@@ -1,6 +1,6 @@
 import './App.css';
 import { Routes, Route } from 'react-router-dom';
-import PaqueteDetalle from './pages/PaqueteDetalle';
+import PaqueteDetalle from './pages/[url]';
 
 function App() {
   return (
