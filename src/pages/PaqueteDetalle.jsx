@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import "react-responsive-carousel/lib/styles/carousel.min.css"; 
 import { Carousel } from 'react-responsive-carousel';
+import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 
 function PaqueteDetalle() {
   const [paquete, setPaquete] = useState(null);
@@ -34,6 +35,10 @@ function PaqueteDetalle() {
   if (loading) return <div className="text-center p-10">🔍 Cargando datos del paquete...</div>;
   if (error) return <div className="text-center p-10 text-red-500">❌ Error: {error}</div>;
   if (!paquete) return <div className="text-center p-10">No se encontró información del paquete.</div>;
+
+
+  const originPosition = [parseFloat(paquete.origen_lat), parseFloat(paquete.origen_lng)];
+  const destinationPosition = [parseFloat(paquete.destino_lat), parseFloat(paquete.destino_lng)];
 
   return (
     <div className="max-w-4xl mx-auto bg-white rounded-xl shadow-lg overflow-hidden my-10">
@@ -101,6 +106,26 @@ function PaqueteDetalle() {
           </ul>
         </div>
         
+        <div className="mb-8">
+          <h2 className="text-3xl font-semibold border-b-2 border-gray-200 pb-2 mb-4">Mapa de la Ruta</h2>
+          <MapContainer center={originPosition} zoom={4} style={{ height: '400px', width: '100%' }}>
+            <TileLayer
+              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            />
+            <Marker position={originPosition}>
+              <Popup>
+                <strong>Origen:</strong> {paquete.origen}
+              </Popup>
+            </Marker>
+            <Marker position={destinationPosition}>
+              <Popup>
+                <strong>Destino:</strong> {paquete.destino}
+              </Popup>
+            </Marker>
+          </MapContainer>
+        </div>
+
         <div>
           <h2 className="text-3xl font-semibold border-b-2 border-gray-200 pb-2 mb-4">Requisitos para el Viaje</h2>
           <div className="bg-gray-100 p-4 rounded-lg">
