@@ -15,17 +15,18 @@ const AdminPaquetes = () => {
         }
 
         const data = await response.json();
-        setPaquetes(data); 
+        setPaquetes(data);
       } catch (e) {
-        setError(e.message); 
+        setError(e.message);
         console.error("Error al obtener los paquetes:", e);
       } finally {
-        setLoading(false); 
+        setLoading(false);
       }
     };
 
     fetchPaquetes();
-  }, []); 
+  }, []);
+
   if (loading) {
     return <div className="flex justify-center items-center h-screen"><p className="text-xl">Cargando paquetes...</p></div>;
   }
@@ -40,8 +41,8 @@ const AdminPaquetes = () => {
         
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-2xl sm:text-3xl font-bold text-gray-800">Gestionar Paquetes</h1>
-          <Link 
-            to="/admin/paquetes/nuevo" 
+          <Link
+            to="/admin/paquetes/nuevo"
             className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-300 ease-in-out"
           >
             + Agregar Paquete
@@ -54,6 +55,7 @@ const AdminPaquetes = () => {
               <thead className="text-xs text-gray-700 uppercase bg-gray-50 border-b">
                 <tr>
                   <th scope="col" className="px-6 py-3">Nombre del Paquete</th>
+                  <th scope="col" className="px-6 py-3">URL del Paquete</th>
                   <th scope="col" className="px-6 py-3">Duración</th>
                   <th scope="col" className="px-6 py-3">Precio Base</th>
                   <th scope="col" className="px-6 py-3 text-center">Acciones</th>
@@ -66,19 +68,30 @@ const AdminPaquetes = () => {
                       {paquete.nombre_paquete}
                     </td>
                     <td className="px-6 py-4">
+          
+                      <Link
+                        to={`/paquetes/${paquete.url}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-600 hover:underline"
+                      >
+                        {`/paquetes/${paquete.url}`}
+                      </Link>
+                    </td>
+                    <td className="px-6 py-4">
                       {paquete.duracion} días
                     </td>
                     <td className="px-6 py-4">
                       {parseFloat(paquete.precio_base).toLocaleString('es-MX', { style: 'currency', currency: 'MXN' })}
                     </td>
                     <td className="px-6 py-4 text-center">
-                      <Link 
-                        to={`/admin/paquetes/editar/${paquete.id}`} 
+                      <Link
+                        to={`/admin/paquetes/editar/${paquete.id}`}
                         className="font-medium text-blue-600 hover:underline mr-4"
                       >
                         Editar
                       </Link>
-                      <button 
+                      <button
                         className="font-medium text-red-600 hover:underline"
                       >
                         Eliminar
