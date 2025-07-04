@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import api from '../../../api';
 
 const AdminPaquetes = () => {
   const [paquetes, setPaquetes] = useState([]);
@@ -9,13 +10,10 @@ const AdminPaquetes = () => {
   useEffect(() => {
     const fetchPaquetes = async () => {
       try {
-        const response = await fetch('http://localhost:3000/paquetes');
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
+        const response = await api.packages.getPaquetes();
+        
+        setPaquetes(response.data); 
 
-        const data = await response.json();
-        setPaquetes(data);
       } catch (e) {
         setError(e.message);
         console.error("Error al obtener los paquetes:", e);
@@ -26,6 +24,8 @@ const AdminPaquetes = () => {
 
     fetchPaquetes();
   }, []);
+
+
 
   if (loading) {
     return <div className="flex justify-center items-center h-screen"><p className="text-xl">Cargando paquetes...</p></div>;
@@ -63,12 +63,12 @@ const AdminPaquetes = () => {
               </thead>
               <tbody>
                 {paquetes.map((paquete) => (
-                  <tr key={paquete.id} className="bg-white border-b hover:bg-gray-50">
+         
+                  <tr key={paquete.id_paquete} className="bg-white border-b hover:bg-gray-50"> 
                     <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
                       {paquete.nombre_paquete}
                     </td>
                     <td className="px-6 py-4">
-          
                       <Link
                         to={`/paquetes/${paquete.url}`}
                         target="_blank"
@@ -82,11 +82,13 @@ const AdminPaquetes = () => {
                       {paquete.duracion} días
                     </td>
                     <td className="px-6 py-4">
+               
                       {parseFloat(paquete.precio_base).toLocaleString('es-MX', { style: 'currency', currency: 'MXN' })}
                     </td>
                     <td className="px-6 py-4 text-center">
+               
                       <Link
-                        to={`/admin/paquetes/editar/${paquete.id}`}
+                        to={`/admin/paquetes/editar/${paquete.id_paquete}`}
                         className="font-medium text-blue-600 hover:underline mr-4"
                       >
                         Editar
