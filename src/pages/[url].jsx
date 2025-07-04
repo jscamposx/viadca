@@ -1,39 +1,23 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { useParams } from 'react-router-dom';
 import "react-responsive-carousel/lib/styles/carousel.min.css"; 
 import { Carousel } from 'react-responsive-carousel';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
-import api from '../api';
+import api from '../api'; 
+import { useFetch } from '../hooks/useFetch';
+
 const API_URL = import.meta.env.VITE_API_URL;
 
 function PaqueteDetalle() {
-  const [paquete, setPaquete] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
   const { url } = useParams();
 
-  useEffect(() => {
-    const fetchPaquete = async () => {
-      setLoading(true);
-      try {
 
-        const response = await api.packages.getPaqueteByUrl(url);
-        setPaquete(response.data);
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    if (url) {
-      fetchPaquete();
-    }
-  }, [url]);
+  const { data: paquete, loading, error } = useFetch(api.packages.getPaqueteByUrl, [url]);
 
   if (loading) return <div className="text-center p-10">🔍 Cargando datos del paquete...</div>;
   if (error) return <div className="text-center p-10 text-red-500">❌ Error: {error}</div>;
   if (!paquete) return <div className="text-center p-10">No se encontró información del paquete.</div>;
+
 
   const originPosition = [parseFloat(paquete.origen_lat), parseFloat(paquete.origen_lng)];
   const destinationPosition = [parseFloat(paquete.destino_lat), parseFloat(paquete.destino_lng)];
@@ -54,7 +38,6 @@ function PaqueteDetalle() {
               <div key={imagen.id}>
                 <img 
                   className="w-full h-96 object-cover" 
-             
                   src={`${API_URL}${imagen.url}`} 
                   alt={imagen.nombre} 
                 />
@@ -73,7 +56,7 @@ function PaqueteDetalle() {
       </div>
 
       <div className="p-8">
-  
+    
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 text-center">
           <div className="p-4 bg-blue-50 rounded-lg shadow-sm">
             <p className="text-sm text-blue-800 font-semibold">Duración</p>

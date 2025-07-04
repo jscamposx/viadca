@@ -22,7 +22,7 @@ const Home = () => {
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link 
-              to="/paquetes/9ElV9" // URL de ejemplo de uno de tus paquetes (recuerda cambiarlo por el de tu bd)
+              to="/paquetes/9ElV9" 
               className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-lg shadow-lg transform hover:scale-105 transition-transform duration-300 ease-in-out"
             >
               Ver Paquetes de Viaje

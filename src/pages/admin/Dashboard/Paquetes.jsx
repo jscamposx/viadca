@@ -1,31 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import api from '../../../api';
+import { useFetch } from '../../../hooks/useFetch';
 
 const AdminPaquetes = () => {
-  const [paquetes, setPaquetes] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-
-  useEffect(() => {
-    const fetchPaquetes = async () => {
-      try {
-        const response = await api.packages.getPaquetes();
-        
-        setPaquetes(response.data); 
-
-      } catch (e) {
-        setError(e.message);
-        console.error("Error al obtener los paquetes:", e);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchPaquetes();
-  }, []);
-
-
+  const { data: paquetes, loading, error } = useFetch(api.packages.getPaquetes);
 
   if (loading) {
     return <div className="flex justify-center items-center h-screen"><p className="text-xl">Cargando paquetes...</p></div>;
@@ -62,8 +41,8 @@ const AdminPaquetes = () => {
                 </tr>
               </thead>
               <tbody>
-                {paquetes.map((paquete) => (
-         
+      
+                {paquetes && paquetes.map((paquete) => (
                   <tr key={paquete.id_paquete} className="bg-white border-b hover:bg-gray-50"> 
                     <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
                       {paquete.nombre_paquete}
@@ -82,11 +61,9 @@ const AdminPaquetes = () => {
                       {paquete.duracion} días
                     </td>
                     <td className="px-6 py-4">
-               
                       {parseFloat(paquete.precio_base).toLocaleString('es-MX', { style: 'currency', currency: 'MXN' })}
                     </td>
                     <td className="px-6 py-4 text-center">
-               
                       <Link
                         to={`/admin/paquetes/editar/${paquete.id_paquete}`}
                         className="font-medium text-blue-600 hover:underline mr-4"
