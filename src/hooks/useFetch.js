@@ -1,10 +1,9 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from "react";
 
 export function useFetch(apiFunc, params = []) {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -13,15 +12,15 @@ export function useFetch(apiFunc, params = []) {
       const response = await apiFunc(...params);
       setData(response.data);
     } catch (err) {
-      setError(err.message || 'Ocurrió un error al obtener los datos.');
+      setError(err.message || "Ocurrió un error al obtener los datos.");
     } finally {
       setLoading(false);
     }
-  }, [apiFunc, ...params]); 
+  }, [apiFunc, ...params]);
 
   useEffect(() => {
     fetchData();
-  }, [fetchData]); 
+  }, [fetchData]);
 
   return { data, loading, error };
 }

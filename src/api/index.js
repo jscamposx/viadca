@@ -1,4 +1,4 @@
-import * as packagesService from './packagesService';
+import * as packagesService from "./packagesService";
 
 const api = {
   packages: {

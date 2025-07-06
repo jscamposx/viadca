@@ -1,10 +1,10 @@
-import './App.css';
-import { Routes, Route } from 'react-router-dom';
-import PaqueteDetalle from './pages/[url]';
-import AdminDashboard from './pages/admin/Dashboard/Home';
-import AdminPaquetes from './pages/admin/Dashboard/Paquetes';
-import Home from './pages/Home';
-import HotelFinder from './pages/HotelFinder';
+import "./App.css";
+import { Routes, Route } from "react-router-dom";
+import PaqueteDetalle from "./pages/[url]";
+import AdminDashboard from "./pages/admin/Dashboard/Home";
+import AdminPaquetes from "./pages/admin/Dashboard/Paquetes";
+import Home from "./pages/Home";
+import HotelFinder from "./pages/HotelFinder";
 
 function App() {
   return (
