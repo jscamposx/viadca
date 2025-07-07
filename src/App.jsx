@@ -1,6 +1,6 @@
 import "./App.css";
 import { Routes, Route } from "react-router-dom";
-import PaqueteDetalle from "./pages/[url]";
+import PaqueteDetalle from "./pages/PackageView";
 import AdminDashboard from "./pages/admin/Dashboard/Home";
 import AdminPaquetes from "./pages/admin/Dashboard/Paquetes";
 import Home from "./pages/Home";
