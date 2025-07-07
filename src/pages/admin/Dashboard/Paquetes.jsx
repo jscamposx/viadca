@@ -3,6 +3,8 @@ import { Link } from "react-router-dom";
 import api from "../../../api";
 import { useFetch } from "../../../hooks/useFetch";
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 const AdminPaquetes = () => {
   const { data: paquetes, loading, error } = useFetch(api.packages.getPaquetes);
 
@@ -49,14 +51,14 @@ const AdminPaquetes = () => {
 
               return (
                 <div
-                  key={paquete.id_paquete}
+                  key={paquete.id}
                   className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300"
                 >
-                  {/* Imagen del paquete */}
+               
                   <div className="h-48 bg-gray-200 overflow-hidden">
                     {imagenPrincipal ? (
                       <img
-                        src={imagenPrincipal.url}
+                        src={`${API_URL}${imagenPrincipal.url}`}
                         alt={paquete.nombre_paquete}
                         className="w-full h-full object-cover"
                       />
@@ -93,12 +95,12 @@ const AdminPaquetes = () => {
                       </Link>
                       <div className="space-x-2">
                         <Link
-                          to={`/admin/paquetes/editar/${paquete.id_paquete}`}
-                          className="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-lg transition duration-300"
+                          to={`/admin/paquetes/editar/${paquete.id}`}
+                          className="bg-blue-500 hover:bg-blue-800 text-white py-2 px-4 rounded-lg transition duration-300"
                         >
                           Editar
                         </Link>
-                        <button className="bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded-lg transition duration-300">
+                        <button className="bg-red-500 hover:bg-red-800 text-white py-2 px-4 rounded-lg transition duration-300">
                           Eliminar
                         </button>
                       </div>
