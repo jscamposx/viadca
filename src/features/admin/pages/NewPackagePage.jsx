@@ -1,10 +1,10 @@
 import React from "react";
 import { APIProvider } from "@vis.gl/react-google-maps";
-import { usePackageForm } from "../../../hooks/usePackageForm";
+import { usePackageForm } from "../hooks/usePackageForm";
 
-import PackageForm from "../../../components/admin/PackageForm";
-import LocationSelector from "../../../components/admin/LocationSelector";
-import ItineraryEditor from "../../../components/admin/ItineraryEditor";
+import PackageForm from "../components/PackageForm";
+import LocationSelector from "../components/LocationSelector";
+import ItineraryEditor from "../components/ItineraryEditor";
 
 const NuevoPaquete = () => {
   const {

@@ -1,10 +1,10 @@
 import "./App.css";
 import { Routes, Route } from "react-router-dom";
-import PaqueteDetalle from "./pages/PackageView";
-import AdminDashboard from "./pages/admin/Dashboard/Home";
-import AdminPaquetes from "./pages/admin/Dashboard/Paquetes";
-import Home from "./pages/Home";
-import NuevoPaquete from "./pages/admin/Dashboard/NuevoPaquete";
+import PaqueteDetalle from "./features/package/pages/PackageViewPage";
+import AdminDashboard from "./features/admin/pages/AdminDashboardPage";
+import AdminPaquetes from "./features/admin/pages/AdminPackagesPage";
+import Home from "./features/home/pages/HomePage";
+import NuevoPaquete from "./features/admin/pages/NewPackagePage";
 
 function App() {
   return (

@@ -10,7 +10,7 @@ import {
   PackageInfo,
   Requirements,
   RouteMap,
-} from "../components/packageView";
+} from "../components";
 
 function PaqueteDetalle() {
   const { url } = useParams();

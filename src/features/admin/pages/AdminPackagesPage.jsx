@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { useAllPackages } from "../../../hooks/useAllPackages"; // <-- Cambio aquí
+import { useAllPackages } from "../../package/hooks/useAllPackages"; // <-- Cambio aquí
 
 const API_URL = import.meta.env.VITE_API_URL;
 
