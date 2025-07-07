@@ -6,7 +6,6 @@ import api from "../../../api";
 import PackageForm from "../../../components/admin/PackageForm";
 import LocationSelector from "../../../components/admin/LocationSelector";
 import ItineraryEditor from "../../../components/admin/ItineraryEditor";
-import GooglePlacesSearch from "../../../components/admin/GooglePlacesSearch";
 
 const durangoCoordinates = {
   lat: 24.0277,
@@ -178,11 +177,6 @@ const NuevoPaquete = () => {
           <div className="space-y-4">
             <h2 className="text-xl font-semibold">Selección de Ubicación</h2>
 
-            <div className="mb-4">
-              <p className="font-medium mb-2">Busca un lugar:</p>
-              <GooglePlacesSearch onPlaceSelected={handlePlaceSelected} />
-            </div>
-
             <div className="flex items-center gap-4 mb-4">
               <p>Seleccionando:</p>
               <button
@@ -207,6 +201,7 @@ const NuevoPaquete = () => {
               onMapClick={onMapClick}
               origin={origin}
               destination={destination}
+              onPlaceSelected={handlePlaceSelected}
             />
           </div>
 

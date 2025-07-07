@@ -1,9 +1,11 @@
 import { Map, AdvancedMarker } from "@vis.gl/react-google-maps";
+import GooglePlacesSearch from "./GooglePlacesSearch";
 
 const mapContainerStyle = {
   width: "100%",
   height: "400px",
   borderRadius: "0.5rem",
+  position: "relative",
 };
 
 const center = {
@@ -18,8 +20,25 @@ const isValidLatLng = (coord) =>
   !isNaN(coord.lat) &&
   !isNaN(coord.lng);
 
-const LocationSelector = ({ onMapClick, origin, destination }) => (
+const LocationSelector = ({
+  onMapClick,
+  origin,
+  destination,
+  onPlaceSelected,
+}) => (
   <div style={mapContainerStyle}>
+    <div
+      style={{
+        position: "absolute",
+        top: "10px",
+        left: "50%",
+        transform: "translateX(-50%)",
+        zIndex: 1,
+        width: "50%",
+      }}
+    >
+      <GooglePlacesSearch onPlaceSelected={onPlaceSelected} />
+    </div>
     <Map
       defaultCenter={center}
       defaultZoom={5}

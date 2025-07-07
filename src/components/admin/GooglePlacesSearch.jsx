@@ -1,42 +1,40 @@
 import React, { useRef, useEffect } from "react";
+import { useMapsLibrary } from "@vis.gl/react-google-maps";
 
 const GooglePlacesSearch = ({ onPlaceSelected }) => {
   const inputRef = useRef(null);
-  const autocompleteRef = useRef(null);
+  const places = useMapsLibrary("places");
 
   useEffect(() => {
-    if (window.google && window.google.maps.places) {
-      autocompleteRef.current = new window.google.maps.places.Autocomplete(
-        inputRef.current,
-        { types: ["(cities)"] }, // Filtra para mostrar solo ciudades
-      );
-
-      autocompleteRef.current.addListener("place_changed", () => {
-        const place = autocompleteRef.current.getPlace();
-        if (place.geometry) {
-          const { lat, lng } = place.geometry.location;
-          // Llama a la función del componente padre con las coordenadas y el nombre del lugar
-          onPlaceSelected({ lat: lat(), lng: lng() }, place.formatted_address);
-        }
-      });
+    if (!places || !inputRef.current) {
+      return;
     }
 
-    // Limpia el listener cuando el componente se desmonta
+    const autocomplete = new places.Autocomplete(inputRef.current, {
+      types: ["(cities)"],
+    });
+
+    autocomplete.addListener("place_changed", () => {
+      const place = autocomplete.getPlace();
+      if (place.geometry) {
+        const { lat, lng } = place.geometry.location;
+        onPlaceSelected({ lat: lat(), lng: lng() }, place.formatted_address);
+      }
+    });
+
     return () => {
-      if (autocompleteRef.current) {
-        window.google.maps.event.clearInstanceListeners(
-          autocompleteRef.current,
-        );
+      if (window.google) {
+        window.google.maps.event.clearInstanceListeners(autocomplete);
       }
     };
-  }, [onPlaceSelected]);
+  }, [places, onPlaceSelected]);
 
   return (
     <input
       ref={inputRef}
       type="text"
       placeholder="Buscar una ciudad..."
-      className="w-full p-2 border rounded"
+      className="w-full p-2 border rounded bg-white"
     />
   );
 };
