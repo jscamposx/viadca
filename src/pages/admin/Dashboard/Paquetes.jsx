@@ -37,71 +37,76 @@ const AdminPaquetes = () => {
           </Link>
         </div>
 
-        <div className="bg-white shadow-lg rounded-xl overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm text-left text-gray-600">
-              <thead className="text-xs text-gray-700 uppercase bg-gray-50 border-b">
-                <tr>
-                  <th scope="col" className="px-6 py-3">
-                    Nombre del Paquete
-                  </th>
-                  <th scope="col" className="px-6 py-3">
-                    URL del Paquete
-                  </th>
-                  <th scope="col" className="px-6 py-3">
-                    Duración
-                  </th>
-                  <th scope="col" className="px-6 py-3">
-                    Precio Base
-                  </th>
-                  <th scope="col" className="px-6 py-3 text-center">
-                    Acciones
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {paquetes &&
-                  paquetes.map((paquete) => (
-                    <tr
-                      key={paquete.id}
-                      className="bg-white border-b hover:bg-gray-50"
-                    >
-                      <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
-                        {paquete.nombre_paquete}
-                      </td>
-                      <td className="px-6 py-4">
-                        <Link
-                          to={`/paquetes/${paquete.url}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-blue-600 hover:underline"
-                        >
-                          {`/paquetes/${paquete.url}`}
-                        </Link>
-                      </td>
-                      <td className="px-6 py-4">{paquete.duracion} días</td>
-                      <td className="px-6 py-4">
-                        {parseFloat(paquete.precio_base).toLocaleString(
-                          "es-MX",
-                          { style: "currency", currency: "MXN" },
-                        )}
-                      </td>
-                      <td className="px-6 py-4 text-center">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {paquetes &&
+            paquetes.map((paquete) => {
+              const imagenPrincipal =
+                paquete.imagenes && paquete.imagenes.length > 0
+                  ? paquete.imagenes
+                      .slice()
+                      .sort((a, b) => a.orden - b.orden)[0]
+                  : null;
+
+              return (
+                <div
+                  key={paquete.id_paquete}
+                  className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300"
+                >
+                  {/* Imagen del paquete */}
+                  <div className="h-48 bg-gray-200 overflow-hidden">
+                    {imagenPrincipal ? (
+                      <img
+                        src={imagenPrincipal.url}
+                        alt={paquete.nombre_paquete}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-gray-500">
+                        Sin imagen
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="p-6">
+                    <h2 className="text-xl font-bold text-gray-800 mb-2">
+                      {paquete.nombre_paquete}
+                    </h2>
+                    <div className="flex items-center text-gray-600 mb-1">
+                      <span className="mr-2">⏱️</span>
+                      <span>{paquete.duracion} días</span>
+                    </div>
+                    <div className="text-lg font-semibold text-gray-900 mb-4">
+                      {parseFloat(paquete.precio_base).toLocaleString("es-MX", {
+                        style: "currency",
+                        currency: "MXN",
+                      })}
+                    </div>
+
+                    <div className="flex justify-between items-center">
+                      <Link
+                        to={`/paquetes/${paquete.url}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded-lg transition duration-300"
+                      >
+                        View
+                      </Link>
+                      <div className="space-x-2">
                         <Link
                           to={`/admin/paquetes/editar/${paquete.id_paquete}`}
-                          className="font-medium text-blue-600 hover:underline mr-4"
+                          className="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-lg transition duration-300"
                         >
                           Editar
                         </Link>
-                        <button className="font-medium text-red-600 hover:underline">
+                        <button className="bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded-lg transition duration-300">
                           Eliminar
                         </button>
-                      </td>
-                    </tr>
-                  ))}
-              </tbody>
-            </table>
-          </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
         </div>
       </div>
     </div>
