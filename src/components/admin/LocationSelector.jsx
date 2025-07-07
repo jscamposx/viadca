@@ -1,4 +1,4 @@
-import { Map, AdvancedMarker } from "@vis.gl/react-google-maps";
+import { Map, AdvancedMarker, Pin } from "@vis.gl/react-google-maps";
 import GooglePlacesSearch from "./GooglePlacesSearch";
 
 const mapContainerStyle = {
@@ -52,10 +52,23 @@ const LocationSelector = ({
       mapId="b21b4a042011d515"
     >
       {isValidLatLng(origin) && (
-        <AdvancedMarker position={origin} title="Origen" />
+        <AdvancedMarker position={origin} title="Origen">
+          <Pin
+            background={"#22c55e"}
+            borderColor={"#166534"}
+            glyphColor={"#ffffff"}
+          />
+        </AdvancedMarker>
       )}
+
       {isValidLatLng(destination) && (
-        <AdvancedMarker position={destination} title="Destino" />
+        <AdvancedMarker position={destination} title="Destino">
+          <Pin
+            background={"#22c55e"}
+            borderColor={"#166534"}
+            glyphColor={"#ffffff"}
+          />
+        </AdvancedMarker>
       )}
     </Map>
   </div>

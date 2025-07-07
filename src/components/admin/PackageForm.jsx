@@ -1,6 +1,5 @@
 const PackageForm = ({ formData, onFormChange }) => (
   <div className="space-y-6">
-    {/* Sección de Información Básica */}
     <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
       <h3 className="text-lg font-medium text-gray-900 mb-4">
         Información Básica
@@ -72,7 +71,6 @@ const PackageForm = ({ formData, onFormChange }) => (
       </div>
     </div>
 
-    {/* Sección de Origen */}
     <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
       <h3 className="text-lg font-medium text-gray-900 mb-4">Origen</h3>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -125,7 +123,6 @@ const PackageForm = ({ formData, onFormChange }) => (
       </div>
     </div>
 
-    {/* Sección de Destino */}
     <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
       <h3 className="text-lg font-medium text-gray-900 mb-4">Destino</h3>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -178,7 +175,6 @@ const PackageForm = ({ formData, onFormChange }) => (
       </div>
     </div>
 
-    {/* Sección de Requisitos */}
     <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
       <h3 className="text-lg font-medium text-gray-900 mb-4">Requisitos</h3>
       <div>

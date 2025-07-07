@@ -24,7 +24,6 @@ const GooglePlacesSearch = ({ onPlaceSelected, value, onChange }) => {
     });
 
     return () => {
-      // The google object can be undefined when the component is unmounted
       if (window.google && window.google.maps.event) {
         window.google.maps.event.clearInstanceListeners(autocomplete);
       }
