@@ -6,8 +6,6 @@ import AdminPaquetes from "./pages/admin/Dashboard/Paquetes";
 import Home from "./pages/Home";
 import NuevoPaquete from "./pages/admin/Dashboard/NuevoPaquete";
 
-
-
 function App() {
   return (
     <Routes>
