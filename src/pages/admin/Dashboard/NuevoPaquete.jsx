@@ -1,175 +1,28 @@
-import React, { useState, useCallback, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import React from "react";
 import { APIProvider } from "@vis.gl/react-google-maps";
-import api from "../../../api";
+import { usePackageForm } from "../../../hooks/usePackageForm";
 
 import PackageForm from "../../../components/admin/PackageForm";
 import LocationSelector from "../../../components/admin/LocationSelector";
 import ItineraryEditor from "../../../components/admin/ItineraryEditor";
 
-const durangoCoordinates = {
-  lat: 24.0277,
-  lng: -104.6532,
-};
-
 const NuevoPaquete = () => {
-  const [formData, setFormData] = useState({
-    nombre_paquete: "",
-    duracion: "",
-    id_vuelo: "",
-    requisitos: "",
-    origen: "Durango, Dgo.",
-    origen_lat: durangoCoordinates.lat,
-    origen_lng: durangoCoordinates.lng,
-    destino: "",
-    destino_lat: "",
-    destino_lng: "",
-    precio_base: "",
-    itinerario: [{ dia: 1, descripcion: "" }],
-  });
-
-  const [selectionMode, setSelectionMode] = useState("destino");
-  const [mapCenter, setMapCenter] = useState(durangoCoordinates);
-  const [searchValue, setSearchValue] = useState("");
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    if (selectionMode === "origen") {
-      setSearchValue(formData.origen);
-    } else {
-      setSearchValue(formData.destino);
-    }
-  }, [selectionMode, formData.origen, formData.destino]);
-
-  const handlePlaceSelected = useCallback(
-    (coords, formattedAddress) => {
-      setMapCenter(coords);
-
-      const fieldName = selectionMode === "origen" ? "origen" : "destino";
-
-      const addressParts = formattedAddress.split(",").slice(0, 2);
-      const simplifiedAddress = addressParts.join(", ");
-
-      setFormData((prev) => ({
-        ...prev,
-        [`${fieldName}`]: simplifiedAddress,
-        [`${fieldName}_lat`]: coords.lat,
-        [`${fieldName}_lng`]: coords.lng,
-      }));
-    },
-    [selectionMode],
-  );
-
-  const onMapClick = useCallback(
-    (event) => {
-      const latLng = event.detail.latLng;
-      if (!latLng) return;
-
-      const { lat, lng } = latLng;
-      const coords = { lat, lng };
-
-      if (selectionMode === "origen") {
-        setFormData((prev) => ({ ...prev, origen_lat: lat, origen_lng: lng }));
-      } else {
-        setFormData((prev) => ({
-          ...prev,
-          destino_lat: lat,
-          destino_lng: lng,
-        }));
-      }
-
-      const geocoder = new window.google.maps.Geocoder();
-      geocoder.geocode({ location: coords }, (results, status) => {
-        if (status === "OK" && results[0]) {
-          const addressComponents = results[0].address_components;
-          let city = "";
-          let state = "";
-
-          for (const component of addressComponents) {
-            if (component.types.includes("locality")) {
-              city = component.long_name;
-            }
-            if (component.types.includes("administrative_area_level_1")) {
-              state = component.long_name;
-            }
-          }
-
-          const locationName = [city, state].filter(Boolean).join(", ");
-
-          if (selectionMode === "origen") {
-            setFormData((prev) => ({ ...prev, origen: locationName }));
-          } else {
-            setFormData((prev) => ({ ...prev, destino: locationName }));
-          }
-        } else {
-          console.error(
-            `Geocode was not successful for the following reason: ${status}`,
-          );
-        }
-      });
-    },
-    [selectionMode],
-  );
-
-  const handleFormChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleItinerarioChange = (index, event) => {
-    const { name, value } = event.target;
-    const itinerario = [...formData.itinerario];
-    itinerario[index][name] = value;
-    setFormData((prev) => ({ ...prev, itinerario }));
-  };
-
-  const handleAddItinerario = () => {
-    setFormData((prev) => ({
-      ...prev,
-      itinerario: [
-        ...prev.itinerario,
-        { dia: prev.itinerario.length + 1, descripcion: "" },
-      ],
-    }));
-  };
-
-  const handleRemoveItinerario = (index) => {
-    const itinerario = [...formData.itinerario];
-    itinerario.splice(index, 1);
-    setFormData((prev) => ({ ...prev, itinerario }));
-  };
-
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    if (
-      !formData.origen_lat ||
-      !formData.origen_lng ||
-      !formData.destino_lat ||
-      !formData.destino_lng
-    ) {
-      alert("Por favor, selecciona el origen y el destino en el mapa.");
-      return;
-    }
-
-    try {
-      await api.packages.createPaquete(formData);
-      alert("Paquete creado con éxito");
-      navigate("/admin/paquetes");
-    } catch (error) {
-      console.error("Error al crear el paquete:", error);
-      alert("Error al crear el paquete");
-    }
-  };
-
-  const origin = {
-    lat: parseFloat(formData.origen_lat) || null,
-    lng: parseFloat(formData.origen_lng) || null,
-  };
-
-  const destination = {
-    lat: parseFloat(formData.destino_lat) || null,
-    lng: parseFloat(formData.destino_lng) || null,
-  };
+  const {
+    formData,
+    selectionMode,
+    searchValue,
+    origin,
+    destination,
+    setSelectionMode,
+    setSearchValue,
+    handlePlaceSelected,
+    onMapClick,
+    handleFormChange,
+    handleItinerarioChange,
+    handleAddItinerario,
+    handleRemoveItinerario,
+    handleSubmit,
+  } = usePackageForm();
 
   return (
     <APIProvider
@@ -185,7 +38,6 @@ const NuevoPaquete = () => {
 
           <div className="space-y-4">
             <h2 className="text-xl font-semibold">Selección de Ubicación</h2>
-
             <div className="flex items-center gap-4 mb-4">
               <p>Seleccionando:</p>
               <button
@@ -206,7 +58,6 @@ const NuevoPaquete = () => {
               </button>
             </div>
             <LocationSelector
-              center={mapCenter}
               onMapClick={onMapClick}
               origin={origin}
               destination={destination}

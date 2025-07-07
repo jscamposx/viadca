@@ -1,12 +1,11 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import api from "../../../api";
-import { useFetch } from "../../../hooks/useFetch";
+import { useAllPackages } from "../../../hooks/useAllPackages"; // <-- Cambio aquí
 
 const API_URL = import.meta.env.VITE_API_URL;
 
 const AdminPaquetes = () => {
-  const { data: paquetes, loading, error } = useFetch(api.packages.getPaquetes);
+  const { paquetes, loading, error } = useAllPackages(); // <-- Y aquí
 
   if (loading) {
     return (

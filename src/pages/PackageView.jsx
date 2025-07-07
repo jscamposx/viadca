@@ -1,6 +1,5 @@
 import { useParams } from "react-router-dom";
-import api from "../api";
-import { useFetch } from "../hooks/useFetch";
+import { usePackage } from "../hooks/usePackage";
 import {
   Error,
   ImageCarousel,
@@ -15,12 +14,7 @@ import {
 
 function PaqueteDetalle() {
   const { url } = useParams();
-
-  const {
-    data: paquete,
-    loading,
-    error,
-  } = useFetch(api.packages.getPaqueteByUrl, [url]);
+  const { paquete, loading, error } = usePackage(url);
 
   if (loading) return <Loading />;
   if (error) return <Error message={error} />;
