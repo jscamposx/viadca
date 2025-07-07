@@ -6,6 +6,7 @@ import api from "../../../api";
 import PackageForm from "../../../components/admin/PackageForm";
 import LocationSelector from "../../../components/admin/LocationSelector";
 import ItineraryEditor from "../../../components/admin/ItineraryEditor";
+import GooglePlacesSearch from "../../../components/admin/GooglePlacesSearch";
 
 const durangoCoordinates = {
   lat: 24.0277,
@@ -29,33 +30,77 @@ const NuevoPaquete = () => {
   });
 
   const [selectionMode, setSelectionMode] = useState("destino");
+  const [mapCenter, setMapCenter] = useState(durangoCoordinates);
   const navigate = useNavigate();
 
-  const setCoordinates = useCallback(
-    (coords) => {
-      if (selectionMode === "origen") {
-        setFormData((prev) => ({
-          ...prev,
-          origen_lat: coords.lat,
-          origen_lng: coords.lng,
-        }));
-      } else {
-        setFormData((prev) => ({
-          ...prev,
-          destino_lat: coords.lat,
-          destino_lng: coords.lng,
-        }));
-      }
+  const handlePlaceSelected = useCallback(
+    (coords, formattedAddress) => {
+      setMapCenter(coords);
+
+      const fieldName = selectionMode === "origen" ? "origen" : "destino";
+
+      const addressParts = formattedAddress.split(",").slice(0, 2);
+      const simplifiedAddress = addressParts.join(", ");
+
+      setFormData((prev) => ({
+        ...prev,
+        [`${fieldName}`]: simplifiedAddress,
+        [`${fieldName}_lat`]: coords.lat,
+        [`${fieldName}_lng`]: coords.lng,
+      }));
     },
     [selectionMode],
   );
 
   const onMapClick = useCallback(
     (event) => {
-      const { lat, lng } = event.detail.latLng; // NO usar lat()
-      setCoordinates({ lat, lng });
+      const latLng = event.detail.latLng;
+      if (!latLng) return;
+
+      const { lat, lng } = latLng;
+      const coords = { lat, lng };
+
+      if (selectionMode === "origen") {
+        setFormData((prev) => ({ ...prev, origen_lat: lat, origen_lng: lng }));
+      } else {
+        setFormData((prev) => ({
+          ...prev,
+          destino_lat: lat,
+          destino_lng: lng,
+        }));
+      }
+
+      const geocoder = new window.google.maps.Geocoder();
+      geocoder.geocode({ location: coords }, (results, status) => {
+        if (status === "OK" && results[0]) {
+          const addressComponents = results[0].address_components;
+          let city = "";
+          let state = "";
+
+          for (const component of addressComponents) {
+            if (component.types.includes("locality")) {
+              city = component.long_name;
+            }
+            if (component.types.includes("administrative_area_level_1")) {
+              state = component.long_name;
+            }
+          }
+
+          const locationName = [city, state].filter(Boolean).join(", ");
+
+          if (selectionMode === "origen") {
+            setFormData((prev) => ({ ...prev, origen: locationName }));
+          } else {
+            setFormData((prev) => ({ ...prev, destino: locationName }));
+          }
+        } else {
+          console.error(
+            `Geocode was not successful for the following reason: ${status}`,
+          );
+        }
+      });
     },
-    [setCoordinates],
+    [selectionMode],
   );
 
   const handleFormChange = (e) => {
@@ -121,7 +166,7 @@ const NuevoPaquete = () => {
   return (
     <APIProvider
       apiKey={import.meta.env.VITE_Maps_API_KEY}
-      libraries={["places"]}
+      libraries={["places", "geocoding", "marker"]}
     >
       <div className="container mx-auto p-8">
         <h1 className="text-2xl font-bold mb-6">
@@ -132,6 +177,12 @@ const NuevoPaquete = () => {
 
           <div className="space-y-4">
             <h2 className="text-xl font-semibold">Selección de Ubicación</h2>
+
+            <div className="mb-4">
+              <p className="font-medium mb-2">Busca un lugar:</p>
+              <GooglePlacesSearch onPlaceSelected={handlePlaceSelected} />
+            </div>
+
             <div className="flex items-center gap-4 mb-4">
               <p>Seleccionando:</p>
               <button
@@ -152,25 +203,10 @@ const NuevoPaquete = () => {
               </button>
             </div>
             <LocationSelector
+              center={mapCenter}
               onMapClick={onMapClick}
-              origin={
-                isFinite(parseFloat(formData.origen_lat)) &&
-                isFinite(parseFloat(formData.origen_lng))
-                  ? {
-                      lat: parseFloat(formData.origen_lat),
-                      lng: parseFloat(formData.origen_lng),
-                    }
-                  : null
-              }
-              destination={
-                isFinite(parseFloat(formData.destino_lat)) &&
-                isFinite(parseFloat(formData.destino_lng))
-                  ? {
-                      lat: parseFloat(formData.destino_lat),
-                      lng: parseFloat(formData.destino_lng),
-                    }
-                  : null
-              }
+              origin={origin}
+              destination={destination}
             />
           </div>
 
