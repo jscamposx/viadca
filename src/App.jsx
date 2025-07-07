@@ -4,13 +4,11 @@ import PaqueteDetalle from "./pages/PackageView";
 import AdminDashboard from "./pages/admin/Dashboard/Home";
 import AdminPaquetes from "./pages/admin/Dashboard/Paquetes";
 import Home from "./pages/Home";
-import HotelFinder from "./pages/HotelFinder";
 
 function App() {
   return (
     <Routes>
       <Route path="/" element={<Home />} />
-      <Route path="/hoteles" element={<HotelFinder />} />
       <Route path="/paquetes/:url" element={<PaqueteDetalle />} />
       <Route path="/admin" element={<AdminDashboard />} />
       <Route path="/admin/paquetes" element={<AdminPaquetes />} />

@@ -11,7 +11,7 @@ import {
   PackageInfo,
   Requirements,
   RouteMap,
-} from "../components/package";
+} from "../components/packageView";
 
 function PaqueteDetalle() {
   const { url } = useParams();
