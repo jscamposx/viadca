@@ -2,10 +2,14 @@ const PackageForm = ({ formData, onFormChange }) => (
   <div className="space-y-6">
     {/* Sección de Información Básica */}
     <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-      <h3 className="text-lg font-medium text-gray-900 mb-4">Información Básica</h3>
+      <h3 className="text-lg font-medium text-gray-900 mb-4">
+        Información Básica
+      </h3>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Nombre del Paquete *</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Nombre del Paquete *
+          </label>
           <input
             type="text"
             name="nombre_paquete"
@@ -15,9 +19,11 @@ const PackageForm = ({ formData, onFormChange }) => (
             required
           />
         </div>
-        
+
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Duración (días) *</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Duración (días) *
+          </label>
           <input
             type="number"
             name="duracion"
@@ -28,9 +34,11 @@ const PackageForm = ({ formData, onFormChange }) => (
             required
           />
         </div>
-        
+
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">ID del Vuelo *</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            ID del Vuelo *
+          </label>
           <input
             type="text"
             name="id_vuelo"
@@ -40,11 +48,15 @@ const PackageForm = ({ formData, onFormChange }) => (
             required
           />
         </div>
-        
+
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Precio Base *</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Precio Base *
+          </label>
           <div className="relative">
-            <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500">$</span>
+            <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500">
+              $
+            </span>
             <input
               type="number"
               step="0.01"
@@ -65,7 +77,9 @@ const PackageForm = ({ formData, onFormChange }) => (
       <h3 className="text-lg font-medium text-gray-900 mb-4">Origen</h3>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Nombre del Origen *</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Nombre del Origen *
+          </label>
           <input
             type="text"
             name="origen"
@@ -76,10 +90,12 @@ const PackageForm = ({ formData, onFormChange }) => (
             required
           />
         </div>
-        
+
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Latitud *</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Latitud *
+            </label>
             <input
               type="number"
               step="any"
@@ -90,9 +106,11 @@ const PackageForm = ({ formData, onFormChange }) => (
               required
             />
           </div>
-          
+
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Longitud *</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Longitud *
+            </label>
             <input
               type="number"
               step="any"
@@ -112,7 +130,9 @@ const PackageForm = ({ formData, onFormChange }) => (
       <h3 className="text-lg font-medium text-gray-900 mb-4">Destino</h3>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Nombre del Destino *</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Nombre del Destino *
+          </label>
           <input
             type="text"
             name="destino"
@@ -123,10 +143,12 @@ const PackageForm = ({ formData, onFormChange }) => (
             required
           />
         </div>
-        
+
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Latitud *</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Latitud *
+            </label>
             <input
               type="number"
               step="any"
@@ -137,9 +159,11 @@ const PackageForm = ({ formData, onFormChange }) => (
               required
             />
           </div>
-          
+
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Longitud *</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Longitud *
+            </label>
             <input
               type="number"
               step="any"
@@ -158,7 +182,9 @@ const PackageForm = ({ formData, onFormChange }) => (
     <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
       <h3 className="text-lg font-medium text-gray-900 mb-4">Requisitos</h3>
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Requisitos del Paquete *</label>
+        <label className="block text-sm font-medium text-gray-700 mb-1">
+          Requisitos del Paquete *
+        </label>
         <textarea
           name="requisitos"
           value={formData.requisitos}

@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { APIProvider } from "@vis.gl/react-google-maps";
 import api from "../../../api";
@@ -30,7 +30,16 @@ const NuevoPaquete = () => {
 
   const [selectionMode, setSelectionMode] = useState("destino");
   const [mapCenter, setMapCenter] = useState(durangoCoordinates);
+  const [searchValue, setSearchValue] = useState("");
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (selectionMode === "origen") {
+      setSearchValue(formData.origen);
+    } else {
+      setSearchValue(formData.destino);
+    }
+  }, [selectionMode, formData.origen, formData.destino]);
 
   const handlePlaceSelected = useCallback(
     (coords, formattedAddress) => {
@@ -202,6 +211,8 @@ const NuevoPaquete = () => {
               origin={origin}
               destination={destination}
               onPlaceSelected={handlePlaceSelected}
+              searchValue={searchValue}
+              onSearchValueChange={setSearchValue}
             />
           </div>
 

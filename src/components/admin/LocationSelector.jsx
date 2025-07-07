@@ -25,6 +25,8 @@ const LocationSelector = ({
   origin,
   destination,
   onPlaceSelected,
+  searchValue,
+  onSearchValueChange,
 }) => (
   <div style={mapContainerStyle}>
     <div
@@ -37,7 +39,11 @@ const LocationSelector = ({
         width: "50%",
       }}
     >
-      <GooglePlacesSearch onPlaceSelected={onPlaceSelected} />
+      <GooglePlacesSearch
+        onPlaceSelected={onPlaceSelected}
+        value={searchValue}
+        onChange={onSearchValueChange}
+      />
     </div>
     <Map
       defaultCenter={center}
