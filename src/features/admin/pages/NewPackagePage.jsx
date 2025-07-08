@@ -24,6 +24,7 @@ const NuevoPaquete = () => {
     handleSubmit,
   } = usePackageForm();
 
+    console.log("NuevoPaquete formData:", formData);  
   return (
     <APIProvider
       apiKey={import.meta.env.VITE_Maps_API_KEY}

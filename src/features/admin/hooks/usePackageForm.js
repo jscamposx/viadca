@@ -146,11 +146,14 @@ export const usePackageForm = () => {
         ...item,
         dia: parseInt(item.dia, 10),
       })),
-      images: formData.images.map((img) => ({
+      images: formData.images.map((img, index) => ({
         url: img.url,
         isUploaded: img.isUploaded,
+        orden: index,
       })),
     };
+
+    console.log("Payload a enviar:", payload); 
 
     try {
       await api.packages.createPaquete(payload);
