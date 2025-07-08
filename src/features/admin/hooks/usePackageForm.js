@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useMemo } from "react"; 
 import { useNavigate } from "react-router-dom";
 import api from "../../../api";
 
@@ -19,8 +19,10 @@ export const usePackageForm = () => {
     destino: "",
     destino_lat: "",
     destino_lng: "",
+    destino_place_id: "",
     precio_base: "",
     itinerario: [{ dia: 1, descripcion: "" }],
+    images: [],
   });
 
   const [selectionMode, setSelectionMode] = useState("destino");
@@ -34,9 +36,13 @@ export const usePackageForm = () => {
   }, [selectionMode, formData.origen, formData.destino]);
 
   const handlePlaceSelected = useCallback(
-    (coords, formattedAddress) => {
+    (place) => {
+      const { geometry, formatted_address, place_id } = place;
+      if (!geometry) return;
+
+      const { lat, lng } = geometry.location;
       const fieldName = selectionMode === "origen" ? "origen" : "destino";
-      const simplifiedAddress = formattedAddress
+      const simplifiedAddress = formatted_address
         .split(",")
         .slice(0, 2)
         .join(", ");
@@ -44,8 +50,9 @@ export const usePackageForm = () => {
       setFormData((prev) => ({
         ...prev,
         [`${fieldName}`]: simplifiedAddress,
-        [`${fieldName}_lat`]: coords.lat,
-        [`${fieldName}_lng`]: coords.lng,
+        [`${fieldName}_lat`]: lat(),
+        [`${fieldName}_lng`]: lng(),
+        [`${fieldName}_place_id`]: fieldName === 'destino' ? place_id : prev.destino_place_id,
       }));
     },
     [selectionMode],
@@ -59,15 +66,14 @@ export const usePackageForm = () => {
       const geocoder = new window.google.maps.Geocoder();
       geocoder.geocode({ location: latLng }, (results, status) => {
         if (status === "OK" && results[0]) {
-          const addressComponents = results[0].address_components;
+          const place = results[0];
+          const addressComponents = place.address_components;
           let city = "";
           let state = "";
 
           for (const component of addressComponents) {
-            if (component.types.includes("locality"))
-              city = component.long_name;
-            if (component.types.includes("administrative_area_level_1"))
-              state = component.long_name;
+            if (component.types.includes("locality")) city = component.long_name;
+            if (component.types.includes("administrative_area_level_1")) state = component.long_name;
           }
 
           const locationName = [city, state].filter(Boolean).join(", ");
@@ -78,11 +84,10 @@ export const usePackageForm = () => {
             [`${fieldName}`]: locationName,
             [`${fieldName}_lat`]: latLng.lat,
             [`${fieldName}_lng`]: latLng.lng,
+            [`${fieldName}_place_id`]: fieldName === 'destino' ? place.place_id : prev.destino_place_id,
           }));
         } else {
-          console.error(
-            `Geocode was not successful for the following reason: ${status}`,
-          );
+          console.error(`Geocode was not successful for the following reason: ${status}`);
         }
       });
     },
@@ -94,6 +99,10 @@ export const usePackageForm = () => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  const handleImagesChange = useCallback((newImages) => {
+    setFormData((prev) => ({ ...prev, images: newImages }));
+  }, []);
+
   const handleItinerarioChange = (index, event) => {
     const { name, value } = event.target;
     const itinerario = [...formData.itinerario];
@@ -104,10 +113,7 @@ export const usePackageForm = () => {
   const handleAddItinerario = () => {
     setFormData((prev) => ({
       ...prev,
-      itinerario: [
-        ...prev.itinerario,
-        { dia: prev.itinerario.length + 1, descripcion: "" },
-      ],
+      itinerario: [...prev.itinerario, { dia: prev.itinerario.length + 1, descripcion: "" }],
     }));
   };
 
@@ -127,10 +133,8 @@ export const usePackageForm = () => {
       ...formData,
       duracion: parseInt(formData.duracion, 10),
       precio_base: parseFloat(formData.precio_base),
-      itinerario: formData.itinerario.map((item) => ({
-        ...item,
-        dia: parseInt(item.dia, 10),
-      })),
+      itinerario: formData.itinerario.map((item) => ({ ...item, dia: parseInt(item.dia, 10) })),
+      images: formData.images.map(img => ({ url: img.url, isUploaded: img.isUploaded })),
     };
 
     try {
@@ -144,15 +148,18 @@ export const usePackageForm = () => {
     }
   };
 
-  const origin = {
+
+  const origin = useMemo(() => ({
     lat: parseFloat(formData.origen_lat) || null,
     lng: parseFloat(formData.origen_lng) || null,
-  };
+  }), [formData.origen_lat, formData.origen_lng]);
 
-  const destination = {
+  const destination = useMemo(() => ({
     lat: parseFloat(formData.destino_lat) || null,
     lng: parseFloat(formData.destino_lng) || null,
-  };
+    placeId: formData.destino_place_id,
+    name: formData.destino, 
+  }), [formData.destino_lat, formData.destino_lng, formData.destino_place_id, formData.destino]);
 
   return {
     formData,
@@ -168,6 +175,7 @@ export const usePackageForm = () => {
     handleItinerarioChange,
     handleAddItinerario,
     handleRemoveItinerario,
+    handleImagesChange,
     handleSubmit,
   };
 };
