@@ -1,11 +1,10 @@
-import React from "react";
 import { Link } from "react-router-dom";
-import { useAllPackages } from "../../package/hooks/useAllPackages"; // <-- Cambio aquí
+import { useAllPackages } from "../../package/hooks/useAllPackages";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
 const AdminPaquetes = () => {
-  const { paquetes, loading, error } = useAllPackages(); // <-- Y aquí
+  const { paquetes, loading, error } = useAllPackages();
 
   if (loading) {
     return (

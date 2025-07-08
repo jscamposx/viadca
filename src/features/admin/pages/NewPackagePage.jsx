@@ -1,10 +1,10 @@
-import React from "react";
 import { APIProvider } from "@vis.gl/react-google-maps";
 import { usePackageForm } from "../hooks/usePackageForm";
 
 import PackageForm from "../components/PackageForm";
 import LocationSelector from "../components/LocationSelector";
 import ItineraryEditor from "../components/ItineraryEditor";
+import HotelFinder from "../components/HotelFinder";
 
 const NuevoPaquete = () => {
   const {
@@ -18,6 +18,7 @@ const NuevoPaquete = () => {
     handlePlaceSelected,
     onMapClick,
     handleFormChange,
+    handleHotelChange,
     handleItinerarioChange,
     handleAddItinerario,
     handleRemoveItinerario,
@@ -43,7 +44,11 @@ const NuevoPaquete = () => {
               <button
                 type="button"
                 onClick={() => setSelectionMode("origen")}
-                className={`p-2 rounded font-bold ${selectionMode === "origen" ? "bg-blue-600 text-white" : "bg-blue-200"}`}
+                className={`p-2 rounded font-bold ${
+                  selectionMode === "origen"
+                    ? "bg-blue-600 text-white"
+                    : "bg-blue-200"
+                }`}
                 aria-pressed={selectionMode === "origen"}
               >
                 Origen
@@ -51,7 +56,11 @@ const NuevoPaquete = () => {
               <button
                 type="button"
                 onClick={() => setSelectionMode("destino")}
-                className={`p-2 rounded font-bold ${selectionMode === "destino" ? "bg-green-600 text-white" : "bg-green-200"}`}
+                className={`p-2 rounded font-bold ${
+                  selectionMode === "destino"
+                    ? "bg-green-600 text-white"
+                    : "bg-green-200"
+                }`}
                 aria-pressed={selectionMode === "destino"}
               >
                 Destino
@@ -66,6 +75,11 @@ const NuevoPaquete = () => {
               onSearchValueChange={setSearchValue}
             />
           </div>
+
+          <HotelFinder
+            destination={destination}
+            onHotelSelect={handleHotelChange}
+          />
 
           <ItineraryEditor
             itinerario={formData.itinerario}

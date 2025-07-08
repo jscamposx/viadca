@@ -1,9 +1,11 @@
-import React, { useRef, useEffect } from "react";
+import { useRef, useEffect } from "react";
 import { useMapsLibrary } from "@vis.gl/react-google-maps";
 import { MagnifyingGlassIcon, XMarkIcon } from "@heroicons/react/24/solid";
 
 const GooglePlacesSearch = ({ onPlaceSelected, value, onChange }) => {
   const inputRef = useRef(null);
+  const placeAutocomplete = useRef(null);
+  const listenerRef = useRef(null);
   const places = useMapsLibrary("places");
 
   useEffect(() => {
@@ -11,21 +13,27 @@ const GooglePlacesSearch = ({ onPlaceSelected, value, onChange }) => {
       return;
     }
 
-    const autocomplete = new places.Autocomplete(inputRef.current, {
-      types: ["(cities)"],
-    });
+    if (!placeAutocomplete.current) {
+      placeAutocomplete.current = new places.Autocomplete(inputRef.current, {
+        types: ["(cities)"],
+      });
+    }
 
-    autocomplete.addListener("place_changed", () => {
-      const place = autocomplete.getPlace();
-      if (place.geometry) {
-        const { lat, lng } = place.geometry.location;
-        onPlaceSelected({ lat: lat(), lng: lng() }, place.formatted_address);
-      }
-    });
+    listenerRef.current = placeAutocomplete.current.addListener(
+      "place_changed",
+      () => {
+        const place = placeAutocomplete.current.getPlace();
+        if (place.geometry) {
+          const { lat, lng } = place.geometry.location;
+          onPlaceSelected({ lat: lat(), lng: lng() }, place.formatted_address);
+        }
+      },
+    );
 
     return () => {
-      if (window.google && window.google.maps.event) {
-        window.google.maps.event.clearInstanceListeners(autocomplete);
+      if (listenerRef.current) {
+        window.google.maps.event.removeListener(listenerRef.current);
+        listenerRef.current = null;
       }
     };
   }, [places, onPlaceSelected]);
@@ -46,7 +54,7 @@ const GooglePlacesSearch = ({ onPlaceSelected, value, onChange }) => {
         ref={inputRef}
         type="text"
         placeholder="Buscar una ciudad..."
-        className="w-full rounded border bg-white p-2 pl-10 pr-10"
+        className="w-full rounded  bg-white p-2 pl-10 pr-10 "
         value={value || ""}
         onChange={(e) => onChange(e.target.value)}
       />
