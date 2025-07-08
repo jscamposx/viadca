@@ -4,6 +4,7 @@ import PackageForm from "../components/PackageForm";
 import LocationSelector from "../components/LocationSelector";
 import ItineraryEditor from "../components/ItineraryEditor";
 import DestinationImageManager from "../components/DestinationImageManager";
+import HotelFinder from "../components/HotelFinder"; // Se importa el componente HotelFinder
 
 const NuevoPaquete = () => {
   const {
@@ -17,6 +18,7 @@ const NuevoPaquete = () => {
     handlePlaceSelected,
     onMapClick,
     handleFormChange,
+    handleHotelSelected, // Se importa el manejador
     handleItinerarioChange,
     handleAddItinerario,
     handleRemoveItinerario,
@@ -79,6 +81,12 @@ const NuevoPaquete = () => {
           <DestinationImageManager
             destination={destination}
             onImagesChange={handleImagesChange}
+          />
+
+          {/* Se añade el componente HotelFinder */}
+          <HotelFinder 
+            destination={destination}
+            onHotelSelect={handleHotelSelected}
           />
 
           <ItineraryEditor

@@ -23,6 +23,7 @@ export const usePackageForm = () => {
     precio_base: "",
     itinerario: [{ dia: 1, descripcion: "" }],
     images: [],
+    hotel: null, // Se añade el hotel al estado inicial
   });
 
   const [selectionMode, setSelectionMode] = useState("destino");
@@ -108,6 +109,10 @@ export const usePackageForm = () => {
   const handleImagesChange = useCallback((newImages) => {
     setFormData((prev) => ({ ...prev, images: newImages }));
   }, []);
+  
+  const handleHotelSelected = useCallback((hotel) => {
+    setFormData((prev) => ({ ...prev, hotel: hotel }));
+  }, []);
 
   const handleItinerarioChange = (index, event) => {
     const { name, value } = event.target;
@@ -151,6 +156,7 @@ export const usePackageForm = () => {
         isUploaded: img.isUploaded,
         orden: index,
       })),
+      hotel: formData.hotel, // Se incluye el hotel en el payload
     };
 
     console.log("Payload a enviar:", payload); 
@@ -202,6 +208,7 @@ export const usePackageForm = () => {
     handlePlaceSelected,
     onMapClick,
     handleFormChange,
+    handleHotelSelected, // Se exporta el nuevo manejador
     handleItinerarioChange,
     handleAddItinerario,
     handleRemoveItinerario,

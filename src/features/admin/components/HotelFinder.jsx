@@ -5,15 +5,18 @@ import StarRating from "./StarRating";
 const HotelFinder = ({ destination, onHotelSelect }) => {
   const places = useMapsLibrary("places");
   const [allHotels, setAllHotels] = useState([]);
-  const [filteredHotels, setFilteredHotels] = useState([]);
-  const [starFilter, setStarFilter] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [currentPage, setCurrentPage] = useState(0);
+  const [searchTerm, setSearchTerm] = useState("");
   const [customHotel, setCustomHotel] = useState({
     nombre: "",
     estrellas: 3,
-    precio: "",
+    images: [],
   });
+
+  // Configuración del carrusel
+  const itemsPerPage = 3;
 
   const fetchHotels = useCallback(
     async (lat, lng) => {
@@ -21,6 +24,7 @@ const HotelFinder = ({ destination, onHotelSelect }) => {
 
       setLoading(true);
       setError(null);
+      setSearchTerm(""); // Resetear búsqueda al cambiar destino
 
       try {
         const service = new places.PlacesService(document.createElement("div"));
@@ -28,13 +32,7 @@ const HotelFinder = ({ destination, onHotelSelect }) => {
           location: { lat, lng },
           radius: "5000",
           type: "lodging",
-          fields: [
-            "name",
-            "rating",
-            "user_ratings_total",
-            "price_level",
-            "photos",
-          ],
+          fields: ["name", "rating", "user_ratings_total", "photos", "place_id"],
         };
 
         const results = await new Promise((resolve, reject) => {
@@ -52,14 +50,14 @@ const HotelFinder = ({ destination, onHotelSelect }) => {
           nombre: place.name,
           estrellas: place.rating || 0,
           total_calificaciones: place.user_ratings_total || 0,
-          precio: place.price_level
-            ? "$".repeat(place.price_level) + " (aprox.)"
-            : "Consultar",
-          foto: place.photos?.[0]?.getUrl({ maxWidth: 300 }),
+          images: place.photos
+            ? place.photos.map((p) => ({ url: p.getUrl({ maxWidth: 800 }) }))
+            : [],
           isCustom: false,
         }));
 
         setAllHotels(formattedHotels);
+        setCurrentPage(0); // Resetear a primera página al cargar nuevos hoteles
       } catch (err) {
         console.error("Error fetching hotels:", err);
         setError(err.message);
@@ -67,35 +65,54 @@ const HotelFinder = ({ destination, onHotelSelect }) => {
         setLoading(false);
       }
     },
-    [places],
+    [places]
   );
 
   useEffect(() => {
     if (destination?.lat && destination?.lng) {
       fetchHotels(destination.lat, destination.lng);
+    } else {
+      setAllHotels([]);
     }
   }, [destination, fetchHotels]);
 
-  useEffect(() => {
-    const filtered =
-      starFilter > 0
-        ? allHotels.filter((hotel) => hotel.estrellas >= starFilter)
-        : allHotels;
-    setFilteredHotels(filtered);
-  }, [starFilter, allHotels]);
+  // Función para filtrar hoteles por nombre
+  const filterHotelsByName = (hotels, term) => {
+    if (!term.trim()) return hotels;
+    return hotels.filter((hotel) =>
+      hotel.nombre.toLowerCase().includes(term.toLowerCase())
+    );
+  };
+
+  // Obtener hoteles filtrados
+  const filteredHotels = filterHotelsByName(allHotels, searchTerm);
+
+  // Obtener hoteles para la página actual
+  const getCurrentHotels = () => {
+    const startIndex = currentPage * itemsPerPage;
+    return filteredHotels.slice(startIndex, startIndex + itemsPerPage);
+  };
+
+  // Calcular total de páginas
+  const totalPages = Math.ceil(filteredHotels.length / itemsPerPage);
 
   const handleCustomHotelChange = (e) => {
     const { name, value } = e.target;
     setCustomHotel((prev) => ({ ...prev, [name]: value }));
   };
 
+  const handleCustomHotelImagesChange = (e) => {
+    const files = Array.from(e.target.files);
+    const imageUrls = files.map((file) => ({
+      url: URL.createObjectURL(file),
+      file: file,
+    }));
+    setCustomHotel((prev) => ({ ...prev, images: [...prev.images, ...imageUrls] }));
+  };
+
   const handleAddCustomHotel = () => {
     if (!customHotel.nombre.trim()) {
       setError("Por favor ingresa el nombre del hotel");
-      return;
-    }
-    if (!customHotel.precio) {
-      setError("Por favor ingresa el precio del hotel");
       return;
     }
 
@@ -104,12 +121,29 @@ const HotelFinder = ({ destination, onHotelSelect }) => {
       id: `custom-${Date.now()}`,
       isCustom: true,
       total_calificaciones: 0,
-      precio: `$${customHotel.precio}`,
     };
 
     onHotelSelect(newHotel);
-    setCustomHotel({ nombre: "", estrellas: 3, precio: "" });
+    setCustomHotel({ nombre: "", estrellas: 3, images: [] });
     setError(null);
+  };
+
+  const nextPage = () => {
+    setCurrentPage((prev) => Math.min(prev + 1, totalPages - 1));
+  };
+
+  const prevPage = () => {
+    setCurrentPage((prev) => Math.max(prev - 1, 0));
+  };
+
+  const handleSearchChange = (e) => {
+    setSearchTerm(e.target.value);
+    setCurrentPage(0); // Resetear a la primera página al buscar
+  };
+
+  const clearSearch = () => {
+    setSearchTerm("");
+    setCurrentPage(0);
   };
 
   return (
@@ -127,40 +161,38 @@ const HotelFinder = ({ destination, onHotelSelect }) => {
 
       {destination?.lat && (
         <div className="p-6">
-          {/* Filtros */}
-          <div className="mb-6 p-4 bg-gray-50 rounded-lg">
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-              <div>
-                <h4 className="font-medium text-gray-700 mb-2">
-                  Filtrar por calificación
-                </h4>
-                <div className="flex items-center gap-3">
-                  <StarRating
-                    rating={starFilter}
-                    setRating={setStarFilter}
-                    interactive
-                    size="lg"
-                  />
-                  {starFilter > 0 && (
-                    <button
-                      onClick={() => setStarFilter(0)}
-                      className="text-sm text-blue-600 hover:text-blue-800 transition-colors"
-                    >
-                      Limpiar filtro
-                    </button>
-                  )}
-                </div>
+          {/* Barra de búsqueda */}
+          <div className="mb-6">
+            <label htmlFor="hotelSearch" className="block text-sm font-medium text-gray-700 mb-2">
+              Buscar hotel por nombre
+            </label>
+            <div className="relative flex items-center">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <svg className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
               </div>
-              <div className="text-sm text-gray-500">
-                {filteredHotels.length}{" "}
-                {filteredHotels.length === 1
-                  ? "hotel encontrado"
-                  : "hoteles encontrados"}
-              </div>
+              <input
+                id="hotelSearch"
+                type="text"
+                placeholder="Escribe el nombre del hotel..."
+                value={searchTerm}
+                onChange={handleSearchChange}
+                className="w-full p-2.5 pl-10 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              />
+              {searchTerm && (
+                <button
+                  onClick={clearSearch}
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
+                >
+                  <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              )}
             </div>
           </div>
 
-          {/* Resultados */}
           <div className="mb-8">
             {loading ? (
               <div className="flex justify-center py-8">
@@ -171,53 +203,130 @@ const HotelFinder = ({ destination, onHotelSelect }) => {
                 <p className="text-red-700">{error}</p>
               </div>
             ) : filteredHotels.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {filteredHotels.map((hotel) => (
-                  <div
-                    key={hotel.id}
-                    onClick={() => onHotelSelect(hotel)}
-                    className="border rounded-lg overflow-hidden cursor-pointer hover:shadow-md transition-shadow"
-                  >
-                    {hotel.foto && (
-                      <div className="h-40 bg-gray-200 overflow-hidden">
-                        <img
-                          src={hotel.foto}
-                          alt={hotel.nombre}
-                          className="w-full h-full object-cover"
-                        />
-                      </div>
-                    )}
-                    <div className="p-4">
-                      <h4 className="font-bold text-lg text-gray-800 mb-1">
-                        {hotel.nombre}
-                      </h4>
-                      <div className="flex items-center gap-2 mb-2">
-                        <StarRating rating={hotel.estrellas} size="sm" />
-                        <span className="text-sm text-gray-600">
-                          {hotel.estrellas.toFixed(1)} (
-                          {hotel.total_calificaciones} opiniones)
-                        </span>
-                      </div>
-                      <div className="flex justify-between items-center">
-                        <span className="font-medium text-gray-700">
-                          {hotel.precio}
-                        </span>
-                        <button className="text-blue-600 hover:text-blue-800 text-sm font-medium">
+              <div className="relative">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {getCurrentHotels().map((hotel) => (
+                    <div
+                      key={hotel.id}
+                      onClick={() => onHotelSelect(hotel)}
+                      className="border rounded-lg overflow-hidden cursor-pointer hover:shadow-md transition-shadow"
+                    >
+                      {hotel.images.length > 0 ? (
+                        <div className="h-48 bg-gray-200 overflow-hidden">
+                          <img
+                            src={hotel.images[0].url}
+                            alt={hotel.nombre}
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                      ) : (
+                        <div className="h-48 bg-gray-100 flex items-center justify-center">
+                          <span className="text-gray-400">Sin imagen</span>
+                        </div>
+                      )}
+                      <div className="p-4">
+                        <h4 className="font-bold text-lg text-gray-800 mb-1 truncate">
+                          {hotel.nombre}
+                        </h4>
+                        <div className="flex items-center gap-2 mb-2">
+                          <StarRating rating={hotel.estrellas} size="sm" />
+                          <span className="text-sm text-gray-600">
+                            {hotel.estrellas.toFixed(1)} ({hotel.total_calificaciones} opiniones)
+                          </span>
+                        </div>
+                        <button className="w-full mt-2 bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-md transition-colors">
                           Seleccionar
                         </button>
                       </div>
                     </div>
+                  ))}
+                </div>
+
+                {totalPages > 1 && (
+                  <div className="flex justify-between items-center mt-6">
+                    <button
+                      onClick={prevPage}
+                      disabled={currentPage === 0}
+                      className={`flex items-center gap-1 px-4 py-2 rounded-md ${
+                        currentPage === 0
+                          ? "bg-gray-200 text-gray-500 cursor-not-allowed"
+                          : "bg-gray-800 text-white hover:bg-gray-700"
+                      }`}
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-5 w-5"
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
+                          clipRule="evenodd"
+                        />
+                      </svg>
+                      Anterior
+                    </button>
+
+                    <div className="flex gap-1">
+                      {Array.from({ length: totalPages }).map((_, index) => (
+                        <button
+                          key={index}
+                          onClick={() => setCurrentPage(index)}
+                          className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                            currentPage === index
+                              ? "bg-blue-600 text-white"
+                              : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                          }`}
+                        >
+                          {index + 1}
+                        </button>
+                      ))}
+                    </div>
+
+                    <button
+                      onClick={nextPage}
+                      disabled={currentPage === totalPages - 1}
+                      className={`flex items-center gap-1 px-4 py-2 rounded-md ${
+                        currentPage === totalPages - 1
+                          ? "bg-gray-200 text-gray-500 cursor-not-allowed"
+                          : "bg-gray-800 text-white hover:bg-gray-700"
+                      }`}
+                    >
+                      Siguiente
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-5 w-5"
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                          clipRule="evenodd"
+                        />
+                      </svg>
+                    </button>
                   </div>
-                ))}
+                )}
               </div>
             ) : (
               <div className="text-center py-6 bg-gray-50 rounded-lg">
-                <p className="text-gray-500 mb-4">
-                  No se encontraron hoteles con ese filtro.
-                </p>
-                <p className="text-gray-400 text-sm">
-                  Intenta con menos estrellas o agrega uno manualmente.
-                </p>
+                {searchTerm ? (
+                  <>
+                    <p className="text-gray-500 mb-2">
+                      No se encontraron hoteles con el nombre "{searchTerm}"
+                    </p>
+                    <button
+                      onClick={clearSearch}
+                      className="text-blue-600 hover:text-blue-800 text-sm font-medium"
+                    >
+                      Mostrar todos los hoteles
+                    </button>
+                  </>
+                ) : (
+                  <p className="text-gray-500">No se encontraron hoteles.</p>
+                )}
               </div>
             )}
           </div>
@@ -234,7 +343,7 @@ const HotelFinder = ({ destination, onHotelSelect }) => {
                 </div>
               )}
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
                     Nombre del Hotel *
@@ -247,26 +356,6 @@ const HotelFinder = ({ destination, onHotelSelect }) => {
                     onChange={handleCustomHotelChange}
                     className="w-full p-2.5 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Precio por noche *
-                  </label>
-                  <div className="relative">
-                    <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500">
-                      $
-                    </span>
-                    <input
-                      type="number"
-                      name="precio"
-                      placeholder="Ej. 1200"
-                      value={customHotel.precio}
-                      onChange={handleCustomHotelChange}
-                      min="0"
-                      className="w-full pl-8 p-2.5 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    />
-                  </div>
                 </div>
 
                 <div>
@@ -289,23 +378,50 @@ const HotelFinder = ({ destination, onHotelSelect }) => {
                     </span>
                   </div>
                 </div>
+
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Imágenes del Hotel
+                  </label>
+                  <input
+                    type="file"
+                    multiple
+                    accept="image/*"
+                    onChange={handleCustomHotelImagesChange}
+                    className="w-full p-2.5 border border-gray-300 rounded-md"
+                  />
+                  <div className="mt-2 flex flex-wrap gap-2">
+                    {customHotel.images.map((img, index) => (
+                      <div key={index} className="relative">
+                        <img
+                          src={img.url}
+                          alt={`preview ${index}`}
+                          className="h-20 w-20 object-cover rounded-md"
+                        />
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setCustomHotel((prev) => ({
+                              ...prev,
+                              images: prev.images.filter((_, i) => i !== index),
+                            }))
+                          }
+                          className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs"
+                        >
+                          ×
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
               </div>
 
               <button
                 onClick={handleAddCustomHotel}
                 className="w-full md:w-auto bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 px-6 rounded-md transition-colors flex items-center justify-center gap-2"
               >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z"
-                    clipRule="evenodd"
-                  />
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clipRule="evenodd" />
                 </svg>
                 Agregar y Seleccionar Hotel
               </button>
