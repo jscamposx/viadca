@@ -155,6 +155,7 @@ export const usePackageForm = () => {
 
     console.log("Payload a enviar:", payload); 
 
+    /*
     try {
       await api.packages.createPaquete(payload);
       alert("Paquete creado con éxito");
@@ -164,6 +165,7 @@ export const usePackageForm = () => {
       const errorMessage = error.response?.data?.message || error.message;
       alert(`Error al crear el paquete: ${errorMessage}`);
     }
+    */
   };
 
   const origin = useMemo(
