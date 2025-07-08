@@ -9,37 +9,30 @@ const HotelFinder = ({ destination, onHotelSelect, selectedHotel }) => {
   const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(0);
   const [searchTerm, setSearchTerm] = useState("");
-
-  // Estado para el ID del hotel seleccionado
   const [selectedHotelId, setSelectedHotelId] = useState(null);
-
-  // Estado para controlar la visibilidad del formulario manual
   const [isManualFormVisible, setIsManualFormVisible] = useState(false);
-
   const [customHotel, setCustomHotel] = useState({
     nombre: "",
     estrellas: 3,
     images: [],
   });
 
-  // Sincronizar el ID seleccionado si ya hay un hotel en el formulario principal
   useEffect(() => {
     if (selectedHotel) {
       setSelectedHotelId(selectedHotel.id);
+    } else {
+      setSelectedHotelId(null);
     }
   }, [selectedHotel]);
 
-  // Configuración del carrusel
   const itemsPerPage = 3;
 
   const fetchHotels = useCallback(
     async (lat, lng) => {
       if (!places) return;
-
       setLoading(true);
       setError(null);
-      setSearchTerm("");
-
+      setAllHotels([]); // Limpiamos los hoteles antes de cada búsqueda
       try {
         const service = new places.PlacesService(document.createElement("div"));
         const request = {
@@ -48,11 +41,13 @@ const HotelFinder = ({ destination, onHotelSelect, selectedHotel }) => {
           type: "lodging",
           fields: ["name", "rating", "user_ratings_total", "photos", "place_id"],
         };
-
+        
         const results = await new Promise((resolve, reject) => {
           service.nearbySearch(request, (results, status) => {
             if (status === places.PlacesServiceStatus.OK) {
               resolve(results || []);
+            } else if (status === places.PlacesServiceStatus.ZERO_RESULTS) {
+              resolve([]); // Resolvemos con un array vacío si no hay resultados
             } else {
               reject(new Error(`Error fetching hotels: ${status}`));
             }
@@ -90,23 +85,36 @@ const HotelFinder = ({ destination, onHotelSelect, selectedHotel }) => {
     }
   }, [destination, fetchHotels]);
 
-  useEffect(() => {
+  const handleSelectHotel = (hotel) => {
+    onHotelSelect(hotel);
+    setSelectedHotelId(hotel.id);
+    setIsManualFormVisible(false);
+  };
+
+  const handleShowManualForm = () => {
+    onHotelSelect(null);
+    setSelectedHotelId(null);
+    setIsManualFormVisible(true);
+  };
+  
+  const handleAddCustomHotel = () => {
+    if (!customHotel.nombre.trim()) {
+      setError("Por favor ingresa el nombre del hotel");
+      return;
+    }
     setError(null);
-  }, [destination]);
-
-  const filterHotelsByName = (hotels, term) => {
-    if (!term.trim()) return hotels;
-    return hotels.filter((hotel) =>
-      hotel.nombre.toLowerCase().includes(term.toLowerCase())
-    );
+    const newHotel = {
+      ...customHotel,
+      id: `custom-${Date.now()}`,
+      isCustom: true,
+      total_calificaciones: 0,
+    };
+    setAllHotels(prev => [newHotel, ...prev]);
+    onHotelSelect(newHotel);
+    setSelectedHotelId(newHotel.id);
+    setCustomHotel({ nombre: "", estrellas: 3, images: [] });
+    setIsManualFormVisible(false);
   };
-
-  const filteredHotels = filterHotelsByName(allHotels, searchTerm);
-  const getCurrentHotels = () => {
-    const startIndex = currentPage * itemsPerPage;
-    return filteredHotels.slice(startIndex, startIndex + itemsPerPage);
-  };
-  const totalPages = Math.ceil(filteredHotels.length / itemsPerPage);
 
   const handleCustomHotelChange = (e) => {
     const { name, value } = e.target;
@@ -122,42 +130,20 @@ const HotelFinder = ({ destination, onHotelSelect, selectedHotel }) => {
     setCustomHotel((prev) => ({ ...prev, images: [...prev.images, ...imageUrls] }));
   };
 
-  const handleAddCustomHotel = () => {
-    setError(null);
-    if (!customHotel.nombre.trim()) {
-      setError("Por favor ingresa el nombre del hotel");
-      return;
-    }
-
-    const newHotel = {
-      ...customHotel,
-      id: `custom-${Date.now()}`,
-      isCustom: true,
-      total_calificaciones: 0,
-    };
-
-    try {
-        onHotelSelect(newHotel);
-        setSelectedHotelId(newHotel.id);
-        setCustomHotel({ nombre: "", estrellas: 3, images: [] });
-        setIsManualFormVisible(false);
-    } catch(e) {
-        console.error("Error al agregar el hotel personalizado:", e);
-        setError("Ocurrió un error al agregar el hotel.");
-    }
+  const filterHotelsByName = (hotels, term) => {
+    if (!term.trim()) return hotels;
+    return hotels.filter((hotel) =>
+      hotel.nombre.toLowerCase().includes(term.toLowerCase())
+    );
   };
 
-  const handleSelectHotel = (hotel) => {
-    try {
-        onHotelSelect(hotel);
-        setSelectedHotelId(hotel.id);
-        setIsManualFormVisible(false);
-    } catch (e) {
-        console.error("Error al seleccionar el hotel:", e);
-        setError("Ocurrió un error al seleccionar el hotel.");
-    }
-  }
-
+  const filteredHotels = filterHotelsByName(allHotels, searchTerm);
+  const totalPages = Math.ceil(filteredHotels.length / itemsPerPage);
+  const getCurrentHotels = () => {
+    const startIndex = currentPage * itemsPerPage;
+    return filteredHotels.slice(startIndex, startIndex + itemsPerPage);
+  };
+  
   const nextPage = () => setCurrentPage((prev) => Math.min(prev + 1, totalPages - 1));
   const prevPage = () => setCurrentPage((prev) => Math.max(prev - 1, 0));
   const handleSearchChange = (e) => {
@@ -237,7 +223,7 @@ const HotelFinder = ({ destination, onHotelSelect, selectedHotel }) => {
                           isSelected ? 'border-blue-600 ring-2 ring-blue-500' : 'border-gray-200'
                         }`}
                       >
-                        {hotel.images.length > 0 ? (
+                        {hotel.images && hotel.images.length > 0 ? (
                           <div className="h-48 bg-gray-200 overflow-hidden">
                             <img
                               src={hotel.images[0].url}
@@ -271,7 +257,6 @@ const HotelFinder = ({ destination, onHotelSelect, selectedHotel }) => {
                   })}
                 </div>
 
-                {/* --- SECCIÓN DE PAGINACIÓN RESTAURADA --- */}
                 {totalPages > 1 && (
                   <div className="flex justify-between items-center mt-6">
                     <button
@@ -283,21 +268,11 @@ const HotelFinder = ({ destination, onHotelSelect, selectedHotel }) => {
                           : "bg-gray-800 text-white hover:bg-gray-700"
                       }`}
                     >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="h-5 w-5"
-                        viewBox="0 0 20 20"
-                        fill="currentColor"
-                      >
-                        <path
-                          fillRule="evenodd"
-                          d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
-                          clipRule="evenodd"
-                        />
-                      </svg>
+                       <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                         <path fillRule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clipRule="evenodd" />
+                       </svg>
                       Anterior
                     </button>
-
                     <div className="flex gap-1">
                       {Array.from({ length: totalPages }).map((_, index) => (
                         <button
@@ -313,7 +288,6 @@ const HotelFinder = ({ destination, onHotelSelect, selectedHotel }) => {
                         </button>
                       ))}
                     </div>
-
                     <button
                       onClick={nextPage}
                       disabled={currentPage === totalPages - 1}
@@ -324,23 +298,12 @@ const HotelFinder = ({ destination, onHotelSelect, selectedHotel }) => {
                       }`}
                     >
                       Siguiente
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="h-5 w-5"
-                        viewBox="0 0 20 20"
-                        fill="currentColor"
-                      >
-                        <path
-                          fillRule="evenodd"
-                          d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
-                          clipRule="evenodd"
-                        />
-                      </svg>
+                       <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                         <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
+                       </svg>
                     </button>
                   </div>
                 )}
-                {/* --- FIN DE LA SECCIÓN DE PAGINACIÓN --- */}
-
               </div>
             ) : (
               <div className="text-center py-6 bg-gray-50 rounded-lg">
@@ -349,15 +312,12 @@ const HotelFinder = ({ destination, onHotelSelect, selectedHotel }) => {
                     <p className="text-gray-500 mb-2">
                       No se encontraron hoteles con el nombre "{searchTerm}"
                     </p>
-                    <button
-                      onClick={clearSearch}
-                      className="text-blue-600 hover:text-blue-800 text-sm font-medium"
-                    >
+                    <button onClick={clearSearch} className="text-blue-600 hover:text-blue-800 text-sm font-medium">
                       Mostrar todos los hoteles
                     </button>
                   </>
                 ) : (
-                  <p className="text-gray-500">No se encontraron hoteles para este destino.</p>
+                  <p className="text-gray-500">Hoteles no disponibles en esta ubicación.</p>
                 )}
               </div>
             )}
@@ -366,7 +326,7 @@ const HotelFinder = ({ destination, onHotelSelect, selectedHotel }) => {
           <div className="border-t pt-6">
             {!isManualFormVisible && (
               <button
-                onClick={() => setIsManualFormVisible(true)}
+                onClick={handleShowManualForm}
                 className="w-full md:w-auto bg-gray-100 hover:bg-gray-200 text-gray-800 font-medium py-2.5 px-6 rounded-md transition-colors flex items-center justify-center gap-2 border border-gray-300"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
@@ -382,10 +342,7 @@ const HotelFinder = ({ destination, onHotelSelect, selectedHotel }) => {
                     <h4 className="font-semibold text-lg text-gray-800">
                     Agregar hotel manualmente
                     </h4>
-                    <button 
-                        onClick={() => setIsManualFormVisible(false)}
-                        className="text-gray-500 hover:text-gray-700"
-                    >
+                    <button onClick={() => setIsManualFormVisible(false)} className="text-gray-500 hover:text-gray-700">
                         <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                         </svg>
@@ -400,9 +357,7 @@ const HotelFinder = ({ destination, onHotelSelect, selectedHotel }) => {
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Nombre del Hotel *
-                    </label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Nombre del Hotel *</label>
                     <input
                       type="text"
                       name="nombre"
@@ -413,29 +368,18 @@ const HotelFinder = ({ destination, onHotelSelect, selectedHotel }) => {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Calificación
-                    </label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Calificación</label>
                     <div className="flex items-center gap-2">
                       <StarRating
                         rating={customHotel.estrellas}
-                        setRating={(rating) =>
-                          setCustomHotel((prev) => ({
-                            ...prev,
-                            estrellas: rating,
-                          }))
-                        }
+                        setRating={(rating) => setCustomHotel((prev) => ({ ...prev, estrellas: rating }))}
                         interactive
                       />
-                      <span className="text-sm text-gray-600">
-                        {customHotel.estrellas} estrellas
-                      </span>
+                      <span className="text-sm text-gray-600">{customHotel.estrellas} estrellas</span>
                     </div>
                   </div>
                   <div className="md:col-span-2">
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Imágenes del Hotel
-                    </label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Imágenes del Hotel</label>
                     <input
                       type="file"
                       multiple
@@ -446,19 +390,10 @@ const HotelFinder = ({ destination, onHotelSelect, selectedHotel }) => {
                     <div className="mt-2 flex flex-wrap gap-2">
                       {customHotel.images.map((img, index) => (
                         <div key={index} className="relative">
-                          <img
-                            src={img.url}
-                            alt={`preview ${index}`}
-                            className="h-20 w-20 object-cover rounded-md"
-                          />
+                          <img src={img.url} alt={`preview ${index}`} className="h-20 w-20 object-cover rounded-md"/>
                           <button
                             type="button"
-                            onClick={() =>
-                              setCustomHotel((prev) => ({
-                                ...prev,
-                                images: prev.images.filter((_, i) => i !== index),
-                              }))
-                            }
+                            onClick={() => setCustomHotel((prev) => ({ ...prev, images: prev.images.filter((_, i) => i !== index), }))}
                             className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs"
                           >
                             ×
