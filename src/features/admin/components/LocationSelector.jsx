@@ -50,6 +50,9 @@ const LocationSelector = ({
       defaultZoom={5}
       onClick={onMapClick}
       mapId="b21b4a042011d515"
+      fullscreenControl={false}
+      mapTypeControl={false}
+      streetViewControl={false}
     >
       {isValidLatLng(origin) && (
         <AdvancedMarker position={origin} title="Origen">
