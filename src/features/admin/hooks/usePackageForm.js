@@ -123,13 +123,24 @@ export const usePackageForm = () => {
       return;
     }
 
+    const payload = {
+      ...formData,
+      duracion: parseInt(formData.duracion, 10),
+      precio_base: parseFloat(formData.precio_base),
+      itinerario: formData.itinerario.map((item) => ({
+        ...item,
+        dia: parseInt(item.dia, 10),
+      })),
+    };
+
     try {
-      await api.packages.createPaquete(formData);
+      await api.packages.createPaquete(payload);
       alert("Paquete creado con éxito");
       navigate("/admin/paquetes");
     } catch (error) {
       console.error("Error al crear el paquete:", error);
-      alert("Error al crear el paquete");
+      const errorMessage = error.response?.data?.message || error.message;
+      alert(`Error al crear el paquete: ${errorMessage}`);
     }
   };
 

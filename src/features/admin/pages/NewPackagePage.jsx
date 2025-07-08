@@ -1,10 +1,8 @@
 import { APIProvider } from "@vis.gl/react-google-maps";
 import { usePackageForm } from "../hooks/usePackageForm";
-
 import PackageForm from "../components/PackageForm";
 import LocationSelector from "../components/LocationSelector";
 import ItineraryEditor from "../components/ItineraryEditor";
-import HotelFinder from "../components/HotelFinder";
 
 const NuevoPaquete = () => {
   const {
@@ -18,12 +16,13 @@ const NuevoPaquete = () => {
     handlePlaceSelected,
     onMapClick,
     handleFormChange,
-    handleHotelChange,
     handleItinerarioChange,
     handleAddItinerario,
     handleRemoveItinerario,
     handleSubmit,
   } = usePackageForm();
+
+  console.log("NuevoPaquete formData:", formData);
 
   return (
     <APIProvider
@@ -75,11 +74,6 @@ const NuevoPaquete = () => {
               onSearchValueChange={setSearchValue}
             />
           </div>
-
-          <HotelFinder
-            destination={destination}
-            onHotelSelect={handleHotelChange}
-          />
 
           <ItineraryEditor
             itinerario={formData.itinerario}
