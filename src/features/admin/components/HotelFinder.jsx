@@ -2,18 +2,32 @@ import { useState, useEffect, useCallback } from "react";
 import { useMapsLibrary } from "@vis.gl/react-google-maps";
 import StarRating from "./StarRating";
 
-const HotelFinder = ({ destination, onHotelSelect }) => {
+const HotelFinder = ({ destination, onHotelSelect, selectedHotel }) => {
   const places = useMapsLibrary("places");
   const [allHotels, setAllHotels] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(0);
   const [searchTerm, setSearchTerm] = useState("");
+
+  // Estado para el ID del hotel seleccionado
+  const [selectedHotelId, setSelectedHotelId] = useState(null);
+
+  // Estado para controlar la visibilidad del formulario manual
+  const [isManualFormVisible, setIsManualFormVisible] = useState(false);
+
   const [customHotel, setCustomHotel] = useState({
     nombre: "",
     estrellas: 3,
     images: [],
   });
+
+  // Sincronizar el ID seleccionado si ya hay un hotel en el formulario principal
+  useEffect(() => {
+    if (selectedHotel) {
+      setSelectedHotelId(selectedHotel.id);
+    }
+  }, [selectedHotel]);
 
   // Configuración del carrusel
   const itemsPerPage = 3;
@@ -24,7 +38,7 @@ const HotelFinder = ({ destination, onHotelSelect }) => {
 
       setLoading(true);
       setError(null);
-      setSearchTerm(""); // Resetear búsqueda al cambiar destino
+      setSearchTerm("");
 
       try {
         const service = new places.PlacesService(document.createElement("div"));
@@ -57,7 +71,7 @@ const HotelFinder = ({ destination, onHotelSelect }) => {
         }));
 
         setAllHotels(formattedHotels);
-        setCurrentPage(0); // Resetear a primera página al cargar nuevos hoteles
+        setCurrentPage(0);
       } catch (err) {
         console.error("Error fetching hotels:", err);
         setError(err.message);
@@ -76,7 +90,10 @@ const HotelFinder = ({ destination, onHotelSelect }) => {
     }
   }, [destination, fetchHotels]);
 
-  // Función para filtrar hoteles por nombre
+  useEffect(() => {
+    setError(null);
+  }, [destination]);
+
   const filterHotelsByName = (hotels, term) => {
     if (!term.trim()) return hotels;
     return hotels.filter((hotel) =>
@@ -84,16 +101,11 @@ const HotelFinder = ({ destination, onHotelSelect }) => {
     );
   };
 
-  // Obtener hoteles filtrados
   const filteredHotels = filterHotelsByName(allHotels, searchTerm);
-
-  // Obtener hoteles para la página actual
   const getCurrentHotels = () => {
     const startIndex = currentPage * itemsPerPage;
     return filteredHotels.slice(startIndex, startIndex + itemsPerPage);
   };
-
-  // Calcular total de páginas
   const totalPages = Math.ceil(filteredHotels.length / itemsPerPage);
 
   const handleCustomHotelChange = (e) => {
@@ -111,6 +123,7 @@ const HotelFinder = ({ destination, onHotelSelect }) => {
   };
 
   const handleAddCustomHotel = () => {
+    setError(null);
     if (!customHotel.nombre.trim()) {
       setError("Por favor ingresa el nombre del hotel");
       return;
@@ -123,24 +136,34 @@ const HotelFinder = ({ destination, onHotelSelect }) => {
       total_calificaciones: 0,
     };
 
-    onHotelSelect(newHotel);
-    setCustomHotel({ nombre: "", estrellas: 3, images: [] });
-    setError(null);
+    try {
+        onHotelSelect(newHotel);
+        setSelectedHotelId(newHotel.id);
+        setCustomHotel({ nombre: "", estrellas: 3, images: [] });
+        setIsManualFormVisible(false);
+    } catch(e) {
+        console.error("Error al agregar el hotel personalizado:", e);
+        setError("Ocurrió un error al agregar el hotel.");
+    }
   };
 
-  const nextPage = () => {
-    setCurrentPage((prev) => Math.min(prev + 1, totalPages - 1));
-  };
+  const handleSelectHotel = (hotel) => {
+    try {
+        onHotelSelect(hotel);
+        setSelectedHotelId(hotel.id);
+        setIsManualFormVisible(false);
+    } catch (e) {
+        console.error("Error al seleccionar el hotel:", e);
+        setError("Ocurrió un error al seleccionar el hotel.");
+    }
+  }
 
-  const prevPage = () => {
-    setCurrentPage((prev) => Math.max(prev - 1, 0));
-  };
-
+  const nextPage = () => setCurrentPage((prev) => Math.min(prev + 1, totalPages - 1));
+  const prevPage = () => setCurrentPage((prev) => Math.max(prev - 1, 0));
   const handleSearchChange = (e) => {
     setSearchTerm(e.target.value);
-    setCurrentPage(0); // Resetear a la primera página al buscar
+    setCurrentPage(0);
   };
-
   const clearSearch = () => {
     setSearchTerm("");
     setCurrentPage(0);
@@ -161,7 +184,6 @@ const HotelFinder = ({ destination, onHotelSelect }) => {
 
       {destination?.lat && (
         <div className="p-6">
-          {/* Barra de búsqueda */}
           <div className="mb-6">
             <label htmlFor="hotelSearch" className="block text-sm font-medium text-gray-700 mb-2">
               Buscar hotel por nombre
@@ -205,43 +227,51 @@ const HotelFinder = ({ destination, onHotelSelect }) => {
             ) : filteredHotels.length > 0 ? (
               <div className="relative">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {getCurrentHotels().map((hotel) => (
-                    <div
-                      key={hotel.id}
-                      onClick={() => onHotelSelect(hotel)}
-                      className="border rounded-lg overflow-hidden cursor-pointer hover:shadow-md transition-shadow"
-                    >
-                      {hotel.images.length > 0 ? (
-                        <div className="h-48 bg-gray-200 overflow-hidden">
-                          <img
-                            src={hotel.images[0].url}
-                            alt={hotel.nombre}
-                            className="w-full h-full object-cover"
-                          />
+                  {getCurrentHotels().map((hotel) => {
+                    const isSelected = hotel.id === selectedHotelId;
+                    return (
+                      <div
+                        key={hotel.id}
+                        onClick={() => handleSelectHotel(hotel)}
+                        className={`border rounded-lg overflow-hidden cursor-pointer hover:shadow-lg transition-all duration-200 ${
+                          isSelected ? 'border-blue-600 ring-2 ring-blue-500' : 'border-gray-200'
+                        }`}
+                      >
+                        {hotel.images.length > 0 ? (
+                          <div className="h-48 bg-gray-200 overflow-hidden">
+                            <img
+                              src={hotel.images[0].url}
+                              alt={hotel.nombre}
+                              className="w-full h-full object-cover"
+                            />
+                          </div>
+                        ) : (
+                          <div className="h-48 bg-gray-100 flex items-center justify-center">
+                            <span className="text-gray-400">Sin imagen</span>
+                          </div>
+                        )}
+                        <div className="p-4">
+                          <h4 className="font-bold text-lg text-gray-800 mb-1 truncate">
+                            {hotel.nombre}
+                          </h4>
+                          <div className="flex items-center gap-2 mb-2">
+                            <StarRating rating={hotel.estrellas} size="sm" />
+                            <span className="text-sm text-gray-600">
+                              {hotel.estrellas.toFixed(1)} ({hotel.total_calificaciones} opiniones)
+                            </span>
+                          </div>
+                          <button className={`w-full mt-2 text-white py-2 px-4 rounded-md transition-colors ${
+                            isSelected ? 'bg-green-600 hover:bg-green-700' : 'bg-blue-600 hover:bg-blue-700'
+                          }`}>
+                            {isSelected ? 'Seleccionado' : 'Seleccionar'}
+                          </button>
                         </div>
-                      ) : (
-                        <div className="h-48 bg-gray-100 flex items-center justify-center">
-                          <span className="text-gray-400">Sin imagen</span>
-                        </div>
-                      )}
-                      <div className="p-4">
-                        <h4 className="font-bold text-lg text-gray-800 mb-1 truncate">
-                          {hotel.nombre}
-                        </h4>
-                        <div className="flex items-center gap-2 mb-2">
-                          <StarRating rating={hotel.estrellas} size="sm" />
-                          <span className="text-sm text-gray-600">
-                            {hotel.estrellas.toFixed(1)} ({hotel.total_calificaciones} opiniones)
-                          </span>
-                        </div>
-                        <button className="w-full mt-2 bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-md transition-colors">
-                          Seleccionar
-                        </button>
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
 
+                {/* --- SECCIÓN DE PAGINACIÓN RESTAURADA --- */}
                 {totalPages > 1 && (
                   <div className="flex justify-between items-center mt-6">
                     <button
@@ -309,6 +339,8 @@ const HotelFinder = ({ destination, onHotelSelect }) => {
                     </button>
                   </div>
                 )}
+                {/* --- FIN DE LA SECCIÓN DE PAGINACIÓN --- */}
+
               </div>
             ) : (
               <div className="text-center py-6 bg-gray-50 rounded-lg">
@@ -325,107 +357,128 @@ const HotelFinder = ({ destination, onHotelSelect }) => {
                     </button>
                   </>
                 ) : (
-                  <p className="text-gray-500">No se encontraron hoteles.</p>
+                  <p className="text-gray-500">No se encontraron hoteles para este destino.</p>
                 )}
               </div>
             )}
           </div>
 
-          {/* Formulario para hotel personalizado */}
           <div className="border-t pt-6">
-            <h4 className="font-semibold text-lg text-gray-800 mb-4">
-              Agregar hotel manualmente
-            </h4>
-            <div className="bg-blue-50 p-4 rounded-lg">
-              {error && (
-                <div className="bg-red-50 border-l-4 border-red-500 p-3 mb-4">
-                  <p className="text-red-700">{error}</p>
-                </div>
-              )}
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Nombre del Hotel *
-                  </label>
-                  <input
-                    type="text"
-                    name="nombre"
-                    placeholder="Ej. Hotel Paradise"
-                    value={customHotel.nombre}
-                    onChange={handleCustomHotelChange}
-                    className="w-full p-2.5 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Calificación
-                  </label>
-                  <div className="flex items-center gap-2">
-                    <StarRating
-                      rating={customHotel.estrellas}
-                      setRating={(rating) =>
-                        setCustomHotel((prev) => ({
-                          ...prev,
-                          estrellas: rating,
-                        }))
-                      }
-                      interactive
-                    />
-                    <span className="text-sm text-gray-600">
-                      {customHotel.estrellas} estrellas
-                    </span>
-                  </div>
-                </div>
-
-                <div className="md:col-span-2">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Imágenes del Hotel
-                  </label>
-                  <input
-                    type="file"
-                    multiple
-                    accept="image/*"
-                    onChange={handleCustomHotelImagesChange}
-                    className="w-full p-2.5 border border-gray-300 rounded-md"
-                  />
-                  <div className="mt-2 flex flex-wrap gap-2">
-                    {customHotel.images.map((img, index) => (
-                      <div key={index} className="relative">
-                        <img
-                          src={img.url}
-                          alt={`preview ${index}`}
-                          className="h-20 w-20 object-cover rounded-md"
-                        />
-                        <button
-                          type="button"
-                          onClick={() =>
-                            setCustomHotel((prev) => ({
-                              ...prev,
-                              images: prev.images.filter((_, i) => i !== index),
-                            }))
-                          }
-                          className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs"
-                        >
-                          ×
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-
+            {!isManualFormVisible && (
               <button
-                onClick={handleAddCustomHotel}
-                className="w-full md:w-auto bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 px-6 rounded-md transition-colors flex items-center justify-center gap-2"
+                onClick={() => setIsManualFormVisible(true)}
+                className="w-full md:w-auto bg-gray-100 hover:bg-gray-200 text-gray-800 font-medium py-2.5 px-6 rounded-md transition-colors flex items-center justify-center gap-2 border border-gray-300"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                   <path fillRule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clipRule="evenodd" />
                 </svg>
-                Agregar y Seleccionar Hotel
+                Agregar hotel manualmente
               </button>
-            </div>
+            )}
+
+            {isManualFormVisible && (
+              <div className="bg-blue-50 p-4 rounded-lg">
+                <div className="flex justify-between items-center mb-4">
+                    <h4 className="font-semibold text-lg text-gray-800">
+                    Agregar hotel manualmente
+                    </h4>
+                    <button 
+                        onClick={() => setIsManualFormVisible(false)}
+                        className="text-gray-500 hover:text-gray-700"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+
+                {error && (
+                  <div className="bg-red-50 border-l-4 border-red-500 p-3 mb-4">
+                    <p className="text-red-700">{error}</p>
+                  </div>
+                )}
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Nombre del Hotel *
+                    </label>
+                    <input
+                      type="text"
+                      name="nombre"
+                      placeholder="Ej. Hotel Paradise"
+                      value={customHotel.nombre}
+                      onChange={handleCustomHotelChange}
+                      className="w-full p-2.5 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Calificación
+                    </label>
+                    <div className="flex items-center gap-2">
+                      <StarRating
+                        rating={customHotel.estrellas}
+                        setRating={(rating) =>
+                          setCustomHotel((prev) => ({
+                            ...prev,
+                            estrellas: rating,
+                          }))
+                        }
+                        interactive
+                      />
+                      <span className="text-sm text-gray-600">
+                        {customHotel.estrellas} estrellas
+                      </span>
+                    </div>
+                  </div>
+                  <div className="md:col-span-2">
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Imágenes del Hotel
+                    </label>
+                    <input
+                      type="file"
+                      multiple
+                      accept="image/*"
+                      onChange={handleCustomHotelImagesChange}
+                      className="w-full p-2.5 border border-gray-300 rounded-md"
+                    />
+                    <div className="mt-2 flex flex-wrap gap-2">
+                      {customHotel.images.map((img, index) => (
+                        <div key={index} className="relative">
+                          <img
+                            src={img.url}
+                            alt={`preview ${index}`}
+                            className="h-20 w-20 object-cover rounded-md"
+                          />
+                          <button
+                            type="button"
+                            onClick={() =>
+                              setCustomHotel((prev) => ({
+                                ...prev,
+                                images: prev.images.filter((_, i) => i !== index),
+                              }))
+                            }
+                            className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs"
+                          >
+                            ×
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+                <button
+                  onClick={handleAddCustomHotel}
+                  className="w-full md:w-auto bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 px-6 rounded-md transition-colors flex items-center justify-center gap-2"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clipRule="evenodd" />
+                  </svg>
+                  Agregar y Seleccionar Hotel
+                </button>
+              </div>
+            )}
           </div>
         </div>
       )}

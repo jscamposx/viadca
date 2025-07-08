@@ -111,6 +111,7 @@ export const usePackageForm = () => {
   }, []);
   
   const handleHotelSelected = useCallback((hotel) => {
+    console.log("Hotel seleccionado, se agregará al formulario:", hotel);
     setFormData((prev) => ({ ...prev, hotel: hotel }));
   }, []);
 
