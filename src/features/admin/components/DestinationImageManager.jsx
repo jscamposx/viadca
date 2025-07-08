@@ -1,10 +1,12 @@
 import { useState, useEffect, useCallback } from 'react';
-import axios from 'axios'; 
+import axios from 'axios';
 const Spinner = () => <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>;
 
 const ImageTile = ({ image, onRemove }) => (
-  <div className="relative group bg-gray-100 rounded-lg overflow-hidden shadow-sm aspect-w-1 aspect-h-1">
-    <img src={image.url} alt="Imagen del destino" className="w-full h-full object-cover" />
+  <div className="relative group bg-gray-100 rounded-lg overflow-hidden shadow-sm">
+    <div className="h-48">
+      <img src={image.url} alt="Imagen del destino" className="w-full h-full object-cover" />
+    </div>
     <div className="absolute top-2 right-2 z-10">
       <button
         onClick={() => onRemove(image.id)}
@@ -51,15 +53,15 @@ const DestinationImageManager = ({ destination, onImagesChange }) => {
           Authorization: PEXELS_API_KEY,
         },
         params: {
-          query: destinationName,
-          per_page: 4, 
+          query: "lugares turisticos en " + destinationName,
+          per_page: 4,
         },
       });
 
       if (response.data.photos && response.data.photos.length > 0) {
         const photoData = response.data.photos.map(photo => ({
           id: `pexels-${photo.id}`,
-          url: photo.src.large, 
+          url: photo.src.large,
           isUploaded: false,
         }));
         setImages(photoData);
@@ -77,7 +79,7 @@ const DestinationImageManager = ({ destination, onImagesChange }) => {
   }, []);
 
   useEffect(() => {
-    if (destination?.name) { 
+    if (destination?.name) {
       fetchImagesFromPexels(destination.name);
     } else {
       setImages([]);
@@ -100,15 +102,15 @@ const DestinationImageManager = ({ destination, onImagesChange }) => {
     setImages(prevImages => [...prevImages, ...newImages]);
     setStatus('success');
   };
-  
+
   const handleRemoveImage = (id) => {
     setImages(prevImages => prevImages.filter(img => img.id !== id));
   };
-  
+
   const handleDragStart = (e, index) => {
     e.dataTransfer.setData("imageIndex", index);
   };
-  
+
   const handleDrop = (e, dropIndex) => {
     const dragIndex = e.dataTransfer.getData("imageIndex");
     const newImages = [...images];
@@ -116,7 +118,7 @@ const DestinationImageManager = ({ destination, onImagesChange }) => {
     newImages.splice(dropIndex, 0, draggedImage);
     setImages(newImages);
   };
-  
+
   const handleDragOver = (e) => e.preventDefault();
 
   return (
@@ -137,7 +139,7 @@ const DestinationImageManager = ({ destination, onImagesChange }) => {
 
       {status === 'loading' && <div className="flex justify-center p-4"><Spinner /></div>}
       {status === 'error' && <div className="text-red-500 text-center p-4">{error}</div>}
-      
+
       {status === 'idle' && (
          <div className="text-center text-gray-500 p-8 border-2 border-dashed rounded-lg">
             <p className="font-semibold">Selecciona un destino en el mapa.</p>
@@ -155,7 +157,7 @@ const DestinationImageManager = ({ destination, onImagesChange }) => {
       {images.length > 0 && (
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {images.map((image, index) => (
-             <div 
+             <div
                 key={image.id}
                 draggable
                 onDragStart={(e) => handleDragStart(e, index)}

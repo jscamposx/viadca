@@ -3,7 +3,7 @@ import { usePackageForm } from "../hooks/usePackageForm";
 import PackageForm from "../components/PackageForm";
 import LocationSelector from "../components/LocationSelector";
 import ItineraryEditor from "../components/ItineraryEditor";
-import DestinationImageManager from "../components/DestinationImageManager"; 
+import DestinationImageManager from "../components/DestinationImageManager";
 
 const NuevoPaquete = () => {
   const {
@@ -20,7 +20,7 @@ const NuevoPaquete = () => {
     handleItinerarioChange,
     handleAddItinerario,
     handleRemoveItinerario,
-    handleImagesChange, 
+    handleImagesChange,
     handleSubmit,
   } = usePackageForm();
 
@@ -74,7 +74,7 @@ const NuevoPaquete = () => {
               onSearchValueChange={setSearchValue}
             />
           </div>
-     
+
           <DestinationImageManager
             destination={destination}
             onImagesChange={handleImagesChange}

@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect, useMemo } from "react"; 
+import { useState, useCallback, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../../../api";
 
@@ -52,7 +52,8 @@ export const usePackageForm = () => {
         [`${fieldName}`]: simplifiedAddress,
         [`${fieldName}_lat`]: lat(),
         [`${fieldName}_lng`]: lng(),
-        [`${fieldName}_place_id`]: fieldName === 'destino' ? place_id : prev.destino_place_id,
+        [`${fieldName}_place_id`]:
+          fieldName === "destino" ? place_id : prev.destino_place_id,
       }));
     },
     [selectionMode],
@@ -72,8 +73,10 @@ export const usePackageForm = () => {
           let state = "";
 
           for (const component of addressComponents) {
-            if (component.types.includes("locality")) city = component.long_name;
-            if (component.types.includes("administrative_area_level_1")) state = component.long_name;
+            if (component.types.includes("locality"))
+              city = component.long_name;
+            if (component.types.includes("administrative_area_level_1"))
+              state = component.long_name;
           }
 
           const locationName = [city, state].filter(Boolean).join(", ");
@@ -84,10 +87,13 @@ export const usePackageForm = () => {
             [`${fieldName}`]: locationName,
             [`${fieldName}_lat`]: latLng.lat,
             [`${fieldName}_lng`]: latLng.lng,
-            [`${fieldName}_place_id`]: fieldName === 'destino' ? place.place_id : prev.destino_place_id,
+            [`${fieldName}_place_id`]:
+              fieldName === "destino" ? place.place_id : prev.destino_place_id,
           }));
         } else {
-          console.error(`Geocode was not successful for the following reason: ${status}`);
+          console.error(
+            `Geocode was not successful for the following reason: ${status}`,
+          );
         }
       });
     },
@@ -113,7 +119,10 @@ export const usePackageForm = () => {
   const handleAddItinerario = () => {
     setFormData((prev) => ({
       ...prev,
-      itinerario: [...prev.itinerario, { dia: prev.itinerario.length + 1, descripcion: "" }],
+      itinerario: [
+        ...prev.itinerario,
+        { dia: prev.itinerario.length + 1, descripcion: "" },
+      ],
     }));
   };
 
@@ -133,8 +142,14 @@ export const usePackageForm = () => {
       ...formData,
       duracion: parseInt(formData.duracion, 10),
       precio_base: parseFloat(formData.precio_base),
-      itinerario: formData.itinerario.map((item) => ({ ...item, dia: parseInt(item.dia, 10) })),
-      images: formData.images.map(img => ({ url: img.url, isUploaded: img.isUploaded })),
+      itinerario: formData.itinerario.map((item) => ({
+        ...item,
+        dia: parseInt(item.dia, 10),
+      })),
+      images: formData.images.map((img) => ({
+        url: img.url,
+        isUploaded: img.isUploaded,
+      })),
     };
 
     try {
@@ -148,18 +163,28 @@ export const usePackageForm = () => {
     }
   };
 
+  const origin = useMemo(
+    () => ({
+      lat: parseFloat(formData.origen_lat) || null,
+      lng: parseFloat(formData.origen_lng) || null,
+    }),
+    [formData.origen_lat, formData.origen_lng],
+  );
 
-  const origin = useMemo(() => ({
-    lat: parseFloat(formData.origen_lat) || null,
-    lng: parseFloat(formData.origen_lng) || null,
-  }), [formData.origen_lat, formData.origen_lng]);
-
-  const destination = useMemo(() => ({
-    lat: parseFloat(formData.destino_lat) || null,
-    lng: parseFloat(formData.destino_lng) || null,
-    placeId: formData.destino_place_id,
-    name: formData.destino, 
-  }), [formData.destino_lat, formData.destino_lng, formData.destino_place_id, formData.destino]);
+  const destination = useMemo(
+    () => ({
+      lat: parseFloat(formData.destino_lat) || null,
+      lng: parseFloat(formData.destino_lng) || null,
+      placeId: formData.destino_place_id,
+      name: formData.destino,
+    }),
+    [
+      formData.destino_lat,
+      formData.destino_lng,
+      formData.destino_place_id,
+      formData.destino,
+    ],
+  );
 
   return {
     formData,
