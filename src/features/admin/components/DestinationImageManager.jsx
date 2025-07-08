@@ -1,11 +1,17 @@
 import { useState, useEffect, useCallback } from "react";
 import axios from "axios";
+
 const Spinner = () => (
   <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
 );
 
-const ImageTile = ({ image, onRemove }) => (
-  <div className="relative group bg-gray-100 rounded-lg overflow-hidden shadow-sm">
+const ImageTile = ({ image, onRemove, onDragStart, onDrop }) => (
+  <div
+    draggable
+    onDragStart={onDragStart}
+    onDrop={onDrop}
+    className="relative group bg-gray-100 rounded-lg overflow-hidden shadow-sm cursor-move"
+  >
     <div className="h-48">
       <img
         src={image.url}
@@ -43,6 +49,7 @@ const DestinationImageManager = ({ destination, onImagesChange }) => {
   const [images, setImages] = useState([]);
   const [status, setStatus] = useState("idle");
   const [error, setError] = useState(null);
+  const [isDragging, setIsDragging] = useState(false);
 
   const fetchImagesFromPexels = useCallback(async (destinationName) => {
     if (!destinationName) {
@@ -105,9 +112,8 @@ const DestinationImageManager = ({ destination, onImagesChange }) => {
     onImagesChange(images);
   }, [images, onImagesChange]);
 
-  const handleFileUpload = (event) => {
-    const files = Array.from(event.target.files);
-    const newImages = files.map((file) => ({
+  const handleFiles = (files) => {
+    const newImages = Array.from(files).map((file) => ({
       id: `uploaded-${file.name}-${Date.now()}`,
       url: URL.createObjectURL(file),
       file: file,
@@ -115,6 +121,10 @@ const DestinationImageManager = ({ destination, onImagesChange }) => {
     }));
     setImages((prevImages) => [...prevImages, ...newImages]);
     setStatus("success");
+  };
+
+  const handleFileUpload = (event) => {
+    handleFiles(event.target.files);
   };
 
   const handleRemoveImage = (id) => {
@@ -125,18 +135,52 @@ const DestinationImageManager = ({ destination, onImagesChange }) => {
     e.dataTransfer.setData("imageIndex", index);
   };
 
-  const handleDrop = (e, dropIndex) => {
-    const dragIndex = e.dataTransfer.getData("imageIndex");
-    const newImages = [...images];
-    const [draggedImage] = newImages.splice(dragIndex, 1);
-    newImages.splice(dropIndex, 0, draggedImage);
-    setImages(newImages);
+  const handleDragOver = (e) => {
+    e.preventDefault();
   };
 
-  const handleDragOver = (e) => e.preventDefault();
+  const handleDrop = (e, dropIndex) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    const dragIndex = e.dataTransfer.getData("imageIndex");
+    if (dragIndex) {
+      const newImages = [...images];
+      const [draggedImage] = newImages.splice(dragIndex, 1);
+      newImages.splice(dropIndex, 0, draggedImage);
+      setImages(newImages);
+    }
+  };
+
+  const handleContainerDragOver = (e) => {
+    e.preventDefault();
+    setIsDragging(true);
+  };
+
+  const handleContainerDragLeave = (e) => {
+    setIsDragging(false);
+  };
+
+  const handleContainerDrop = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      handleFiles(e.dataTransfer.files);
+      e.dataTransfer.clearData();
+    }
+  };
 
   return (
-    <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 space-y-4">
+    <div
+      className={`bg-white p-6 rounded-lg shadow-sm border border-gray-200 space-y-4 ${
+        isDragging ? "border-blue-500 border-dashed border-2" : ""
+      }`}
+      onDragEnter={handleContainerDragOver}
+      onDragLeave={handleContainerDragLeave}
+      onDragOver={handleContainerDragOver}
+      onDrop={handleContainerDrop}
+    >
       <div className="flex justify-between items-center">
         <h3 className="text-lg font-medium text-gray-900">
           Imágenes del Destino
@@ -166,7 +210,8 @@ const DestinationImageManager = ({ destination, onImagesChange }) => {
         <div className="text-center text-gray-500 p-8 border-2 border-dashed rounded-lg">
           <p className="font-semibold">Selecciona un destino en el mapa.</p>
           <p className="text-sm mt-1">
-            Las imágenes aparecerán aquí automáticamente.
+            Arrastra y suelta imágenes aquí o haz clic en el botón para
+            subirlas.
           </p>
         </div>
       )}
@@ -183,18 +228,18 @@ const DestinationImageManager = ({ destination, onImagesChange }) => {
       )}
 
       {images.length > 0 && (
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div
+          className="grid grid-cols-2 md:grid-cols-4 gap-4"
+          onDragOver={handleDragOver}
+        >
           {images.map((image, index) => (
-            <div
+            <ImageTile
               key={image.id}
-              draggable
+              image={image}
+              onRemove={handleRemoveImage}
               onDragStart={(e) => handleDragStart(e, index)}
               onDrop={(e) => handleDrop(e, index)}
-              onDragOver={handleDragOver}
-              className="cursor-move"
-            >
-              <ImageTile image={image} onRemove={handleRemoveImage} />
-            </div>
+            />
           ))}
         </div>
       )}
