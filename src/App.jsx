@@ -13,7 +13,8 @@ function App() {
       <Route path="/paquetes/:url" element={<PaqueteDetalle />} />
       <Route path="/admin" element={<AdminDashboard />} />
       <Route path="/admin/paquetes" element={<AdminPaquetes />} />
-      <Route path="/admin/paquetes/nuevo" element={<NuevoPaquete />} />;
+      <Route path="/admin/paquetes/nuevo" element={<NuevoPaquete />} />
+      <Route path="/admin/paquetes/editar/:url" element={<NuevoPaquete />} />
     </Routes>
   );
 }

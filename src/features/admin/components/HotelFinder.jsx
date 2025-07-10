@@ -19,6 +19,9 @@ const HotelFinder = ({ destination, onHotelSelect, selectedHotel }) => {
 
   useEffect(() => {
     setSelectedHotelInfo(selectedHotel);
+    if (selectedHotel && !allHotels.some(hotel => hotel.id === selectedHotel.id)) {
+        setAllHotels(prev => [selectedHotel, ...prev]);
+    }
   }, [selectedHotel]);
 
   const itemsPerPage = 3;
@@ -221,7 +224,7 @@ const HotelFinder = ({ destination, onHotelSelect, selectedHotel }) => {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {getCurrentHotels().map((hotel) => {
                     const isSelected = hotel.id === selectedHotelInfo?.id;
-                    const imageUrl = hotel.isCustom ? (hotel.images?.[0]?.url) : hotel.previewImageUrl;
+                    const imageUrl = hotel.isCustom ? (hotel.imagenes?.[0]?.url || hotel.images?.[0]?.url) : hotel.previewImageUrl;
 
                     return (
                       <div

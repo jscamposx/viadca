@@ -42,10 +42,15 @@ const AdminPaquetes = () => {
             paquetes.map((paquete) => {
               const imagenPrincipal =
                 paquete.imagenes && paquete.imagenes.length > 0
-                  ? paquete.imagenes
-                      .slice()
-                      .sort((a, b) => a.orden - b.orden)[0]
+                  ? paquete.imagenes[0]
                   : null;
+
+              const getImageUrl = (url) => {
+                if (url.startsWith('http') || url.startsWith('data:')) {
+                  return url;
+                }
+                return `${API_URL}${url}`;
+              }
 
               return (
                 <div
@@ -55,7 +60,7 @@ const AdminPaquetes = () => {
                   <div className="h-48 bg-gray-200 overflow-hidden">
                     {imagenPrincipal ? (
                       <img
-                        src={`${API_URL}${imagenPrincipal.url}`}
+                        src={getImageUrl(imagenPrincipal.url)}
                         alt={paquete.nombre_paquete}
                         className="w-full h-full object-cover"
                       />
@@ -92,7 +97,7 @@ const AdminPaquetes = () => {
                       </Link>
                       <div className="space-x-2">
                         <Link
-                          to={`/admin/paquetes/editar/${paquete.id}`}
+                          to={`/admin/paquetes/editar/${paquete.url}`}
                           className="bg-blue-500 hover:bg-blue-800 text-white py-2 px-4 rounded-lg transition duration-300"
                         >
                           Editar

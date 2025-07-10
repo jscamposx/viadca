@@ -12,6 +12,13 @@ const ImageCarousel = ({ imagenes }) => {
     );
   }
 
+  const getImageUrl = (url) => {
+    if (url.startsWith('http') || url.startsWith('data:')) {
+      return url;
+    }
+    return `${API_URL}${url}`;
+  }
+
   return (
     <Carousel
       showArrows={true}
@@ -25,7 +32,7 @@ const ImageCarousel = ({ imagenes }) => {
         <div key={imagen.id}>
           <img
             className="w-full h-96 object-cover"
-            src={`${API_URL}${imagen.url}`}
+            src={getImageUrl(imagen.url)}
             alt={imagen.nombre}
           />
         </div>

@@ -45,6 +45,14 @@ const ImageTile = ({ image, onRemove, onDragStart, onDrop }) => (
   </div>
 );
 
+const fileToBase64 = (file) =>
+  new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = (error) => reject(error);
+  });
+
 const DestinationImageManager = ({ destination, onImagesChange }) => {
   const [images, setImages] = useState([]);
   const [status, setStatus] = useState("idle");
@@ -112,13 +120,19 @@ const DestinationImageManager = ({ destination, onImagesChange }) => {
     onImagesChange(images);
   }, [images, onImagesChange]);
 
-  const handleFiles = (files) => {
-    const newImages = Array.from(files).map((file) => ({
-      id: `uploaded-${file.name}-${Date.now()}`,
-      url: URL.createObjectURL(file),
-      file: file,
-      isUploaded: true,
-    }));
+  const handleFiles = async (files) => {
+    const fileArray = Array.from(files);
+    const newImages = await Promise.all(
+      fileArray.map(async (file) => {
+        const base64 = await fileToBase64(file);
+        return {
+          id: `uploaded-${file.name}-${Date.now()}`,
+          url: base64,
+          file: file,
+          isUploaded: true,
+        };
+      })
+    );
     setImages((prevImages) => [...prevImages, ...newImages]);
     setStatus("success");
   };

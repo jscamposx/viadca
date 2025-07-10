@@ -7,7 +7,7 @@ const durangoCoordinates = {
   lng: -104.6532,
 };
 
-export const usePackageForm = () => {
+export const usePackageForm = (initialPackageData = null) => {
   const [formData, setFormData] = useState({
     nombre_paquete: "",
     duracion: "",
@@ -25,6 +25,13 @@ export const usePackageForm = () => {
     images: [],
     hotel: null, // Se añade el hotel al estado inicial
   });
+
+  useEffect(() => {
+    if (initialPackageData) {
+      setFormData(initialPackageData);
+    }
+  }, [initialPackageData]);
+
 
   const [selectionMode, setSelectionMode] = useState("destino");
   const [searchValue, setSearchValue] = useState("");
@@ -143,7 +150,18 @@ export const usePackageForm = () => {
       alert("Por favor, selecciona el origen y el destino en el mapa.");
       return;
     }
-
+  
+    const cleanedImages = formData.images.map(({ url }) => ({ url }));
+  
+    let cleanedHotel = null;
+    if (formData.hotel) {
+      const { place_id, previewImageUrl, images, ...hotelData } = formData.hotel;
+      cleanedHotel = {
+        ...hotelData,
+        images: images ? images.map(({ url }) => ({ url })) : []
+      };
+    }
+  
     const payload = {
       ...formData,
       duracion: parseInt(formData.duracion, 10),
@@ -152,27 +170,26 @@ export const usePackageForm = () => {
         ...item,
         dia: parseInt(item.dia, 10),
       })),
-      images: formData.images.map((img, index) => ({
-        url: img.url,
-        isUploaded: img.isUploaded,
-        orden: index,
-      })),
-      hotel: formData.hotel, // Se incluye el hotel en el payload
+      images: cleanedImages,
+      hotel: cleanedHotel,
     };
-
-    console.log("Payload a enviar:", payload); 
-
-    /*
+  
+    console.log("Payload a enviar:", payload);
+  
     try {
-      await api.packages.createPaquete(payload);
-      alert("Paquete creado con éxito");
+      if (initialPackageData) {
+        await api.packages.updatePaquete(initialPackageData.url, payload);
+        alert("Paquete actualizado con éxito");
+      } else {
+        await api.packages.createPaquete(payload);
+        alert("Paquete creado con éxito");
+      }
       navigate("/admin/paquetes");
     } catch (error) {
-      console.error("Error al crear el paquete:", error);
+      console.error("Error al procesar el paquete:", error);
       const errorMessage = error.response?.data?.message || error.message;
-      alert(`Error al crear el paquete: ${errorMessage}`);
+      alert(`Error al procesar el paquete: ${errorMessage}`);
     }
-    */
   };
 
   const origin = useMemo(
@@ -209,7 +226,7 @@ export const usePackageForm = () => {
     handlePlaceSelected,
     onMapClick,
     handleFormChange,
-    handleHotelSelected, // Se exporta el nuevo manejador
+    handleHotelSelected,
     handleItinerarioChange,
     handleAddItinerario,
     handleRemoveItinerario,

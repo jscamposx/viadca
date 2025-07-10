@@ -1,12 +1,19 @@
 import { APIProvider } from "@vis.gl/react-google-maps";
+import { useParams } from "react-router-dom";
+import { usePackage } from "../../package/hooks/usePackage";
 import { usePackageForm } from "../hooks/usePackageForm";
 import PackageForm from "../components/PackageForm";
 import LocationSelector from "../components/LocationSelector";
 import ItineraryEditor from "../components/ItineraryEditor";
 import DestinationImageManager from "../components/DestinationImageManager";
-import HotelFinder from "../components/HotelFinder"; // Se importa el componente HotelFinder
+import HotelFinder from "../components/HotelFinder";
+import Loading from "../../package/components/Loading";
+import Error from "../../package/components/Error";
 
 const NuevoPaquete = () => {
+  const { url } = useParams();
+  const { paquete, loading, error } = usePackage(url);
+
   const {
     formData,
     selectionMode,
@@ -18,15 +25,17 @@ const NuevoPaquete = () => {
     handlePlaceSelected,
     onMapClick,
     handleFormChange,
-    handleHotelSelected, // Se importa el manejador
+    handleHotelSelected,
     handleItinerarioChange,
     handleAddItinerario,
     handleRemoveItinerario,
     handleImagesChange,
     handleSubmit,
-  } = usePackageForm();
+  } = usePackageForm(paquete);
 
-    console.log("NuevoPaquete formData:", formData);  
+  if (url && loading) return <Loading />;
+  if (url && error) return <Error message={error} />;
+
   return (
     <APIProvider
       apiKey={import.meta.env.VITE_Maps_API_KEY}
@@ -34,7 +43,7 @@ const NuevoPaquete = () => {
     >
       <div className="container mx-auto p-8">
         <h1 className="text-2xl font-bold mb-6">
-          Crear Nuevo Paquete Turístico
+          {url ? "Editar Paquete Turístico" : "Crear Nuevo Paquete Turístico"}
         </h1>
         <form onSubmit={handleSubmit} className="space-y-6">
           <PackageForm formData={formData} onFormChange={handleFormChange} />
@@ -81,12 +90,13 @@ const NuevoPaquete = () => {
           <DestinationImageManager
             destination={destination}
             onImagesChange={handleImagesChange}
+            initialImages={formData.imagenes}
           />
 
-          {/* Se añade el componente HotelFinder */}
           <HotelFinder 
             destination={destination}
             onHotelSelect={handleHotelSelected}
+            selectedHotel={formData.hotel}
           />
 
           <ItineraryEditor
@@ -100,7 +110,7 @@ const NuevoPaquete = () => {
             type="submit"
             className="w-full bg-green-500 text-white p-3 rounded font-bold"
           >
-            Crear Paquete
+            {url ? "Guardar Cambios" : "Crear Paquete"}
           </button>
         </form>
       </div>
