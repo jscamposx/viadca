@@ -1,5 +1,3 @@
-import { Link } from "react-router-dom";
-
 const AdminDashboard = () => {
   return (
     <div className="bg-gray-100 min-h-screen p-4 sm:p-6 lg:p-8">
@@ -12,18 +10,7 @@ const AdminDashboard = () => {
             Gestiona todo el contenido de tu sitio desde un solo lugar.
           </p>
         </header>
-        <nav className="flex justify-center mb-12">
-          <ul className="flex flex-wrap justify-center gap-4">
-            <li>
-              <Link
-                to="/admin/paquetes"
-                className="block bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg shadow-lg transform hover:scale-105 transition-transform duration-300 ease-in-out"
-              >
-                Gestionar Paquetes
-              </Link>
-            </li>
-          </ul>
-        </nav>
+      
 
         <main className="max-w-4xl mx-auto">
           <h2 className="text-2xl font-semibold text-gray-700 mb-6 text-center sm:text-left">

@@ -93,7 +93,7 @@ const NuevoPaquete = () => {
             initialImages={formData.imagenes}
           />
 
-          <HotelFinder 
+          <HotelFinder
             destination={destination}
             onHotelSelect={handleHotelSelected}
             selectedHotel={formData.hotel}

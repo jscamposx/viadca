@@ -131,7 +131,7 @@ const DestinationImageManager = ({ destination, onImagesChange }) => {
           file: file,
           isUploaded: true,
         };
-      })
+      }),
     );
     setImages((prevImages) => [...prevImages, ...newImages]);
     setStatus("success");

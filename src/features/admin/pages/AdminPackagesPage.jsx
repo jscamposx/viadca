@@ -46,11 +46,11 @@ const AdminPaquetes = () => {
                   : null;
 
               const getImageUrl = (url) => {
-                if (url.startsWith('http') || url.startsWith('data:')) {
+                if (url.startsWith("http") || url.startsWith("data:")) {
                   return url;
                 }
                 return `${API_URL}${url}`;
-              }
+              };
 
               return (
                 <div

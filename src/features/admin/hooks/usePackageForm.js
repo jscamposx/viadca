@@ -32,7 +32,6 @@ export const usePackageForm = (initialPackageData = null) => {
     }
   }, [initialPackageData]);
 
-
   const [selectionMode, setSelectionMode] = useState("destino");
   const [searchValue, setSearchValue] = useState("");
   const navigate = useNavigate();
@@ -116,7 +115,7 @@ export const usePackageForm = (initialPackageData = null) => {
   const handleImagesChange = useCallback((newImages) => {
     setFormData((prev) => ({ ...prev, images: newImages }));
   }, []);
-  
+
   const handleHotelSelected = useCallback((hotel) => {
     console.log("Hotel seleccionado, se agregará al formulario:", hotel);
     setFormData((prev) => ({ ...prev, hotel: hotel }));
@@ -150,18 +149,19 @@ export const usePackageForm = (initialPackageData = null) => {
       alert("Por favor, selecciona el origen y el destino en el mapa.");
       return;
     }
-  
+
     const cleanedImages = formData.images.map(({ url }) => ({ url }));
-  
+
     let cleanedHotel = null;
     if (formData.hotel) {
-      const { place_id, previewImageUrl, images, ...hotelData } = formData.hotel;
+      const { place_id, previewImageUrl, images, ...hotelData } =
+        formData.hotel;
       cleanedHotel = {
         ...hotelData,
-        images: images ? images.map(({ url }) => ({ url })) : []
+        images: images ? images.map(({ url }) => ({ url })) : [],
       };
     }
-  
+
     const payload = {
       ...formData,
       duracion: parseInt(formData.duracion, 10),
@@ -173,9 +173,9 @@ export const usePackageForm = (initialPackageData = null) => {
       images: cleanedImages,
       hotel: cleanedHotel,
     };
-  
+
     console.log("Payload a enviar:", payload);
-  
+
     try {
       if (initialPackageData) {
         await api.packages.updatePaquete(initialPackageData.url, payload);
