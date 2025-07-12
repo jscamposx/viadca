@@ -53,6 +53,8 @@ const fileToBase64 = (file) =>
     reader.onerror = (error) => reject(error);
   });
 
+
+
 const DestinationImageManager = ({ destination, onImagesChange }) => {
   const [images, setImages] = useState([]);
   const [status, setStatus] = useState("idle");
@@ -120,15 +122,15 @@ const DestinationImageManager = ({ destination, onImagesChange }) => {
     onImagesChange(images);
   }, [images, onImagesChange]);
 
-  const handleFiles = async (files) => {
+ const handleFiles = async (files) => {
     const fileArray = Array.from(files);
+    setStatus("loading");
     const newImages = await Promise.all(
       fileArray.map(async (file) => {
         const base64 = await fileToBase64(file);
         return {
           id: `uploaded-${file.name}-${Date.now()}`,
-          url: base64,
-          file: file,
+          url: base64, // <-- AHORA ES BASE64
           isUploaded: true,
         };
       }),

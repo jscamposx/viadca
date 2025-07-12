@@ -7,6 +7,40 @@ const durangoCoordinates = {
   lng: -104.6532,
 };
 
+// --- FUNCIÓN AUXILIAR FINAL ---
+// Esta función se encarga de que todas las URLs sean absolutas antes de enviarlas.
+const uploadImageIfNeeded = async (image) => {
+  // Si la URL es externa (Pexels, Google), ya es válida.
+  if (typeof image.url === "string" && image.url.startsWith("http")) {
+    return { url: image.url };
+  }
+
+  // Si es una imagen nueva en Base64, se sube y se completa la URL.
+  if (typeof image.url === "string" && image.url.startsWith("data:image")) {
+    try {
+      const response = await api.packages.uploadBase64Image({ image: image.url });
+      const API_URL = import.meta.env.VITE_API_URL;
+      const fullUrl = `${API_URL}${response.data.url}`;
+      return { url: fullUrl };
+    } catch (error) {
+      console.error("Error al subir la imagen:", error);
+      return null;
+    }
+  }
+
+  // Si es una ruta relativa de nuestro backend (al editar), la completamos.
+  if (typeof image.url === "string" && image.url.startsWith("/uploads")) {
+    const API_URL = import.meta.env.VITE_API_URL;
+    const fullUrl = `${API_URL}${image.url}`;
+    return { url: fullUrl };
+  }
+
+  // Para cualquier otro caso, lo devolvemos como está pero advertimos en consola.
+  console.warn("URL de imagen con formato no manejado:", image.url);
+  return { url: image.url };
+};
+
+
 export const usePackageForm = (initialPackageData = null) => {
   const [formData, setFormData] = useState({
     nombre_paquete: "",
@@ -23,7 +57,7 @@ export const usePackageForm = (initialPackageData = null) => {
     precio_base: "",
     itinerario: [{ dia: 1, descripcion: "" }],
     images: [],
-    hotel: null, // Se añade el hotel al estado inicial
+    hotel: null,
   });
 
   useEffect(() => {
@@ -59,7 +93,7 @@ export const usePackageForm = (initialPackageData = null) => {
         [`${fieldName}`]: simplifiedAddress,
         [`${fieldName}_lat`]: lat(),
         [`${fieldName}_lng`]: lng(),
-        [`${fieldName}_place_id`]:
+        destino_place_id:
           fieldName === "destino" ? place_id : prev.destino_place_id,
       }));
     },
@@ -94,7 +128,7 @@ export const usePackageForm = (initialPackageData = null) => {
             [`${fieldName}`]: locationName,
             [`${fieldName}_lat`]: latLng.lat,
             [`${fieldName}_lng`]: latLng.lng,
-            [`${fieldName}_place_id`]:
+            destino_place_id:
               fieldName === "destino" ? place.place_id : prev.destino_place_id,
           }));
         } else {
@@ -117,7 +151,6 @@ export const usePackageForm = (initialPackageData = null) => {
   }, []);
 
   const handleHotelSelected = useCallback((hotel) => {
-    console.log("Hotel seleccionado, se agregará al formulario:", hotel);
     setFormData((prev) => ({ ...prev, hotel: hotel }));
   }, []);
 
@@ -150,18 +183,36 @@ export const usePackageForm = (initialPackageData = null) => {
       return;
     }
 
-    const cleanedImages = formData.images.map(({ url }) => ({ url }));
+    // 1. Procesar todas las imágenes para asegurar que las URLs sean absolutas
+    const processedImages = await Promise.all(
+      formData.images.map(uploadImageIfNeeded)
+    );
+    const cleanedImages = processedImages.filter(Boolean).map(({ url }) => ({ url }));
 
+    // 2. Procesar y limpiar el objeto del hotel
     let cleanedHotel = null;
     if (formData.hotel) {
-      const { place_id, previewImageUrl, images, ...hotelData } =
-        formData.hotel;
+      const {
+        place_id,
+        previewImageUrl,
+        total_calificaciones,
+        ...hotelData
+      } = formData.hotel;
+
+      let processedHotelImages = [];
+      if (hotelData.images && hotelData.images.length > 0) {
+        processedHotelImages = await Promise.all(
+          hotelData.images.map(uploadImageIfNeeded)
+        );
+      }
+
       cleanedHotel = {
         ...hotelData,
-        images: images ? images.map(({ url }) => ({ url })) : [],
+        images: processedHotelImages.filter(Boolean).map(({ url }) => ({ url })),
       };
     }
 
+    // 3. Construir el payload final
     const payload = {
       ...formData,
       duracion: parseInt(formData.duracion, 10),
@@ -174,7 +225,7 @@ export const usePackageForm = (initialPackageData = null) => {
       hotel: cleanedHotel,
     };
 
-    console.log("Payload a enviar:", payload);
+    console.log("Payload final a enviar:", payload);
 
     try {
       if (initialPackageData) {

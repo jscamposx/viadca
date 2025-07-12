@@ -137,17 +137,33 @@ const HotelFinder = ({ destination, onHotelSelect, selectedHotel }) => {
     setCustomHotel((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleCustomHotelImagesChange = (e) => {
+ const handleCustomHotelImagesChange = async (e) => {
     const files = Array.from(e.target.files);
-    const imageUrls = files.map((file) => ({
-      url: URL.createObjectURL(file),
-      file: file,
-    }));
+    // Usamos la misma función `fileToBase64` que en DestinationImageManager
+    const imageUrls = await Promise.all(
+      files.map(async (file) => {
+        const base64 = await fileToBase64(file);
+        return {
+          url: base64, // <-- AHORA ES BASE64
+          file: file, // Puedes mantener el archivo si lo necesitas para algo más
+        };
+      })
+    );
     setCustomHotel((prev) => ({
       ...prev,
       images: [...prev.images, ...imageUrls],
     }));
   };
+
+
+  const fileToBase64 = (file) =>
+  new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = (error) => reject(error);
+  });
+
 
   const filterHotelsByName = (hotels, term) => {
     if (!term.trim()) return hotels;
