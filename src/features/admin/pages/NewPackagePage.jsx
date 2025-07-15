@@ -17,6 +17,7 @@ const NuevoPaquete = () => {
   const {
     formData,
     selectionMode,
+    flights,
     searchValue,
     origin,
     destination,
@@ -46,7 +47,11 @@ const NuevoPaquete = () => {
           {url ? "Editar Paquete Turístico" : "Crear Nuevo Paquete Turístico"}
         </h1>
         <form onSubmit={handleSubmit} className="space-y-6">
-          <PackageForm formData={formData} onFormChange={handleFormChange} />
+            <PackageForm
+            formData={formData}
+            onFormChange={handleFormChange}
+            flights={flights} // <-- **Pasa los vuelos al componente del formulario**
+          />
 
           <div className="space-y-4">
             <h2 className="text-xl font-semibold">Selección de Ubicación</h2>

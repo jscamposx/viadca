@@ -47,11 +47,11 @@ const processImage = async (image) => {
 
 
 export const usePackageForm = (initialPackageData = null) => {
-    // ... (el resto del hook hasta handleSubmit se mantiene igual)
-    const [formData, setFormData] = useState({
+  const [flights, setFlights] = useState([]); // Estado para almacenar los vuelos
+  const [formData, setFormData] = useState({
     nombre_paquete: "",
     duracion: "",
-    id_vuelo: "",
+    id_vuelo: "", // Este campo ahora guardará el ID del vuelo seleccionado
     requisitos: "",
     origen: "Durango, Dgo.",
     origen_lat: 24.0277,
@@ -64,7 +64,7 @@ export const usePackageForm = (initialPackageData = null) => {
     itinerario: [{ dia: 1, descripcion: "" }],
     images: [],
     hotel: null,
-    });
+  });
 
     useEffect(() => {
         if (initialPackageData) {
@@ -87,6 +87,22 @@ export const usePackageForm = (initialPackageData = null) => {
         selectionMode === "origen" ? formData.origen : formData.destino,
         );
     }, [selectionMode, formData.origen, formData.destino]);
+
+
+      useEffect(() => {
+    const fetchFlights = async () => {
+      try {
+        const response = await api.flights.getVuelos();
+        setFlights(response.data);
+      } catch (error) {
+        console.error("Error al obtener los vuelos:", error);
+        // Opcionalmente, puedes manejar el error mostrando una notificación al usuario
+      }
+    };
+
+    fetchFlights();
+  }, []); // El array de dependencias vacío asegura que se ejecute solo una vez
+
 
     const handlePlaceSelected = useCallback(
         (place) => {
@@ -289,6 +305,7 @@ export const usePackageForm = (initialPackageData = null) => {
   return {
     formData,
     selectionMode,
+      flights,
     searchValue,
     origin,
     destination,
