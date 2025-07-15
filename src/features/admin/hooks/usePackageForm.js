@@ -68,12 +68,15 @@ export const usePackageForm = (initialPackageData = null) => {
 
     useEffect(() => {
         if (initialPackageData) {
+          const sortedImages = (initialPackageData.imagenes || []).sort((a, b) => a.orden - b.orden);
+          const sortedHotelImages = initialPackageData.hotel ? (initialPackageData.hotel.imagenes || []).sort((a, b) => a.orden - b.orden) : [];
+
         setFormData({
             ...initialPackageData,
-            images: initialPackageData.imagenes || [],
+            images: sortedImages,
             hotel: initialPackageData.hotel ? {
             ...initialPackageData.hotel,
-            images: initialPackageData.hotel.imagenes || []
+            images: sortedHotelImages
             } : null
         });
         }

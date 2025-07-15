@@ -12,7 +12,8 @@ import Error from "../../package/components/Error";
 
 const NuevoPaquete = () => {
   const { url } = useParams();
-  const { paquete, loading, error } = usePackage(url);
+  const { paquete, loading, error } = url ? usePackage(url) : { paquete: null, loading: false, error: null };
+
 
   const {
     formData,
