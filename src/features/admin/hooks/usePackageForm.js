@@ -229,8 +229,14 @@ export const usePackageForm = (initialPackageData = null) => {
       };
     }
 
-    const packageImageIds = await Promise.all(
-      (formData.images || []).map(processImage),
+    const packageImages = await Promise.all(
+      (formData.images || []).map(async (image, index) => {
+        const imageId = await processImage(image);
+        if (imageId) {
+          return { id: imageId, orden: index + 1 };
+        }
+        return null;
+      })
     );
 
     const { images, ...restOfFormData } = formData;
@@ -243,7 +249,7 @@ export const usePackageForm = (initialPackageData = null) => {
         ...item,
         dia: parseInt(item.dia, 10),
       })),
-      imageIds: packageImageIds.filter(Boolean),
+      imagenes: packageImages.filter(Boolean),
       hotel: hotelPayload,
     };
 
