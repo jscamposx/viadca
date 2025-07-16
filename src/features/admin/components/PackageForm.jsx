@@ -36,31 +36,6 @@ const PackageForm = ({ formData, onFormChange, flights = [] }) => (
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
-            Vuelo *
-          </label>
-          <select
-            name="id_vuelo"
-            value={formData.id_vuelo}
-            onChange={onFormChange}
-            className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            required
-            disabled={flights.length === 0}
-          >
-            <option value="">
-              {flights.length === 0
-                ? "Cargando vuelos..."
-                : "Selecciona un vuelo"}
-            </option>
-            {flights.map((vuelo) => (
-              <option key={vuelo.id} value={vuelo.id}>
-                {vuelo.nombre} ({vuelo.transporte})
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
             Precio Base *
           </label>
           <div className="relative">

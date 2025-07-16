@@ -10,6 +10,7 @@ import DestinationImageManager from "../components/DestinationImageManager";
 import HotelFinder from "../components/HotelFinder";
 import Loading from "../../package/components/Loading";
 import Error from "../../package/components/Error";
+import FlightCarousel from "../components/FlightCarousel"; // Importa el nuevo componente
 
 const NuevoPaquete = () => {
   const { url } = useParams();
@@ -20,6 +21,7 @@ const NuevoPaquete = () => {
 
   const {
     formData,
+    setFormData, // Necesitamos acceso a setFormData
     selectionMode,
     flights,
     searchValue,
@@ -37,6 +39,10 @@ const NuevoPaquete = () => {
     handleImagesChange,
     handleSubmit: formSubmitHandler,
   } = usePackageForm(paquete);
+
+  const handleFlightSelect = (flightId) => {
+    setFormData((prev) => ({ ...prev, id_vuelo: flightId }));
+  };
 
   const handleSubmit = (e) => {
     setIsSubmitting(true);
@@ -60,6 +66,12 @@ const NuevoPaquete = () => {
             formData={formData}
             onFormChange={handleFormChange}
             flights={flights}
+          />
+          
+          <FlightCarousel 
+            flights={flights}
+            onFlightSelect={handleFlightSelect}
+            selectedFlightId={formData.id_vuelo}
           />
 
           <div className="space-y-4">

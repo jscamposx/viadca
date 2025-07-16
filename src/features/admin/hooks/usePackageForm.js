@@ -295,6 +295,7 @@ export const usePackageForm = (initialPackageData = null) => {
     searchValue,
     origin,
     destination,
+     setFormData,
     setSelectionMode,
     setSearchValue,
     handlePlaceSelected,
