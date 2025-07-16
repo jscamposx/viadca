@@ -24,8 +24,8 @@ const GooglePlacesSearch = ({ onPlaceSelected, value, onChange }) => {
       () => {
         const place = placeAutocomplete.current.getPlace();
         if (place.geometry) {
-          const { lat, lng } = place.geometry.location;
-          onPlaceSelected({ lat: lat(), lng: lng() }, place.formatted_address);
+          // AHORA SE ENVÍA EL OBJETO COMPLETO
+          onPlaceSelected(place);
         }
       },
     );

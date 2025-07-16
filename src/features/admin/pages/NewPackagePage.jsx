@@ -1,5 +1,6 @@
 import { APIProvider } from "@vis.gl/react-google-maps";
 import { useParams } from "react-router-dom";
+import { useState } from "react";
 import { usePackage } from "../../package/hooks/usePackage";
 import { usePackageForm } from "../hooks/usePackageForm";
 import PackageForm from "../components/PackageForm";
@@ -12,6 +13,7 @@ import Error from "../../package/components/Error";
 
 const NuevoPaquete = () => {
   const { url } = useParams();
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const { paquete, loading, error } = url
     ? usePackage(url)
     : { paquete: null, loading: false, error: null };
@@ -33,8 +35,13 @@ const NuevoPaquete = () => {
     handleAddItinerario,
     handleRemoveItinerario,
     handleImagesChange,
-    handleSubmit,
+    handleSubmit: formSubmitHandler,
   } = usePackageForm(paquete);
+
+  const handleSubmit = (e) => {
+    setIsSubmitting(true);
+    formSubmitHandler(e);
+  };
 
   if (url && loading) return <Loading />;
   if (url && error) return <Error message={error} />;
@@ -115,9 +122,10 @@ const NuevoPaquete = () => {
 
           <button
             type="submit"
-            className="w-full bg-green-500 text-white p-3 rounded font-bold"
+            className="w-full bg-green-500 text-white p-3 rounded font-bold disabled:bg-green-300"
+            disabled={isSubmitting}
           >
-            {url ? "Guardar Cambios" : "Crear Paquete"}
+            {isSubmitting ? 'Procesando...' : (url ? "Guardar Cambios" : "Crear Paquete")}
           </button>
         </form>
       </div>

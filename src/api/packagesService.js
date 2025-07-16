@@ -19,3 +19,9 @@ export const uploadBase64Image = (imageData) => {
 export const updatePaquete = (url, paqueteData) => {
   return apiClient.patch(`/paquetes/url/${url}`, paqueteData);
 };
+
+export const exportToExcel = (id) => {
+  return apiClient.get(`/paquetes/export/excel/${id}`, {
+    responseType: "blob",
+  });
+};

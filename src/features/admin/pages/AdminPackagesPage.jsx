@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useAllPackages } from "../../package/hooks/useAllPackages";
+import { FiDownload } from "react-icons/fi";
+import api from "../../../api";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -14,6 +16,21 @@ const AdminPaquetes = () => {
   });
   const [deleteConfirm, setDeleteConfirm] = useState(null);
 
+  const handleExport = async (paqueteId) => {
+    try {
+      const response = await api.packages.exportToExcel(paqueteId);
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", `paquete-${paqueteId}.xlsx`);
+      document.body.appendChild(link);
+      link.click();
+      link.parentNode.removeChild(link);
+    } catch (error) {
+      console.error("Error al exportar a Excel:", error);
+      alert("No se pudo exportar el archivo de Excel.");
+    }
+  };
   // Filtrado y ordenamiento
   useEffect(() => {
     let result = [...(paquetes || [])];
@@ -25,7 +42,7 @@ const AdminPaquetes = () => {
         (p) =>
           p.nombre_paquete.toLowerCase().includes(term) ||
           p.descripcion?.toLowerCase().includes(term) ||
-          p.precio_base.toString().includes(term),
+          p.precio_base.toString().includes(term)
       );
     }
 
@@ -164,7 +181,11 @@ const AdminPaquetes = () => {
           <div className="flex flex-wrap gap-3">
             <span className="text-gray-700 font-medium">Ordenar por:</span>
             <button
-              className={`px-4 py-2 rounded-lg font-medium transition ${sortConfig.key === "nombre" ? "bg-blue-100 text-blue-700" : "bg-gray-100 text-gray-700 hover:bg-gray-200"}`}
+              className={`px-4 py-2 rounded-lg font-medium transition ${
+                sortConfig.key === "nombre"
+                  ? "bg-blue-100 text-blue-700"
+                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+              }`}
               onClick={() => requestSort("nombre")}
             >
               Nombre{" "}
@@ -172,7 +193,11 @@ const AdminPaquetes = () => {
                 (sortConfig.direction === "asc" ? "↑" : "↓")}
             </button>
             <button
-              className={`px-4 py-2 rounded-lg font-medium transition ${sortConfig.key === "precio_base" ? "bg-blue-100 text-blue-700" : "bg-gray-100 text-gray-700 hover:bg-gray-200"}`}
+              className={`px-4 py-2 rounded-lg font-medium transition ${
+                sortConfig.key === "precio_base"
+                  ? "bg-blue-100 text-blue-700"
+                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+              }`}
               onClick={() => requestSort("precio_base")}
             >
               Precio{" "}
@@ -180,7 +205,11 @@ const AdminPaquetes = () => {
                 (sortConfig.direction === "asc" ? "↑" : "↓")}
             </button>
             <button
-              className={`px-4 py-2 rounded-lg font-medium transition ${sortConfig.key === "duracion" ? "bg-blue-100 text-blue-700" : "bg-gray-100 text-gray-700 hover:bg-gray-200"}`}
+              className={`px-4 py-2 rounded-lg font-medium transition ${
+                sortConfig.key === "duracion"
+                  ? "bg-blue-100 text-blue-700"
+                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+              }`}
               onClick={() => requestSort("duracion")}
             >
               Duración{" "}
@@ -339,6 +368,13 @@ const AdminPaquetes = () => {
                           />
                         </svg>
                         Eliminar
+                      </button>
+                      <button
+                        onClick={() => handleExport(paquete.id)}
+                        className="flex items-center gap-1.5 bg-green-100 hover:bg-green-200 text-green-700 font-medium py-2 px-4 rounded-lg transition"
+                      >
+                        <FiDownload />
+                        Excel
                       </button>
                     </div>
                   </div>
