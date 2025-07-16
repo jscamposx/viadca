@@ -1,9 +1,10 @@
-import React from 'react';
 import ImageCarousel from "./ImageCarousel";
-import { FiStar } from 'react-icons/fi';
+import { FiStar } from "react-icons/fi";
 
 const Star = ({ filled }) => (
-  <FiStar className={`w-5 h-5 ${filled ? "text-yellow-400 fill-current" : "text-gray-300"}`} />
+  <FiStar
+    className={`w-5 h-5 ${filled ? "text-yellow-400 fill-current" : "text-gray-300"}`}
+  />
 );
 
 const StarRatingDisplay = ({ rating }) => {
@@ -28,10 +29,14 @@ const HotelInfo = ({ hotel }) => {
         <h4 className="text-lg font-semibold text-gray-700">{hotel.nombre}</h4>
         <div className="flex items-center my-2">
           <StarRatingDisplay rating={hotel.estrellas} />
-          <span className="text-sm text-gray-600 ml-2">{hotel.estrellas} estrellas</span>
+          <span className="text-sm text-gray-600 ml-2">
+            {hotel.estrellas} estrellas
+          </span>
         </div>
         {hotel.total_calificaciones !== null && (
-          <p className="text-sm text-gray-500">{hotel.total_calificaciones} calificaciones</p>
+          <p className="text-sm text-gray-500">
+            {hotel.total_calificaciones} calificaciones
+          </p>
         )}
       </div>
       {hotel.imagenes && hotel.imagenes.length > 0 && (

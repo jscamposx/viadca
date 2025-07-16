@@ -53,8 +53,6 @@ const fileToBase64 = (file) =>
     reader.onerror = (error) => reject(error);
   });
 
-
-
 const DestinationImageManager = ({ destination, onImagesChange }) => {
   const [images, setImages] = useState([]);
   const [status, setStatus] = useState("idle");
@@ -122,7 +120,7 @@ const DestinationImageManager = ({ destination, onImagesChange }) => {
     onImagesChange(images);
   }, [images, onImagesChange]);
 
- const handleFiles = async (files) => {
+  const handleFiles = async (files) => {
     const fileArray = Array.from(files);
     setStatus("loading");
     const newImages = await Promise.all(

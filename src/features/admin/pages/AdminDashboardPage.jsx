@@ -10,7 +10,6 @@ const AdminDashboard = () => {
             Gestiona todo el contenido de tu sitio desde un solo lugar.
           </p>
         </header>
-      
 
         <main className="max-w-4xl mx-auto">
           <h2 className="text-2xl font-semibold text-gray-700 mb-6 text-center sm:text-left">

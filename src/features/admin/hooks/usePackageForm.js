@@ -1,5 +1,3 @@
-// src/features/admin/hooks/usePackageForm.js - CÓDIGO CORREGIDO
-
 import { useState, useCallback, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../../../api";
@@ -10,7 +8,10 @@ const isUUID = (str) =>
   );
 
 const processImage = async (image) => {
-  if (typeof image === 'string' && (isUUID(image) || image.startsWith('http'))) {
+  if (
+    typeof image === "string" &&
+    (isUUID(image) || image.startsWith("http"))
+  ) {
     return image;
   }
   if (image.id && isUUID(image.id)) {
@@ -60,9 +61,13 @@ export const usePackageForm = (initialPackageData = null) => {
 
   useEffect(() => {
     if (initialPackageData) {
-      const sortedImages = (initialPackageData.imagenes || []).sort((a, b) => a.orden - b.orden);
+      const sortedImages = (initialPackageData.imagenes || []).sort(
+        (a, b) => a.orden - b.orden,
+      );
       const sortedHotelImages = initialPackageData.hotel
-        ? (initialPackageData.hotel.imagenes || []).sort((a, b) => a.orden - b.orden)
+        ? (initialPackageData.hotel.imagenes || []).sort(
+            (a, b) => a.orden - b.orden,
+          )
         : [];
 
       setFormData({
@@ -83,7 +88,9 @@ export const usePackageForm = (initialPackageData = null) => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    setSearchValue(selectionMode === "origen" ? formData.origen : formData.destino);
+    setSearchValue(
+      selectionMode === "origen" ? formData.origen : formData.destino,
+    );
   }, [selectionMode, formData.origen, formData.destino]);
 
   useEffect(() => {
@@ -105,14 +112,18 @@ export const usePackageForm = (initialPackageData = null) => {
 
       const { lat, lng } = geometry.location;
       const fieldName = selectionMode === "origen" ? "origen" : "destino";
-      const simplifiedAddress = formatted_address.split(",").slice(0, 2).join(", ");
+      const simplifiedAddress = formatted_address
+        .split(",")
+        .slice(0, 2)
+        .join(", ");
 
       setFormData((prev) => ({
         ...prev,
         [`${fieldName}`]: simplifiedAddress,
         [`${fieldName}_lat`]: lat(),
         [`${fieldName}_lng`]: lng(),
-        destino_place_id: fieldName === "destino" ? place_id : prev.destino_place_id,
+        destino_place_id:
+          fieldName === "destino" ? place_id : prev.destino_place_id,
       }));
     },
     [selectionMode],
@@ -132,7 +143,8 @@ export const usePackageForm = (initialPackageData = null) => {
           let state = "";
 
           for (const component of addressComponents) {
-            if (component.types.includes("locality")) city = component.long_name;
+            if (component.types.includes("locality"))
+              city = component.long_name;
             if (component.types.includes("administrative_area_level_1"))
               state = component.long_name;
           }
@@ -149,7 +161,9 @@ export const usePackageForm = (initialPackageData = null) => {
               fieldName === "destino" ? place.place_id : prev.destino_place_id,
           }));
         } else {
-          console.error(`Geocode was not successful for the following reason: ${status}`);
+          console.error(
+            `Geocode was not successful for the following reason: ${status}`,
+          );
         }
       });
     },
@@ -199,15 +213,14 @@ export const usePackageForm = (initialPackageData = null) => {
       return;
     }
 
-    // ✅ --- SECCIÓN CORREGIDA ---
     let hotelPayload = null;
     if (formData.hotel) {
       const hotelImageIds = await Promise.all(
-        (formData.hotel.images || []).map(processImage)
+        (formData.hotel.images || []).map(processImage),
       );
 
       hotelPayload = {
-        placeId: formData.hotel.place_id || formData.hotel.id, // Usa place_id o id como fallback
+        placeId: formData.hotel.place_id || formData.hotel.id,
         nombre: formData.hotel.nombre,
         estrellas: formData.hotel.estrellas,
         isCustom: formData.hotel.isCustom || false,
@@ -215,14 +228,13 @@ export const usePackageForm = (initialPackageData = null) => {
         imageIds: hotelImageIds.filter(Boolean),
       };
     }
-    
+
     const packageImageIds = await Promise.all(
-      (formData.images || []).map(processImage)
+      (formData.images || []).map(processImage),
     );
 
-    // Desestructura formData DESPUÉS de haber procesado el hotel
     const { images, ...restOfFormData } = formData;
-    
+
     const payload = {
       ...restOfFormData,
       duracion: parseInt(formData.duracion, 10),

@@ -12,8 +12,9 @@ import Error from "../../package/components/Error";
 
 const NuevoPaquete = () => {
   const { url } = useParams();
-  const { paquete, loading, error } = url ? usePackage(url) : { paquete: null, loading: false, error: null };
-
+  const { paquete, loading, error } = url
+    ? usePackage(url)
+    : { paquete: null, loading: false, error: null };
 
   const {
     formData,
@@ -48,10 +49,10 @@ const NuevoPaquete = () => {
           {url ? "Editar Paquete Turístico" : "Crear Nuevo Paquete Turístico"}
         </h1>
         <form onSubmit={handleSubmit} className="space-y-6">
-            <PackageForm
+          <PackageForm
             formData={formData}
             onFormChange={handleFormChange}
-            flights={flights} // <-- **Pasa los vuelos al componente del formulario**
+            flights={flights}
           />
 
           <div className="space-y-4">

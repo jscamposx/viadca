@@ -37,16 +37,14 @@ const AdminFlightsPage = () => {
     }
   };
 
-  // --- FUNCIÓN CORREGIDA ---
   const getImageUrl = (vuelo) => {
-    // Verifica si el vuelo tiene el array de imágenes y si no está vacío
     if (vuelo.imagenes && vuelo.imagenes.length > 0) {
-      const url = vuelo.imagenes[0].url; // Accede a la URL de la primera imagen
-      if (url.startsWith('http')) return url;
+      const url = vuelo.imagenes[0].url;
+      if (url.startsWith("http")) return url;
       return `${API_URL}${url}`;
     }
-    // Si no hay imagen, muestra un placeholder
-    return 'https://via.placeholder.com/100x50';
+
+    return "https://via.placeholder.com/100x50";
   };
 
   if (loading) return <p>Cargando vuelos...</p>;
@@ -73,7 +71,7 @@ const AdminFlightsPage = () => {
               <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                 Nombre del Vuelo
               </th>
-               <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+              <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                 Transporte
               </th>
               <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">

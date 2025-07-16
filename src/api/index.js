@@ -1,12 +1,10 @@
 import * as packagesService from "./packagesService";
 import * as flightsService from "./flightsService";
-import * as imageService from "./imageService"; // <-- Asegúrate de que esta línea esté presente
+import * as imageService from "./imageService";
 
 const api = {
   packages: { ...packagesService },
   flights: { ...flightsService },
-  // --- LÍNEA CLAVE ---
-  // Aquí agregamos las funciones del imageService al objeto api
   images: { ...imageService },
 };
 

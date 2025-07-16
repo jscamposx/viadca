@@ -1,8 +1,10 @@
-import { FiCalendar } from 'react-icons/fi';
+import { FiCalendar } from "react-icons/fi";
 
 const Itinerary = ({ itinerario }) => (
   <div>
-    <h2 className="text-3xl font-bold text-gray-800 mb-6">Itinerario del Viaje</h2>
+    <h2 className="text-3xl font-bold text-gray-800 mb-6">
+      Itinerario del Viaje
+    </h2>
     <div className="relative border-l-2 border-blue-500 ml-4 pl-8">
       {itinerario.map((item, index) => (
         <div key={item.id} className="mb-8 last:mb-0">

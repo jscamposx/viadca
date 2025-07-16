@@ -1,4 +1,4 @@
-const PackageForm = ({ formData, onFormChange, flights= [] }) => (
+const PackageForm = ({ formData, onFormChange, flights = [] }) => (
   <div className="space-y-6">
     <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
       <h3 className="text-lg font-medium text-gray-900 mb-4">
@@ -33,7 +33,7 @@ const PackageForm = ({ formData, onFormChange, flights= [] }) => (
             required
           />
         </div>
-    
+
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
             Vuelo *
@@ -44,13 +44,13 @@ const PackageForm = ({ formData, onFormChange, flights= [] }) => (
             onChange={onFormChange}
             className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             required
-            // Deshabilitamos el selector mientras se cargan los vuelos
-            disabled={flights.length === 0} 
+            disabled={flights.length === 0}
           >
             <option value="">
-              {flights.length === 0 ? "Cargando vuelos..." : "Selecciona un vuelo"}
+              {flights.length === 0
+                ? "Cargando vuelos..."
+                : "Selecciona un vuelo"}
             </option>
-            {/* El .map ya no causará error porque 'flights' es un array vacío al inicio */}
             {flights.map((vuelo) => (
               <option key={vuelo.id} value={vuelo.id}>
                 {vuelo.nombre} ({vuelo.transporte})

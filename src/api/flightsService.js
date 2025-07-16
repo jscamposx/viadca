@@ -8,11 +8,6 @@ export const getVueloById = (id) => {
   return apiClient.get(`/vuelos/${id}`);
 };
 
-/**
- * Crea o actualiza un vuelo enviando datos JSON.
- * Tu backend ya maneja la creación/actualización de imágenes
- * si se incluye el array 'imagenes' en el payload.
- */
 export const createVuelo = (vueloData) => {
   return apiClient.post("/vuelos", vueloData);
 };
