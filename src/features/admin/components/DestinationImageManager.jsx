@@ -82,7 +82,7 @@ const DestinationImageManager = ({ destination, onImagesChange }) => {
           Authorization: PEXELS_API_KEY,
         },
         params: {
-          query: "lugares turisticos en " + destinationName,
+          query: "lugares turísticos en " + destinationName,
           per_page: 4,
         },
       });

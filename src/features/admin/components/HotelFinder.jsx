@@ -79,7 +79,7 @@ const HotelFinder = ({ destination, onHotelSelect, selectedHotel }) => {
         setCurrentPage(0);
       } catch (err) {
         console.error("Error fetching hotels:", err);
-        setError("No se pudieron cargar los hoteles. Intenta de nuevo.");
+        setError("No se pudieron cargar los hoteles. Inténtalo de nuevo.");
       } finally {
         setLoading(false);
       }
