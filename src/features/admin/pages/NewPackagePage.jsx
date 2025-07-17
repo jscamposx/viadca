@@ -77,10 +77,10 @@ const NuevoPaquete = () => {
               <h1 className="text-2xl md:text-3xl font-bold text-white">
                 {url
                   ? "Editar Paquete Turístico"
-                  : "Crear Nuevo Paquete Turístico"}
+                  : "Crear un nuevo paquete turístico"}
               </h1>
               <p className="text-blue-100 mt-2">
-                Completa toda la información para crear un paquete atractivo
+                Complete toda la información para crear un paquete atractivo
               </p>
             </div>
             <div className="bg-white border-b border-gray-200">
@@ -132,7 +132,7 @@ const NuevoPaquete = () => {
                     Selección de Ubicación
                   </h2>
                   <p className="text-gray-600 mt-1">
-                    Define los lugares de origen y destino usando el mapa o el
+                    Define los lugares de origen y destino utilizando el mapa o el
                     buscador.
                   </p>
                 </div>

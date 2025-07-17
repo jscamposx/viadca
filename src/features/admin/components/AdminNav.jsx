@@ -246,7 +246,7 @@ const AdminNav = ({ isOpen, setIsOpen }) => {
           <h1 className="font-bold text-2xl text-slate-800">
             <span className="text-blue-500 font-bold">Viadca</span>
           </h1>
-          <p className="text-xs text-slate-500 mt-1">Admin Dashboard</p>
+     
         </div>
       </div>
 

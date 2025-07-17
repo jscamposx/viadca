@@ -50,7 +50,7 @@ const AdminHotelsPage = () => {
   }, []);
 
   const handleDelete = async (id) => {
-    if (window.confirm("¿Estás seguro de que quieres eliminar este hotel?")) {
+    if (window.confirm("¿Está seguro de que desea eliminar este hotel?")) {
       try {
         setHoteles(hoteles.filter((hotel) => hotel.id !== id));
         console.log(`Hotel con id ${id} eliminado`);

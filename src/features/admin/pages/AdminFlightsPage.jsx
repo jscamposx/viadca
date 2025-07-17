@@ -30,7 +30,7 @@ const AdminFlightsPage = () => {
         setVuelos(response.data);
       } catch (err) {
         setError(
-          "No se pudieron cargar los vuelos. Por favor, inténtalo de nuevo más tarde.",
+          "No se pudieron cargar los vuelos. Por favor, inténtelo de nuevo más tarde.",
         );
         console.error(err);
       } finally {
@@ -41,12 +41,12 @@ const AdminFlightsPage = () => {
   }, []);
 
   const handleDelete = async (id) => {
-    if (window.confirm("¿Estás seguro de que quieres eliminar este vuelo?")) {
+    if (window.confirm("¿Está seguro de que desea eliminar este vuelo?")) {
       try {
         await api.flights.deleteVuelo(id);
         setVuelos(vuelos.filter((vuelo) => vuelo.id !== id));
       } catch (err) {
-        alert("Error al eliminar el vuelo. Por favor, inténtalo de nuevo.");
+        alert("Error al eliminar el vuelo. Por favor, inténtelo de nuevo.");
         console.error(err);
       }
     }

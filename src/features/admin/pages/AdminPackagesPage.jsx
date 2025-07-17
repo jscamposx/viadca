@@ -28,7 +28,7 @@ const AdminPaquetes = () => {
       link.parentNode.removeChild(link);
     } catch (error) {
       console.error("Error al exportar a Excel:", error);
-      alert("No se pudo exportar el archivo de Excel.");
+      alert("No ha sido posible exportar el archivo de Excel.");
     }
   };
 
@@ -122,8 +122,8 @@ const AdminPaquetes = () => {
             <p className="text-gray-600 mt-2">
               {paquetes?.length || 0}{" "}
               {paquetes?.length === 1
-                ? "paquete disponible"
-                : "paquetes disponibles"}
+                ? "paquete "
+                : "paquetes "}
             </p>
           </div>
 

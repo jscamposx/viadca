@@ -1,5 +1,5 @@
 const Loading = () => (
-  <div className="text-center p-10">🔍 Cargando datos del paquete...</div>
+  <div className="text-center p-10">🔍 Cargando paquete...</div>
 );
 
 export default Loading;

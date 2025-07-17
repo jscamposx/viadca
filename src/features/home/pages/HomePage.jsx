@@ -64,7 +64,7 @@ const Home = () => {
 
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold mb-6">
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-teal-300 to-cyan-400">
-              Tu próxima aventura
+              Su próxima aventura comienza aquí
             </span>{" "}
             <br />
             <span className="text-white">comienza aquí</span>
