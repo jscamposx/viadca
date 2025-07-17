@@ -121,9 +121,7 @@ const AdminPaquetes = () => {
             </h1>
             <p className="text-gray-600 mt-2">
               {paquetes?.length || 0}{" "}
-              {paquetes?.length === 1
-                ? "paquete "
-                : "paquetes "}
+              {paquetes?.length === 1 ? "paquete " : "paquetes "}
             </p>
           </div>
 

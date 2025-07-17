@@ -132,8 +132,8 @@ const NuevoPaquete = () => {
                     Selección de Ubicación
                   </h2>
                   <p className="text-gray-600 mt-1">
-                    Define los lugares de origen y destino utilizando el mapa o el
-                    buscador.
+                    Define los lugares de origen y destino utilizando el mapa o
+                    el buscador.
                   </p>
                 </div>
                 <div className="p-6">
