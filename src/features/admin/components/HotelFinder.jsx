@@ -109,7 +109,7 @@ const HotelFinder = ({ destination, onHotelSelect, selectedHotel }) => {
 
   const handleAddCustomHotel = () => {
     if (!customHotel.nombre.trim()) {
-      setError("Por favor ingresa el nombre del hotel.");
+      setError("Por favor, ingresa el nombre del hotel.");
       return;
     }
     setError(null);

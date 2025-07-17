@@ -67,7 +67,7 @@ const Home = () => {
               Su próxima aventura comienza aquí
             </span>{" "}
             <br />
-            <span className="text-white">comienza aquí</span>
+     
           </h1>
 
           <p className="text-lg text-gray-300 mb-10 max-w-2xl mx-auto">
