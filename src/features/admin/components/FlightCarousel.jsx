@@ -74,18 +74,11 @@ const FlightCarousel = ({ flights = [], onFlightSelect, selectedFlightId }) => {
   }
 
   return (
-    <div className="bg-gradient-to-br from-gray-50 to-gray-100 p-6 rounded-2xl border border-gray-200 shadow-lg max-w-7xl mx-auto">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
-        <div>
-          <h3 className="text-xl md:text-2xl font-bold text-gray-900 tracking-tight">
-            Selecciona tu vuelo
-          </h3>
-          <p className="text-sm text-gray-500 mt-1">
-            Explora nuestras opciones disponibles
-          </p>
-        </div>
+    <div className="">
+      <div className="">
+   
 
-        <div className="flex items-center space-x-3 mt-4 md:mt-0">
+        <div className="flex items-center justify-end space-x-3 mt-4 md:mt-0">
           <span className="inline-flex items-center bg-blue-50 text-blue-700 py-1 px-3 rounded-full text-sm font-medium">
             <svg
               xmlns="http://www.w3.org/2000/svg"

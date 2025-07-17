@@ -408,12 +408,7 @@ const AdminPaquetes = () => {
                     ? `No hay resultados para "${searchTerm}".`
                     : "Parece que no hay paquetes disponibles."}
                 </p>
-                <button
-                  onClick={() => setSearchTerm("")}
-                  className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 px-6 rounded-lg transition"
-                >
-                  {searchTerm ? "Limpiar búsqueda" : "Crear nuevo paquete"}
-                </button>
+               
               </div>
             </div>
           )}

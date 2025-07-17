@@ -195,11 +195,9 @@ const DestinationImageManager = ({ destination, onImagesChange }) => {
       onDragOver={handleContainerDragOver}
       onDrop={handleContainerDrop}
     >
-      <div className="flex justify-between items-center">
-        <h3 className="text-lg font-medium text-gray-900">
-          Imágenes del Destino
-        </h3>
-        <label className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg shadow-md cursor-pointer">
+      <div className="flex justify-end mb-4">
+     
+        <label className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg shadow-md cursor-pointer ">
           <span>+ Subir Imágenes</span>
           <input
             type="file"

@@ -13,9 +13,7 @@ const PackageForm = ({ formData, onFormChange }) => (
 
     {/* SECCIONES VISIBLES PARA EL USUARIO */}
     <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-      <h3 className="text-lg font-medium text-gray-900 mb-4">
-        Información Básica
-      </h3>
+      
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -27,6 +25,7 @@ const PackageForm = ({ formData, onFormChange }) => (
             value={formData.nombre_paquete || ''}
             onChange={onFormChange}
             className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            placeholder="Ej. Aventura en las Pirámides"
             required
           />
         </div>
@@ -42,6 +41,7 @@ const PackageForm = ({ formData, onFormChange }) => (
             value={formData.duracion || ''}
             onChange={onFormChange}
             className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            placeholder="Ej. 7"
             required
           />
         </div>
@@ -62,6 +62,7 @@ const PackageForm = ({ formData, onFormChange }) => (
               value={formData.precio_base || ''}
               onChange={onFormChange}
               className="w-full pl-8 p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              placeholder="Ej. 1500.00"
               required
             />
           </div>
@@ -72,9 +73,7 @@ const PackageForm = ({ formData, onFormChange }) => (
     <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
       <h3 className="text-lg font-medium text-gray-900 mb-4">Requisitos</h3>
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
-          Requisitos del Paquete *
-        </label>
+        
         <textarea
           name="requisitos"
           value={formData.requisitos || ''}

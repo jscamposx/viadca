@@ -5,10 +5,8 @@ const ItineraryEditor = ({
   onRemoveItinerario,
 }) => (
   <div className="space-y-4">
-    <div className="flex justify-between items-center">
-      <h2 className="text-xl font-semibold text-gray-800">
-        Itinerario del Viaje
-      </h2>
+    <div className="flex justify-end items-center">
+    
       <button
         type="button"
         onClick={onAddItinerario}
