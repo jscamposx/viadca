@@ -190,7 +190,6 @@ const HotelFinder = ({ destination, onHotelSelect, selectedHotel }) => {
   return (
     <div className="bg-white rounded-xl  overflow-hidden transition-all duration-300 ">
       <div className="">
-     
         {!destination?.lat && (
           <p className="mt-2 text-gray-600">
             Selecciona un destino en el mapa para buscar hoteles cercanos.

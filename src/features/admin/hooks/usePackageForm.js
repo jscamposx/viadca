@@ -236,7 +236,7 @@ export const usePackageForm = (initialPackageData = null) => {
           return { id: imageId, orden: index + 1 };
         }
         return null;
-      })
+      }),
     );
 
     const { images, ...restOfFormData } = formData;
@@ -301,7 +301,7 @@ export const usePackageForm = (initialPackageData = null) => {
     searchValue,
     origin,
     destination,
-     setFormData,
+    setFormData,
     setSelectionMode,
     setSearchValue,
     handlePlaceSelected,

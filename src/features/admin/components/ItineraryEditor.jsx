@@ -6,7 +6,6 @@ const ItineraryEditor = ({
 }) => (
   <div className="space-y-4">
     <div className="flex justify-end items-center">
-    
       <button
         type="button"
         onClick={onAddItinerario}

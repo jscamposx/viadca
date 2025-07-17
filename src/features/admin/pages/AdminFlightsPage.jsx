@@ -1,7 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import api from "../../../api";
-import { FiPlus, FiEdit, FiTrash2, FiSearch, FiChevronDown, FiChevronUp } from "react-icons/fi";
+import {
+  FiPlus,
+  FiEdit,
+  FiTrash2,
+  FiSearch,
+  FiChevronDown,
+  FiChevronUp,
+} from "react-icons/fi";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -10,7 +17,10 @@ const AdminFlightsPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
-  const [sortConfig, setSortConfig] = useState({ key: "nombre", direction: "ascending" });
+  const [sortConfig, setSortConfig] = useState({
+    key: "nombre",
+    direction: "ascending",
+  });
   const [expandedFlight, setExpandedFlight] = useState(null);
 
   useEffect(() => {
@@ -19,7 +29,9 @@ const AdminFlightsPage = () => {
         const response = await api.flights.getVuelos();
         setVuelos(response.data);
       } catch (err) {
-        setError("No se pudieron cargar los vuelos. Por favor, inténtalo de nuevo más tarde.");
+        setError(
+          "No se pudieron cargar los vuelos. Por favor, inténtalo de nuevo más tarde.",
+        );
         console.error(err);
       } finally {
         setLoading(false);
@@ -71,32 +83,19 @@ const AdminFlightsPage = () => {
     return 0;
   });
 
-  const filteredVuelos = sortedVuelos.filter((vuelo) => 
-    vuelo.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    vuelo.transporte.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredVuelos = sortedVuelos.filter(
+    (vuelo) =>
+      vuelo.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      vuelo.transporte.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
   if (loading) {
     return (
-      <div className="container mx-auto p-8">
-        <div className="flex justify-center items-center h-64">
-          <div className="animate-pulse bg-blue-100 rounded-xl p-6 w-full max-w-3xl">
-            <div className="h-8 bg-blue-200 rounded w-1/3 mb-6"></div>
-            <div className="space-y-4">
-              {[...Array(5)].map((_, index) => (
-                <div key={index} className="flex items-center justify-between p-4 bg-white rounded-lg shadow">
-                  <div className="h-10 bg-gray-200 rounded w-24"></div>
-                  <div className="h-4 bg-gray-200 rounded w-1/4"></div>
-                  <div className="h-4 bg-gray-200 rounded w-1/4"></div>
-                  <div className="flex space-x-3">
-                    <div className="h-8 w-8 bg-gray-200 rounded-full"></div>
-                    <div className="h-8 w-8 bg-gray-200 rounded-full"></div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
+      <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-4">
+        <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+        <p className="mt-4 text-gray-600 text-lg font-medium">
+          Cargando vuelos...
+        </p>
       </div>
     );
   }
@@ -107,8 +106,17 @@ const AdminFlightsPage = () => {
         <div className="bg-red-50 border-l-4 border-red-500 p-6 rounded-lg shadow">
           <div className="flex">
             <div className="flex-shrink-0">
-              <svg className="h-5 w-5 text-red-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+              <svg
+                className="h-5 w-5 text-red-400"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                  clipRule="evenodd"
+                />
               </svg>
             </div>
             <div className="ml-3">
@@ -126,8 +134,12 @@ const AdminFlightsPage = () => {
       <div className="max-w-7xl mx-auto">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Administración de Vuelos</h1>
-            <p className="mt-2 text-gray-600">Gestiona todos los vuelos disponibles en la plataforma</p>
+            <h1 className="text-3xl font-bold text-gray-900">
+              Administración de Vuelos
+            </h1>
+            <p className="mt-2 text-gray-600">
+              Gestiona todos los vuelos disponibles en la plataforma
+            </p>
           </div>
           <Link
             to="/admin/vuelos/nuevo"
@@ -154,7 +166,10 @@ const AdminFlightsPage = () => {
                 />
               </div>
               <div className="text-sm text-gray-500 flex items-center">
-                {filteredVuelos.length} {filteredVuelos.length === 1 ? "vuelo encontrado" : "vuelos encontrados"}
+                {filteredVuelos.length}{" "}
+                {filteredVuelos.length === 1
+                  ? "vuelo encontrado"
+                  : "vuelos encontrados"}
               </div>
             </div>
           </div>
@@ -163,36 +178,50 @@ const AdminFlightsPage = () => {
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th
+                    scope="col"
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
                     Vuelo
                   </th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    <button 
+                  <th
+                    scope="col"
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
+                    <button
                       className="flex items-center focus:outline-none"
                       onClick={() => handleSort("nombre")}
                     >
                       Nombre
-                      {sortConfig.key === "nombre" && (
-                        sortConfig.direction === "ascending" ? 
-                        <FiChevronUp className="ml-1" /> : 
-                        <FiChevronDown className="ml-1" />
-                      )}
+                      {sortConfig.key === "nombre" &&
+                        (sortConfig.direction === "ascending" ? (
+                          <FiChevronUp className="ml-1" />
+                        ) : (
+                          <FiChevronDown className="ml-1" />
+                        ))}
                     </button>
                   </th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    <button 
+                  <th
+                    scope="col"
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
+                    <button
                       className="flex items-center focus:outline-none"
                       onClick={() => handleSort("transporte")}
                     >
                       Transporte
-                      {sortConfig.key === "transporte" && (
-                        sortConfig.direction === "ascending" ? 
-                        <FiChevronUp className="ml-1" /> : 
-                        <FiChevronDown className="ml-1" />
-                      )}
+                      {sortConfig.key === "transporte" &&
+                        (sortConfig.direction === "ascending" ? (
+                          <FiChevronUp className="ml-1" />
+                        ) : (
+                          <FiChevronDown className="ml-1" />
+                        ))}
                     </button>
                   </th>
-                  <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th
+                    scope="col"
+                    className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
                     Acciones
                   </th>
                 </tr>
@@ -202,38 +231,56 @@ const AdminFlightsPage = () => {
                   <tr>
                     <td colSpan="4" className="px-6 py-12 text-center">
                       <div className="flex flex-col items-center justify-center">
-                        <svg className="w-16 h-16 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        <svg
+                          className="w-16 h-16 text-gray-400"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth="2"
+                            d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                          ></path>
                         </svg>
-                        <h3 className="mt-4 text-lg font-medium text-gray-900">No se encontraron vuelos</h3>
-                        <p className="mt-1 text-gray-500">Intenta cambiar tus criterios de búsqueda</p>
+                        <h3 className="mt-4 text-lg font-medium text-gray-900">
+                          No se encontraron vuelos
+                        </h3>
+                        <p className="mt-1 text-gray-500">
+                          Intenta cambiar tus criterios de búsqueda
+                        </p>
                       </div>
                     </td>
                   </tr>
                 ) : (
                   filteredVuelos.map((vuelo) => (
                     <React.Fragment key={vuelo.id}>
-                      <tr 
+                      <tr
                         className="hover:bg-blue-50 cursor-pointer transition-colors duration-150"
                         onClick={() => toggleFlightDetails(vuelo.id)}
                       >
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="flex items-center">
                             <div className="flex-shrink-0 h-10 w-10">
-                              <img 
-                                className="h-10 w-10 rounded-lg object-cover" 
-                                src={getImageUrl(vuelo)} 
-                                alt={vuelo.nombre} 
+                              <img
+                                className="h-10 w-10 rounded-lg object-cover"
+                                src={getImageUrl(vuelo)}
+                                alt={vuelo.nombre}
                                 onError={(e) => {
                                   e.target.onerror = null;
-                                  e.target.src = "https://via.placeholder.com/100x50/3b82f6/ffffff?text=Sin+Imagen";
+                                  e.target.src =
+                                    "https://via.placeholder.com/100x50/3b82f6/ffffff?text=Sin+Imagen";
                                 }}
                               />
                             </div>
                           </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="text-sm font-medium text-gray-900">{vuelo.nombre}</div>
+                          <div className="text-sm font-medium text-gray-900">
+                            {vuelo.nombre}
+                          </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="text-sm text-gray-700 bg-blue-100 px-3 py-1 rounded-full inline-block">
@@ -266,7 +313,11 @@ const AdminFlightsPage = () => {
                               }}
                               className="text-gray-500 hover:text-gray-700 p-2 rounded-full hover:bg-gray-100 transition-colors"
                             >
-                              {expandedFlight === vuelo.id ? <FiChevronUp size={18} /> : <FiChevronDown size={18} />}
+                              {expandedFlight === vuelo.id ? (
+                                <FiChevronUp size={18} />
+                              ) : (
+                                <FiChevronDown size={18} />
+                              )}
                             </button>
                           </div>
                         </td>
@@ -276,43 +327,74 @@ const AdminFlightsPage = () => {
                           <td colSpan="4" className="px-6 py-4">
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                               <div>
-                                <h4 className="text-sm font-semibold text-gray-700 mb-2">Detalles del Vuelo</h4>
+                                <h4 className="text-sm font-semibold text-gray-700 mb-2">
+                                  Detalles del Vuelo
+                                </h4>
                                 <div className="space-y-1">
                                   <div className="flex">
-                                    <span className="text-gray-500 w-28">Origen:</span>
-                                    <span className="text-gray-800 font-medium">{vuelo.origen || "No especificado"}</span>
+                                    <span className="text-gray-500 w-28">
+                                      Origen:
+                                    </span>
+                                    <span className="text-gray-800 font-medium">
+                                      {vuelo.origen || "No especificado"}
+                                    </span>
                                   </div>
                                   <div className="flex">
-                                    <span className="text-gray-500 w-28">Destino:</span>
-                                    <span className="text-gray-800 font-medium">{vuelo.destino || "No especificado"}</span>
+                                    <span className="text-gray-500 w-28">
+                                      Destino:
+                                    </span>
+                                    <span className="text-gray-800 font-medium">
+                                      {vuelo.destino || "No especificado"}
+                                    </span>
                                   </div>
                                   <div className="flex">
-                                    <span className="text-gray-500 w-28">Fecha:</span>
-                                    <span className="text-gray-800 font-medium">{vuelo.fecha || "No especificado"}</span>
+                                    <span className="text-gray-500 w-28">
+                                      Fecha:
+                                    </span>
+                                    <span className="text-gray-800 font-medium">
+                                      {vuelo.fecha || "No especificado"}
+                                    </span>
                                   </div>
                                 </div>
                               </div>
                               <div>
-                                <h4 className="text-sm font-semibold text-gray-700 mb-2">Precios</h4>
+                                <h4 className="text-sm font-semibold text-gray-700 mb-2">
+                                  Precios
+                                </h4>
                                 <div className="space-y-1">
                                   <div className="flex">
-                                    <span className="text-gray-500 w-28">Económico:</span>
-                                    <span className="text-gray-800 font-medium">${vuelo.precioEconomico || "0.00"}</span>
+                                    <span className="text-gray-500 w-28">
+                                      Económico:
+                                    </span>
+                                    <span className="text-gray-800 font-medium">
+                                      ${vuelo.precioEconomico || "0.00"}
+                                    </span>
                                   </div>
                                   <div className="flex">
-                                    <span className="text-gray-500 w-28">Ejecutivo:</span>
-                                    <span className="text-gray-800 font-medium">${vuelo.precioEjecutivo || "0.00"}</span>
+                                    <span className="text-gray-500 w-28">
+                                      Ejecutivo:
+                                    </span>
+                                    <span className="text-gray-800 font-medium">
+                                      ${vuelo.precioEjecutivo || "0.00"}
+                                    </span>
                                   </div>
                                   <div className="flex">
-                                    <span className="text-gray-500 w-28">Primera:</span>
-                                    <span className="text-gray-800 font-medium">${vuelo.precioPrimera || "0.00"}</span>
+                                    <span className="text-gray-500 w-28">
+                                      Primera:
+                                    </span>
+                                    <span className="text-gray-800 font-medium">
+                                      ${vuelo.precioPrimera || "0.00"}
+                                    </span>
                                   </div>
                                 </div>
                               </div>
                               <div>
-                                <h4 className="text-sm font-semibold text-gray-700 mb-2">Información Adicional</h4>
+                                <h4 className="text-sm font-semibold text-gray-700 mb-2">
+                                  Información Adicional
+                                </h4>
                                 <p className="text-gray-600 text-sm">
-                                  {vuelo.descripcion || "No hay descripción disponible."}
+                                  {vuelo.descripcion ||
+                                    "No hay descripción disponible."}
                                 </p>
                               </div>
                             </div>
@@ -326,8 +408,6 @@ const AdminFlightsPage = () => {
             </table>
           </div>
         </div>
-
-    
       </div>
     </div>
   );

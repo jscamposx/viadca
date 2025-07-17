@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import api from "../../../api";
 
@@ -17,8 +17,9 @@ const NewHotelPage = () => {
   useEffect(() => {
     if (isEditing) {
       setLoading(true);
-      api.hotels.getHotelById(id)
-        .then(response => {
+      api.hotels
+        .getHotelById(id)
+        .then((response) => {
           setFormData({
             nombre: response.data.nombre,
             estrellas: response.data.estrellas,
@@ -31,7 +32,7 @@ const NewHotelPage = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e) => {
@@ -57,11 +58,23 @@ const NewHotelPage = () => {
 
   return (
     <div className="container mx-auto p-8">
-      <h1 className="text-3xl font-bold mb-6">{isEditing ? "Editar Hotel" : "Crear Nuevo Hotel"}</h1>
-      {error && <div className="bg-red-100 text-red-700 p-3 rounded mb-4">{error}</div>}
-      <form onSubmit={handleSubmit} className="bg-white p-6 rounded-lg shadow-md space-y-4">
+      <h1 className="text-3xl font-bold mb-6">
+        {isEditing ? "Editar Hotel" : "Crear Nuevo Hotel"}
+      </h1>
+      {error && (
+        <div className="bg-red-100 text-red-700 p-3 rounded mb-4">{error}</div>
+      )}
+      <form
+        onSubmit={handleSubmit}
+        className="bg-white p-6 rounded-lg shadow-md space-y-4"
+      >
         <div>
-          <label htmlFor="nombre" className="block text-sm font-medium text-gray-700">Nombre del Hotel</label>
+          <label
+            htmlFor="nombre"
+            className="block text-sm font-medium text-gray-700"
+          >
+            Nombre del Hotel
+          </label>
           <input
             type="text"
             id="nombre"
@@ -73,7 +86,12 @@ const NewHotelPage = () => {
           />
         </div>
         <div>
-          <label htmlFor="estrellas" className="block text-sm font-medium text-gray-700">Estrellas</label>
+          <label
+            htmlFor="estrellas"
+            className="block text-sm font-medium text-gray-700"
+          >
+            Estrellas
+          </label>
           <input
             type="number"
             id="estrellas"

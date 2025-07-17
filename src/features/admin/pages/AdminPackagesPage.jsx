@@ -31,22 +31,20 @@ const AdminPaquetes = () => {
       alert("No se pudo exportar el archivo de Excel.");
     }
   };
-  // Filtrado y ordenamiento
+
   useEffect(() => {
     let result = [...(paquetes || [])];
 
-    // Aplicar filtro de búsqueda
     if (searchTerm) {
       const term = searchTerm.toLowerCase();
       result = result.filter(
         (p) =>
           p.nombre_paquete.toLowerCase().includes(term) ||
           p.descripcion?.toLowerCase().includes(term) ||
-          p.precio_base.toString().includes(term)
+          p.precio_base.toString().includes(term),
       );
     }
 
-    // Aplicar ordenamiento
     if (sortConfig.key) {
       result.sort((a, b) => {
         if (a[sortConfig.key] < b[sortConfig.key]) {
@@ -408,7 +406,6 @@ const AdminPaquetes = () => {
                     ? `No hay resultados para "${searchTerm}".`
                     : "Parece que no hay paquetes disponibles."}
                 </p>
-               
               </div>
             </div>
           )}

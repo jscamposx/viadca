@@ -54,15 +54,15 @@ const LocationSelector = ({
       mapTypeControl={false}
       streetViewControl={false}
     >
-     {isValidLatLng(origin) && (
-  <AdvancedMarker position={origin} title="Origen">
-    <Pin
-      background={"#2563eb"}     // Equivalente a bg-blue-600
-      borderColor={"#1e40af"}    // Un azul más oscuro para el borde
-      glyphColor={"#ffffff"}      // Color del ícono/glifo interior (blanco)
-    />
-  </AdvancedMarker>
-)}
+      {isValidLatLng(origin) && (
+        <AdvancedMarker position={origin} title="Origen">
+          <Pin
+            background={"#2563eb"}
+            borderColor={"#1e40af"}
+            glyphColor={"#ffffff"}
+          />
+        </AdvancedMarker>
+      )}
 
       {isValidLatLng(destination) && (
         <AdvancedMarker position={destination} title="Destino">

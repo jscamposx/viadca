@@ -1,5 +1,5 @@
 import { APIProvider } from "@vis.gl/react-google-maps";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { usePackage } from "../../package/hooks/usePackage";
 import { usePackageForm } from "../hooks/usePackageForm";
@@ -14,6 +14,7 @@ import FlightCarousel from "../components/FlightCarousel";
 
 const NuevoPaquete = () => {
   const { url } = useParams();
+  const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [activeSection, setActiveSection] = useState("informacion");
 
@@ -48,7 +49,6 @@ const NuevoPaquete = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Aquí puedes agregar tu lógica de validación manual si lo deseas
     setIsSubmitting(true);
     formSubmitHandler(e);
   };
@@ -75,7 +75,9 @@ const NuevoPaquete = () => {
           <div className="bg-white rounded-2xl shadow-xl overflow-hidden mb-8">
             <div className="bg-gradient-to-r from-blue-600 to-indigo-700 py-6 px-8">
               <h1 className="text-2xl md:text-3xl font-bold text-white">
-                {url ? "Editar Paquete Turístico" : "Crear Nuevo Paquete Turístico"}
+                {url
+                  ? "Editar Paquete Turístico"
+                  : "Crear Nuevo Paquete Turístico"}
               </h1>
               <p className="text-blue-100 mt-2">
                 Completa toda la información para crear un paquete atractivo
@@ -102,14 +104,17 @@ const NuevoPaquete = () => {
 
           <form onSubmit={handleSubmit} className="space-y-8" noValidate>
             {/* Las secciones del formulario... */}
-            <div className={`${activeSection !== "informacion" ? "hidden" : ""}`}>
+            <div
+              className={`${activeSection !== "informacion" ? "hidden" : ""}`}
+            >
               <div className="bg-white rounded-2xl shadow-md overflow-hidden">
                 <div className="p-6 border-b border-gray-200">
                   <h2 className="text-xl font-semibold text-gray-800">
                     Información Básica
                   </h2>
                   <p className="text-gray-600 mt-1">
-                    Detalles esenciales del paquete turístico. Los datos de ubicación se definen en la siguiente sección.
+                    Detalles esenciales del paquete turístico. Los datos de
+                    ubicación se definen en la siguiente sección.
                   </p>
                 </div>
                 <div className="p-6">
@@ -123,59 +128,62 @@ const NuevoPaquete = () => {
             </div>
             <div className={`${activeSection !== "ubicacion" ? "hidden" : ""}`}>
               <div className="bg-white rounded-2xl shadow-md overflow-hidden">
-                  <div className="p-6 border-b border-gray-200">
-                    <h2 className="text-xl font-semibold text-gray-800">
-                      Selección de Ubicación
-                    </h2>
-                    <p className="text-gray-600 mt-1">
-                      Define los lugares de origen y destino usando el mapa o el buscador.
-                    </p>
-                  </div>
-                  <div className="p-6">
-                    <div className="flex flex-wrap gap-4 mb-6">
-                      <p className="text-gray-700 font-medium self-center">Seleccionando:</p>
-                      <div className="flex flex-wrap gap-2">
-                        <button
-                          type="button"
-                          onClick={() => setSelectionMode("origen")}
-                          className={`px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 ${
-                            selectionMode === "origen"
-                              ? "bg-blue-600 text-white shadow-md"
-                              : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-                          }`}
-                        >
-                          {selectionMode === "origen" && (
-                            <div className="w-2 h-2 bg-white rounded-full"></div>
-                          )}
-                          Origen
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => setSelectionMode("destino")}
-                          className={`px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 ${
-                            selectionMode === "destino"
-                              ? "bg-green-600 text-white shadow-md"
-                              : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-                          }`}
-                        >
-                          {selectionMode === "destino" && (
-                            <div className="w-2 h-2 bg-white rounded-full"></div>
-                          )}
-                          Destino
-                        </button>
-                      </div>
-                    </div>
-                    
-                    <LocationSelector
-                      onMapClick={onMapClick}
-                      origin={origin}
-                      destination={destination}
-                      onPlaceSelected={handlePlaceSelected}
-                      searchValue={searchValue}
-                      onSearchValueChange={setSearchValue}
-                    />
-                  </div>
+                <div className="p-6 border-b border-gray-200">
+                  <h2 className="text-xl font-semibold text-gray-800">
+                    Selección de Ubicación
+                  </h2>
+                  <p className="text-gray-600 mt-1">
+                    Define los lugares de origen y destino usando el mapa o el
+                    buscador.
+                  </p>
                 </div>
+                <div className="p-6">
+                  <div className="flex flex-wrap gap-4 mb-6">
+                    <p className="text-gray-700 font-medium self-center">
+                      Seleccionando:
+                    </p>
+                    <div className="flex flex-wrap gap-2">
+                      <button
+                        type="button"
+                        onClick={() => setSelectionMode("origen")}
+                        className={`px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 ${
+                          selectionMode === "origen"
+                            ? "bg-blue-600 text-white shadow-md"
+                            : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                        }`}
+                      >
+                        {selectionMode === "origen" && (
+                          <div className="w-2 h-2 bg-white rounded-full"></div>
+                        )}
+                        Origen
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setSelectionMode("destino")}
+                        className={`px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 ${
+                          selectionMode === "destino"
+                            ? "bg-green-600 text-white shadow-md"
+                            : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                        }`}
+                      >
+                        {selectionMode === "destino" && (
+                          <div className="w-2 h-2 bg-white rounded-full"></div>
+                        )}
+                        Destino
+                      </button>
+                    </div>
+                  </div>
+
+                  <LocationSelector
+                    onMapClick={onMapClick}
+                    origin={origin}
+                    destination={destination}
+                    onPlaceSelected={handlePlaceSelected}
+                    searchValue={searchValue}
+                    onSearchValueChange={setSearchValue}
+                  />
+                </div>
+              </div>
             </div>
             <div className={`${activeSection !== "imagenes" ? "hidden" : ""}`}>
               <div className="bg-white rounded-2xl shadow-md overflow-hidden">
@@ -196,7 +204,7 @@ const NuevoPaquete = () => {
                 </div>
               </div>
             </div>
-            
+
             <div className={`${activeSection !== "vuelo" ? "hidden" : ""}`}>
               <div className="bg-white rounded-2xl shadow-md overflow-hidden">
                 <div className="p-6 border-b border-gray-200">
@@ -208,7 +216,7 @@ const NuevoPaquete = () => {
                   </p>
                 </div>
                 <div className="p-6">
-                  <FlightCarousel 
+                  <FlightCarousel
                     flights={flights}
                     onFlightSelect={handleFlightSelect}
                     selectedFlightId={formData.id_vuelo}
@@ -216,7 +224,7 @@ const NuevoPaquete = () => {
                 </div>
               </div>
             </div>
-            
+
             <div className={`${activeSection !== "hotel" ? "hidden" : ""}`}>
               <div className="bg-white rounded-2xl shadow-md overflow-hidden">
                 <div className="p-6 border-b border-gray-200">
@@ -236,8 +244,10 @@ const NuevoPaquete = () => {
                 </div>
               </div>
             </div>
-            
-            <div className={`${activeSection !== "itinerario" ? "hidden" : ""}`}>
+
+            <div
+              className={`${activeSection !== "itinerario" ? "hidden" : ""}`}
+            >
               <div className="bg-white rounded-2xl shadow-md overflow-hidden">
                 <div className="p-6 border-b border-gray-200">
                   <h2 className="text-xl font-semibold text-gray-800">
@@ -257,19 +267,24 @@ const NuevoPaquete = () => {
                 </div>
               </div>
             </div>
-            
 
             <div className="sticky bottom-0 bg-white border-t border-gray-200 py-4 px-6 rounded-b-2xl shadow-lg">
               <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
                 <div className="text-sm text-gray-600">
-                  {activeSection === "itinerario" ? "¡Último paso!" : "Sigue completando los detalles"}
+                  <button
+                    type="button"
+                    onClick={() => navigate("/admin/paquetes")}
+                    className="px-5 py-2.5 border border-gray-300 rounded-lg font-medium text-gray-700 hover:bg-gray-100"
+                  >
+                    Regresar
+                  </button>
                 </div>
-                
+
                 <div className="flex gap-3">
                   <button
                     type="button"
                     onClick={() => {
-                      const sectionIds = sections.map(s => s.id);
+                      const sectionIds = sections.map((s) => s.id);
                       const currentIndex = sectionIds.indexOf(activeSection);
                       if (currentIndex > 0) {
                         setActiveSection(sectionIds[currentIndex - 1]);
@@ -280,16 +295,14 @@ const NuevoPaquete = () => {
                   >
                     Anterior
                   </button>
-                  
+
                   {activeSection !== "itinerario" ? (
                     <button
                       type="button"
                       onClick={(e) => {
-                        // --- SOLUCIÓN DEFINITIVA ---
-                        // Prevenimos explícitamente el envío del formulario
                         e.preventDefault();
 
-                        const sectionIds = sections.map(s => s.id);
+                        const sectionIds = sections.map((s) => s.id);
                         const currentIndex = sectionIds.indexOf(activeSection);
                         if (currentIndex < sections.length - 1) {
                           setActiveSection(sectionIds[currentIndex + 1]);
@@ -305,7 +318,11 @@ const NuevoPaquete = () => {
                       className="px-8 py-2.5 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-bold rounded-lg shadow-md transition-all transform hover:-translate-y-0.5"
                       disabled={isSubmitting}
                     >
-                      {isSubmitting ? 'Guardando...' : (url ? "Actualizar Paquete" : "Crear Paquete")}
+                      {isSubmitting
+                        ? "Guardando..."
+                        : url
+                          ? "Actualizar Paquete"
+                          : "Crear Paquete"}
                     </button>
                   )}
                 </div>

@@ -76,8 +76,6 @@ const FlightCarousel = ({ flights = [], onFlightSelect, selectedFlightId }) => {
   return (
     <div className="">
       <div className="">
-   
-
         <div className="flex items-center justify-end space-x-3 mt-4 md:mt-0">
           <span className="inline-flex items-center bg-blue-50 text-blue-700 py-1 px-3 rounded-full text-sm font-medium">
             <svg
@@ -355,9 +353,9 @@ FlightCarousel.propTypes = {
       imagenes: PropTypes.arrayOf(
         PropTypes.shape({
           url: PropTypes.string.isRequired,
-        })
+        }),
       ),
-    })
+    }),
   ),
   onFlightSelect: PropTypes.func.isRequired,
   selectedFlightId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),

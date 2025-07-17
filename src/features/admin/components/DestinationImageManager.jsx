@@ -196,7 +196,6 @@ const DestinationImageManager = ({ destination, onImagesChange }) => {
       onDrop={handleContainerDrop}
     >
       <div className="flex justify-end mb-4">
-     
         <label className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg shadow-md cursor-pointer ">
           <span>+ Subir Imágenes</span>
           <input
