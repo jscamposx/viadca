@@ -103,7 +103,6 @@ const NuevoPaquete = () => {
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-8" noValidate>
-        
             <div
               className={`${activeSection !== "informacion" ? "hidden" : ""}`}
             >
@@ -315,8 +314,7 @@ const NuevoPaquete = () => {
                   ) : (
                     <button
                       type="submit"
-                     className="px-8 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold rounded-lg shadow-md transition-all transform hover:-translate-y-0.5"
-
+                      className="px-8 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold rounded-lg shadow-md transition-all transform hover:-translate-y-0.5"
                       disabled={isSubmitting}
                     >
                       {isSubmitting
