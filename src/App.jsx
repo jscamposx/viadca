@@ -8,6 +8,9 @@ import NuevoPaquete from "./features/admin/pages/NewPackagePage";
 import AdminLayout from "./features/admin/pages/AdminLayout";
 import AdminFlightsPage from "./features/admin/pages/AdminFlightsPage";
 import NewFlightPage from "./features/admin/pages/NewFlightPage";
+import AdminHotelsPage from "./features/admin/pages/AdminHotelsPage"; // <-- Añadido
+import NewHotelPage from "./features/admin/pages/NewHotelPage";       // <-- Añadido
+import AdminTrashPage from "./features/admin/pages/AdminTrashPage";   // <-- Añadido
 
 function App() {
   return (
@@ -22,6 +25,10 @@ function App() {
         <Route path="vuelos" element={<AdminFlightsPage />} />
         <Route path="vuelos/nuevo" element={<NewFlightPage />} />
         <Route path="vuelos/editar/:id" element={<NewFlightPage />} />
+        <Route path="hoteles" element={<AdminHotelsPage />} />         {/* <-- Añadido */}
+        <Route path="hoteles/nuevo" element={<NewHotelPage />} />       {/* <-- Añadido */}
+        <Route path="hoteles/editar/:id" element={<NewHotelPage />} />   {/* <-- Añadido */}
+        <Route path="papelera" element={<AdminTrashPage />} />         {/* <-- Añadido */}
       </Route>
     </Routes>
   );
