@@ -15,6 +15,7 @@ import {
   FiX,
   FiLock,
   FiTrash,
+  FiCompass,
 } from "react-icons/fi";
 
 const NavItem = ({
@@ -237,7 +238,7 @@ const AdminNav = ({ isOpen, setIsOpen }) => {
 
       <div className="flex items-center mb-8 mt-4 px-2 py-3">
         <div className="bg-gradient-to-r from-blue-500 to-indigo-600 p-2 rounded-xl shadow">
-          <FiBriefcase className="text-white text-2xl" />
+          <FiCompass className="text-white text-2xl" />
         </div>
         <div
           className={`ml-3 overflow-hidden transition-all duration-300 ${!isOpen ? "opacity-0 w-0" : "opacity-100"}`}
@@ -285,7 +286,7 @@ const AdminNav = ({ isOpen, setIsOpen }) => {
         <NavItem
           to="/admin/papelera"
           icon={<FiTrash size={20} />}
-          label="papelera"
+          label="Papelera"
           isOpen={isOpen}
         />
         <div

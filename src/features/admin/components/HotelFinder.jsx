@@ -527,7 +527,7 @@ const HotelFinder = ({ destination, onHotelSelect, selectedHotel }) => {
                   Agregar hotel manualmente
                 </button>
                 <p className="mt-3 text-sm text-gray-500">
-                  ¿No encuentras tu hotel? Agrégalo manually
+                  ¿No encuentras tu hotel? Agrégalo manualmente
                 </p>
               </div>
             ) : (
