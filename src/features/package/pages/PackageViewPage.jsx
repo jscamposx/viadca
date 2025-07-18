@@ -21,6 +21,7 @@ import {
   FiStar,
 } from "react-icons/fi";
 
+
 function LoadingSpinner() {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-slate-50 to-blue-50 px-4">
@@ -148,14 +149,23 @@ function Badge({ children, variant = "default", icon: Icon }) {
   );
 }
 
+
 function PackageViewPage() {
   const { url } = useParams();
   const { paquete, loading, error } = usePackage(url);
   const [isLiked, setIsLiked] = useState(false);
 
-  // ✨ FUNCIÓN PARA COMPARTIR ✨
+
+  const isMobile = () => {
+    if (navigator.userAgentData?.mobile) {
+      return true;
+    }
+    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+  };
+
+ 
   const handleShare = async () => {
-    if (!paquete) return; // No hacer nada si los datos del paquete aún no están cargados
+    if (!paquete) return;
 
     const shareData = {
       title: paquete.nombre_paquete,
@@ -163,24 +173,22 @@ function PackageViewPage() {
       url: window.location.href,
     };
 
-    if (navigator.share) {
+    if (isMobile() && navigator.share) {
       try {
         await navigator.share(shareData);
-        console.log("Contenido compartido con éxito.");
       } catch (err) {
-        // Es común que los usuarios cancelen el diálogo, por lo que solo registramos errores reales
         if (err.name !== "AbortError") {
           console.error("Error al compartir:", err);
         }
       }
     } else {
-      // Fallback para navegadores que no soportan la Web Share API
+
       try {
         await navigator.clipboard.writeText(window.location.href);
         alert("¡Enlace copiado al portapapeles!");
       } catch (err) {
         console.error("No se pudo copiar el enlace:", err);
-        alert("No se pudo copiar el enlace.");
+        alert("Error al copiar el enlace.");
       }
     }
   };
@@ -225,7 +233,7 @@ function PackageViewPage() {
                   }`}
                 />
               </button>
-              {/* ✨ BOTÓN CON EL onClick AÑADIDO ✨ */}
+        
               <button
                 onClick={handleShare}
                 aria-label="Compartir paquete"
@@ -426,10 +434,13 @@ function PackageViewPage() {
                 <div className="text-center mb-4 sm:mb-6">
                   <div className="flex flex-col sm:flex-row items-center justify-center sm:items-baseline">
                     <span className="text-3xl sm:text-4xl lg:text-5xl font-bold text-slate-900">
-                      {parseFloat(paquete.precio_base).toLocaleString("es-MX", {
-                        style: "currency",
-                        currency: "MXN",
-                      })}
+                      {parseFloat(paquete.precio_base).toLocaleString(
+                        "es-MX",
+                        {
+                          style: "currency",
+                          currency: "MXN",
+                        }
+                      )}
                     </span>
                     <span className="ml-0 sm:ml-2 text-slate-500 text-base sm:text-lg">
                       / persona
