@@ -28,7 +28,10 @@ const processImage = async (image, index) => {
   if (image.url && image.url.startsWith("data:image")) {
     try {
       // MODIFICADO: Se envía la imagen junto con su orden
-      const response = await api.images.upload({ image: image.url, orden: index + 1 });
+      const response = await api.images.upload({
+        image: image.url,
+        orden: index + 1,
+      });
       if (response.data && response.data.id) {
         // Devuelve solo el ID como se espera
         return response.data.id;
@@ -220,7 +223,9 @@ export const usePackageForm = (initialPackageData = null) => {
     let hotelPayload = null;
     if (formData.hotel) {
       const hotelImageIds = await Promise.all(
-        (formData.hotel.images || []).map((image, index) => processImage(image, index)),
+        (formData.hotel.images || []).map((image, index) =>
+          processImage(image, index),
+        ),
       );
 
       hotelPayload = {

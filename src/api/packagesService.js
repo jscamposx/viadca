@@ -26,7 +26,6 @@ export const exportToExcel = (id) => {
   });
 };
 
-
 export const deletePaquete = (id) => {
   return apiClient.delete(`/paquetes/${id}`);
 };

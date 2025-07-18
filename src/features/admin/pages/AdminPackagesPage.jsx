@@ -7,7 +7,6 @@ import api from "../../../api";
 const API_URL = import.meta.env.VITE_API_URL;
 
 const AdminPaquetes = () => {
-  // El hook 'useAllPackages' ahora devolverá 'setPaquetes' para poder actualizarlo
   const { paquetes, setPaquetes, loading, error } = useAllPackages();
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredPaquetes, setFilteredPaquetes] = useState([]);
@@ -62,7 +61,6 @@ const AdminPaquetes = () => {
     }
   }, [paquetes, searchTerm, sortConfig]);
 
-
   const requestSort = (key) => {
     let direction = "asc";
     if (sortConfig.key === key && sortConfig.direction === "asc") {
@@ -78,22 +76,19 @@ const AdminPaquetes = () => {
     return `${API_URL}${url}`;
   };
 
-  // --- MODIFICAR ESTA FUNCIÓN ---
   const handleDelete = async (id) => {
     try {
       await api.packages.deletePaquete(id);
-      // Actualiza el estado para remover el paquete eliminado de la UI
+
       setPaquetes((prevPaquetes) => prevPaquetes.filter((p) => p.id !== id));
       alert("Paquete eliminado con éxito.");
     } catch (err) {
       console.error("Error al eliminar el paquete:", err);
       alert("No se pudo eliminar el paquete. Inténtalo de nuevo.");
     } finally {
-      // Cierra el modal de confirmación
       setDeleteConfirm(null);
     }
   };
-
 
   if (loading) {
     return (

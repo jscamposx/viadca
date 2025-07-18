@@ -120,7 +120,6 @@ const AdminHotelsPage = () => {
           </Link>
         </div>
 
-        {/* Barra de búsqueda mejorada */}
         <div className="mb-8 bg-white p-4 rounded-xl shadow-sm">
           <div className="relative max-w-md">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -136,7 +135,6 @@ const AdminHotelsPage = () => {
           </div>
         </div>
 
-        {/* Tabla de hoteles */}
         <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100">
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
