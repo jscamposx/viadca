@@ -23,8 +23,8 @@ const HotelInfo = ({ hotel }) => {
   }
 
   return (
-    <div className="bg-gray-50 rounded-xl shadow-md p-6 border border-gray-200">
-      <h3 className="text-xl font-bold text-gray-800 mb-4">Hotel Incluido</h3>
+    <div >
+     
       <div>
         <h4 className="text-lg font-semibold text-gray-700">{hotel.nombre}</h4>
         <div className="flex items-center my-2">
