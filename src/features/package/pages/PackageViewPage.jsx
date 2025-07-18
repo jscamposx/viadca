@@ -20,12 +20,12 @@ import {
   FiHome,
   FiStar,
 } from "react-icons/fi";
-
 function LoadingSpinner() {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-slate-50 to-blue-50 px-4">
       <div role="status" className="text-center space-y-4 sm:space-y-6">
-        <div className="w-16 h-16 sm:w-20 sm:h-20 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+        <div className="mx-auto w-16 h-16 sm:w-20 sm:h-20 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+
         <div className="space-y-2">
           <p className="text-slate-700 font-semibold text-base sm:text-lg">
             Preparando tu experiencia de viaje
