@@ -23,7 +23,7 @@ const HotelInfo = ({ hotel }) => {
   }
 
   return (
-    <div >
+    <div className="flex flex-col h-full">
      
       <div>
         <h4 className="text-lg font-semibold text-gray-700">{hotel.nombre}</h4>
@@ -40,7 +40,7 @@ const HotelInfo = ({ hotel }) => {
         )}
       </div>
       {hotel.imagenes && hotel.imagenes.length > 0 && (
-        <div className="mt-4 rounded-lg overflow-hidden shadow-inner">
+        <div className="mt-4 rounded-lg overflow-hidden shadow-inner flex-grow">
           <ImageCarousel imagenes={hotel.imagenes} />
         </div>
       )}
