@@ -1,6 +1,6 @@
 import { FiClock, FiSend, FiDollarSign } from "react-icons/fi";
 
-const PackageInfo = ({ duracion, id_vuelo, precio_base }) => (
+const PackageInfo = ({ duracion, vuelo, precio_base }) => (
   <div className="bg-gray-50 rounded-xl shadow-md p-6 border border-gray-200">
     <h3 className="text-xl font-bold text-gray-800 mb-4">
       Detalles del Paquete
@@ -17,7 +17,13 @@ const PackageInfo = ({ duracion, id_vuelo, precio_base }) => (
         <FiSend className="w-6 h-6 text-green-500 mr-3" />
         <div>
           <p className="font-semibold text-gray-700">Vuelo</p>
-          <p className="text-gray-600">{id_vuelo}</p>
+          {vuelo ? (
+            <p className="text-gray-600">
+              {vuelo.nombre} ({vuelo.transporte})
+            </p>
+          ) : (
+            <p className="text-gray-500">Cargando información del vuelo...</p>
+          )}
         </div>
       </li>
       <li className="flex items-center">

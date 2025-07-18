@@ -15,26 +15,32 @@ import {
 
 function PaqueteDetalle() {
   const { url } = useParams();
+
   const { paquete, loading, error } = usePackage(url);
 
-  if (loading)
+  if (loading) {
     return (
       <div className="flex justify-center items-center h-screen">
         <Loading />
       </div>
     );
-  if (error)
+  }
+
+  if (error) {
     return (
       <div className="max-w-4xl mx-auto my-10 p-6 bg-red-100 border border-red-400 text-red-700 rounded-md">
         <Error message={error} />
       </div>
     );
-  if (!paquete)
+  }
+
+  if (!paquete) {
     return (
       <div className="max-w-4xl mx-auto my-10 p-6 bg-gray-100 border border-gray-400 text-gray-700 rounded-md">
         <NotFound />
       </div>
     );
+  }
 
   return (
     <div className="bg-gray-50 py-12">
@@ -57,7 +63,7 @@ function PaqueteDetalle() {
           <div className="mb-6 border-b border-gray-200 pb-4">
             <PackageInfo
               duracion={paquete.duracion}
-              id_vuelo={paquete.id_vuelo}
+              vuelo={paquete.vuelo}
               precio_base={paquete.precio_base}
             />
           </div>
