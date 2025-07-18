@@ -15,22 +15,17 @@ import {
   FiCalendar,
   FiSun,
   FiCheckSquare,
-  FiDollarSign,
-  FiUsers,
-  FiStar,
-  FiClock,
-  FiShield,
   FiHeart,
   FiShare2,
-  FiCamera,
   FiHome,
+  FiStar,
 } from "react-icons/fi";
 
-// A11Y Improvement: Add role="status" to announce loading to screen readers.
+
 function LoadingSpinner() {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-slate-50 to-blue-50 px-4">
-      {/* role="status" makes this a live region, announcing its content when it appears. */}
+  
       <div role="status" className="text-center space-y-4 sm:space-y-6">
         <div className="w-16 h-16 sm:w-20 sm:h-20 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
         <div className="space-y-2">
@@ -46,14 +41,14 @@ function LoadingSpinner() {
   );
 }
 
-// A11Y Improvement: Use role="alert" and hide decorative icons.
+
 function ErrorMessage({ message, onRetry }) {
   return (
-    // role="alert" makes this an assertive live region. It will be announced immediately by screen readers.
+
     <div role="alert" className="min-h-screen flex items-center justify-center bg-gradient-to-br from-red-50 to-orange-50 p-4 sm:p-6">
       <div className="max-w-md w-full bg-white rounded-2xl sm:rounded-3xl shadow-2xl p-6 sm:p-8 text-center backdrop-blur-sm border border-red-100">
         <div className="w-20 h-20 sm:w-24 sm:h-24 bg-gradient-to-br from-red-100 to-red-200 rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-6">
-          {/* aria-hidden="true" hides purely decorative elements from screen readers. */}
+     
           <svg
             aria-hidden="true"
             xmlns="http://www.w3.org/2000/svg"
@@ -87,7 +82,7 @@ function ErrorMessage({ message, onRetry }) {
   );
 }
 
-// A11Y Improvement: Use role="alert" and hide decorative icons.
+
 function NotFoundMessage() {
     return (
       <div role="alert" className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-blue-50 p-4 sm:p-6">
@@ -139,7 +134,7 @@ function Badge({ children, variant = "default", icon: Icon }) {
     <span
       className={`inline-flex items-center px-2 py-1 sm:px-3 sm:py-1.5 rounded-full text-xs sm:text-sm font-medium border ${variants[variant]} backdrop-blur-sm`}
     >
-      {/* A11Y Improvement: Hide decorative icon. */}
+
       {Icon && <Icon aria-hidden="true" className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-1.5" />}
       <span className="truncate">{children}</span>
     </span>
@@ -151,9 +146,7 @@ function PackageViewPage() {
   const { paquete, loading, error } = usePackage(url);
   const [isLiked, setIsLiked] = useState(false);
 
-  // A11Y Note: useEffect is often used to manage focus on dynamic content,
-  // for example, focusing on the error message when it appears.
-  // This is already handled well by role="alert".
+
 
   if (loading) return <LoadingSpinner />;
   if (error)
@@ -164,7 +157,7 @@ function PackageViewPage() {
 
   return (
     <div className="bg-gradient-to-br from-slate-50 via-white to-blue-50 min-h-screen">
-      {/* This could be a <header> if it were a site-wide header. For a page-specific bar, <div> is fine. */}
+   
       <div className="sticky top-0 z-50 bg-white/80 backdrop-blur-lg border-b border-slate-200/50">
         <div className="container mx-auto px-4 py-3 sm:py-4">
           <div className="flex items-center justify-between">
@@ -177,7 +170,7 @@ function PackageViewPage() {
               </Badge>
             </div>
             <div className="flex items-center space-x-2 sm:space-x-3 flex-shrink-0">
-              {/* A11Y Improvement: Added aria-label for icon-only buttons and aria-pressed for toggle state. */}
+         
               <button
                 onClick={() => setIsLiked(!isLiked)}
                 aria-pressed={isLiked}
@@ -198,7 +191,7 @@ function PackageViewPage() {
         </div>
       </div>
       
-      {/* A11Y Improvement: Use <main> for the primary content of the page. */}
+
       <main className="container mx-auto px-4 py-6 sm:py-8">
         <div className="mb-8 sm:mb-12">
           <div className="text-center mb-6 sm:mb-8">
@@ -210,8 +203,7 @@ function PackageViewPage() {
               momentos inolvidables
             </p>
           </div>
-          {/* A11Y Note: The ImageCarousel component MUST render <img> elements with meaningful alt text. */}
-          {/* Example: <img src={image.url} alt={`${paquete.nombre_paquete} - Foto ${index + 1}`} /> */}
+      
           <div className="relative h-64 sm:h-80 md:h-96 lg:h-[600px] rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl group">
             <ImageCarousel imagenes={paquete.imagenes} />
             <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
@@ -221,9 +213,9 @@ function PackageViewPage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8 lg:gap-12">
           <div className="lg:col-span-2 space-y-8 sm:space-y-12 lg:space-y-16">
             
-            {/* A11Y Improvement: Use <section> with aria-labelledby to create landmarks. */}
+
             <section aria-labelledby="info-heading" className="bg-white rounded-2xl sm:rounded-3xl shadow-xl p-4 sm:p-6 lg:p-8 border border-slate-100">
-              {/* The PackageInfo component should have a heading with id="info-heading" */}
+       
               <PackageInfo
                 id="info-heading"
                 duracion={paquete.duracion}
@@ -272,11 +264,46 @@ function PackageViewPage() {
               </section>
             )}
             
-            {/* ... other sections should follow the same pattern (section, aria-labelledby, h2 with id) ... */}
+            {paquete.requisitos && (
+              <section aria-labelledby="requirements-heading" className="bg-white rounded-2xl sm:rounded-3xl shadow-xl p-4 sm:p-6 lg:p-8 border border-slate-100">
+                <div className="flex items-center mb-4 sm:mb-6">
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-emerald-500 to-green-600 rounded-xl sm:rounded-2xl flex items-center justify-center mr-3 sm:mr-4 flex-shrink-0">
+                    <FiCheckSquare aria-hidden="true" className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+                  </div>
+                  <div>
+                    <h2 id="requirements-heading" className="text-2xl sm:text-3xl font-bold text-slate-900">
+                      Requisitos
+                    </h2>
+                    <p className="text-slate-600 text-sm sm:text-base">
+                      Lo que necesitas para tu viaje
+                    </p>
+                  </div>
+                </div>
+                <Requirements requisitos={paquete.requisitos} />
+              </section>
+            )}
 
+            {paquete.destino_lat && paquete.destino_lng && (
+                <section aria-labelledby="weather-heading" className="bg-white rounded-2xl sm:rounded-3xl shadow-xl p-4 sm:p-6 lg:p-8 border border-slate-100">
+                    <div className="flex items-center mb-4 sm:mb-6">
+                        <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-sky-500 to-blue-600 rounded-xl sm:rounded-2xl flex items-center justify-center mr-3 sm:mr-4 flex-shrink-0">
+                            <FiSun aria-hidden="true" className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+                        </div>
+                        <div>
+                            <h2 id="weather-heading" className="text-2xl sm:text-3xl font-bold text-slate-900">
+                                Pronóstico del Clima
+                            </h2>
+                            <p className="text-slate-600 text-sm sm:text-base">
+                                El tiempo en {paquete.destino}
+                            </p>
+                        </div>
+                    </div>
+                    <WeatherForecast lat={paquete.destino_lat} lon={paquete.destino_lng} cityName={paquete.destino} />
+                </section>
+            )}
+            
           </div>
-          
-          {/* A11Y Improvement: Use <aside> for complementary content like a booking widget. */}
+ 
           <aside className="lg:col-span-1">
             <div className="lg:sticky lg:top-32">
               <div className="bg-white rounded-2xl sm:rounded-3xl shadow-2xl p-4 sm:p-6 lg:p-8 border border-slate-100 backdrop-blur-sm">
@@ -297,7 +324,7 @@ function PackageViewPage() {
                   </p>
                 </div>
                 
-                {/* A11Y Improvement: Use semantic <ul> for lists. */}
+
                 <div className="space-y-3 sm:space-y-4 mb-6 sm:mb-8">
                   <h3 className="font-semibold text-slate-900 text-base sm:text-lg">
                     ¿Qué incluye?
@@ -329,14 +356,13 @@ function PackageViewPage() {
                     🚀 Reservar Aventura
                   </span>
                 </button>
-                
-                {/* A11Y Improvement: A rating should have a single, clear label for screen readers. */}
+    
                 <div className="mt-4 sm:mt-6 bg-gradient-to-r from-emerald-50 to-teal-50 rounded-xl sm:rounded-2xl p-4 sm:p-6 border border-emerald-200">
                   <div 
                     className="flex items-center justify-center mb-2 sm:mb-3"
-                    // Provide a single, clear label for the entire rating.
+               
                     aria-label="Calificación: 4.9 de 5 estrellas"
-                    role="img" // Role indicates this group of elements represents an image/graphic.
+                    role="img"
                   >
                     <div className="flex items-center" aria-hidden="true">
                       {[...Array(5)].map((_, i) => (
