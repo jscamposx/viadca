@@ -22,5 +22,6 @@ export function useFetch(apiFunc, params = []) {
     fetchData();
   }, [fetchData]);
 
-  return { data, loading, error };
+  // Devuelve 'setData' junto con los demás estados
+  return { data, setData, loading, error };
 }

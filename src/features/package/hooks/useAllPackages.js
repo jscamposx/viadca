@@ -2,7 +2,8 @@ import { useFetch } from "../../../hooks/useFetch";
 import api from "../../../api";
 
 export const useAllPackages = () => {
-  const { data: paquetes, loading, error } = useFetch(api.packages.getPaquetes);
+  // Asegúrate de que useFetch devuelva 'setData' para poder modificar el estado
+  const { data: paquetes, setData: setPaquetes, loading, error } = useFetch(api.packages.getPaquetes);
 
-  return { paquetes, loading, error };
+  return { paquetes, setPaquetes, loading, error };
 };

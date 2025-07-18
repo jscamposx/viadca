@@ -25,3 +25,8 @@ export const exportToExcel = (id) => {
     responseType: "blob",
   });
 };
+
+
+export const deletePaquete = (id) => {
+  return apiClient.delete(`/paquetes/${id}`);
+};

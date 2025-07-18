@@ -7,7 +7,8 @@ import api from "../../../api";
 const API_URL = import.meta.env.VITE_API_URL;
 
 const AdminPaquetes = () => {
-  const { paquetes, loading, error } = useAllPackages();
+  // El hook 'useAllPackages' ahora devolverá 'setPaquetes' para poder actualizarlo
+  const { paquetes, setPaquetes, loading, error } = useAllPackages();
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredPaquetes, setFilteredPaquetes] = useState([]);
   const [sortConfig, setSortConfig] = useState({
@@ -33,32 +34,34 @@ const AdminPaquetes = () => {
   };
 
   useEffect(() => {
-    let result = [...(paquetes || [])];
+    if (paquetes) {
+      let result = [...paquetes];
 
-    if (searchTerm) {
-      const term = searchTerm.toLowerCase();
-      result = result.filter(
-        (p) =>
-          p.nombre_paquete.toLowerCase().includes(term) ||
-          p.descripcion?.toLowerCase().includes(term) ||
-          p.precio_base.toString().includes(term),
-      );
+      if (searchTerm) {
+        const term = searchTerm.toLowerCase();
+        result = result.filter(
+          (p) =>
+            p.nombre_paquete.toLowerCase().includes(term) ||
+            p.descripcion?.toLowerCase().includes(term) ||
+            p.precio_base.toString().includes(term),
+        );
+      }
+
+      if (sortConfig.key) {
+        result.sort((a, b) => {
+          if (a[sortConfig.key] < b[sortConfig.key]) {
+            return sortConfig.direction === "asc" ? -1 : 1;
+          }
+          if (a[sortConfig.key] > b[sortConfig.key]) {
+            return sortConfig.direction === "asc" ? 1 : -1;
+          }
+          return 0;
+        });
+      }
+      setFilteredPaquetes(result);
     }
-
-    if (sortConfig.key) {
-      result.sort((a, b) => {
-        if (a[sortConfig.key] < b[sortConfig.key]) {
-          return sortConfig.direction === "asc" ? -1 : 1;
-        }
-        if (a[sortConfig.key] > b[sortConfig.key]) {
-          return sortConfig.direction === "asc" ? 1 : -1;
-        }
-        return 0;
-      });
-    }
-
-    setFilteredPaquetes(result);
   }, [paquetes, searchTerm, sortConfig]);
+
 
   const requestSort = (key) => {
     let direction = "asc";
@@ -75,10 +78,22 @@ const AdminPaquetes = () => {
     return `${API_URL}${url}`;
   };
 
-  const handleDelete = (id) => {
-    console.log("Eliminar paquete con ID:", id);
-    setDeleteConfirm(null);
+  // --- MODIFICAR ESTA FUNCIÓN ---
+  const handleDelete = async (id) => {
+    try {
+      await api.packages.deletePaquete(id);
+      // Actualiza el estado para remover el paquete eliminado de la UI
+      setPaquetes((prevPaquetes) => prevPaquetes.filter((p) => p.id !== id));
+      alert("Paquete eliminado con éxito.");
+    } catch (err) {
+      console.error("Error al eliminar el paquete:", err);
+      alert("No se pudo eliminar el paquete. Inténtalo de nuevo.");
+    } finally {
+      // Cierra el modal de confirmación
+      setDeleteConfirm(null);
+    }
   };
+
 
   if (loading) {
     return (
