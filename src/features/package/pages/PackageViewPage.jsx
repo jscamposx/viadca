@@ -22,7 +22,8 @@ import {
   FiShield,
   FiHeart,
   FiShare2,
-  FiCamera
+  FiCamera,
+  FiHome
 } from "react-icons/fi";
 
 // Componente de Loading mejorado y responsive
@@ -197,7 +198,18 @@ function PackageViewPage() {
             {/* Hotel */}
             {paquete.hotel && (
               <section className="bg-white rounded-2xl sm:rounded-3xl shadow-xl p-4 sm:p-6 lg:p-8 border border-slate-100">
-                <HotelInfo hotel={paquete.hotel} />
+                <div className="flex items-center mb-4 sm:mb-6">
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-amber-500 to-orange-600 rounded-xl sm:rounded-2xl flex items-center justify-center mr-3 sm:mr-4 flex-shrink-0">
+                    <FiHome className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+                  </div>
+                  <div>
+                    <h2 className="text-2xl sm:text-3xl font-bold text-slate-900">Alojamiento</h2>
+                    <p className="text-slate-600 text-sm sm:text-base">Tu hogar durante el viaje</p>
+                  </div>
+                </div>
+                <div className="h-80 sm:h-96 lg:h-[400px] overflow-hidden rounded-xl sm:rounded-2xl">
+                  <HotelInfo hotel={paquete.hotel} />
+                </div>
               </section>
             )}
 
@@ -212,7 +224,7 @@ function PackageViewPage() {
                   <p className="text-slate-600 text-sm sm:text-base">Explora el destino</p>
                 </div>
               </div>
-              <div className="overflow-hidden rounded-xl sm:rounded-2xl">
+              <div className="h-80 sm:h-96 lg:h-[400px] overflow-hidden rounded-xl sm:rounded-2xl">
                 <RouteMap paquete={paquete} />
               </div>
             </section>
