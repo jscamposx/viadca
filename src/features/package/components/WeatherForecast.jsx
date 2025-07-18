@@ -174,13 +174,8 @@ const WeatherForecast = ({ lat, lon, cityName = "Ubicación Actual" }) => {
   return (
     <div className={`bg-gradient-to-br ${getBackgroundGradient} rounded-xl shadow-sm p-6 border border-gray-100 mt-6`}>
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <h3 className="text-xl font-bold text-gray-800">
-            Pronóstico del Clima
-          </h3>
-          <p className="text-gray-600 text-sm">{cityName}</p>
-        </div>
+      <div className="flex items-center justify-end mb-6">
+     
         <div className="flex items-center gap-3">
           {lastUpdate && (
             <p className="text-xs text-gray-500">
