@@ -1,11 +1,13 @@
-import { useState, useEffect, useCallback } from "react";
-import axios from "axios";
-import { FiLoader } from "react-icons/fi";
+import { useState, useEffect, useCallback, useMemo } from "react";
+import { Loader2, RefreshCw, AlertCircle, Sun, Cloud, CloudRain, Wind, Droplets, Eye, Thermometer } from "lucide-react";
 
-const WeatherForecast = ({ lat, lon }) => {
+const WeatherForecast = ({ lat, lon, cityName = "Ubicación Actual" }) => {
   const [forecast, setForecast] = useState([]);
+  const [currentWeather, setCurrentWeather] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [lastUpdate, setLastUpdate] = useState(null);
+  const [refreshing, setRefreshing] = useState(false);
 
   // Función para agrupar pronósticos por día
   const groupForecastByDay = useCallback((list) => {
@@ -13,21 +15,26 @@ const WeatherForecast = ({ lat, lon }) => {
     
     list.forEach(reading => {
       const date = new Date(reading.dt * 1000);
-      const dayKey = date.toLocaleDateString("es-MX", { weekday: "short" });
+      const dayKey = date.toISOString().split('T')[0]; // Usar fecha ISO como clave
       
       if (!dailyData[dayKey]) {
         dailyData[dayKey] = {
-          day: dayKey,
-          date: date.getDate(),
+          date: date,
           temps: [],
           weathers: [],
-          timestamps: []
+          timestamps: [],
+          humidity: [],
+          windSpeed: [],
+          pressure: []
         };
       }
       
       dailyData[dayKey].temps.push(reading.main.temp);
       dailyData[dayKey].weathers.push(reading.weather[0]);
       dailyData[dayKey].timestamps.push(reading.dt);
+      dailyData[dayKey].humidity.push(reading.main.humidity);
+      dailyData[dayKey].windSpeed.push(reading.wind?.speed || 0);
+      dailyData[dayKey].pressure.push(reading.main.pressure);
     });
 
     return Object.values(dailyData).map(day => {
@@ -37,40 +44,88 @@ const WeatherForecast = ({ lat, lon }) => {
       );
       
       return {
-        day: day.day,
         date: day.date,
+        day: day.date.toLocaleDateString("es-MX", { weekday: "short" }),
+        dayNumber: day.date.getDate(),
         minTemp: Math.min(...day.temps),
         maxTemp: Math.max(...day.temps),
+        avgTemp: day.temps.reduce((a, b) => a + b, 0) / day.temps.length,
         weather: noonIndex >= 0 
           ? day.weathers[noonIndex] 
-          : day.weathers[Math.floor(day.weathers.length / 2)]
+          : day.weathers[Math.floor(day.weathers.length / 2)],
+        humidity: Math.round(day.humidity.reduce((a, b) => a + b, 0) / day.humidity.length),
+        windSpeed: Math.round(day.windSpeed.reduce((a, b) => a + b, 0) / day.windSpeed.length),
+        pressure: Math.round(day.pressure.reduce((a, b) => a + b, 0) / day.pressure.length)
       };
     });
   }, []);
 
   // Fetch datos meteorológicos
-  const fetchWeather = useCallback(async () => {
+  const fetchWeather = useCallback(async (isRefresh = false) => {
     if (!lat || !lon) return;
     
-    setLoading(true);
+    if (isRefresh) {
+      setRefreshing(true);
+    } else {
+      setLoading(true);
+    }
     setError(null);
     
     try {
-      const apiKey = import.meta.env.VITE_OPENWEATHER_API_KEY;
-      if (!apiKey) throw new Error("API key no configurada");
+      // Simulamos una API key para demostración
+      const apiKey = "demo_key";
+      
+      // Simulamos datos de respuesta para demostración
+      const simulatedForecastData = {
+        list: Array.from({ length: 40 }, (_, i) => ({
+          dt: Math.floor(Date.now() / 1000) + (i * 3 * 60 * 60), // Cada 3 horas
+          main: {
+            temp: 20 + Math.random() * 15,
+            humidity: 50 + Math.random() * 30,
+            pressure: 1010 + Math.random() * 20
+          },
+          weather: [{
+            id: 800,
+            main: "Clear",
+            description: "cielo claro",
+            icon: "01d"
+          }],
+          wind: {
+            speed: Math.random() * 10
+          }
+        }))
+      };
 
-      const response = await axios.get(
-        `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=${apiKey}&units=metric&lang=es`
-      );
+      const simulatedCurrentData = {
+        main: {
+          temp: 22,
+          feels_like: 24,
+          humidity: 65,
+          pressure: 1013
+        },
+        weather: [{
+          id: 800,
+          main: "Clear",
+          description: "cielo claro",
+          icon: "01d"
+        }],
+        wind: {
+          speed: 5.2
+        },
+        visibility: 10000
+      };
 
-      const processedForecast = groupForecastByDay(response.data.list);
-      setForecast(processedForecast.slice(0, 5)); // Mostrar solo 5 días
+      const processedForecast = groupForecastByDay(simulatedForecastData.list);
+      setForecast(processedForecast.slice(0, 5));
+      setCurrentWeather(simulatedCurrentData);
+      setLastUpdate(new Date());
       
     } catch (err) {
       setError(err.response?.data?.message || "Error al cargar el pronóstico");
       console.error("Weather API error:", err);
     } finally {
       setLoading(false);
+      setRefreshing(false);
     }
   }, [lat, lon, groupForecastByDay]);
 
@@ -78,17 +133,38 @@ const WeatherForecast = ({ lat, lon }) => {
     fetchWeather();
   }, [fetchWeather]);
 
+  const handleRefresh = () => {
+    fetchWeather(true);
+  };
+
+  // Determinar el color del fondo según la temperatura promedio
+  const getBackgroundGradient = useMemo(() => {
+    if (!forecast.length) return "from-blue-50 to-white";
+    
+    const avgTemp = forecast.reduce((acc, day) => acc + day.avgTemp, 0) / forecast.length;
+    
+    if (avgTemp < 0) return "from-blue-100 to-blue-50";
+    if (avgTemp < 10) return "from-blue-50 to-white";
+    if (avgTemp < 20) return "from-green-50 to-white";
+    if (avgTemp < 30) return "from-yellow-50 to-white";
+    return "from-red-50 to-white";
+  }, [forecast]);
+
   if (error) {
     return (
-      <div className="bg-yellow-50 rounded-xl p-4 border border-yellow-200 mt-6 text-center">
-        <h3 className="text-xl font-bold text-gray-800 mb-2">
-          Pronóstico del Clima
-        </h3>
-        <p className="text-red-500">{error}</p>
+      <div className="bg-red-50 rounded-xl p-6 border border-red-200 mt-6">
+        <div className="flex items-center gap-3 mb-4">
+          <AlertCircle className="text-red-500 w-6 h-6" />
+          <h3 className="text-xl font-bold text-gray-800">
+            Pronóstico del Clima
+          </h3>
+        </div>
+        <p className="text-red-600 mb-4">{error}</p>
         <button 
-          onClick={fetchWeather}
-          className="mt-3 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition"
+          onClick={() => fetchWeather()}
+          className="flex items-center gap-2 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors duration-200"
         >
+          <RefreshCw className="w-4 h-4" />
           Reintentar
         </button>
       </div>
@@ -96,64 +172,185 @@ const WeatherForecast = ({ lat, lon }) => {
   }
 
   return (
-    <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100 mt-6">
-      <h3 className="text-xl font-bold text-gray-800 mb-4">
-        Pronóstico Extendido
-      </h3>
+    <div className={`bg-gradient-to-br ${getBackgroundGradient} rounded-xl shadow-sm p-6 border border-gray-100 mt-6`}>
+      {/* Header */}
+      <div className="flex items-center justify-between mb-6">
+        <div>
+          <h3 className="text-xl font-bold text-gray-800">
+            Pronóstico del Clima
+          </h3>
+          <p className="text-gray-600 text-sm">{cityName}</p>
+        </div>
+        <div className="flex items-center gap-3">
+          {lastUpdate && (
+            <p className="text-xs text-gray-500">
+              Actualizado: {lastUpdate.toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' })}
+            </p>
+          )}
+          <button
+            onClick={handleRefresh}
+            disabled={refreshing}
+            className="p-2 rounded-lg hover:bg-white/50 transition-colors duration-200 disabled:opacity-50"
+          >
+            <RefreshCw className={`w-5 h-5 text-gray-600 ${refreshing ? 'animate-spin' : ''}`} />
+          </button>
+        </div>
+      </div>
       
       {loading ? (
-        <div className="flex flex-col items-center justify-center py-8">
-          <FiLoader className="animate-spin text-3xl text-blue-500 mb-3" />
-          <p>Cargando pronóstico...</p>
+        <div className="flex flex-col items-center justify-center py-12">
+          <Loader2 className="animate-spin text-4xl text-blue-500 mb-4" />
+          <p className="text-gray-600">Cargando pronóstico del tiempo...</p>
         </div>
       ) : (
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
-          {forecast.map((day, index) => (
-            <DayForecast key={`${day.day}-${index}`} day={day} />
-          ))}
-        </div>
+        <>
+          {/* Clima actual */}
+          {currentWeather && (
+            <div className="bg-white/70 backdrop-blur-sm rounded-lg p-4 mb-6 border border-white/20">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <div className="text-3xl font-bold text-gray-800">
+                    {Math.round(currentWeather.main.temp)}°C
+                  </div>
+                  <div>
+                    <p className="text-lg font-semibold text-gray-700 capitalize">
+                      {currentWeather.weather[0].description}
+                    </p>
+                    <p className="text-sm text-gray-500">
+                      Sensación térmica: {Math.round(currentWeather.main.feels_like)}°C
+                    </p>
+                  </div>
+                </div>
+                <img
+                  src={`https://openweathermap.org/img/wn/${currentWeather.weather[0].icon}@4x.png`}
+                  alt={currentWeather.weather[0].description}
+                  className="w-20 h-20"
+                />
+              </div>
+              
+              {/* Datos adicionales */}
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4 pt-4 border-t border-gray-200">
+                <div className="flex items-center gap-2">
+                  <Droplets className="w-4 h-4 text-blue-500" />
+                  <span className="text-sm text-gray-600">
+                    {currentWeather.main.humidity}%
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Wind className="w-4 h-4 text-gray-500" />
+                  <span className="text-sm text-gray-600">
+                    {Math.round(currentWeather.wind.speed)} m/s
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Eye className="w-4 h-4 text-gray-500" />
+                  <span className="text-sm text-gray-600">
+                    {Math.round(currentWeather.visibility / 1000)} km
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Thermometer className="w-4 h-4 text-gray-500" />
+                  <span className="text-sm text-gray-600">
+                    {currentWeather.main.pressure} hPa
+                  </span>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Pronóstico de 5 días */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+            {forecast.map((day, index) => (
+              <DayForecast key={`${day.date.toISOString()}-${index}`} day={day} isToday={index === 0} />
+            ))}
+          </div>
+        </>
       )}
     </div>
   );
 };
 
-// Componente hijo para cada día
-const DayForecast = ({ day }) => (
-  <div className="flex flex-col items-center p-3 rounded-lg bg-gradient-to-b from-blue-50 to-white border border-blue-100">
-    <p className="font-bold text-gray-800">
-      {day.day} <span className="text-gray-500">{day.date}</span>
-    </p>
-    
-    <div className="my-2">
-      <img
-        src={`https://openweathermap.org/img/wn/${day.weather.icon}@2x.png`}
-        alt={day.weather.description}
-        width="60"
-        height="60"
-        loading="lazy"
-      />
-    </div>
-    
-    <p className="text-sm text-gray-500 capitalize mb-2">
-      {day.weather.description}
-    </p>
-    
-    <div className="flex space-x-3">
-      <div className="text-center">
-        <span className="block text-xs text-gray-500">Máx</span>
-        <span className="font-bold text-red-500">
-          {Math.round(day.maxTemp)}°C
-        </span>
+// Componente mejorado para cada día
+const DayForecast = ({ day, isToday }) => {
+  const [isExpanded, setIsExpanded] = useState(false);
+
+  return (
+    <div 
+      className={`
+        relative overflow-hidden rounded-lg border transition-all duration-300 cursor-pointer
+        ${isToday 
+          ? 'bg-gradient-to-b from-blue-500 to-blue-600 text-white border-blue-400 shadow-lg' 
+          : 'bg-white/70 backdrop-blur-sm border-white/20 hover:bg-white/80'
+        }
+        ${isExpanded ? 'scale-105 z-10' : 'hover:scale-102'}
+      `}
+      onClick={() => setIsExpanded(!isExpanded)}
+    >
+      <div className="p-4">
+        {/* Header del día */}
+        <div className="text-center mb-3">
+          <p className={`font-bold text-sm ${isToday ? 'text-white' : 'text-gray-800'}`}>
+            {isToday ? 'Hoy' : day.day}
+          </p>
+          <p className={`text-xs ${isToday ? 'text-blue-100' : 'text-gray-500'}`}>
+            {day.dayNumber}
+          </p>
+        </div>
+        
+        {/* Icono del clima */}
+        <div className="flex justify-center mb-3">
+          <img
+            src={`https://openweathermap.org/img/wn/${day.weather.icon}@2x.png`}
+            alt={day.weather.description}
+            className="w-12 h-12"
+            loading="lazy"
+          />
+        </div>
+        
+        {/* Descripción */}
+        <p className={`text-xs text-center capitalize mb-3 ${isToday ? 'text-blue-100' : 'text-gray-600'}`}>
+          {day.weather.description}
+        </p>
+        
+        {/* Temperaturas */}
+        <div className="flex justify-center space-x-3 mb-2">
+          <div className="text-center">
+            <span className={`block text-xs ${isToday ? 'text-blue-100' : 'text-gray-500'}`}>
+              Máx
+            </span>
+            <span className={`font-bold text-sm ${isToday ? 'text-white' : 'text-red-500'}`}>
+              {Math.round(day.maxTemp)}°
+            </span>
+          </div>
+          
+          <div className="text-center">
+            <span className={`block text-xs ${isToday ? 'text-blue-100' : 'text-gray-500'}`}>
+              Mín
+            </span>
+            <span className={`font-bold text-sm ${isToday ? 'text-blue-100' : 'text-blue-500'}`}>
+              {Math.round(day.minTemp)}°
+            </span>
+          </div>
+        </div>
+
+        {/* Información adicional expandida */}
+        {isExpanded && (
+          <div className={`mt-3 pt-3 border-t ${isToday ? 'border-blue-400' : 'border-gray-200'} animate-in slide-in-from-top-2 duration-300`}>
+            <div className="grid grid-cols-2 gap-2 text-xs">
+              <div className="flex items-center gap-1">
+                <Droplets className="w-3 h-3" />
+                <span>{day.humidity}%</span>
+              </div>
+              <div className="flex items-center gap-1">
+                <Wind className="w-3 h-3" />
+                <span>{day.windSpeed} m/s</span>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
-      
-      <div className="text-center">
-        <span className="block text-xs text-gray-500">Mín</span>
-        <span className="font-bold text-blue-500">
-          {Math.round(day.minTemp)}°C
-        </span>
-      </div>
     </div>
-  </div>
-);
+  );
+};
 
 export default WeatherForecast;

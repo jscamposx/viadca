@@ -10,57 +10,78 @@ import {
   HotelInfo,
 } from "../components";
 import WeatherForecast from "../components/WeatherForecast";
+import { 
+  FiMapPin, 
+  FiCalendar, 
+  FiSun, 
+  FiCheckSquare, 
+  FiDollarSign,
+  FiUsers,
+  FiStar,
+  FiClock,
+  FiShield,
+  FiHeart,
+  FiShare2,
+  FiCamera
+} from "react-icons/fi";
 
+// Componente de Loading mejorado
 function LoadingSpinner() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
-      <div className="text-center space-y-4">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-blue-50">
+      <div className="text-center space-y-6">
         <div className="relative">
-          <div className="w-16 h-16 border-4 border-blue-500/30 rounded-full"></div>
-          <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin absolute top-0 left-0"></div>
+          <div className="w-20 h-20 border-4 border-blue-200 rounded-full"></div>
+          <div className="w-20 h-20 border-4 border-blue-600 border-t-transparent rounded-full animate-spin absolute top-0 left-0"></div>
+          <div className="w-12 h-12 border-2 border-indigo-400 border-b-transparent rounded-full animate-spin absolute top-2 left-2"></div>
         </div>
-        <p className="text-gray-600 font-medium">Preparando tu experiencia de viaje...</p>
+        <div className="space-y-2">
+          <p className="text-slate-700 font-semibold text-lg">Preparando tu experiencia de viaje</p>
+          <p className="text-slate-500 text-sm">Cargando los mejores momentos...</p>
+        </div>
       </div>
     </div>
   );
 }
 
+// Componente de Error mejorado
 function ErrorMessage({ message, onRetry }) {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 p-6">
-      <div className="max-w-md w-full bg-white rounded-2xl shadow-xl p-8 text-center">
-        <div className="w-20 h-20 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-4">
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-red-50 to-orange-50 p-6">
+      <div className="max-w-md w-full bg-white rounded-3xl shadow-2xl p-8 text-center backdrop-blur-sm border border-red-100">
+        <div className="w-24 h-24 bg-gradient-to-br from-red-100 to-red-200 rounded-full flex items-center justify-center mx-auto mb-6">
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
           </svg>
         </div>
-        <h3 className="text-2xl font-bold text-gray-800 mb-2">Error al cargar</h3>
-        <p className="text-gray-600 mb-6">{message}</p>
-        <button 
-          onClick={onRetry} 
-          className="w-full py-3 px-6 bg-gradient-to-r from-blue-500 to-blue-600 text-white font-medium rounded-lg hover:shadow-md transition-all"
+        <h3 className="text-3xl font-bold text-slate-800 mb-3">¡Ups! Algo salió mal</h3>
+        <p className="text-slate-600 mb-8 leading-relaxed">{message}</p>
+        <button
+          onClick={onRetry}
+          className="w-full py-4 px-6 bg-gradient-to-r from-red-500 to-red-600 text-white font-semibold rounded-2xl hover:shadow-lg transform hover:-translate-y-1 transition-all duration-300 hover:from-red-600 hover:to-red-700"
         >
-          Reintentar
+          Intentar de nuevo
         </button>
       </div>
     </div>
   );
 }
 
+// Componente de Not Found mejorado
 function NotFoundMessage() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 p-6">
-      <div className="max-w-md w-full bg-white rounded-2xl shadow-xl p-8 text-center">
-        <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-blue-50 p-6">
+      <div className="max-w-md w-full bg-white rounded-3xl shadow-2xl p-8 text-center backdrop-blur-sm border border-slate-100">
+        <div className="w-24 h-24 bg-gradient-to-br from-slate-100 to-slate-200 rounded-full flex items-center justify-center mx-auto mb-6">
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
         </div>
-        <h3 className="text-2xl font-bold text-gray-800 mb-2">Paquete no encontrado</h3>
-        <p className="text-gray-600 mb-6">Lo sentimos, no pudimos encontrar el paquete que buscas.</p>
-        <button 
-          onClick={() => window.history.back()} 
-          className="w-full py-3 px-6 bg-gradient-to-r from-blue-500 to-blue-600 text-white font-medium rounded-lg hover:shadow-md transition-all"
+        <h3 className="text-3xl font-bold text-slate-800 mb-3">Paquete no encontrado</h3>
+        <p className="text-slate-600 mb-8 leading-relaxed">Lo sentimos, no pudimos encontrar el paquete que buscas. Puede que haya sido movido o ya no esté disponible.</p>
+        <button
+          onClick={() => window.history.back()}
+          className="w-full py-4 px-6 bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-semibold rounded-2xl hover:shadow-lg transform hover:-translate-y-1 transition-all duration-300 hover:from-blue-600 hover:to-indigo-700"
         >
           Explorar otros paquetes
         </button>
@@ -69,267 +90,257 @@ function NotFoundMessage() {
   );
 }
 
+// Componente de badge mejorado
+function Badge({ children, variant = "default", icon: Icon }) {
+  const variants = {
+    default: "bg-slate-100 text-slate-700 border-slate-200",
+    success: "bg-emerald-100 text-emerald-700 border-emerald-200",
+    warning: "bg-amber-100 text-amber-700 border-amber-200",
+    info: "bg-blue-100 text-blue-700 border-blue-200"
+  };
+
+  return (
+    <span className={`inline-flex items-center px-3 py-1.5 rounded-full text-sm font-medium border ${variants[variant]} backdrop-blur-sm`}>
+      {Icon && <Icon className="w-4 h-4 mr-1.5" />}
+      {children}
+    </span>
+  );
+}
+
+// Componente principal mejorado
 function PackageViewPage() {
   const { url } = useParams();
   const { paquete, loading, error } = usePackage(url);
-  const [activeSection, setActiveSection] = useState('detalles');
-
-  // Efecto para observar qué sección está visible
-  useEffect(() => {
-    if (!paquete) return;
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            setActiveSection(entry.target.id);
-          }
-        });
-      },
-      { threshold: 0.5 }
-    );
-
-    const sections = ['detalles', 'itinerario', 'mapa', 'hotel', 'clima', 'requisitos'];
-    sections.forEach((id) => {
-      const element = document.getElementById(id);
-      if (element) observer.observe(element);
-    });
-
-    return () => observer.disconnect();
-  }, [paquete]);
+  const [isLiked, setIsLiked] = useState(false);
 
   if (loading) return <LoadingSpinner />;
   if (error) return <ErrorMessage message={error} onRetry={() => window.location.reload()} />;
   if (!paquete) return <NotFoundMessage />;
 
-  const scrollToSection = (sectionId) => {
-    const element = document.getElementById(sectionId);
-    if (element) {
-      element.scrollIntoView({
-        behavior: 'smooth'
-      });
-    }
-  };
-
   return (
-    <div className="bg-white">
-      {/* Hero Section */}
-      <div className="relative h-[85vh] min-h-[600px] overflow-hidden">
-        <div className="absolute inset-0 z-0">
-          <ImageCarousel imagenes={paquete.imagenes} />
-        </div>
-        
-        {/* Overlay degradado para mejor legibilidad */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent z-1"></div>
-        
-        {/* Contenido hero */}
-        <div className="absolute bottom-0 left-0 right-0 z-10">
-          <div className="container mx-auto px-6 pb-12">
-            <div className="backdrop-blur-md bg-white/90 rounded-3xl shadow-2xl p-8 max-w-3xl transform transition-all duration-500 hover:scale-[1.01]">
-              <div className="flex items-center space-x-3 mb-4">
-                <span className="bg-blue-500/10 text-blue-600 text-xs font-semibold px-3 py-1 rounded-full">
-                  Experiencia Premium
-                </span>
-                <span className="text-gray-500 text-sm">
-                  {paquete.duracion} días
-                </span>
-              </div>
-              
-              <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-3 leading-tight">
-                {paquete.nombre_paquete}
-              </h1>
-              
-              <div className="flex items-center text-gray-700">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                </svg>
-                <span className="mr-4">{paquete.origen}</span>
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mx-1 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                </svg>
-                <span className="ml-4 font-medium">{paquete.destino}</span>
-              </div>
-              
-              <div className="mt-6 flex items-center justify-between">
-                <div>
-                  <p className="text-gray-500 text-sm">Desde</p>
-                  <p className="text-3xl font-bold text-blue-600">
-                    {parseFloat(paquete.precio_base).toLocaleString("es-MX", {
-                      style: "currency",
-                      currency: "MXN",
-                    })}
-                  </p>
-                </div>
-                <button 
-                  className="relative bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-medium py-3 px-8 rounded-full shadow-lg hover:shadow-xl transition-all transform hover:scale-105 group"
-                >
-                  Reservar ahora
-                  <span className="absolute right-4 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-300">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                    </svg>
-                  </span>
-                </button>
-              </div>
+    <div className="bg-gradient-to-br from-slate-50 via-white to-blue-50 min-h-screen">
+      {/* Header flotante */}
+      <div className="sticky top-0 z-50 bg-white/80 backdrop-blur-lg border-b border-slate-200/50">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <Badge variant="info" icon={FiMapPin}>
+                {paquete.origen} → {paquete.destino}
+              </Badge>
+              <Badge variant="success" icon={FiCalendar}>
+                {paquete.duracion} días
+              </Badge>
+            </div>
+            <div className="flex items-center space-x-3">
+              <button 
+                onClick={() => setIsLiked(!isLiked)}
+                className={`p-2 rounded-full transition-all duration-300 ${isLiked ? 'bg-red-100 text-red-500' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'}`}
+              >
+                <FiHeart className={`w-5 h-5 ${isLiked ? 'fill-current' : ''}`} />
+              </button>
+              <button className="p-2 rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200 transition-all duration-300">
+                <FiShare2 className="w-5 h-5" />
+              </button>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Navigation */}
-      <div className="sticky top-0 z-30 bg-white/95 backdrop-blur-sm shadow-sm border-b border-gray-100">
-        <div className="container mx-auto px-6">
-          <div className="flex overflow-x-auto scrollbar-hide -mx-2">
-            {['Detalles', 'Itinerario', 'Mapa', 'Hotel', 'Clima', 'Requisitos'].map((item) => {
-              const sectionId = item.toLowerCase();
-              return (
-                <button
-                  key={item}
-                  onClick={() => scrollToSection(sectionId)}
-                  className={`px-4 py-4 text-sm font-medium whitespace-nowrap mx-2 border-b-2 transition-colors duration-300 ${
-                    activeSection === sectionId
-                      ? 'text-blue-600 border-blue-500' 
-                      : 'text-gray-600 hover:text-blue-600 border-transparent hover:border-blue-500'
-                  }`}
-                >
-                  {item}
-                </button>
-              );
-            })}
+      <div className="container mx-auto px-4 py-8">
+        {/* Hero Section */}
+        <div className="mb-12">
+          <div className="text-center mb-8">
+            <h1 className="text-5xl md:text-6xl font-bold text-slate-900 mb-4 leading-tight">
+              {paquete.nombre_paquete}
+            </h1>
+            <p className="text-xl text-slate-600 max-w-2xl mx-auto leading-relaxed">
+              Descubre una experiencia única que combina aventura, cultura y momentos inolvidables
+            </p>
+          </div>
+
+          {/* Galería de Imágenes Mejorada */}
+          <div className="relative h-[600px] rounded-3xl overflow-hidden shadow-2xl group">
+            <ImageCarousel imagenes={paquete.imagenes} />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            <div className="absolute bottom-6 left-6 flex items-center space-x-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+              <FiCamera className="w-5 h-5 text-white" />
+              <span className="text-white font-medium">Ver todas las fotos</span>
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* Main Content */}
-      <div className="container mx-auto px-6 py-16">
-        <div className="max-w-5xl mx-auto space-y-20">
-          {/* Package Details */}
-          <section 
-            id="detalles" 
-            className="scroll-mt-20 transition-all duration-300 hover:bg-gray-50/50 rounded-xl hover:shadow-sm p-6 -m-6"
-            role="region" 
-            aria-label="Detalles del paquete"
-          >
-            <div className="flex items-center mb-8">
-              <div className="h-px bg-gray-200 flex-1"></div>
-              <h2 className="text-2xl font-bold text-gray-800 px-6">Detalles del viaje</h2>
-              <div className="h-px bg-gray-200 flex-1"></div>
-            </div>
-            <PackageInfo
-              duracion={paquete.duracion}
-              vuelo={paquete.vuelo}
-              precio_base={paquete.precio_base}
-            />
-          </section>
-
-          {/* Itinerary */}
-          {paquete.itinerario && paquete.itinerario.length > 0 && (
-            <section 
-              id="itinerario" 
-              className="scroll-mt-20 transition-all duration-300 hover:bg-gray-50/50 rounded-xl hover:shadow-sm p-6 -m-6"
-              role="region" 
-              aria-label="Itinerario del viaje"
-            >
-              <div className="flex items-center mb-8">
-                <div className="h-px bg-gray-200 flex-1"></div>
-                <h2 className="text-2xl font-bold text-gray-800 px-6">Tu itinerario</h2>
-                <div className="h-px bg-gray-200 flex-1"></div>
-              </div>
-              <Itinerary itinerario={paquete.itinerario} />
-            </section>
-          )}
-
-          {/* Route Map */}
-          <section 
-            id="mapa" 
-            className="scroll-mt-20 transition-all duration-300 hover:bg-gray-50/50 rounded-xl hover:shadow-sm p-6 -m-6"
-            role="region" 
-            aria-label="Mapa de la ruta"
-          >
-            <div className="flex items-center mb-8">
-              <div className="h-px bg-gray-200 flex-1"></div>
-              <h2 className="text-2xl font-bold text-gray-800 px-6">Ruta del viaje</h2>
-              <div className="h-px bg-gray-200 flex-1"></div>
-            </div>
-            <RouteMap paquete={paquete} />
-          </section>
-
-          {/* Hotel Info */}
-          {paquete.hotel && (
-            <section 
-              id="hotel" 
-              className="scroll-mt-20 transition-all duration-300 hover:bg-gray-50/50 rounded-xl hover:shadow-sm p-6 -m-6"
-              role="region" 
-              aria-label="Información del hotel"
-            >
-              <div className="flex items-center mb-8">
-                <div className="h-px bg-gray-200 flex-1"></div>
-                <h2 className="text-2xl font-bold text-gray-800 px-6">Tu alojamiento</h2>
-                <div className="h-px bg-gray-200 flex-1"></div>
-              </div>
-              <HotelInfo hotel={paquete.hotel} />
-            </section>
-          )}
-
-          {/* Weather Forecast */}
-          {paquete.destino_lat && paquete.destino_lng && (
-            <section 
-              id="clima" 
-              className="scroll-mt-20 transition-all duration-300 hover:bg-gray-50/50 rounded-xl hover:shadow-sm p-6 -m-6"
-              role="region" 
-              aria-label="Pronóstico del clima"
-            >
-              <div className="flex items-center mb-8">
-                <div className="h-px bg-gray-200 flex-1"></div>
-                <h2 className="text-2xl font-bold text-gray-800 px-6">Pronóstico del clima</h2>
-                <div className="h-px bg-gray-200 flex-1"></div>
-              </div>
-              <WeatherForecast
-                lat={paquete.destino_lat}
-                lon={paquete.destino_lng}
+        {/* Contenido Principal */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
+          {/* Columna Izquierda: Contenido Principal */}
+          <div className="lg:col-span-2 space-y-16">
+            {/* Información del Paquete */}
+            <section className="bg-white rounded-3xl shadow-xl p-8 border border-slate-100">
+              <PackageInfo
+                duracion={paquete.duracion}
+                vuelo={paquete.vuelo}
+                precio_base={paquete.precio_base}
               />
             </section>
-          )}
 
-          {/* Requirements */}
-          {paquete.requisitos && (
-            <section 
-              id="requisitos" 
-              className="scroll-mt-20 transition-all duration-300 hover:bg-gray-50/50 rounded-xl hover:shadow-sm p-6 -m-6"
-              role="region" 
-              aria-label="Requisitos de viaje"
-            >
-              <div className="flex items-center mb-8">
-                <div className="h-px bg-gray-200 flex-1"></div>
-                <h2 className="text-2xl font-bold text-gray-800 px-6">Requisitos de viaje</h2>
-                <div className="h-px bg-gray-200 flex-1"></div>
+            {/* Itinerario */}
+            {paquete.itinerario && paquete.itinerario.length > 0 && (
+              <section className="bg-white rounded-3xl shadow-xl p-8 border border-slate-100">
+                <div className="flex items-center mb-6">
+                  <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center mr-4">
+                    <FiCalendar className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <h2 className="text-3xl font-bold text-slate-900">Itinerario</h2>
+                    <p className="text-slate-600">Tu aventura día a día</p>
+                  </div>
+                </div>
+                <Itinerary itinerario={paquete.itinerario} />
+              </section>
+            )}
+
+            {/* Hotel */}
+            {paquete.hotel && (
+              <section className="bg-white rounded-3xl shadow-xl p-8 border border-slate-100">
+                <HotelInfo hotel={paquete.hotel} />
+              </section>
+            )}
+
+            {/* Mapa */}
+            <section className="bg-white rounded-3xl shadow-xl p-8 border border-slate-100">
+              <div className="flex items-center mb-6">
+                <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl flex items-center justify-center mr-4">
+                  <FiMapPin className="w-6 h-6 text-white" />
+                </div>
+                <div>
+                  <h2 className="text-3xl font-bold text-slate-900">Ubicación</h2>
+                  <p className="text-slate-600">Explora el destino</p>
+                </div>
               </div>
-              <Requirements requisitos={paquete.requisitos} />
+              <RouteMap paquete={paquete} />
             </section>
-          )}
-        </div>
-      </div>
 
-      {/* Mobile Booking Bar */}
-      <div className="fixed bottom-0 left-0 right-0 bg-white shadow-lg border-t border-gray-200 z-40 lg:hidden">
-        <div className="container mx-auto px-4 py-3">
-          <div className="flex justify-between items-center">
-            <div>
-              <p className="text-xs text-gray-500">Desde</p>
-              <p className="text-md font-bold text-blue-600">
-                {parseFloat(paquete.precio_base).toLocaleString("es-MX", {
-                  style: "currency",
-                  currency: "MXN",
-                })}
-              </p>
+            {/* Clima */}
+            {paquete.destino_lat && paquete.destino_lng && (
+              <section className="bg-white rounded-3xl shadow-xl p-8 border border-slate-100">
+                <div className="flex items-center mb-6">
+                  <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-red-600 rounded-2xl flex items-center justify-center mr-4">
+                    <FiSun className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <h2 className="text-3xl font-bold text-slate-900">Clima</h2>
+                    <p className="text-slate-600">Pronóstico para tu viaje</p>
+                  </div>
+                </div>
+                <WeatherForecast
+                  lat={paquete.destino_lat}
+                  lon={paquete.destino_lng}
+                />
+              </section>
+            )}
+
+            {/* Requisitos */}
+            {paquete.requisitos && (
+              <section className="bg-white rounded-3xl shadow-xl p-8 border border-slate-100">
+                <div className="flex items-center mb-6">
+                  <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-600 rounded-2xl flex items-center justify-center mr-4">
+                    <FiShield className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <h2 className="text-3xl font-bold text-slate-900">Requisitos</h2>
+                    <p className="text-slate-600">Lo que necesitas saber</p>
+                  </div>
+                </div>
+                <Requirements requisitos={paquete.requisitos} />
+              </section>
+            )}
+          </div>
+
+          {/* Columna Derecha: Tarjeta de Reserva */}
+          <div className="lg:col-span-1">
+            <div className="sticky top-32">
+              <div className="bg-white rounded-3xl shadow-2xl p-8 border border-slate-100 backdrop-blur-sm">
+                {/* Precio */}
+                <div className="text-center mb-6">
+                  <div className="inline-flex items-baseline">
+                    <span className="text-5xl font-bold text-slate-900">
+                      {parseFloat(paquete.precio_base).toLocaleString("es-MX", {
+                        style: "currency",
+                        currency: "MXN",
+                      })}
+                    </span>
+                    <span className="ml-2 text-slate-500 text-lg">/ persona</span>
+                  </div>
+                  <p className="text-slate-600 mt-2">Precio todo incluido</p>
+                </div>
+
+                {/* Incluye */}
+                <div className="space-y-4 mb-8">
+                  <h3 className="font-semibold text-slate-900 text-lg">¿Qué incluye?</h3>
+                  <div className="space-y-3">
+                    <div className="flex items-center">
+                      <div className="w-6 h-6 bg-emerald-100 rounded-full flex items-center justify-center mr-3">
+                        <FiCheckSquare className="w-4 h-4 text-emerald-600" />
+                      </div>
+                      <span className="text-slate-700">Vuelo redondo incluido</span>
+                    </div>
+                    <div className="flex items-center">
+                      <div className="w-6 h-6 bg-emerald-100 rounded-full flex items-center justify-center mr-3">
+                        <FiCheckSquare className="w-4 h-4 text-emerald-600" />
+                      </div>
+                      <span className="text-slate-700">Alojamiento premium</span>
+                    </div>
+                    <div className="flex items-center">
+                      <div className="w-6 h-6 bg-emerald-100 rounded-full flex items-center justify-center mr-3">
+                        <FiCheckSquare className="w-4 h-4 text-emerald-600" />
+                      </div>
+                      <span className="text-slate-700">Actividades exclusivas</span>
+                    </div>
+                    <div className="flex items-center">
+                      <div className="w-6 h-6 bg-emerald-100 rounded-full flex items-center justify-center mr-3">
+                        <FiCheckSquare className="w-4 h-4 text-emerald-600" />
+                      </div>
+                      <span className="text-slate-700">Guía especializado</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Botón de Reserva */}
+                <button className="w-full bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 text-white font-bold py-5 rounded-2xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 hover:from-blue-700 hover:via-indigo-700 hover:to-purple-700 mb-4">
+                  <span className="text-lg">🚀 Reservar Aventura</span>
+                </button>
+
+                {/* Información adicional */}
+                <div className="space-y-2 text-center">
+                  <p className="text-sm text-slate-500">
+                    <FiShield className="inline w-4 h-4 mr-1" />
+                    Pagos 100% seguros
+                  </p>
+                  <p className="text-sm text-slate-500">
+                    <FiClock className="inline w-4 h-4 mr-1" />
+                    Cancelación flexible
+                  </p>
+                  <p className="text-sm text-slate-500">
+                    <FiUsers className="inline w-4 h-4 mr-1" />
+                    Atención 24/7
+                  </p>
+                </div>
+              </div>
+
+              {/* Tarjeta de confianza */}
+              <div className="mt-6 bg-gradient-to-r from-emerald-50 to-teal-50 rounded-2xl p-6 border border-emerald-200">
+                <div className="flex items-center justify-center mb-3">
+                  <div className="flex items-center">
+                    {[...Array(5)].map((_, i) => (
+                      <FiStar key={i} className="w-5 h-5 text-yellow-400 fill-current" />
+                    ))}
+                  </div>
+                  <span className="ml-2 font-semibold text-slate-700">4.9</span>
+                </div>
+                <p className="text-center text-slate-600 text-sm">
+                  Más de 1,000 viajeros satisfechos
+                </p>
+              </div>
             </div>
-            <button className="flex items-center bg-gradient-to-r from-blue-600 to-blue-700 text-white font-medium py-2 px-4 rounded-full shadow-md hover:shadow-lg transition-all text-sm">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-              Reservar
-            </button>
           </div>
         </div>
       </div>
