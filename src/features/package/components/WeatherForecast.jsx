@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { Loader2, RefreshCw, AlertCircle, Sun, Cloud, CloudRain, Wind, Droplets, Eye, Thermometer } from "lucide-react";
+import axios from "axios";
 
 const WeatherForecast = ({ lat, lon, cityName = "Ubicación Actual" }) => {
   const [forecast, setForecast] = useState([]);
@@ -72,56 +73,23 @@ const WeatherForecast = ({ lat, lon, cityName = "Ubicación Actual" }) => {
     setError(null);
     
     try {
-      // Simulamos una API key para demostración
-      const apiKey = "demo_key";
+      const apiKey = import.meta.env.VITE_OPENWEATHER_API_KEY;
       
-      // Simulamos datos de respuesta para demostración
-      const simulatedForecastData = {
-        list: Array.from({ length: 40 }, (_, i) => ({
-          dt: Math.floor(Date.now() / 1000) + (i * 3 * 60 * 60), // Cada 3 horas
-          main: {
-            temp: 20 + Math.random() * 15,
-            humidity: 50 + Math.random() * 30,
-            pressure: 1010 + Math.random() * 20
-          },
-          weather: [{
-            id: 800,
-            main: "Clear",
-            description: "cielo claro",
-            icon: "01d"
-          }],
-          wind: {
-            speed: Math.random() * 10
-          }
-        }))
-      };
+      const forecastUrl = `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=${apiKey}&units=metric&lang=es`;
+      const currentUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apiKey}&units=metric&lang=es`;
 
-      const simulatedCurrentData = {
-        main: {
-          temp: 22,
-          feels_like: 24,
-          humidity: 65,
-          pressure: 1013
-        },
-        weather: [{
-          id: 800,
-          main: "Clear",
-          description: "cielo claro",
-          icon: "01d"
-        }],
-        wind: {
-          speed: 5.2
-        },
-        visibility: 10000
-      };
+      const [forecastResponse, currentWeatherResponse] = await Promise.all([
+        axios.get(forecastUrl),
+        axios.get(currentUrl)
+      ]);
 
-      const processedForecast = groupForecastByDay(simulatedForecastData.list);
+      const processedForecast = groupForecastByDay(forecastResponse.data.list);
       setForecast(processedForecast.slice(0, 5));
-      setCurrentWeather(simulatedCurrentData);
+      setCurrentWeather(currentWeatherResponse.data);
       setLastUpdate(new Date());
       
     } catch (err) {
-      setError(err.response?.data?.message || "Error al cargar el pronóstico");
+      setError(err.response?.data?.message || "Error al cargar el pronóstico. Verifica la API key y la conexión.");
       console.error("Weather API error:", err);
     } finally {
       setLoading(false);
