@@ -314,10 +314,6 @@ const AdminPaquetes = () => {
                       </div>
                     </div>
 
-                    <p className="text-gray-600 text-sm mb-4 line-clamp-3">
-                      {paquete.descripcion || "No hay descripción disponible."}
-                    </p>
-
                     <div className="flex flex-wrap gap-2">
                       <Link
                         to={`/paquetes/${paquete.url}`}

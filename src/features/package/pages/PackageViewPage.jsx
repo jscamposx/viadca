@@ -20,12 +20,12 @@ import {
   FiHome,
   FiStar,
 } from "react-icons/fi";
+
 function LoadingSpinner() {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-slate-50 to-blue-50 px-4">
       <div role="status" className="text-center space-y-4 sm:space-y-6">
         <div className="mx-auto w-16 h-16 sm:w-20 sm:h-20 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
-
         <div className="space-y-2">
           <p className="text-slate-700 font-semibold text-base sm:text-lg">
             Preparando tu experiencia de viaje
@@ -153,6 +153,38 @@ function PackageViewPage() {
   const { paquete, loading, error } = usePackage(url);
   const [isLiked, setIsLiked] = useState(false);
 
+  // ✨ FUNCIÓN PARA COMPARTIR ✨
+  const handleShare = async () => {
+    if (!paquete) return; // No hacer nada si los datos del paquete aún no están cargados
+
+    const shareData = {
+      title: paquete.nombre_paquete,
+      text: `¡Echa un vistazo a este increíble paquete de viaje: ${paquete.nombre_paquete}!`,
+      url: window.location.href,
+    };
+
+    if (navigator.share) {
+      try {
+        await navigator.share(shareData);
+        console.log("Contenido compartido con éxito.");
+      } catch (err) {
+        // Es común que los usuarios cancelen el diálogo, por lo que solo registramos errores reales
+        if (err.name !== "AbortError") {
+          console.error("Error al compartir:", err);
+        }
+      }
+    } else {
+      // Fallback para navegadores que no soportan la Web Share API
+      try {
+        await navigator.clipboard.writeText(window.location.href);
+        alert("¡Enlace copiado al portapapeles!");
+      } catch (err) {
+        console.error("No se pudo copiar el enlace:", err);
+        alert("No se pudo copiar el enlace.");
+      }
+    }
+  };
+
   if (loading) return <LoadingSpinner />;
   if (error)
     return (
@@ -181,13 +213,21 @@ function PackageViewPage() {
                 aria-label={
                   isLiked ? "Quitar de favoritos" : "Añadir a favoritos"
                 }
-                className={`p-2 rounded-full transition-all duration-300 ${isLiked ? "bg-red-100 text-red-500" : "bg-slate-100 text-slate-500 hover:bg-slate-200"}`}
+                className={`p-2 rounded-full transition-all duration-300 ${
+                  isLiked
+                    ? "bg-red-100 text-red-500"
+                    : "bg-slate-100 text-slate-500 hover:bg-slate-200"
+                }`}
               >
                 <FiHeart
-                  className={`w-4 h-4 sm:w-5 sm:h-5 ${isLiked ? "fill-current" : ""}`}
+                  className={`w-4 h-4 sm:w-5 sm:h-5 ${
+                    isLiked ? "fill-current" : ""
+                  }`}
                 />
               </button>
+              {/* ✨ BOTÓN CON EL onClick AÑADIDO ✨ */}
               <button
+                onClick={handleShare}
                 aria-label="Compartir paquete"
                 className="p-2 rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200 transition-all duration-300"
               >
