@@ -2,16 +2,15 @@ import { FiClock, FiSend, FiDollarSign, FiCalendar, FiAirplay, FiTrendingUp } fr
 
 // Componente individual para cada pieza de información
 const InfoCard = ({ icon, title, value, subtitle, colorClass, gradientClass, index }) => (
-  <div 
+  <div
     className={`group relative overflow-hidden bg-white rounded-2xl shadow-lg border border-slate-200/50 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 cursor-pointer backdrop-blur-sm ${colorClass}`}
-    style={{ 
+    style={{
       animationDelay: `${index * 150}ms`,
-      animation: 'fadeInUp 0.6s ease-out forwards'
     }}
   >
     {/* Gradiente de fondo sutil */}
     <div className={`absolute inset-0 opacity-0 group-hover:opacity-10 transition-opacity duration-300 ${gradientClass}`}></div>
-    
+
     {/* Contenido */}
     <div className="relative p-6">
       {/* Icono con animación */}
@@ -20,7 +19,7 @@ const InfoCard = ({ icon, title, value, subtitle, colorClass, gradientClass, ind
           {icon}
         </div>
       </div>
-      
+
       {/* Información */}
       <div className="space-y-2">
         <h3 className="text-sm font-semibold text-slate-500 uppercase tracking-wider">
@@ -35,11 +34,11 @@ const InfoCard = ({ icon, title, value, subtitle, colorClass, gradientClass, ind
           </p>
         )}
       </div>
-      
+
       {/* Decoración */}
       <div className="absolute top-4 right-4 w-8 h-8 bg-gradient-to-br from-white/20 to-white/10 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
     </div>
-    
+
     {/* Borde inferior decorativo */}
     <div className={`absolute bottom-0 left-0 right-0 h-1 ${gradientClass} transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300`}></div>
   </div>
@@ -154,20 +153,6 @@ const PackageInfo = ({ duracion, vuelo, precio_base }) => {
           </div>
         </div>
       </div>
-
-      {/* Estilos CSS en línea para la animación */}
-      <style jsx>{`
-        @keyframes fadeInUp {
-          from {
-            opacity: 0;
-            transform: translateY(30px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-      `}</style>
     </div>
   );
 };

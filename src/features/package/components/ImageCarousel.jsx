@@ -4,10 +4,6 @@ import { Carousel } from "react-responsive-carousel";
 import { 
   FiChevronLeft, 
   FiChevronRight, 
-  FiMaximize2, 
-  FiDownload, 
-  FiHeart,
-  FiShare2,
   FiCamera,
   FiEye
 } from "react-icons/fi";
@@ -37,73 +33,9 @@ const CustomArrow = ({ direction, onClick, isVisible }) => {
   );
 };
 
-// Componente de overlay con información
-const ImageOverlay = ({ imagen, currentIndex, totalImages, onAction }) => {
-  const [isVisible, setIsVisible] = useState(false);
-  
-  useEffect(() => {
-    const timer = setTimeout(() => setIsVisible(true), 500);
-    return () => clearTimeout(timer);
-  }, [currentIndex]);
-
-  return (
-    <div className={`absolute inset-0 z-10 transition-opacity duration-500 ${isVisible ? 'opacity-100' : 'opacity-0'}`}>
-      {/* Gradiente superior */}
-      <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-black/40 to-transparent" />
-      
-      {/* Gradiente inferior */}
-      <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-black/40 to-transparent" />
-      
-      {/* Información superior */}
-      <div className="absolute top-6 left-6 right-6 flex justify-between items-start">
-        <div className="flex items-center space-x-2">
-          <div className="bg-white/20 backdrop-blur-md rounded-full px-3 py-1.5 border border-white/30">
-            <span className="text-white text-sm font-medium">
-              {currentIndex + 1} / {totalImages}
-            </span>
-          </div>
-          <div className="bg-white/20 backdrop-blur-md rounded-full px-3 py-1.5 border border-white/30">
-            <FiCamera className="w-4 h-4 text-white inline mr-1.5" />
-            <span className="text-white text-sm font-medium">Galería</span>
-          </div>
-        </div>
-        
-        {/* Acciones */}
-        <div className="flex items-center space-x-2">
-          <button 
-            onClick={() => onAction('favorite')}
-            className="w-10 h-10 bg-white/20 hover:bg-white/30 backdrop-blur-md rounded-full flex items-center justify-center border border-white/30 transition-all duration-300 hover:scale-110"
-          >
-            <FiHeart className="w-5 h-5 text-white" />
-          </button>
-          <button 
-            onClick={() => onAction('share')}
-            className="w-10 h-10 bg-white/20 hover:bg-white/30 backdrop-blur-md rounded-full flex items-center justify-center border border-white/30 transition-all duration-300 hover:scale-110"
-          >
-            <FiShare2 className="w-5 h-5 text-white" />
-          </button>
-          <button 
-            onClick={() => onAction('fullscreen')}
-            className="w-10 h-10 bg-white/20 hover:bg-white/30 backdrop-blur-md rounded-full flex items-center justify-center border border-white/30 transition-all duration-300 hover:scale-110"
-          >
-            <FiMaximize2 className="w-5 h-5 text-white" />
-          </button>
-        </div>
-      </div>
-      
-      {/* Información inferior */}
-      <div className="absolute bottom-6 left-6 right-6">
-        <div className="bg-white/20 backdrop-blur-md rounded-2xl p-4 border border-white/30">
-          <h3 className="text-white font-semibold text-lg mb-1">
-            {imagen?.nombre || `Imagen ${currentIndex + 1}`}
-          </h3>
-          <p className="text-white/80 text-sm">
-            {imagen?.descripcion || "Una vista espectacular de tu próximo destino"}
-          </p>
-        </div>
-      </div>
-    </div>
-  );
+// Componente de overlay simplificado
+const ImageOverlay = ({ imagen, currentIndex, totalImages }) => {
+  return null; // Completamente eliminado
 };
 
 // Componente de indicadores personalizados
@@ -157,23 +89,6 @@ const ImageCarousel = ({ imagenes }) => {
     setIsLoading(false);
   };
 
-  // Manejo de acciones
-  const handleAction = (action) => {
-    switch (action) {
-      case 'favorite':
-        console.log('Agregar a favoritos');
-        break;
-      case 'share':
-        console.log('Compartir imagen');
-        break;
-      case 'fullscreen':
-        console.log('Ver en pantalla completa');
-        break;
-      default:
-        break;
-    }
-  };
-
   // Función para obtener URL de imagen
   const getImageUrl = (url) => {
     if (url?.startsWith("http") || url?.startsWith("data:")) {
@@ -205,6 +120,7 @@ const ImageCarousel = ({ imagenes }) => {
         showArrows={true}
         showThumbs={false}
         showStatus={false}
+        showIndicators={false}
         infiniteLoop={true}
         useKeyboardArrows={true}
         autoPlay={true}
@@ -228,14 +144,7 @@ const ImageCarousel = ({ imagenes }) => {
             isVisible={hasNext && validImages.length > 1}
           />
         )}
-        renderIndicator={(onClickHandler, isSelected, index) => (
-          <CustomIndicator 
-            isSelected={isSelected}
-            index={index}
-            onClick={onClickHandler}
-          />
-        )}
-        className="h-full"
+        className="h-full [&_.carousel]:h-full [&_.carousel_.slider-wrapper]:h-full [&_.carousel_.slider]:h-full [&_.carousel_.slide]:h-full [&_.carousel-slider]:overflow-visible"
       >
         {validImages.map((imagen, index) => (
           <div key={imagen.id || index} className="w-full h-full relative">
@@ -246,14 +155,6 @@ const ImageCarousel = ({ imagenes }) => {
               onLoad={handleImageLoad}
               onError={() => handleImageError(imagen.id)}
               loading={index === 0 ? "eager" : "lazy"}
-            />
-            
-            {/* Overlay con información */}
-            <ImageOverlay
-              imagen={imagen}
-              currentIndex={index}
-              totalImages={validImages.length}
-              onAction={handleAction}
             />
           </div>
         ))}

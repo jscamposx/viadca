@@ -39,7 +39,6 @@ const WeatherForecast = ({ lat, lon, cityName = "Ubicación Actual" }) => {
     });
 
     return Object.values(dailyData).map(day => {
-      // Encontrar el icono más representativo (el de mediodía más cercano)
       const noonIndex = day.timestamps.findIndex(
         ts => new Date(ts * 1000).getHours() >= 11
       );
@@ -73,7 +72,7 @@ const WeatherForecast = ({ lat, lon, cityName = "Ubicación Actual" }) => {
     setError(null);
     
     try {
-      const apiKey = import.meta.env.VITE_OPENWEATHER_API_KEY;
+      const apiKey = import.meta.env.VITE_OPENWEATHER_API_KEY ;
       
       const forecastUrl = `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=${apiKey}&units=metric&lang=es`;
       const currentUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apiKey}&units=metric&lang=es`;
@@ -105,19 +104,6 @@ const WeatherForecast = ({ lat, lon, cityName = "Ubicación Actual" }) => {
     fetchWeather(true);
   };
 
-  // Determinar el color del fondo según la temperatura promedio
-  const getBackgroundGradient = useMemo(() => {
-    if (!forecast.length) return "from-blue-50 to-white";
-    
-    const avgTemp = forecast.reduce((acc, day) => acc + day.avgTemp, 0) / forecast.length;
-    
-    if (avgTemp < 0) return "from-blue-100 to-blue-50";
-    if (avgTemp < 10) return "from-blue-50 to-white";
-    if (avgTemp < 20) return "from-green-50 to-white";
-    if (avgTemp < 30) return "from-yellow-50 to-white";
-    return "from-red-50 to-white";
-  }, [forecast]);
-
   if (error) {
     return (
       <div className="bg-red-50 rounded-xl p-6 border border-red-200 mt-6">
@@ -140,7 +126,7 @@ const WeatherForecast = ({ lat, lon, cityName = "Ubicación Actual" }) => {
   }
 
   return (
-    <div className={`bg-gradient-to-br ${getBackgroundGradient} rounded-xl shadow-sm p-6 border border-gray-100 mt-6`}>
+    <div className="bg-white ">
       {/* Header */}
       <div className="flex items-center justify-end mb-6">
      
@@ -153,7 +139,7 @@ const WeatherForecast = ({ lat, lon, cityName = "Ubicación Actual" }) => {
           <button
             onClick={handleRefresh}
             disabled={refreshing}
-            className="p-2 rounded-lg hover:bg-white/50 transition-colors duration-200 disabled:opacity-50"
+            className="p-2 rounded-lg hover:bg-gray-100 transition-colors duration-200 disabled:opacity-50"
           >
             <RefreshCw className={`w-5 h-5 text-gray-600 ${refreshing ? 'animate-spin' : ''}`} />
           </button>
@@ -169,7 +155,7 @@ const WeatherForecast = ({ lat, lon, cityName = "Ubicación Actual" }) => {
         <>
           {/* Clima actual */}
           {currentWeather && (
-            <div className="bg-white/70 backdrop-blur-sm rounded-lg p-4 mb-6 border border-white/20">
+            <div className="bg-gray-50 rounded-lg p-4 mb-6 border border-gray-200">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
                   <div className="text-3xl font-bold text-gray-800">
@@ -233,7 +219,7 @@ const WeatherForecast = ({ lat, lon, cityName = "Ubicación Actual" }) => {
   );
 };
 
-// Componente mejorado para cada día
+// Componente para cada día
 const DayForecast = ({ day, isToday }) => {
   const [isExpanded, setIsExpanded] = useState(false);
 
@@ -243,7 +229,7 @@ const DayForecast = ({ day, isToday }) => {
         relative overflow-hidden rounded-lg border transition-all duration-300 cursor-pointer
         ${isToday 
           ? 'bg-gradient-to-b from-blue-500 to-blue-600 text-white border-blue-400 shadow-lg' 
-          : 'bg-white/70 backdrop-blur-sm border-white/20 hover:bg-white/80'
+          : 'bg-gray-50 border-gray-200 hover:bg-gray-100'
         }
         ${isExpanded ? 'scale-105 z-10' : 'hover:scale-102'}
       `}
