@@ -25,7 +25,7 @@ import {
 function LoadingSpinner() {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-slate-50 to-blue-50 px-4">
-  
+ 
       <div role="status" className="text-center space-y-4 sm:space-y-6">
         <div className="w-16 h-16 sm:w-20 sm:h-20 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
         <div className="space-y-2">
@@ -203,7 +203,7 @@ function PackageViewPage() {
               momentos inolvidables
             </p>
           </div>
-      
+     
           <div className="relative h-64 sm:h-80 md:h-96 lg:h-[600px] rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl group">
             <ImageCarousel imagenes={paquete.imagenes} />
             <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
@@ -215,7 +215,7 @@ function PackageViewPage() {
             
 
             <section aria-labelledby="info-heading" className="bg-white rounded-2xl sm:rounded-3xl shadow-xl p-4 sm:p-6 lg:p-8 border border-slate-100">
-       
+   
               <PackageInfo
                 id="info-heading"
                 duracion={paquete.duracion}
@@ -261,6 +261,25 @@ function PackageViewPage() {
                 <div className="h-80 sm:h-96 lg:h-[400px] overflow-hidden rounded-xl sm:rounded-2xl">
                   <HotelInfo hotel={paquete.hotel} />
                 </div>
+              </section>
+            )}
+
+            {paquete.origen_lat && paquete.origen_lng && paquete.destino_lat && paquete.destino_lng && (
+              <section aria-labelledby="routemap-heading" className="bg-white rounded-2xl sm:rounded-3xl shadow-xl p-4 sm:p-6 lg:p-8 border border-slate-100">
+                <div className="flex items-center mb-4 sm:mb-6">
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-purple-500 to-pink-600 rounded-xl sm:rounded-2xl flex items-center justify-center mr-3 sm:mr-4 flex-shrink-0">
+                    <FiMapPin aria-hidden="true" className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+                  </div>
+                  <div>
+                    <h2 id="routemap-heading" className="text-2xl sm:text-3xl font-bold text-slate-900">
+                      Ruta del Viaje
+                    </h2>
+                    <p className="text-slate-600 text-sm sm:text-base">
+                      Visualiza tu trayecto
+                    </p>
+                  </div>
+                </div>
+                <RouteMap paquete={paquete} />
               </section>
             )}
             
@@ -324,7 +343,6 @@ function PackageViewPage() {
                   </p>
                 </div>
                 
-
                 <div className="space-y-3 sm:space-y-4 mb-6 sm:mb-8">
                   <h3 className="font-semibold text-slate-900 text-base sm:text-lg">
                     ¿Qué incluye?
@@ -356,7 +374,7 @@ function PackageViewPage() {
                     🚀 Reservar Aventura
                   </span>
                 </button>
-    
+   
                 <div className="mt-4 sm:mt-6 bg-gradient-to-r from-emerald-50 to-teal-50 rounded-xl sm:rounded-2xl p-4 sm:p-6 border border-emerald-200">
                   <div 
                     className="flex items-center justify-center mb-2 sm:mb-3"
