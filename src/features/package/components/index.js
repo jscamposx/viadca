@@ -8,3 +8,4 @@ export { default as PackageInfo } from "./PackageInfo";
 export { default as Requirements } from "./Requirements";
 export { default as RouteMap } from "./RouteMap";
 export { default as HotelInfo } from "./HotelInfo";
+export { default as WheaterForecast } from "./WeatherForecast";

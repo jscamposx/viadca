@@ -12,6 +12,7 @@ import {
   RouteMap,
   HotelInfo,
 } from "../components";
+import WeatherForecast from "../components/WeatherForecast"; // Importa el nuevo componente
 
 function PaqueteDetalle() {
   const { url } = useParams();
@@ -67,6 +68,16 @@ function PaqueteDetalle() {
               precio_base={paquete.precio_base}
             />
           </div>
+
+          {/* Sección del Clima */}
+          {paquete.destino_lat && paquete.destino_lng && (
+            <div className="mb-6 border-b border-gray-200 pb-4">
+               <WeatherForecast
+                  lat={paquete.destino_lat}
+                  lon={paquete.destino_lng}
+               />
+            </div>
+          )}
 
           {paquete.itinerario && paquete.itinerario.length > 0 && (
             <div className="mb-6 border-b border-gray-200 pb-4">
