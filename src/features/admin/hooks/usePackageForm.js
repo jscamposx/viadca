@@ -7,7 +7,8 @@ const isUUID = (str) =>
     str,
   );
 
-const processImage = async (image) => {
+// MODIFICADO: La función ahora acepta 'index' para el 'orden'
+const processImage = async (image, index) => {
   if (
     typeof image === "string" &&
     (isUUID(image) || image.startsWith("http"))
@@ -26,8 +27,10 @@ const processImage = async (image) => {
   }
   if (image.url && image.url.startsWith("data:image")) {
     try {
-      const response = await api.images.upload({ image: image.url });
+      // MODIFICADO: Se envía la imagen junto con su orden
+      const response = await api.images.upload({ image: image.url, orden: index + 1 });
       if (response.data && response.data.id) {
+        // Devuelve solo el ID como se espera
         return response.data.id;
       }
     } catch (error) {
@@ -205,6 +208,7 @@ export const usePackageForm = (initialPackageData = null) => {
     setFormData((prev) => ({ ...prev, itinerario }));
   };
 
+  // MODIFICADO: Lógica de envío actualizada
   const handleSubmit = async (event) => {
     event.preventDefault();
 
@@ -216,7 +220,7 @@ export const usePackageForm = (initialPackageData = null) => {
     let hotelPayload = null;
     if (formData.hotel) {
       const hotelImageIds = await Promise.all(
-        (formData.hotel.images || []).map(processImage),
+        (formData.hotel.images || []).map((image, index) => processImage(image, index)),
       );
 
       hotelPayload = {
@@ -229,17 +233,11 @@ export const usePackageForm = (initialPackageData = null) => {
       };
     }
 
-    const packageImages = await Promise.all(
-      (formData.images || []).map(async (image, index) => {
-        const imageId = await processImage(image);
-        if (imageId) {
-          return { id: imageId, orden: index + 1 };
-        }
-        return null;
-      }),
+    const packageImageIds = await Promise.all(
+      (formData.images || []).map((image, index) => processImage(image, index)),
     );
 
-    const { images, ...restOfFormData } = formData;
+    const { images, imagenes, ...restOfFormData } = formData;
 
     const payload = {
       ...restOfFormData,
@@ -249,7 +247,7 @@ export const usePackageForm = (initialPackageData = null) => {
         ...item,
         dia: parseInt(item.dia, 10),
       })),
-      imagenes: packageImages.filter(Boolean),
+      imageIds: packageImageIds.filter(Boolean), // Se envía 'imageIds' con un arreglo de strings
       hotel: hotelPayload,
     };
 
