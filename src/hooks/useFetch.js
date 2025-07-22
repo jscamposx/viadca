@@ -40,7 +40,7 @@ export function useFetch(apiFunc, params = []) {
     return () => {
       isMounted = false;
     };
-  }, [apiFunc, paramsKey, params]);
+  }, [apiFunc, paramsKey]);
 
   return { data, setData, loading, error };
 }

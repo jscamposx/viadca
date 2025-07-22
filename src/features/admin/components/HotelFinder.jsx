@@ -25,7 +25,7 @@ const HotelFinder = ({ destination, onHotelSelect, selectedHotel }) => {
     ) {
       setAllHotels((prev) => [selectedHotel, ...prev]);
     }
-  }, [selectedHotel, allHotels]);
+  }, [selectedHotel]);
 
   const itemsPerPage = 3;
 
