@@ -66,7 +66,7 @@ const ItineraryEditor = ({
               <button
                 type="button"
                 onClick={() => onRemoveItinerario(index)}
-                className="flex items-center gap-1 bg-red-500 hover:bg-red-600 text-white py-2 px-3 rounded-md transition-colors duration-200"
+                className="w-full sm:w-auto flex items-center justify-center gap-1 bg-red-500 hover:bg-red-600 text-white py-2 px-3 rounded-md transition-colors duration-200"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"

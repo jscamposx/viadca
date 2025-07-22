@@ -36,7 +36,7 @@ const NewFlightPage = () => {
             setPreview(
               imagenes[0].url.startsWith("http")
                 ? imagenes[0].url
-                : `${API_URL}${imagenes[0].url}`
+                : `${API_URL}${imagenes[0].url}`,
             );
           }
         })
@@ -55,33 +55,25 @@ const NewFlightPage = () => {
     }
   };
 
-  // 🔽 --- INICIO DEL CÓDIGO CORREGIDO --- 🔽
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
     setLoading(true);
 
     try {
-      // 1. Prepara el payload base solo con los datos que siempre se envían.
       const vueloPayload = {
         nombre,
         transporte,
       };
-
-      // 2. Si el usuario seleccionó una nueva imagen, súbela y añade 'imageIds' al payload.
       if (imagen) {
         const base64String = await fileToBase64(imagen);
         const uploadResponse = await api.images.uploadBase64Image(base64String);
         const imageId = uploadResponse.data.id;
-        
+
         if (imageId) {
-          // Solo añadimos la clave 'imageIds' si hay una nueva imagen.
           vueloPayload.imageIds = [imageId];
         }
       }
-      // Si 'imagen' es null, no se añade la clave 'imageIds', y el backend no tocará las imágenes existentes.
-
-      // 3. Envía el payload al backend.
       if (isEditing) {
         await api.flights.updateVuelo(id, vueloPayload);
         alert("Vuelo actualizado con éxito.");
@@ -190,8 +182,8 @@ const NewFlightPage = () => {
             {loading
               ? "Guardando..."
               : isEditing
-              ? "Actualizar Vuelo"
-              : "Crear Vuelo"}
+                ? "Actualizar Vuelo"
+                : "Crear Vuelo"}
           </button>
         </div>
       </form>

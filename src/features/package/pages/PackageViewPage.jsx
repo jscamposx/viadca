@@ -21,7 +21,6 @@ import {
   FiStar,
 } from "react-icons/fi";
 
-
 function LoadingSpinner() {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-slate-50 to-blue-50 px-4">
@@ -149,21 +148,20 @@ function Badge({ children, variant = "default", icon: Icon }) {
   );
 }
 
-
 function PackageViewPage() {
   const { url } = useParams();
   const { paquete, loading, error } = usePackage(url);
   const [isLiked, setIsLiked] = useState(false);
 
-
   const isMobile = () => {
     if (navigator.userAgentData?.mobile) {
       return true;
     }
-    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+      navigator.userAgent,
+    );
   };
 
- 
   const handleShare = async () => {
     if (!paquete) return;
 
@@ -182,7 +180,6 @@ function PackageViewPage() {
         }
       }
     } else {
-
       try {
         await navigator.clipboard.writeText(window.location.href);
         alert("¡Enlace copiado al portapapeles!");
@@ -233,7 +230,7 @@ function PackageViewPage() {
                   }`}
                 />
               </button>
-        
+
               <button
                 onClick={handleShare}
                 aria-label="Compartir paquete"
@@ -434,13 +431,10 @@ function PackageViewPage() {
                 <div className="text-center mb-4 sm:mb-6">
                   <div className="flex flex-col sm:flex-row items-center justify-center sm:items-baseline">
                     <span className="text-3xl sm:text-4xl lg:text-5xl font-bold text-slate-900">
-                      {parseFloat(paquete.precio_base).toLocaleString(
-                        "es-MX",
-                        {
-                          style: "currency",
-                          currency: "MXN",
-                        }
-                      )}
+                      {parseFloat(paquete.precio_base).toLocaleString("es-MX", {
+                        style: "currency",
+                        currency: "MXN",
+                      })}
                     </span>
                     <span className="ml-0 sm:ml-2 text-slate-500 text-base sm:text-lg">
                       / persona

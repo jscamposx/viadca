@@ -269,17 +269,17 @@ const NuevoPaquete = () => {
 
             <div className="sticky bottom-0 bg-white border-t border-gray-200 py-4 px-6 rounded-b-2xl shadow-lg">
               <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
-                <div className="text-sm text-gray-600">
+                <div className="w-full sm:w-auto">
                   <button
                     type="button"
                     onClick={() => navigate("/admin/paquetes")}
-                    className="px-5 py-2.5 border border-gray-300 rounded-lg font-medium text-gray-700 hover:bg-gray-100"
+                    className="w-full sm:w-auto px-5 py-2.5 border border-gray-300 rounded-lg font-medium text-gray-700 hover:bg-gray-100"
                   >
                     Regresar
                   </button>
                 </div>
 
-                <div className="flex gap-3">
+                <div className="flex gap-3 w-full sm:w-auto">
                   <button
                     type="button"
                     onClick={() => {
@@ -290,7 +290,7 @@ const NuevoPaquete = () => {
                       }
                     }}
                     disabled={activeSection === "informacion"}
-                    className="px-5 py-2.5 border border-gray-300 rounded-lg font-medium text-gray-700 disabled:opacity-50"
+                    className="w-full sm:w-auto px-5 py-2.5 border border-gray-300 rounded-lg font-medium text-gray-700 disabled:opacity-50"
                   >
                     Anterior
                   </button>
@@ -307,14 +307,14 @@ const NuevoPaquete = () => {
                           setActiveSection(sectionIds[currentIndex + 1]);
                         }
                       }}
-                      className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors"
+                      className="w-full sm:w-auto px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors"
                     >
                       Siguiente
                     </button>
                   ) : (
                     <button
                       type="submit"
-                      className="px-8 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold rounded-lg shadow-md transition-all transform hover:-translate-y-0.5"
+                      className="w-full sm:w-auto px-8 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold rounded-lg shadow-md transition-all transform hover:-translate-y-0.5"
                       disabled={isSubmitting}
                     >
                       {isSubmitting

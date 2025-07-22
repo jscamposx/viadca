@@ -1,13 +1,6 @@
 import { Map, AdvancedMarker, Pin } from "@vis.gl/react-google-maps";
 import GooglePlacesSearch from "./GooglePlacesSearch";
 
-const mapContainerStyle = {
-  width: "100%",
-  height: "400px",
-  borderRadius: "0.5rem",
-  position: "relative",
-};
-
 const center = {
   lat: 23.6345,
   lng: -102.5528,
@@ -28,17 +21,8 @@ const LocationSelector = ({
   searchValue,
   onSearchValueChange,
 }) => (
-  <div style={mapContainerStyle}>
-    <div
-      style={{
-        position: "absolute",
-        top: "10px",
-        left: "50%",
-        transform: "translateX(-50%)",
-        zIndex: 1,
-        width: "50%",
-      }}
-    >
+  <div className="w-full h-[400px] rounded-lg relative">
+    <div className="absolute top-2.5 left-1/2 -translate-x-1/2 z-10 w-11/12 sm:w-3/4 md:w-1/2">
       <GooglePlacesSearch
         onPlaceSelected={onPlaceSelected}
         value={searchValue}
