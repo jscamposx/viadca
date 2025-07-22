@@ -36,7 +36,7 @@ const NewFlightPage = () => {
             setPreview(
               imagenes[0].url.startsWith("http")
                 ? imagenes[0].url
-                : `${API_URL}${imagenes[0].url}`,
+                : `${API_URL}${imagenes[0].url}`
             );
           }
         })
@@ -55,32 +55,33 @@ const NewFlightPage = () => {
     }
   };
 
+  // 🔽 --- INICIO DEL CÓDIGO CORREGIDO --- 🔽
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
     setLoading(true);
 
     try {
-      let imageUrl = null;
-
-      if (imagen) {
-        const base64String = await fileToBase64(imagen);
-
-        const base64Data = base64String.split(",")[1];
-
-        const uploadResponse = await api.images.uploadBase64Image(base64Data);
-        imageUrl = uploadResponse.data.url;
-      }
-
+      // 1. Prepara el payload base solo con los datos que siempre se envían.
       const vueloPayload = {
         nombre,
         transporte,
       };
 
-      if (imageUrl) {
-        vueloPayload.imagenes = [{ url: imageUrl }];
+      // 2. Si el usuario seleccionó una nueva imagen, súbela y añade 'imageIds' al payload.
+      if (imagen) {
+        const base64String = await fileToBase64(imagen);
+        const uploadResponse = await api.images.uploadBase64Image(base64String);
+        const imageId = uploadResponse.data.id;
+        
+        if (imageId) {
+          // Solo añadimos la clave 'imageIds' si hay una nueva imagen.
+          vueloPayload.imageIds = [imageId];
+        }
       }
+      // Si 'imagen' es null, no se añade la clave 'imageIds', y el backend no tocará las imágenes existentes.
 
+      // 3. Envía el payload al backend.
       if (isEditing) {
         await api.flights.updateVuelo(id, vueloPayload);
         alert("Vuelo actualizado con éxito.");
@@ -90,12 +91,15 @@ const NewFlightPage = () => {
       }
       navigate("/admin/vuelos");
     } catch (err) {
-      const errorMessage = err.response?.data?.message || err.message;
+      const errorMessage =
+        err.response?.data?.message?.toString() || err.message;
       setError(`Error al guardar el vuelo: ${errorMessage}`);
     } finally {
       setLoading(false);
     }
   };
+  // 🔼 --- FIN DEL CÓDIGO CORREGIDO --- 🔼
+
   return (
     <div className="container mx-auto p-8">
       <h1 className="text-3xl font-bold mb-6">
@@ -186,8 +190,8 @@ const NewFlightPage = () => {
             {loading
               ? "Guardando..."
               : isEditing
-                ? "Actualizar Vuelo"
-                : "Crear Vuelo"}
+              ? "Actualizar Vuelo"
+              : "Crear Vuelo"}
           </button>
         </div>
       </form>
