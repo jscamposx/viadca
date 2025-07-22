@@ -40,7 +40,7 @@ const AdminHotelsPage = () => {
 
         setHoteles(mockHotels);
         console.log("Datos de prueba cargados");
-      } catch (err) {
+      } catch {
         setError("No se pudieron cargar los hoteles.");
       } finally {
         setLoading(false);
@@ -54,7 +54,7 @@ const AdminHotelsPage = () => {
       try {
         setHoteles(hoteles.filter((hotel) => hotel.id !== id));
         console.log(`Hotel con id ${id} eliminado`);
-      } catch (err) {
+      } catch {
         alert("Error al eliminar el hotel.");
       }
     }

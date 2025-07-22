@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 
 export function useFetch(apiFunc, params = []) {
   const [data, setData] = useState(null);
@@ -40,7 +40,7 @@ export function useFetch(apiFunc, params = []) {
     return () => {
       isMounted = false;
     };
-  }, [apiFunc, paramsKey]);
+  }, [apiFunc, paramsKey, params]);
 
   return { data, setData, loading, error };
 }

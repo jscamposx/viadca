@@ -49,7 +49,6 @@ const Itinerary = ({ itinerario = [] }) => {
         <div className="space-y-6">
           {itinerario.map((item, index) => {
             const isExpanded = expandedItems.has(item.id);
-            const isLast = index === itinerario.length - 1;
 
             return (
               <div

@@ -242,7 +242,7 @@ export const usePackageForm = (initialPackageData = null) => {
       (formData.images || []).map((image, index) => processImage(image, index)),
     );
 
-    const { images, imagenes, ...restOfFormData } = formData;
+    const { ...restOfFormData } = formData;
 
     const payload = {
       ...restOfFormData,

@@ -49,7 +49,7 @@ const NewHotelPage = () => {
         alert("Hotel creado con éxito.");
       }
       navigate("/admin/hoteles");
-    } catch (err) {
+    } catch {
       setError("Error al guardar el hotel.");
     } finally {
       setLoading(false);

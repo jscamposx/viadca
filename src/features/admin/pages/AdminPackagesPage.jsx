@@ -106,7 +106,7 @@ const AdminPaquetes = () => {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-4">
+      <div className="min-h-screen bg-white flex flex-col items-center justify-center p-4">
         <div className="bg-red-100 p-6 rounded-xl max-w-md text-center">
           <div className="text-red-500 text-5xl mb-3">⚠️</div>
           <h2 className="text-xl font-bold text-red-700 mb-2">

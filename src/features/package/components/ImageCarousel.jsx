@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 import { Carousel } from "react-responsive-carousel";
 import { FiChevronLeft, FiChevronRight, FiCamera, FiEye } from "react-icons/fi";
@@ -27,7 +27,7 @@ const CustomArrow = ({ direction, onClick, isVisible }) => {
   );
 };
 
-const ImageOverlay = ({ imagen, currentIndex, totalImages }) => {
+const ImageOverlay = () => {
   return null;
 };
 

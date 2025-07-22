@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useEffect, useCallback } from "react";
 import {
   Loader2,
   RefreshCw,
@@ -10,7 +10,7 @@ import {
 } from "lucide-react";
 import axios from "axios";
 
-const WeatherForecast = ({ lat, lon, cityName = "Ubicación Actual" }) => {
+const WeatherForecast = ({ lat, lon = "Ubicación Actual" }) => {
   const [forecast, setForecast] = useState([]);
   const [currentWeather, setCurrentWeather] = useState(null);
   const [loading, setLoading] = useState(true);

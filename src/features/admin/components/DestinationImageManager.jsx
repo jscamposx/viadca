@@ -171,7 +171,7 @@ const DestinationImageManager = ({ destination, onImagesChange }) => {
     setIsDragging(true);
   };
 
-  const handleContainerDragLeave = (e) => {
+  const handleContainerDragLeave = () => {
     setIsDragging(false);
   };
 
