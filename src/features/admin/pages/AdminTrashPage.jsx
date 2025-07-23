@@ -37,9 +37,9 @@ const AdminTrashPage = () => {
   }, []);
 
   const toggleItem = (id) => {
-    setExpandedItems(prev => ({
+    setExpandedItems((prev) => ({
       ...prev,
-      [id]: !prev[id]
+      [id]: !prev[id],
     }));
   };
 
@@ -47,7 +47,7 @@ const AdminTrashPage = () => {
     if (!window.confirm(`¿Desea restaurar el ${tipo} "${nombre}"?`)) {
       return;
     }
-    
+
     setRestoring(id);
     try {
       await api.trash.restoreTrashItem(id, tipo);
@@ -63,7 +63,8 @@ const AdminTrashPage = () => {
   };
 
   const handleDelete = async (id, tipo, nombre) => {
-    if (!window.confirm(
+    if (
+      !window.confirm(
         `¿Está seguro de que desea eliminar permanentemente el ${tipo} "${nombre}"?\n\nEsta acción no se puede deshacer.`
       )
     ) {
@@ -83,20 +84,42 @@ const AdminTrashPage = () => {
       setDeleting(null);
     }
   };
-
+  
+  // ✅ Componente corregido con el mapa de estilos
   const ItemList = ({ items, tipo, icon, color }) => {
     const tipoNombre = tipo.charAt(0).toUpperCase() + tipo.slice(1) + "s";
-    
+
+    const colorStyles = {
+      blue: {
+        border: "border-blue-100",
+        gradient: "from-blue-50",
+        iconBg: "bg-blue-100",
+        iconText: "text-blue-600",
+        badgeBg: "bg-blue-100",
+        badgeText: "text-blue-800",
+      },
+      purple: {
+        border: "border-purple-100",
+        gradient: "from-purple-50",
+        iconBg: "bg-purple-100",
+        iconText: "text-purple-600",
+        badgeBg: "bg-purple-100",
+        badgeText: "text-purple-800",
+      },
+    };
+
+    const styles = colorStyles[color] || colorStyles.blue;
+
     return (
-      <div className={`bg-white rounded-xl shadow-md border border-${color}-100 overflow-hidden`}>
-        <div className={`flex items-center justify-between p-4 bg-gradient-to-r from-${color}-50 to-white`}>
+      <div className={`bg-white rounded-xl shadow-md border overflow-hidden ${styles.border}`}>
+        <div className={`flex items-center justify-between p-4 bg-gradient-to-r to-white ${styles.gradient}`}>
           <div className="flex items-center">
-            <div className={`p-2 rounded-lg bg-${color}-100 text-${color}-600`}>
+            <div className={`p-2 rounded-lg ${styles.iconBg} ${styles.iconText}`}>
               {icon}
             </div>
             <h2 className="text-xl font-bold text-gray-800 ml-3">{tipoNombre}</h2>
           </div>
-          <span className={`px-2.5 py-0.5 rounded-full text-xs font-medium bg-${color}-100 text-${color}-800`}>
+          <span className={`px-2.5 py-0.5 rounded-full text-xs font-medium ${styles.badgeBg} ${styles.badgeText}`}>
             {items.length} {items.length === 1 ? 'elemento' : 'elementos'}
           </span>
         </div>
@@ -273,9 +296,6 @@ const AdminTrashPage = () => {
             color="purple"
           />
         </div>
-
-      
-      
       </div>
     </div>
   );

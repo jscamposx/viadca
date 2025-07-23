@@ -6,20 +6,15 @@ import {
   FiPackage,
   FiHome,
   FiSend,
-  FiBriefcase, // Se mantiene por el ícono del encabezado móvil
+  FiBriefcase,
   FiMenu,
   FiX,
   FiTrash,
   FiCompass,
 } from "react-icons/fi";
 
-const NavItem = ({
-  to,
-  icon,
-  label,
-  isOpen,
-  isMobile = false,
-}) => {
+// Este componente no necesita cambios.
+const NavItem = ({ to, icon, label, isOpen, isMobile = false }) => {
   const activeLinkStyle = {
     backgroundColor: "#eff6ff",
     color: "#3b82f6",
@@ -40,13 +35,19 @@ const NavItem = ({
         title={!isOpen && !isMobile ? label : undefined}
       >
         <div
-          className={`transition-all duration-300 group-hover:scale-110 ${isOpen || isMobile ? "mr-3" : ""}`}
+          className={`transition-all duration-300 group-hover:scale-110 ${
+            isOpen || isMobile ? "mr-3" : ""
+          }`}
         >
           {icon}
         </div>
         <span
           className={`font-medium overflow-hidden transition-all duration-300 text-slate-600
-                      ${!(isOpen || isMobile) ? "w-0 opacity-0" : "w-full opacity-100"}`}
+                      ${
+                        !(isOpen || isMobile)
+                          ? "w-0 opacity-0"
+                          : "w-full opacity-100"
+                      }`}
         >
           {label}
         </span>
@@ -64,6 +65,14 @@ const AdminNav = ({ isOpen, setIsOpen }) => {
   const [isMobile, setIsMobile] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const location = useLocation();
+
+  // ✅ Define los enlaces de navegación en un solo array
+  const navLinks = [
+    { to: "/admin", icon: <FiHome size={20} />, label: "Dashboard" },
+    { to: "/admin/paquetes", icon: <FiPackage size={20} />, label: "Paquetes" },
+    { to: "/admin/vuelos", icon: <FiSend size={20} />, label: "Vuelos" },
+    { to: "/admin/papelera", icon: <FiTrash size={20} />, label: "Papelera" },
+  ];
 
   useEffect(() => {
     const handleResize = () => {
@@ -85,6 +94,7 @@ const AdminNav = ({ isOpen, setIsOpen }) => {
     }
   }, [location.pathname, isMobile]);
 
+  // --- Vista Móvil ---
   if (isMobile) {
     return (
       <header className="bg-white text-slate-700 shadow-md fixed top-0 w-full z-50">
@@ -107,24 +117,10 @@ const AdminNav = ({ isOpen, setIsOpen }) => {
         {isMobileMenuOpen && (
           <nav className="p-4 border-t border-slate-200 bg-white absolute w-full shadow-lg">
             <ul className="flex flex-col gap-2">
-              <NavItem
-                to="/admin"
-                icon={<FiHome size={20} />}
-                label="Dashboard"
-                isMobile={true}
-              />
-              <NavItem
-                to="/admin/paquetes"
-                icon={<FiPackage size={20} />}
-                label="Paquetes"
-                isMobile={true}
-              />
-              <NavItem
-                to="/admin/vuelos"
-                icon={<FiSend size={20} />}
-                label="Vuelos"
-                isMobile={true}
-              />
+              {/* ✅ Renderiza los enlaces usando .map() */}
+              {navLinks.map((link) => (
+                <NavItem key={link.to} {...link} isMobile={true} />
+              ))}
             </ul>
           </nav>
         )}
@@ -132,6 +128,7 @@ const AdminNav = ({ isOpen, setIsOpen }) => {
     );
   }
 
+  // --- Vista de Escritorio ---
   return (
     <aside
       className={`fixed top-0 left-0 h-screen bg-white text-slate-700 p-4
@@ -154,7 +151,9 @@ const AdminNav = ({ isOpen, setIsOpen }) => {
           <FiCompass className="text-white text-2xl" />
         </div>
         <div
-          className={`ml-3 overflow-hidden transition-all duration-300 ${!isOpen ? "opacity-0 w-0" : "opacity-100"}`}
+          className={`ml-3 overflow-hidden transition-all duration-300 ${
+            !isOpen ? "opacity-0 w-0" : "opacity-100"
+          }`}
         >
           <h1 className="font-bold text-2xl text-slate-800">
             <span className="text-blue-700 font-bold">Viadca</span>
@@ -163,33 +162,12 @@ const AdminNav = ({ isOpen, setIsOpen }) => {
       </div>
 
       <ul className="flex flex-col gap-1 flex-grow">
-        <NavItem
-          to="/admin"
-          icon={<FiHome size={20} />}
-          label="Dashboard"
-          isOpen={isOpen}
-        />
-        <NavItem
-          to="/admin/paquetes"
-          icon={<FiPackage size={20} />}
-          label="Paquetes"
-          isOpen={isOpen}
-        />
-        <NavItem
-          to="/admin/vuelos"
-          icon={<FiSend size={20} />}
-          label="Vuelos"
-          isOpen={isOpen}
-        />
-        <NavItem
-          to="/admin/papelera"
-          icon={<FiTrash size={20} />}
-          label="Papelera"
-          isOpen={isOpen}
-        />
+        {/* ✅ Renderiza los mismos enlaces aquí también */}
+        {navLinks.map((link) => (
+          <NavItem key={link.to} {...link} isOpen={isOpen} />
+        ))}
       </ul>
 
-      {/* Se eliminó la sección inferior que contenía "Configuración" y "Cerrar Sesión" */}
       <div className="mt-auto"></div>
     </aside>
   );
