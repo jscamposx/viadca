@@ -94,7 +94,7 @@ const AdminNav = ({ isOpen, setIsOpen }) => {
               <FiBriefcase className="text-white text-xl" />
             </div>
             <h1 className="font-bold text-lg text-slate-800 ml-3">
-              <span className="text-blue-500">Viadca</span> Admin
+              <span className="text-blue-700">Viadca</span> Admin
             </h1>
           </div>
           <button
@@ -157,7 +157,7 @@ const AdminNav = ({ isOpen, setIsOpen }) => {
           className={`ml-3 overflow-hidden transition-all duration-300 ${!isOpen ? "opacity-0 w-0" : "opacity-100"}`}
         >
           <h1 className="font-bold text-2xl text-slate-800">
-            <span className="text-blue-500 font-bold">Viadca</span>
+            <span className="text-blue-700 font-bold">Viadca</span>
           </h1>
         </div>
       </div>
