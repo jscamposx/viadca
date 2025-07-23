@@ -275,6 +275,7 @@ const AdminTrashPage = () => {
         </div>
 
       
+      
       </div>
     </div>
   );
