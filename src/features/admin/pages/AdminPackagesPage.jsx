@@ -106,7 +106,7 @@ const AdminPaquetes = () => {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-white flex flex-col items-center justify-center p-4">
+      <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-4">
         <div className="bg-red-100 p-6 rounded-xl max-w-md text-center">
           <div className="text-red-500 text-5xl mb-3">⚠️</div>
           <h2 className="text-xl font-bold text-red-700 mb-2">
@@ -125,7 +125,7 @@ const AdminPaquetes = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-3 sm:p-4 md:p-6">
+    <div className="min-h-screen bg-white p-3 sm:p-4 md:p-6">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">

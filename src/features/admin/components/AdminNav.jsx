@@ -6,14 +6,9 @@ import {
   FiPackage,
   FiHome,
   FiSend,
-  FiBriefcase,
-  FiSettings,
-  FiUser,
-  FiDatabase,
-  FiLogOut,
+  FiBriefcase, // Se mantiene por el ícono del encabezado móvil
   FiMenu,
   FiX,
-  FiLock,
   FiTrash,
   FiCompass,
 } from "react-icons/fi";
@@ -24,17 +19,11 @@ const NavItem = ({
   label,
   isOpen,
   isMobile = false,
-  disabled = false,
 }) => {
   const activeLinkStyle = {
     backgroundColor: "#eff6ff",
     color: "#3b82f6",
     fontWeight: "600",
-  };
-
-  const disabledStyle = {
-    opacity: 0.6,
-    pointerEvents: "none",
   };
 
   const commonClasses =
@@ -43,60 +32,30 @@ const NavItem = ({
 
   return (
     <li>
-      {disabled ? (
+      <NavLink
+        to={to}
+        end={to === "/admin"}
+        style={({ isActive }) => (isActive ? activeLinkStyle : undefined)}
+        className={`${commonClasses} ${isMobile ? "" : desktopClasses}`}
+        title={!isOpen && !isMobile ? label : undefined}
+      >
         <div
-          className={`${commonClasses} ${isMobile ? "" : desktopClasses} cursor-not-allowed`}
-          style={disabledStyle}
-          title={!isOpen && !isMobile ? `${label} (En desarrollo)` : undefined}
+          className={`transition-all duration-300 group-hover:scale-110 ${isOpen || isMobile ? "mr-3" : ""}`}
         >
-          <div
-            className={`transition-all duration-300 ${isOpen || isMobile ? "mr-3" : ""}`}
-          >
-            <FiLock size={18} className="text-slate-400" />
-          </div>
-          <span
-            className={`font-medium overflow-hidden transition-all duration-300 text-slate-400
-                       ${!(isOpen || isMobile) ? "w-0 opacity-0" : "w-full opacity-100"}`}
-          >
-            {label}
-          </span>
-          {!isOpen && !isMobile && (
-            <div className="absolute left-full top-1/2 transform -translate-y-1/2 ml-3 bg-slate-800 text-white px-3 py-2 rounded-lg shadow-xl font-medium text-sm whitespace-nowrap z-50">
-              En desarrollo
-            </div>
-          )}
-          {(isOpen || isMobile) && (
-            <span className="ml-auto text-xs bg-slate-100 text-slate-500 px-2 py-1 rounded">
-              En desarrollo
-            </span>
-          )}
+          {icon}
         </div>
-      ) : (
-        <NavLink
-          to={to}
-          end={to === "/admin"}
-          style={({ isActive }) => (isActive ? activeLinkStyle : undefined)}
-          className={`${commonClasses} ${isMobile ? "" : desktopClasses}`}
-          title={!isOpen && !isMobile ? label : undefined}
+        <span
+          className={`font-medium overflow-hidden transition-all duration-300 text-slate-600
+                      ${!(isOpen || isMobile) ? "w-0 opacity-0" : "w-full opacity-100"}`}
         >
-          <div
-            className={`transition-all duration-300 group-hover:scale-110 ${isOpen || isMobile ? "mr-3" : ""}`}
-          >
-            {icon}
-          </div>
-          <span
-            className={`font-medium overflow-hidden transition-all duration-300 text-slate-600
-                       ${!(isOpen || isMobile) ? "w-0 opacity-0" : "w-full opacity-100"}`}
-          >
+          {label}
+        </span>
+        {!isOpen && !isMobile && (
+          <div className="absolute left-full top-1/2 transform -translate-y-1/2 ml-3 bg-slate-800 text-white px-3 py-2 rounded-lg shadow-xl font-medium text-sm whitespace-nowrap z-50 opacity-0 group-hover:opacity-100 transition-opacity">
             {label}
-          </span>
-          {!isOpen && !isMobile && (
-            <div className="absolute left-full top-1/2 transform -translate-y-1/2 ml-3 bg-slate-800 text-white px-3 py-2 rounded-lg shadow-xl font-medium text-sm whitespace-nowrap z-50 opacity-0 group-hover:opacity-100 transition-opacity">
-              {label}
-            </div>
-          )}
-        </NavLink>
-      )}
+          </div>
+        )}
+      </NavLink>
     </li>
   );
 };
@@ -125,16 +84,6 @@ const AdminNav = ({ isOpen, setIsOpen }) => {
       setIsMobileMenuOpen(false);
     }
   }, [location.pathname, isMobile]);
-
-  const disabledItems = [
-    "/admin/hoteles",
-    "/admin/clientes",
-    "/admin/inventario",
-    "/admin/configuracion",
-    "/logout",
-  ];
-
-  const isDisabled = (path) => disabledItems.includes(path);
 
   if (isMobile) {
     return (
@@ -171,46 +120,10 @@ const AdminNav = ({ isOpen, setIsOpen }) => {
                 isMobile={true}
               />
               <NavItem
-                to="/admin/hoteles"
-                icon={<FiBriefcase size={20} />}
-                label="Hoteles"
-                isMobile={true}
-                disabled={isDisabled("/admin/hoteles")}
-              />
-              <NavItem
                 to="/admin/vuelos"
                 icon={<FiSend size={20} />}
                 label="Vuelos"
                 isMobile={true}
-              />
-              <NavItem
-                to="/admin/clientes"
-                icon={<FiUser size={20} />}
-                label="Clientes"
-                isMobile={true}
-                disabled={isDisabled("/admin/clientes")}
-              />
-              <NavItem
-                to="/admin/inventario"
-                icon={<FiDatabase size={20} />}
-                label="Inventario"
-                isMobile={true}
-                disabled={isDisabled("/admin/inventario")}
-              />
-              <div className="my-2 border-t border-slate-200"></div>
-              <NavItem
-                to="/admin/configuracion"
-                icon={<FiSettings size={20} />}
-                label="Configuración"
-                isMobile={true}
-                disabled={isDisabled("/admin/configuracion")}
-              />
-              <NavItem
-                to="/logout"
-                icon={<FiLogOut size={20} />}
-                label="Cerrar Sesión"
-                isMobile={true}
-                disabled={isDisabled("/logout")}
               />
             </ul>
           </nav>
@@ -263,24 +176,10 @@ const AdminNav = ({ isOpen, setIsOpen }) => {
           isOpen={isOpen}
         />
         <NavItem
-          to="/admin/hoteles"
-          icon={<FiBriefcase size={20} />}
-          label="Hoteles"
-          isOpen={isOpen}
-          disabled={isDisabled("/admin/hoteles")}
-        />
-        <NavItem
           to="/admin/vuelos"
           icon={<FiSend size={20} />}
           label="Vuelos"
           isOpen={isOpen}
-        />
-        <NavItem
-          to="/admin/clientes"
-          icon={<FiUser size={20} />}
-          label="Clientes"
-          isOpen={isOpen}
-          disabled={isDisabled("/admin/clientes")}
         />
         <NavItem
           to="/admin/papelera"
@@ -288,27 +187,10 @@ const AdminNav = ({ isOpen, setIsOpen }) => {
           label="Papelera"
           isOpen={isOpen}
         />
-        <div
-          className={`my-4 border-t border-slate-200 ${!isOpen ? "w-12 mx-auto" : "w-full"}`}
-        ></div>
-        <NavItem
-          to="/admin/configuracion"
-          icon={<FiSettings size={20} />}
-          label="Configuración"
-          isOpen={isOpen}
-          disabled={isDisabled("/admin/configuracion")}
-        />
       </ul>
 
-      <div className="mt-auto">
-        <NavItem
-          to="/logout"
-          icon={<FiLogOut size={20} />}
-          label="Cerrar Sesión"
-          isOpen={isOpen}
-          disabled={isDisabled("/logout")}
-        />
-      </div>
+      {/* Se eliminó la sección inferior que contenía "Configuración" y "Cerrar Sesión" */}
+      <div className="mt-auto"></div>
     </aside>
   );
 };
