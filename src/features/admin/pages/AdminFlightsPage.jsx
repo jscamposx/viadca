@@ -296,6 +296,7 @@ const AdminFlightsPage = () => {
                               to={`/admin/vuelos/editar/${vuelo.id}`}
                               className="text-blue-600 hover:text-blue-900 p-1 sm:p-2 rounded-full hover:bg-blue-100 transition-colors"
                               title="Editar vuelo"
+                              aria-label="Editar vuelo"
                               onClick={(e) => e.stopPropagation()}
                             >
                               <FiEdit size={16} className="sm:w-5" />
@@ -307,6 +308,7 @@ const AdminFlightsPage = () => {
                               }}
                               className="text-red-600 hover:text-red-900 p-1 sm:p-2 rounded-full hover:bg-red-100 transition-colors"
                               title="Eliminar vuelo"
+                              aria-label="Eliminar vuelo"
                             >
                               <FiTrash2 size={16} className="sm:w-5" />
                             </button>
@@ -316,6 +318,7 @@ const AdminFlightsPage = () => {
                                 toggleFlightDetails(vuelo.id);
                               }}
                               className="text-gray-500 hover:text-gray-700 p-1 sm:p-2 rounded-full hover:bg-gray-100 transition-colors"
+                              aria-label={expandedFlight === vuelo.id ? "Contraer detalles del vuelo" : "Expandir detalles del vuelo"}
                             >
                               {expandedFlight === vuelo.id ? (
                                 <FiChevronUp size={16} className="sm:w-5" />
