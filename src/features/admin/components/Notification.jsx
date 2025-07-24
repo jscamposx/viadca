@@ -11,6 +11,7 @@ const Notification = ({
   const [progress, setProgress] = useState(100);
   const progressInterval = useRef(null);
   const animationRef = useRef(null);
+  const notificationRef = useRef(null);
 
   // Iconos con contorno circular
   const notificationIcons = {
@@ -86,11 +87,17 @@ const Notification = ({
 
   return (
     <div
-      className={`fixed bottom-5 right-5 z-50 max-w-sm w-full transition-all duration-300 ease-out ${
-        visible
-          ? "opacity-100 translate-y-0"
-          : "opacity-0 translate-y-10 pointer-events-none"
-      }`}
+      ref={notificationRef}
+      className={`fixed z-50 transition-all duration-300 ease-out
+        ${
+          visible
+            ? "opacity-100 translate-y-0"
+            : "opacity-0 translate-y-10 pointer-events-none"
+        }
+        /* Posicionamiento responsive */
+        top-4 left-1/2 transform -translate-x-1/2 w-[calc(100%-2rem)] max-w-md
+        sm:top-auto sm:bottom-5 sm:left-auto sm:right-5 sm:translate-x-0 sm:w-auto
+      `}
     >
       <div
         className={`${notificationColors[type].bg} ${notificationColors[type].border} rounded-lg shadow-lg overflow-hidden`}
@@ -109,7 +116,7 @@ const Notification = ({
           ></div>
         </div>
         
-        <div className="p-4 flex items-start">
+        <div className="p-3 sm:p-4 flex items-start">
           <div className="mr-3 mt-0.5 flex-shrink-0">
             {notificationIcons[type]}
           </div>
