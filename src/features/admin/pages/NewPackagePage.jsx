@@ -1,6 +1,7 @@
 import { APIProvider } from "@vis.gl/react-google-maps";
 import { useParams, useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { FiArrowLeft, FiCheckCircle, FiMapPin, FiImage, FiCalendar, FiInfo } from "react-icons/fi";
 import { usePackage } from "../../package/hooks/usePackage";
 import { usePackageForm } from "../hooks/usePackageForm";
 import PackageForm from "../components/PackageForm";
@@ -11,8 +12,8 @@ import HotelFinder from "../components/HotelFinder";
 import Loading from "../../package/components/Loading";
 import Error from "../../package/components/Error";
 import FlightCarousel from "../components/FlightCarousel";
-import { FiArrowLeft } from "react-icons/fi";
 import { useNotification } from "./AdminLayout";
+
 
 const NuevoPaquete = () => {
   const { url } = useParams();
@@ -64,8 +65,15 @@ const NuevoPaquete = () => {
     }
   };
 
-  if (url && loading) return <Loading />;
-  if (url && error) return <Error message={error} />;
+  // Iconos para cada sección
+  const sectionIcons = {
+    informacion: <FiInfo className="w-4 h-4" />,
+    ubicacion: <FiMapPin className="w-4 h-4" />,
+    imagenes: <FiImage className="w-4 h-4" />,
+    vuelo: <FiCalendar className="w-4 h-4" />,
+    hotel: <FiCalendar className="w-4 h-4" />,
+    itinerario: <FiCalendar className="w-4 h-4" />,
+  };
 
   const sections = [
     { id: "informacion", label: "Información" },
@@ -76,22 +84,31 @@ const NuevoPaquete = () => {
     { id: "itinerario", label: "Itinerario" },
   ];
 
+  // Efecto para desplazamiento suave al cambiar sección
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [activeSection]);
+
+  if (url && loading) return <Loading />;
+  if (url && error) return <Error message={error} />;
+
   return (
     <APIProvider
       apiKey={import.meta.env.VITE_Maps_API_KEY}
       libraries={["places", "geocoding", "marker"]}
     >
-      <div className="min-h-screen bg-white py-4 sm:py-6 px-3 sm:px-4">
+      <div className="min-h-screen bg-gray-50 py-4 sm:py-6 px-3 sm:px-4">
         <div className="max-w-7xl mx-auto">
-          <div className="bg-white rounded-xl sm:rounded-2xl shadow-md sm:shadow-xl overflow-hidden mb-5 sm:mb-8">
-            <div className="bg-gradient-to-r from-blue-600 to-indigo-700 py-4 sm:py-6 px-4 sm:px-8 flex items-center justify-between gap-4">
+          {/* Cabecera mejorada */}
+          <div className="bg-gradient-to-r from-blue-700 to-indigo-800 rounded-2xl shadow-xl overflow-hidden mb-6 sm:mb-8">
+            <div className="py-5 sm:py-7 px-4 sm:px-8 flex items-center justify-between gap-4">
               <div>
-                <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-white">
+                <h1 className="text-2xl sm:text-3xl font-bold text-white">
                   {url
                     ? "Editar Paquete Turístico"
                     : "Crear nuevo paquete turístico"}
                 </h1>
-                <p className="text-blue-100 mt-1 text-sm sm:text-base">
+                <p className="text-blue-100 mt-1.5 text-base">
                   Complete toda la información para crear un paquete atractivo
                 </p>
               </div>
@@ -100,49 +117,78 @@ const NuevoPaquete = () => {
                 type="button"
                 onClick={() => navigate("/admin/paquetes")}
                 aria-label="Regresar a paquetes"
-                className="flex-shrink-0 p-2 sm:p-3 rounded-full text-white bg-white/10 hover:bg-white/20 transition-colors duration-200"
+                className="flex-shrink-0 p-2.5 rounded-lg text-white bg-white/15 hover:bg-white/25 transition-colors duration-200 flex items-center gap-2"
               >
-                <FiArrowLeft className="w-5 h-5 sm:w-6 sm:h-6" />
+                <FiArrowLeft className="w-5 h-5" />
+                <span className="hidden sm:inline">Volver</span>
               </button>
             </div>
 
-            <div className="bg-white border-b border-gray-200">
-              <div className="flex overflow-x-auto py-2 sm:py-3 px-3 gap-1 sm:gap-2">
-                {sections.map((section) => (
-                  <button
-                    key={section.id}
-                    onClick={() => setActiveSection(section.id)}
-                    className={`px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg font-medium whitespace-nowrap transition-colors text-sm sm:text-base ${
-                      activeSection === section.id
-                        ? "bg-blue-100 text-blue-700 font-semibold"
-                        : "text-gray-600 hover:bg-gray-100"
-                    }`}
-                  >
-                    {section.label}
-                  </button>
-                ))}
+            {/* Barra de navegación por pasos mejorada */}
+            <div className="bg-white/10 backdrop-blur-sm py-3 px-4">
+              <div className="flex overflow-x-auto gap-1 pb-1">
+                {sections.map((section, index) => {
+                  const currentIndex = sections.findIndex(s => s.id === activeSection);
+                  const isCompleted = index < currentIndex;
+                  const isActive = activeSection === section.id;
+                  
+                  return (
+                    <div key={section.id} className="flex items-center">
+                      {index > 0 && (
+                        <div className={`w-4 h-0.5 mx-1 ${isCompleted || isActive ? 'bg-blue-400' : 'bg-gray-400'}`}></div>
+                      )}
+                      <button
+                        type="button"
+                        onClick={() => setActiveSection(section.id)}
+                        className={`flex items-center gap-2 px-3 py-2 rounded-lg font-medium whitespace-nowrap transition-all text-sm ${
+                          isActive
+                            ? 'bg-white text-blue-800 shadow-md'
+                            : isCompleted
+                              ? 'bg-blue-500/20 text-blue-100 hover:bg-blue-500/30'
+                              : 'bg-white/10 text-blue-100 hover:bg-white/20'
+                        }`}
+                      >
+                        <span className={`${isCompleted ? 'hidden' : 'flex'}`}>
+                          {sectionIcons[section.id]}
+                        </span>
+                        {isCompleted && (
+                          <FiCheckCircle className="w-4 h-4 text-green-300" />
+                        )}
+                        {section.label}
+                      </button>
+                    </div>
+                  );
+                })}
               </div>
             </div>
           </div>
 
           <form
             onSubmit={handleSubmit}
-            className="space-y-5 sm:space-y-8"
+            className="space-y-5 sm:space-y-7"
             noValidate
           >
+            {/* Información Básica */}
             <div
-              className={`${activeSection !== "informacion" ? "hidden" : ""}`}
+              className={`${activeSection !== "informacion" ? "hidden" : ""} animate-fadeIn`}
             >
-              <div className="bg-white rounded-xl sm:rounded-2xl shadow-md overflow-hidden">
-                <div className="p-4 sm:p-6 border-b border-gray-200">
-                  <h2 className="text-lg sm:text-xl font-semibold text-gray-800">
-                    Información Básica
-                  </h2>
-                  <p className="text-gray-600 mt-1 text-sm sm:text-base">
-                    Detalles esenciales del paquete turístico.
-                  </p>
+              <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
+                <div className="p-5 sm:p-7 border-b border-gray-200">
+                  <div className="flex items-center gap-3">
+                    <div className="bg-blue-100 p-2 rounded-lg text-blue-700">
+                      <FiInfo className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <h2 className="text-xl font-semibold text-gray-800">
+                        Información Básica
+                      </h2>
+                      <p className="text-gray-600 mt-1">
+                        Detalles esenciales del paquete turístico
+                      </p>
+                    </div>
+                  </div>
                 </div>
-                <div className="p-4 sm:p-6">
+                <div className="p-5 sm:p-7">
                   <PackageForm
                     formData={formData}
                     onFormChange={handleFormChange}
@@ -152,49 +198,57 @@ const NuevoPaquete = () => {
               </div>
             </div>
 
-            <div className={`${activeSection !== "ubicacion" ? "hidden" : ""}`}>
-              <div className="bg-white rounded-xl sm:rounded-2xl shadow-md overflow-hidden">
-                <div className="p-4 sm:p-6 border-b border-gray-200">
-                  <h2 className="text-lg sm:text-xl font-semibold text-gray-800">
-                    Selección de Ubicación
-                  </h2>
-                  <p className="text-gray-600 mt-1 text-sm sm:text-base">
-                    Define los lugares de origen y destino.
-                  </p>
+            {/* Ubicación */}
+            <div className={`${activeSection !== "ubicacion" ? "hidden" : ""} animate-fadeIn`}>
+              <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
+                <div className="p-5 sm:p-7 border-b border-gray-200">
+                  <div className="flex items-center gap-3">
+                    <div className="bg-blue-100 p-2 rounded-lg text-blue-700">
+                      <FiMapPin className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <h2 className="text-xl font-semibold text-gray-800">
+                        Selección de Ubicación
+                      </h2>
+                      <p className="text-gray-600 mt-1">
+                        Define los lugares de origen y destino
+                      </p>
+                    </div>
+                  </div>
                 </div>
-                <div className="p-4 sm:p-6">
-                  <div className="flex flex-col gap-3 mb-4 sm:mb-6">
-                    <p className="text-gray-700 font-medium self-center text-sm sm:text-base">
+                <div className="p-5 sm:p-7">
+                  <div className="flex flex-col gap-4 mb-5">
+                    <p className="text-gray-700 font-medium self-center">
                       Seleccionando:
                     </p>
-                    <div className="flex flex-wrap justify-center gap-2">
+                    <div className="flex flex-wrap justify-center gap-3">
                       <button
                         type="button"
                         onClick={() => setSelectionMode("origen")}
-                        className={`px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg font-medium transition-colors flex items-center gap-1.5 text-sm sm:text-base ${
+                        className={`px-4 py-2.5 rounded-xl font-medium transition-colors flex items-center gap-2 ${
                           selectionMode === "origen"
                             ? "bg-blue-600 text-white shadow-md"
-                            : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                            : "bg-gray-100 text-gray-700 hover:bg-gray-200"
                         }`}
                       >
                         {selectionMode === "origen" && (
-                          <div className="w-1.5 h-1.5 bg-white rounded-full"></div>
+                          <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
                         )}
-                        Origen
+                        <span>Origen</span>
                       </button>
                       <button
                         type="button"
                         onClick={() => setSelectionMode("destino")}
-                        className={`px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg font-medium transition-colors flex items-center gap-1.5 text-sm sm:text-base ${
+                        className={`px-4 py-2.5 rounded-xl font-medium transition-colors flex items-center gap-2 ${
                           selectionMode === "destino"
                             ? "bg-green-600 text-white shadow-md"
-                            : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                            : "bg-gray-100 text-gray-700 hover:bg-gray-200"
                         }`}
                       >
                         {selectionMode === "destino" && (
-                          <div className="w-1.5 h-1.5 bg-white rounded-full"></div>
+                          <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
                         )}
-                        Destino
+                        <span>Destino</span>
                       </button>
                     </div>
                   </div>
@@ -210,17 +264,25 @@ const NuevoPaquete = () => {
               </div>
             </div>
 
-            <div className={`${activeSection !== "imagenes" ? "hidden" : ""}`}>
-              <div className="bg-white rounded-xl sm:rounded-2xl shadow-md overflow-hidden">
-                <div className="p-4 sm:p-6 border-b border-gray-200">
-                  <h2 className="text-lg sm:text-xl font-semibold text-gray-800">
-                    Imágenes del Destino
-                  </h2>
-                  <p className="text-gray-600 mt-1 text-sm sm:text-base">
-                    Agrega imágenes atractivas para mostrar el destino
-                  </p>
+            {/* Imágenes */}
+            <div className={`${activeSection !== "imagenes" ? "hidden" : ""} animate-fadeIn`}>
+              <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
+                <div className="p-5 sm:p-7 border-b border-gray-200">
+                  <div className="flex items-center gap-3">
+                    <div className="bg-blue-100 p-2 rounded-lg text-blue-700">
+                      <FiImage className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <h2 className="text-xl font-semibold text-gray-800">
+                        Imágenes del Destino
+                      </h2>
+                      <p className="text-gray-600 mt-1">
+                        Agrega imágenes atractivas para mostrar el destino
+                      </p>
+                    </div>
+                  </div>
                 </div>
-                <div className="p-4 sm:p-6">
+                <div className="p-5 sm:p-7">
                   <DestinationImageManager
                     destination={destination}
                     onImagesChange={handleImagesChange}
@@ -230,17 +292,26 @@ const NuevoPaquete = () => {
               </div>
             </div>
 
-            <div className={`${activeSection !== "vuelo" ? "hidden" : ""}`}>
-              <div className="bg-white rounded-xl sm:rounded-2xl shadow-md overflow-hidden">
-                <div className="p-4 sm:p-6 border-b border-gray-200">
-                  <h2 className="text-lg sm:text-xl font-semibold text-gray-800">
-                    Selección de Vuelo
-                  </h2>
-                  <p className="text-gray-600 mt-1 text-sm sm:text-base">
-                    Elige el vuelo que se incluirá en este paquete
-                  </p>
+            {/* Vuelo */}
+            <div className={`${activeSection !== "vuelo" ? "hidden" : ""} animate-fadeIn`}>
+              <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
+                <div className="p-5 sm:p-7 border-b border-gray-200">
+                  <div className="flex items-center gap-3">
+                    <div className="bg-blue-100 p-2 rounded-lg text-blue-700">
+                      <FiCalendar className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <h2 className="text-xl font-semibold text-gray-800">
+                        Selección de Vuelo
+                      </h2>
+                      <p className="text-gray-600 mt-1">
+                        Elige el vuelo que se incluirá en este paquete
+                      </p>
+                    </div>
+                  </div>
                 </div>
-                <div className="p-4 sm:p-6">
+                <div className="p-5 sm:p-7">
+               
                   <FlightCarousel
                     flights={flights}
                     onFlightSelect={handleFlightSelect}
@@ -250,17 +321,26 @@ const NuevoPaquete = () => {
               </div>
             </div>
 
-            <div className={`${activeSection !== "hotel" ? "hidden" : ""}`}>
-              <div className="bg-white rounded-xl sm:rounded-2xl shadow-md overflow-hidden">
-                <div className="p-4 sm:p-6 border-b border-gray-200">
-                  <h2 className="text-lg sm:text-xl font-semibold text-gray-800">
-                    Selección de Hotel
-                  </h2>
-                  <p className="text-gray-600 mt-1 text-sm sm:text-base">
-                    Elige el hotel que se incluirá en este paquete
-                  </p>
+            {/* Hotel */}
+            <div className={`${activeSection !== "hotel" ? "hidden" : ""} animate-fadeIn`}>
+              <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
+                <div className="p-5 sm:p-7 border-b border-gray-200">
+                  <div className="flex items-center gap-3">
+                    <div className="bg-blue-100 p-2 rounded-lg text-blue-700">
+                      <FiCalendar className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <h2 className="text-xl font-semibold text-gray-800">
+                        Selección de Hotel
+                      </h2>
+                      <p className="text-gray-600 mt-1">
+                        Elige el hotel que se incluirá en este paquete
+                      </p>
+                    </div>
+                  </div>
                 </div>
-                <div className="p-4 sm:p-6">
+                <div className="p-5 sm:p-7">
+               
                   <HotelFinder
                     destination={destination}
                     onHotelSelect={handleHotelSelected}
@@ -270,19 +350,25 @@ const NuevoPaquete = () => {
               </div>
             </div>
 
-            <div
-              className={`${activeSection !== "itinerario" ? "hidden" : ""}`}
-            >
-              <div className="bg-white rounded-xl sm:rounded-2xl shadow-md overflow-hidden">
-                <div className="p-4 sm:p-6 border-b border-gray-200">
-                  <h2 className="text-lg sm:text-xl font-semibold text-gray-800">
-                    Itinerario del Viaje
-                  </h2>
-                  <p className="text-gray-600 mt-1 text-sm sm:text-base">
-                    Define las actividades diarias del paquete
-                  </p>
+            {/* Itinerario */}
+            <div className={`${activeSection !== "itinerario" ? "hidden" : ""} animate-fadeIn`}>
+              <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
+                <div className="p-5 sm:p-7 border-b border-gray-200">
+                  <div className="flex items-center gap-3">
+                    <div className="bg-blue-100 p-2 rounded-lg text-blue-700">
+                      <FiCalendar className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <h2 className="text-xl font-semibold text-gray-800">
+                        Itinerario del Viaje
+                      </h2>
+                      <p className="text-gray-600 mt-1">
+                        Define las actividades diarias del paquete
+                      </p>
+                    </div>
+                  </div>
                 </div>
-                <div className="p-4 sm:p-6">
+                <div className="p-5 sm:p-7">
                   <ItineraryEditor
                     itinerario={formData.itinerario}
                     onItinerarioChange={handleItinerarioChange}
@@ -293,8 +379,9 @@ const NuevoPaquete = () => {
               </div>
             </div>
 
-            <div className="sticky bottom-0 bg-white border-t border-gray-200 py-3 sm:py-4 px-4 sm:px-6 rounded-b-xl sm:rounded-b-2xl shadow-lg">
-              <div className="flex justify-end items-center gap-3">
+            {/* Navegación entre secciones */}
+            <div className="sticky bottom-0 bg-white border-t border-gray-200 py-4 px-4 sm:px-6 rounded-xl shadow-lg z-10">
+              <div className="flex justify-between items-center gap-3">
                 <button
                   type="button"
                   onClick={() => {
@@ -305,12 +392,13 @@ const NuevoPaquete = () => {
                     }
                   }}
                   disabled={activeSection === "informacion"}
-                  className={`w-full sm:w-auto px-4 py-2 border border-gray-300 rounded-lg font-medium text-gray-700 text-sm sm:text-base ${
+                  className={`flex items-center gap-2 px-4 py-2.5 rounded-lg font-medium text-sm sm:text-base ${
                     activeSection === "informacion"
-                      ? "opacity-50 cursor-not-allowed"
-                      : "hover:bg-gray-100"
+                      ? "opacity-50 cursor-not-allowed text-gray-500"
+                      : "text-blue-600 hover:bg-blue-50"
                   }`}
                 >
+                  <FiArrowLeft className="w-4 h-4" />
                   Anterior
                 </button>
 
@@ -325,21 +413,30 @@ const NuevoPaquete = () => {
                         setActiveSection(sectionIds[currentIndex + 1]);
                       }
                     }}
-                    className="w-full sm:w-auto px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors text-sm sm:text-base"
+                    className="flex items-center gap-2 px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors text-sm sm:text-base"
                   >
                     Siguiente
+                    <FiArrowLeft className="w-4 h-4 transform rotate-180" />
                   </button>
                 ) : (
                   <button
                     type="submit"
-                    className="w-full sm:w-auto px-6 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold rounded-lg shadow-md transition-all text-sm sm:text-base disabled:opacity-70 disabled:cursor-wait"
+                    className="px-6 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold rounded-lg shadow-md transition-all text-sm sm:text-base disabled:opacity-70 disabled:cursor-wait flex items-center gap-2"
                     disabled={isSubmitting}
                   >
-                    {isSubmitting
-                      ? "Guardando..."
-                      : url
-                        ? "Actualizar Paquete"
-                        : "Crear Paquete"}
+                    {isSubmitting ? (
+                      <>
+                        <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        {url ? "Actualizando..." : "Creando..."}
+                      </>
+                    ) : url ? (
+                      "Actualizar Paquete"
+                    ) : (
+                      "Crear Paquete"
+                    )}
                   </button>
                 )}
               </div>
@@ -347,6 +444,8 @@ const NuevoPaquete = () => {
           </form>
         </div>
       </div>
+      
+  
     </APIProvider>
   );
 };
