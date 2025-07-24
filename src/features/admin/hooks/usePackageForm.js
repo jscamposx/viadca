@@ -7,7 +7,6 @@ const isUUID = (str) =>
     str,
   );
 
-// MODIFICADO: La función ahora acepta 'index' para el 'orden'
 const processImage = async (image, index) => {
   if (
     typeof image === "string" &&
@@ -27,13 +26,11 @@ const processImage = async (image, index) => {
   }
   if (image.url && image.url.startsWith("data:image")) {
     try {
-      // MODIFICADO: Se envía la imagen junto con su orden
       const response = await api.images.upload({
         image: image.url,
         orden: index + 1,
       });
       if (response.data && response.data.id) {
-        // Devuelve solo el ID como se espera
         return response.data.id;
       }
     } catch (error) {
@@ -211,11 +208,15 @@ export const usePackageForm = (initialPackageData = null) => {
     setFormData((prev) => ({ ...prev, itinerario }));
   };
 
-  const handleSubmit = async (event) => {
+  // 1. Modificar handleSubmit para aceptar 'addNotification'
+  const handleSubmit = async (event, addNotification) => {
     event.preventDefault();
 
     if (!formData.origen_lat || !formData.destino_lat) {
-      alert("Por favor, selecciona el origen y el destino en el mapa.");
+      // 2. Usar addNotification en lugar de alert()
+      if (addNotification) {
+        addNotification("Por favor, selecciona el origen y el destino en el mapa.", "error");
+      }
       return;
     }
 
@@ -241,13 +242,11 @@ export const usePackageForm = (initialPackageData = null) => {
       (formData.images || []).map((image, index) => processImage(image, index)),
     );
     
-    // ✅ SOLUCIÓN: Excluir 'images' del payload final
     const { images, ...restOfFormData } = formData;
 
     const payload = {
       ...restOfFormData,
       duracion: parseInt(formData.duracion, 10),
-      // ✅ SOLUCIÓN: Asegurarse de que precio_base sea un entero
       precio_base: parseInt(formData.precio_base, 10),
       itinerario: formData.itinerario.map((item) => ({
         ...item,
@@ -262,16 +261,19 @@ export const usePackageForm = (initialPackageData = null) => {
     try {
       if (initialPackageData) {
         await api.packages.updatePaquete(initialPackageData.url, payload);
-        alert("Paquete actualizado con éxito");
+        // 3. Notificación de éxito para actualización
+        if (addNotification) addNotification("Paquete actualizado con éxito", "success");
       } else {
         await api.packages.createPaquete(payload);
-        alert("Paquete creado con éxito");
+        // 4. Notificación de éxito para creación
+        if (addNotification) addNotification("Paquete creado con éxito", "success");
       }
       navigate("/admin/paquetes");
     } catch (error) {
-      console.error("Error al procesar el paquete:", error);
-      const errorMessage = error.response?.data?.message || error.message;
-      alert(`Error al procesar el paquete: ${errorMessage}`);
+      // 5. Imprimir el error en consola y mostrar notificación
+      console.error("Error detallado al procesar el paquete:", error.response || error);
+      const errorMessage = error.response?.data?.message || "Ocurrió un error inesperado.";
+      if (addNotification) addNotification(`Error: ${errorMessage}`, "error");
     }
   };
 

@@ -12,12 +12,14 @@ import Loading from "../../package/components/Loading";
 import Error from "../../package/components/Error";
 import FlightCarousel from "../components/FlightCarousel";
 import { FiArrowLeft } from "react-icons/fi";
+import { useNotification } from "./AdminLayout"; // 1. Importar el hook de notificación
 
 const NuevoPaquete = () => {
   const { url } = useParams();
   const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [activeSection, setActiveSection] = useState("informacion");
+  const { addNotification } = useNotification(); // 2. Obtener la función de notificación
 
   const { paquete, loading, error } = usePackage(url);
 
@@ -46,10 +48,20 @@ const NuevoPaquete = () => {
     setFormData((prev) => ({ ...prev, id_vuelo: flightId }));
   };
 
-  const handleSubmit = (e) => {
+  // 3. Modificar handleSubmit para pasar la función de notificación
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
-    formSubmitHandler(e);
+    try {
+      // Pasamos la función 'addNotification' al hook que maneja la lógica
+      await formSubmitHandler(e, addNotification);
+    } catch (err) {
+      // Captura de errores inesperados en este componente
+      console.error("Error inesperado en el componente de envío:", err);
+      addNotification("Ocurrió un error inesperado al enviar el formulario.", "error");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   if (url && loading) return <Loading />;

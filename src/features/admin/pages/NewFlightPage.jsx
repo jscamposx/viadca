@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import api from "../../../api";
 import { FiArrowLeft, FiUpload, FiSave } from "react-icons/fi";
+import { useNotification } from "./AdminLayout"; // 1. Importar el hook de notificación
 
 const fileToBase64 = (file) =>
   new Promise((resolve, reject) => {
@@ -14,13 +15,13 @@ const fileToBase64 = (file) =>
 const NewFlightPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { addNotification } = useNotification(); // 2. Obtener la función de notificación
 
   const [nombre, setNombre] = useState("");
   const [transporte, setTransporte] = useState("");
   const [imagen, setImagen] = useState(null);
   const [preview, setPreview] = useState("");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
   const isEditing = Boolean(id);
 
   useEffect(() => {
@@ -41,10 +42,13 @@ const NewFlightPage = () => {
             );
           }
         })
-        .catch(() => setError("No se pudo cargar la información del vuelo."))
+        .catch((err) => {
+            console.error("Error al cargar el vuelo:", err);
+            addNotification("No se pudo cargar la información del vuelo.", "error");
+        })
         .finally(() => setLoading(false));
     }
-  }, [id, isEditing]);
+  }, [id, isEditing, addNotification]);
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -56,9 +60,9 @@ const NewFlightPage = () => {
     }
   };
 
+  // 3. Modificar handleSubmit para usar notificaciones
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError(null);
     setLoading(true);
 
     try {
@@ -77,16 +81,17 @@ const NewFlightPage = () => {
       }
       if (isEditing) {
         await api.flights.updateVuelo(id, vueloPayload);
-        alert("Vuelo actualizado con éxito.");
+        addNotification("Vuelo actualizado con éxito.", "success");
       } else {
         await api.flights.createVuelo(vueloPayload);
-        alert("Vuelo creado con éxito.");
+        addNotification("Vuelo creado con éxito.", "success");
       }
       navigate("/admin/vuelos");
     } catch (err) {
+      console.error("Error al guardar el vuelo:", err.response || err);
       const errorMessage =
-        err.response?.data?.message?.toString() || err.message;
-      setError(`Error al guardar el vuelo: ${errorMessage}`);
+        err.response?.data?.message?.toString() || "Ocurrió un error inesperado";
+      addNotification(`Error: ${errorMessage}`, "error");
     } finally {
       setLoading(false);
     }
@@ -105,22 +110,6 @@ const NewFlightPage = () => {
             </p>
           </div>
         </div>
-
-        {error && (
-          <div className="bg-red-50 border-l-4 border-red-500 p-4 rounded-lg mb-6">
-            <div className="flex">
-              <div className="flex-shrink-0">
-                <svg className="h-5 w-5 text-red-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-                </svg>
-              </div>
-              <div className="ml-3">
-                <h3 className="text-sm sm:text-base font-medium text-red-800">Error</h3>
-                <p className="mt-1 text-sm text-red-700">{error}</p>
-              </div>
-            </div>
-          </div>
-        )}
 
         <form onSubmit={handleSubmit} className="bg-white rounded-xl shadow-md p-5 sm:p-6 space-y-6">
           <div className="space-y-4">

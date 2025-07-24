@@ -7,6 +7,7 @@ import {
   FiSend,
   FiClock,
 } from "react-icons/fi";
+import { useNotification } from "./AdminLayout"; // 1. Importar el hook de notificación
 
 const AdminTrashPage = () => {
   const [trashItems, setTrashItems] = useState({
@@ -18,6 +19,7 @@ const AdminTrashPage = () => {
   const [restoring, setRestoring] = useState(null);
   const [deleting, setDeleting] = useState(null);
   const [expandedItems, setExpandedItems] = useState({});
+  const { addNotification } = useNotification(); // 2. Obtener la función de notificación
 
   const fetchTrashItems = async () => {
     setLoading(true);
@@ -27,6 +29,7 @@ const AdminTrashPage = () => {
       setTrashItems(response.data);
     } catch (err) {
       setError("No se pudieron cargar los elementos de la papelera.");
+      console.error("Error al cargar la papelera:", err);
     } finally {
       setLoading(false);
     }
@@ -43,6 +46,7 @@ const AdminTrashPage = () => {
     }));
   };
 
+  // 3. Modificar handleRestore para usar notificaciones
   const handleRestore = async (id, tipo, nombre) => {
     if (!window.confirm(`¿Desea restaurar el ${tipo} "${nombre}"?`)) {
       return;
@@ -51,17 +55,17 @@ const AdminTrashPage = () => {
     setRestoring(id);
     try {
       await api.trash.restoreTrashItem(id, tipo);
-      setTimeout(() => {
-        alert(`El ${tipo} "${nombre}" ha sido restaurado.`);
-        setRestoring(null);
-        fetchTrashItems();
-      }, 800);
+      addNotification(`El ${tipo} "${nombre}" ha sido restaurado.`, "success");
+      await fetchTrashItems(); // Refrescar la lista
     } catch (err) {
-      alert(`Error al restaurar el ${tipo} "${nombre}".`);
+      console.error(`Error al restaurar el ${tipo}:`, err);
+      addNotification(`Error al restaurar el ${tipo} "${nombre}".`, "error");
+    } finally {
       setRestoring(null);
     }
   };
 
+  // 4. Modificar handleDelete para usar notificaciones
   const handleDelete = async (id, tipo, nombre) => {
     if (
       !window.confirm(
@@ -74,18 +78,16 @@ const AdminTrashPage = () => {
     setDeleting(id);
     try {
       await api.trash.deleteTrashItem(tipo, id);
-      setTimeout(() => {
-        alert(`El ${tipo} "${nombre}" ha sido eliminado permanentemente.`);
-        setDeleting(null);
-        fetchTrashItems();
-      }, 800);
+      addNotification(`El ${tipo} "${nombre}" ha sido eliminado permanentemente.`, "info");
+      await fetchTrashItems(); // Refrescar la lista
     } catch (err) {
-      alert(`Error al eliminar el ${tipo} "${nombre}".`);
+      console.error(`Error al eliminar permanentemente el ${tipo}:`, err);
+      addNotification(`Error al eliminar el ${tipo} "${nombre}".`, "error");
+    } finally {
       setDeleting(null);
     }
   };
   
-  // ✅ Componente corregido con el mapa de estilos
   const ItemList = ({ items, tipo, icon, color }) => {
     const tipoNombre = tipo.charAt(0).toUpperCase() + tipo.slice(1) + "s";
 

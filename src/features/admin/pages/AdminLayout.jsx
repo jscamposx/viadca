@@ -1,6 +1,45 @@
-import { Outlet } from "react-router-dom";
+import { Outlet, useOutletContext } from "react-router-dom";
 import AdminNav from "../components/AdminNav";
-import { useState, useEffect } from "react";
+import { useState, useEffect, createContext, useContext, useCallback } from "react";
+import Notification from "../components/Notification"; // Asegúrate de que este componente exista
+
+// 1. Crear el Contexto de Notificaciones
+const NotificationContext = createContext();
+
+// 2. Crear un hook personalizado para usar las notificaciones fácilmente
+export const useNotification = () => useContext(NotificationContext);
+
+// 3. Crear el componente proveedor que manejará el estado
+const NotificationProvider = ({ children }) => {
+  const [notifications, setNotifications] = useState([]);
+
+  const addNotification = useCallback((message, type = 'info') => {
+    const id = new Date().getTime();
+    setNotifications((prev) => [...prev, { id, message, type }]);
+  }, []);
+
+  const removeNotification = useCallback((id) => {
+    setNotifications((prev) => prev.filter((n) => n.id !== id));
+  }, []);
+
+  return (
+    <NotificationContext.Provider value={{ addNotification }}>
+      {children}
+      {/* Contenedor donde se renderizarán las notificaciones */}
+      <div className="fixed bottom-0 right-0 p-4 space-y-3 z-[100]">
+        {notifications.map((notif) => (
+          <Notification
+            key={notif.id}
+            message={notif.message}
+            type={notif.type}
+            onDismiss={() => removeNotification(notif.id)}
+          />
+        ))}
+      </div>
+    </NotificationContext.Provider>
+  );
+};
+
 
 const AdminLayout = () => {
   const [isMobile, setIsMobile] = useState(() => {
@@ -35,18 +74,21 @@ const AdminLayout = () => {
   }, []);
 
   return (
-    <div className="bg-gray-100 min-h-screen">
-      <AdminNav isOpen={isSidebarOpen} setIsOpen={setSidebarOpen} />
-      <main
-        className={`transition-[margin-left] duration-300 ease-in-out ${
-          isMobile ? "pt-16" : isSidebarOpen ? "ml-64" : "ml-20"
-        }`}
-      >
-        <div className="p-4 sm:p-6 md:p-8 bg-white">
-          <Outlet />
-        </div>
-      </main>
-    </div>
+    // 4. Envolver el layout con el proveedor
+    <NotificationProvider>
+      <div className="bg-gray-100 min-h-screen">
+        <AdminNav isOpen={isSidebarOpen} setIsOpen={setSidebarOpen} />
+        <main
+          className={`transition-[margin-left] duration-300 ease-in-out ${
+            isMobile ? "pt-16" : isSidebarOpen ? "ml-64" : "ml-20"
+          }`}
+        >
+          <div className="p-4 sm:p-6 md:p-8 bg-white">
+            <Outlet />
+          </div>
+        </main>
+      </div>
+    </NotificationProvider>
   );
 };
 

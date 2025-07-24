@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { useAllPackages } from "../../package/hooks/useAllPackages";
 import { FiDownload, FiArrowUp, FiArrowDown, FiSearch } from "react-icons/fi";
 import api from "../../../api";
+import { useNotification } from "./AdminLayout";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -11,11 +12,13 @@ const AdminPaquetes = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredPaquetes, setFilteredPaquetes] = useState([]);
   const [sortConfig, setSortConfig] = useState({
-    key: "nombre",
+    key: "nombre_paquete",
     direction: "asc",
   });
-  const [deleteConfirm, setDeleteConfirm] = useState(null);
+  // 1. El estado 'deleteConfirm' ya no es necesario
+  // const [deleteConfirm, setDeleteConfirm] = useState(null); 
   const [isSortMenuOpen, setIsSortMenuOpen] = useState(false);
+  const { addNotification } = useNotification();
 
   const handleExport = async (paqueteId) => {
     try {
@@ -27,9 +30,10 @@ const AdminPaquetes = () => {
       document.body.appendChild(link);
       link.click();
       link.parentNode.removeChild(link);
+      addNotification("La exportación a Excel ha comenzado.", "success");
     } catch (error) {
       console.error("Error al exportar a Excel:", error);
-      alert("No ha sido posible exportar el archivo de Excel.");
+      addNotification("No ha sido posible exportar el archivo.", "error");
     }
   };
 
@@ -42,7 +46,7 @@ const AdminPaquetes = () => {
         result = result.filter(
           (p) =>
             p.nombre_paquete.toLowerCase().includes(term) ||
-            p.descripcion?.toLowerCase().includes(term) ||
+            p.destino?.toLowerCase().includes(term) ||
             p.precio_base.toString().includes(term),
         );
       }
@@ -79,17 +83,15 @@ const AdminPaquetes = () => {
     return `${API_URL}${url}`;
   };
 
+  // 2. handleDelete ahora elimina directamente
   const handleDelete = async (id) => {
     try {
       await api.packages.deletePaquete(id);
-
       setPaquetes((prevPaquetes) => prevPaquetes.filter((p) => p.id !== id));
-      alert("Paquete eliminado con éxito.");
+      addNotification("Paquete movido a la papelera.", "success");
     } catch (err) {
       console.error("Error al eliminar el paquete:", err);
-      alert("No se pudo eliminar el paquete. Inténtalo de nuevo.");
-    } finally {
-      setDeleteConfirm(null);
+      addNotification("No se pudo eliminar el paquete. Inténtalo de nuevo.", "error");
     }
   };
 
@@ -195,7 +197,7 @@ const AdminPaquetes = () => {
                 onClick={() => setIsSortMenuOpen(!isSortMenuOpen)}
               >
                 <span>
-                  {sortConfig.key === "nombre" && "Nombre"}
+                  {sortConfig.key === "nombre_paquete" && "Nombre"}
                   {sortConfig.key === "precio_base" && "Precio"}
                   {sortConfig.key === "duracion" && "Duración"}
                 </span>
@@ -206,18 +208,18 @@ const AdminPaquetes = () => {
                 <div className="absolute top-full left-0 right-0 mt-1 bg-white rounded-lg shadow-lg z-10 border border-gray-200">
                   <button
                     className={`w-full px-4 py-2.5 text-left flex items-center gap-1.5 ${
-                      sortConfig.key === "nombre"
+                      sortConfig.key === "nombre_paquete"
                         ? "bg-blue-50 text-blue-700"
                         : "hover:bg-gray-50"
                     }`}
-                    onClick={() => requestSort("nombre")}
+                    onClick={() => requestSort("nombre_paquete")}
                   >
                     Nombre
-                    {sortConfig.key === "nombre" &&
+                    {sortConfig.key === "nombre_paquete" &&
                       sortConfig.direction === "asc" && (
                         <FiArrowUp className="ml-auto" />
                       )}
-                    {sortConfig.key === "nombre" &&
+                    {sortConfig.key === "nombre_paquete" &&
                       sortConfig.direction === "desc" && (
                         <FiArrowDown className="ml-auto" />
                       )}
@@ -265,14 +267,14 @@ const AdminPaquetes = () => {
             <div className="hidden sm:flex flex-wrap gap-2">
               <button
                 className={`px-4 py-2 rounded-lg font-medium transition flex items-center gap-1.5 text-sm ${
-                  sortConfig.key === "nombre"
+                  sortConfig.key === "nombre_paquete"
                     ? "bg-blue-100 text-blue-700"
                     : "bg-gray-100 text-gray-700 hover:bg-gray-200"
                 }`}
-                onClick={() => requestSort("nombre")}
+                onClick={() => requestSort("nombre_paquete")}
               >
                 Nombre{" "}
-                {sortConfig.key === "nombre" &&
+                {sortConfig.key === "nombre_paquete" &&
                   (sortConfig.direction === "asc" ? (
                     <FiArrowUp />
                   ) : (
@@ -452,9 +454,10 @@ const AdminPaquetes = () => {
                         <span className="hidden sm:inline">Editar</span>
                         <span className="sm:hidden">Edit</span>
                       </Link>
-
+                      
+                      {/* 3. Modificar el botón para llamar a handleDelete directamente */}
                       <button
-                        onClick={() => setDeleteConfirm(paquete.id)}
+                        onClick={() => handleDelete(paquete.id)}
                         className="flex items-center gap-1 bg-red-100 hover:bg-red-200 text-red-700 font-medium py-1.5 px-3 rounded-lg transition text-xs sm:text-sm"
                         title="Eliminar"
                       >
@@ -522,53 +525,7 @@ const AdminPaquetes = () => {
         </div>
       </div>
 
-      {deleteConfirm && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-3 sm:p-4 z-50">
-          <div className="bg-white rounded-xl shadow-lg max-w-sm w-full p-4 sm:p-6">
-            <div className="text-center">
-              <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100">
-                <svg
-                  className="h-6 w-6 text-red-600"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-                  />
-                </svg>
-              </div>
-              <h3 className="text-lg font-medium text-gray-900 mt-4">
-                ¿Eliminar paquete?
-              </h3>
-              <p className="text-gray-500 mt-2 text-sm sm:text-base">
-                Esta acción eliminará permanentemente el paquete. ¿Estás seguro
-                de continuar?
-              </p>
-            </div>
-            <div className="mt-6 flex justify-center gap-3">
-              <button
-                type="button"
-                className="px-4 py-2 sm:px-5 sm:py-2.5 border border-gray-300 rounded-lg text-gray-700 font-medium hover:bg-gray-50 transition text-sm sm:text-base"
-                onClick={() => setDeleteConfirm(null)}
-              >
-                Cancelar
-              </button>
-              <button
-                type="button"
-                className="px-4 py-2 sm:px-5 sm:py-2.5 bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg transition text-sm sm:text-base"
-                onClick={() => handleDelete(deleteConfirm)}
-              >
-                Sí, eliminar
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* 4. Eliminar por completo el JSX del modal de confirmación */}
     </div>
   );
 };

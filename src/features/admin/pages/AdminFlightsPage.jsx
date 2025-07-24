@@ -9,19 +9,21 @@ import {
   FiChevronDown,
   FiChevronUp,
 } from "react-icons/fi";
+import { useNotification } from "./AdminLayout"; // 1. Importar el hook de notificación
 
 const API_URL = import.meta.env.VITE_API_URL;
 
 const AdminFlightsPage = () => {
   const [vuelos, setVuelos] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState(null); // Se mantiene para el error de carga inicial
   const [searchTerm, setSearchTerm] = useState("");
   const [sortConfig, setSortConfig] = useState({
     key: "nombre",
     direction: "ascending",
   });
   const [expandedFlight, setExpandedFlight] = useState(null);
+  const { addNotification } = useNotification(); // 2. Obtener la función de notificación
 
   useEffect(() => {
     const fetchVuelos = async () => {
@@ -32,7 +34,7 @@ const AdminFlightsPage = () => {
         setError(
           "No se pudieron cargar los vuelos. Por favor, inténtelo de nuevo más tarde.",
         );
-        console.error(err);
+        console.error("Error al cargar los vuelos:", err);
       } finally {
         setLoading(false);
       }
@@ -40,14 +42,16 @@ const AdminFlightsPage = () => {
     fetchVuelos();
   }, []);
 
+  // 3. Modificar handleDelete para usar notificaciones
   const handleDelete = async (id) => {
     if (window.confirm("¿Está seguro de que desea eliminar este vuelo?")) {
       try {
         await api.flights.deleteVuelo(id);
         setVuelos(vuelos.filter((vuelo) => vuelo.id !== id));
+        addNotification("Vuelo movido a la papelera con éxito.", "success");
       } catch (err) {
-        alert("Error al eliminar el vuelo. Por favor, inténtelo de nuevo.");
-        console.error(err);
+        console.error("Error al eliminar el vuelo:", err);
+        addNotification("Error al eliminar el vuelo. Por favor, inténtelo de nuevo.", "error");
       }
     }
   };
