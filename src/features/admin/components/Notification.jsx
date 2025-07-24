@@ -14,14 +14,14 @@ const Notification = ({ message, type = "info", onDismiss }) => {
     setVisible(true);
     const timer = setTimeout(() => {
       handleDismiss();
-    }, 5000); // La notificación se oculta después de 5 segundos
+    }, 5000);
 
     return () => clearTimeout(timer);
   }, []);
 
   const handleDismiss = () => {
     setVisible(false);
-    setTimeout(onDismiss, 300); // Espera a que la animación de salida termine
+    setTimeout(onDismiss, 300);
   };
 
   return (
@@ -32,13 +32,16 @@ const Notification = ({ message, type = "info", onDismiss }) => {
         type === "success"
           ? "bg-green-600"
           : type === "error"
-          ? "bg-red-600"
-          : "bg-blue-600"
+            ? "bg-red-600"
+            : "bg-blue-600"
       }`}
     >
       <div className="mr-3">{notificationIcons[type]}</div>
       <div className="flex-grow font-medium">{message}</div>
-      <button onClick={handleDismiss} className="ml-4 p-1 rounded-full hover:bg-white/20">
+      <button
+        onClick={handleDismiss}
+        className="ml-4 p-1 rounded-full hover:bg-white/20"
+      >
         <FiX className="w-5 h-5" />
       </button>
     </div>

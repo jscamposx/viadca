@@ -5,7 +5,15 @@ const Spinner = () => (
   <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
 );
 
-const ImageTile = ({ image, onRemove, onDragStart, onDrop, onTouchStart, onTouchEnd, onTouchMove }) => (
+const ImageTile = ({
+  image,
+  onRemove,
+  onDragStart,
+  onDrop,
+  onTouchStart,
+  onTouchEnd,
+  onTouchMove,
+}) => (
   <div
     draggable
     onDragStart={onDragStart}
@@ -61,8 +69,7 @@ const DestinationImageManager = ({ destination, onImagesChange }) => {
   const [status, setStatus] = useState("idle");
   const [error, setError] = useState(null);
   const [isDragging, setIsDragging] = useState(false);
-  
-  // Referencias para el drag and drop táctil
+
   const dragItem = useRef(null);
   const dragOverItem = useRef(null);
 
@@ -135,7 +142,7 @@ const DestinationImageManager = ({ destination, onImagesChange }) => {
         const base64 = await fileToBase64(file);
         return {
           id: `uploaded-${file.name}-${Date.now()}`,
-          url: base64, 
+          url: base64,
           isUploaded: true,
         };
       }),
@@ -155,7 +162,7 @@ const DestinationImageManager = ({ destination, onImagesChange }) => {
   const handleDragStart = (e, index) => {
     e.dataTransfer.setData("imageIndex", index);
   };
-  
+
   const handleSort = () => {
     const newImages = [...images];
     const draggedItemContent = newImages.splice(dragItem.current, 1)[0];
@@ -269,10 +276,15 @@ const DestinationImageManager = ({ destination, onImagesChange }) => {
               onTouchStart={() => (dragItem.current = index)}
               onTouchMove={(e) => {
                 const touch = e.touches[0];
-                const targetElement = document.elementFromPoint(touch.clientX, touch.clientY);
-                const targetNode = targetElement?.closest('[draggable]');
+                const targetElement = document.elementFromPoint(
+                  touch.clientX,
+                  touch.clientY,
+                );
+                const targetNode = targetElement?.closest("[draggable]");
                 if (targetNode) {
-                  const targetIndex = Array.from(targetNode.parentNode.children).indexOf(targetNode);
+                  const targetIndex = Array.from(
+                    targetNode.parentNode.children,
+                  ).indexOf(targetNode);
                   dragOverItem.current = targetIndex;
                 }
               }}

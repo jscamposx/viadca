@@ -12,14 +12,14 @@ import Loading from "../../package/components/Loading";
 import Error from "../../package/components/Error";
 import FlightCarousel from "../components/FlightCarousel";
 import { FiArrowLeft } from "react-icons/fi";
-import { useNotification } from "./AdminLayout"; // 1. Importar el hook de notificación
+import { useNotification } from "./AdminLayout";
 
 const NuevoPaquete = () => {
   const { url } = useParams();
   const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [activeSection, setActiveSection] = useState("informacion");
-  const { addNotification } = useNotification(); // 2. Obtener la función de notificación
+  const { addNotification } = useNotification();
 
   const { paquete, loading, error } = usePackage(url);
 
@@ -48,17 +48,17 @@ const NuevoPaquete = () => {
     setFormData((prev) => ({ ...prev, id_vuelo: flightId }));
   };
 
-  // 3. Modificar handleSubmit para pasar la función de notificación
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
     try {
-      // Pasamos la función 'addNotification' al hook que maneja la lógica
       await formSubmitHandler(e, addNotification);
     } catch (err) {
-      // Captura de errores inesperados en este componente
       console.error("Error inesperado en el componente de envío:", err);
-      addNotification("Ocurrió un error inesperado al enviar el formulario.", "error");
+      addNotification(
+        "Ocurrió un error inesperado al enviar el formulario.",
+        "error",
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -83,20 +83,28 @@ const NuevoPaquete = () => {
     >
       <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 py-4 sm:py-6 px-3 sm:px-4">
         <div className="max-w-7xl mx-auto">
-          {/* Encabezado */}
           <div className="bg-white rounded-xl sm:rounded-2xl shadow-md sm:shadow-xl overflow-hidden mb-5 sm:mb-8">
-            <div className="bg-gradient-to-r from-blue-600 to-indigo-700 py-4 sm:py-6 px-4 sm:px-8">
-              <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-white">
-                {url
-                  ? "Editar Paquete Turístico"
-                  : "Crear nuevo paquete turístico"}
-              </h1>
-              <p className="text-blue-100 mt-1 sm:mt-2 text-sm sm:text-base">
-                Complete toda la información para crear un paquete atractivo
-              </p>
+            <div className="bg-gradient-to-r from-blue-600 to-indigo-700 py-4 sm:py-6 px-4 sm:px-8 flex items-center gap-3 sm:gap-4">
+              <button
+                type="button"
+                onClick={() => navigate("/admin/paquetes")}
+                aria-label="Regresar a paquetes"
+                className="flex-shrink-0 p-2 sm:p-3 rounded-full text-white bg-white/10 hover:bg-white/20 transition-colors duration-200"
+              >
+                <FiArrowLeft className="w-5 h-5 sm:w-6 sm:h-6" />
+              </button>
+              <div>
+                <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-white">
+                  {url
+                    ? "Editar Paquete Turístico"
+                    : "Crear nuevo paquete turístico"}
+                </h1>
+                <p className="text-blue-100 mt-1 text-sm sm:text-base">
+                  Complete toda la información para crear un paquete atractivo
+                </p>
+              </div>
             </div>
 
-            {/* Pestañas de navegación */}
             <div className="bg-white border-b border-gray-200">
               <div className="flex overflow-x-auto py-2 sm:py-3 px-3 gap-1 sm:gap-2">
                 {sections.map((section) => (
@@ -121,7 +129,6 @@ const NuevoPaquete = () => {
             className="space-y-5 sm:space-y-8"
             noValidate
           >
-            {/* Sección: Información Básica */}
             <div
               className={`${activeSection !== "informacion" ? "hidden" : ""}`}
             >
@@ -144,7 +151,6 @@ const NuevoPaquete = () => {
               </div>
             </div>
 
-            {/* Sección: Ubicación */}
             <div className={`${activeSection !== "ubicacion" ? "hidden" : ""}`}>
               <div className="bg-white rounded-xl sm:rounded-2xl shadow-md overflow-hidden">
                 <div className="p-4 sm:p-6 border-b border-gray-200">
@@ -191,7 +197,6 @@ const NuevoPaquete = () => {
                       </button>
                     </div>
                   </div>
-
                   <LocationSelector
                     onMapClick={onMapClick}
                     origin={origin}
@@ -204,7 +209,6 @@ const NuevoPaquete = () => {
               </div>
             </div>
 
-            {/* Sección: Imágenes */}
             <div className={`${activeSection !== "imagenes" ? "hidden" : ""}`}>
               <div className="bg-white rounded-xl sm:rounded-2xl shadow-md overflow-hidden">
                 <div className="p-4 sm:p-6 border-b border-gray-200">
@@ -225,7 +229,6 @@ const NuevoPaquete = () => {
               </div>
             </div>
 
-            {/* Sección: Vuelo */}
             <div className={`${activeSection !== "vuelo" ? "hidden" : ""}`}>
               <div className="bg-white rounded-xl sm:rounded-2xl shadow-md overflow-hidden">
                 <div className="p-4 sm:p-6 border-b border-gray-200">
@@ -246,7 +249,6 @@ const NuevoPaquete = () => {
               </div>
             </div>
 
-            {/* Sección: Hotel */}
             <div className={`${activeSection !== "hotel" ? "hidden" : ""}`}>
               <div className="bg-white rounded-xl sm:rounded-2xl shadow-md overflow-hidden">
                 <div className="p-4 sm:p-6 border-b border-gray-200">
@@ -267,7 +269,6 @@ const NuevoPaquete = () => {
               </div>
             </div>
 
-            {/* Sección: Itinerario */}
             <div
               className={`${activeSection !== "itinerario" ? "hidden" : ""}`}
             >
@@ -291,69 +292,55 @@ const NuevoPaquete = () => {
               </div>
             </div>
 
-            {/* Botones de navegación */}
             <div className="sticky bottom-0 bg-white border-t border-gray-200 py-3 sm:py-4 px-4 sm:px-6 rounded-b-xl sm:rounded-b-2xl shadow-lg">
-              <div className="flex flex-col-reverse sm:flex-row justify-between items-center gap-3">
-                <div className="w-full sm:w-auto">
-                  <button
-                    type="button"
-                    onClick={() => navigate("/admin/paquetes")}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg font-medium text-gray-700 hover:bg-gray-100 text-sm sm:text-base flex items-center justify-center gap-2"
-                  >
-                        <FiArrowLeft className="w-4 h-4" />
-                    Regresar
-                  </button>
-                </div>
+              <div className="flex justify-end items-center gap-3">
+                <button
+                  type="button"
+                  onClick={() => {
+                    const sectionIds = sections.map((s) => s.id);
+                    const currentIndex = sectionIds.indexOf(activeSection);
+                    if (currentIndex > 0) {
+                      setActiveSection(sectionIds[currentIndex - 1]);
+                    }
+                  }}
+                  disabled={activeSection === "informacion"}
+                  className={`w-full sm:w-auto px-4 py-2 border border-gray-300 rounded-lg font-medium text-gray-700 text-sm sm:text-base ${
+                    activeSection === "informacion"
+                      ? "opacity-50 cursor-not-allowed"
+                      : "hover:bg-gray-100"
+                  }`}
+                >
+                  Anterior
+                </button>
 
-                <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+                {activeSection !== "itinerario" ? (
                   <button
                     type="button"
-                    onClick={() => {
+                    onClick={(e) => {
+                      e.preventDefault();
                       const sectionIds = sections.map((s) => s.id);
                       const currentIndex = sectionIds.indexOf(activeSection);
-                      if (currentIndex > 0) {
-                        setActiveSection(sectionIds[currentIndex - 1]);
+                      if (currentIndex < sections.length - 1) {
+                        setActiveSection(sectionIds[currentIndex + 1]);
                       }
                     }}
-                    disabled={activeSection === "informacion"}
-                    className={`w-full px-4 py-2 border border-gray-300 rounded-lg font-medium text-gray-700 text-sm sm:text-base ${
-                      activeSection === "informacion"
-                        ? "opacity-50 cursor-not-allowed"
-                        : ""
-                    }`}
+                    className="w-full sm:w-auto px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors text-sm sm:text-base"
                   >
-                    Anterior
+                    Siguiente
                   </button>
-
-                  {activeSection !== "itinerario" ? (
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        const sectionIds = sections.map((s) => s.id);
-                        const currentIndex = sectionIds.indexOf(activeSection);
-                        if (currentIndex < sections.length - 1) {
-                          setActiveSection(sectionIds[currentIndex + 1]);
-                        }
-                      }}
-                      className="w-full px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors text-sm sm:text-base"
-                    >
-                      Siguiente
-                    </button>
-                  ) : (
-                    <button
-                      type="submit"
-                      className="w-full px-6 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold rounded-lg shadow-md transition-all text-sm sm:text-base"
-                      disabled={isSubmitting}
-                    >
-                      {isSubmitting
-                        ? "Guardando..."
-                        : url
-                          ? "Actualizar Paquete"
-                          : "Crear Paquete"}
-                    </button>
-                  )}
-                </div>
+                ) : (
+                  <button
+                    type="submit"
+                    className="w-full sm:w-auto px-6 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold rounded-lg shadow-md transition-all text-sm sm:text-base"
+                    disabled={isSubmitting}
+                  >
+                    {isSubmitting
+                      ? "Guardando..."
+                      : url
+                        ? "Actualizar Paquete"
+                        : "Crear Paquete"}
+                  </button>
+                )}
               </div>
             </div>
           </form>

@@ -9,21 +9,21 @@ import {
   FiChevronDown,
   FiChevronUp,
 } from "react-icons/fi";
-import { useNotification } from "./AdminLayout"; // 1. Importar el hook de notificación
+import { useNotification } from "./AdminLayout";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
 const AdminFlightsPage = () => {
   const [vuelos, setVuelos] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null); // Se mantiene para el error de carga inicial
+  const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [sortConfig, setSortConfig] = useState({
     key: "nombre",
     direction: "ascending",
   });
   const [expandedFlight, setExpandedFlight] = useState(null);
-  const { addNotification } = useNotification(); // 2. Obtener la función de notificación
+  const { addNotification } = useNotification();
 
   useEffect(() => {
     const fetchVuelos = async () => {
@@ -42,7 +42,6 @@ const AdminFlightsPage = () => {
     fetchVuelos();
   }, []);
 
-  // 3. Modificar handleDelete para usar notificaciones
   const handleDelete = async (id) => {
     if (window.confirm("¿Está seguro de que desea eliminar este vuelo?")) {
       try {
@@ -51,7 +50,10 @@ const AdminFlightsPage = () => {
         addNotification("Vuelo movido a la papelera con éxito.", "success");
       } catch (err) {
         console.error("Error al eliminar el vuelo:", err);
-        addNotification("Error al eliminar el vuelo. Por favor, inténtelo de nuevo.", "error");
+        addNotification(
+          "Error al eliminar el vuelo. Por favor, inténtelo de nuevo.",
+          "error",
+        );
       }
     }
   };
@@ -136,7 +138,6 @@ const AdminFlightsPage = () => {
   return (
     <div className="min-h-screen bg-white py-4 px-2 sm:px-4 lg:px-6">
       <div className="max-w-7xl mx-auto">
-        {/* Header */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-3">
           <div className="mb-4 md:mb-0">
             <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
@@ -179,7 +180,6 @@ const AdminFlightsPage = () => {
           </div>
         </div>
 
-        {/* Tabla de vuelos */}
         <div className="bg-white rounded-xl shadow-xl overflow-hidden">
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200">
@@ -322,7 +322,11 @@ const AdminFlightsPage = () => {
                                 toggleFlightDetails(vuelo.id);
                               }}
                               className="text-gray-500 hover:text-gray-700 p-1 sm:p-2 rounded-full hover:bg-gray-100 transition-colors"
-                              aria-label={expandedFlight === vuelo.id ? "Contraer detalles del vuelo" : "Expandir detalles del vuelo"}
+                              aria-label={
+                                expandedFlight === vuelo.id
+                                  ? "Contraer detalles del vuelo"
+                                  : "Expandir detalles del vuelo"
+                              }
                             >
                               {expandedFlight === vuelo.id ? (
                                 <FiChevronUp size={16} className="sm:w-5" />

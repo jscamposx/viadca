@@ -15,8 +15,7 @@ const AdminPaquetes = () => {
     key: "nombre_paquete",
     direction: "asc",
   });
-  // 1. El estado 'deleteConfirm' ya no es necesario
-  // const [deleteConfirm, setDeleteConfirm] = useState(null); 
+
   const [isSortMenuOpen, setIsSortMenuOpen] = useState(false);
   const { addNotification } = useNotification();
 
@@ -83,7 +82,6 @@ const AdminPaquetes = () => {
     return `${API_URL}${url}`;
   };
 
-  // 2. handleDelete ahora elimina directamente
   const handleDelete = async (id) => {
     try {
       await api.packages.deletePaquete(id);
@@ -91,7 +89,10 @@ const AdminPaquetes = () => {
       addNotification("Paquete movido a la papelera.", "success");
     } catch (err) {
       console.error("Error al eliminar el paquete:", err);
-      addNotification("No se pudo eliminar el paquete. Inténtalo de nuevo.", "error");
+      addNotification(
+        "No se pudo eliminar el paquete. Inténtalo de nuevo.",
+        "error",
+      );
     }
   };
 
@@ -129,7 +130,6 @@ const AdminPaquetes = () => {
   return (
     <div className="min-h-screen bg-white p-3 sm:p-4 md:p-6">
       <div className="max-w-7xl mx-auto">
-        {/* Header */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
           <div className="mb-3 sm:mb-0">
             <h1 className="text-2xl sm:text-3xl font-bold text-gray-800">
@@ -454,8 +454,7 @@ const AdminPaquetes = () => {
                         <span className="hidden sm:inline">Editar</span>
                         <span className="sm:hidden">Edit</span>
                       </Link>
-                      
-                      {/* 3. Modificar el botón para llamar a handleDelete directamente */}
+
                       <button
                         onClick={() => handleDelete(paquete.id)}
                         className="flex items-center gap-1 bg-red-100 hover:bg-red-200 text-red-700 font-medium py-1.5 px-3 rounded-lg transition text-xs sm:text-sm"
@@ -524,8 +523,6 @@ const AdminPaquetes = () => {
           )}
         </div>
       </div>
-
-      {/* 4. Eliminar por completo el JSX del modal de confirmación */}
     </div>
   );
 };

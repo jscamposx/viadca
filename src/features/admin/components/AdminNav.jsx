@@ -13,7 +13,6 @@ import {
   FiCompass,
 } from "react-icons/fi";
 
-// Este componente no necesita cambios.
 const NavItem = ({ to, icon, label, isOpen, isMobile = false }) => {
   const activeLinkStyle = {
     backgroundColor: "#eff6ff",
@@ -66,7 +65,6 @@ const AdminNav = ({ isOpen, setIsOpen }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const location = useLocation();
 
-  // ✅ Define los enlaces de navegación en un solo array
   const navLinks = [
     { to: "/admin", icon: <FiHome size={20} />, label: "Dashboard" },
     { to: "/admin/paquetes", icon: <FiPackage size={20} />, label: "Paquetes" },
@@ -94,7 +92,6 @@ const AdminNav = ({ isOpen, setIsOpen }) => {
     }
   }, [location.pathname, isMobile]);
 
-  // --- Vista Móvil ---
   if (isMobile) {
     return (
       <header className="bg-white text-slate-700 shadow-md fixed top-0 w-full z-50">
@@ -117,7 +114,6 @@ const AdminNav = ({ isOpen, setIsOpen }) => {
         {isMobileMenuOpen && (
           <nav className="p-4 border-t border-slate-200 bg-white absolute w-full shadow-lg">
             <ul className="flex flex-col gap-2">
-              {/* ✅ Renderiza los enlaces usando .map() */}
               {navLinks.map((link) => (
                 <NavItem key={link.to} {...link} isMobile={true} />
               ))}
@@ -128,7 +124,6 @@ const AdminNav = ({ isOpen, setIsOpen }) => {
     );
   }
 
-  // --- Vista de Escritorio ---
   return (
     <aside
       className={`fixed top-0 left-0 h-screen bg-white text-slate-700 p-4
@@ -162,7 +157,6 @@ const AdminNav = ({ isOpen, setIsOpen }) => {
       </div>
 
       <ul className="flex flex-col gap-1 flex-grow">
-        {/* ✅ Renderiza los mismos enlaces aquí también */}
         {navLinks.map((link) => (
           <NavItem key={link.to} {...link} isOpen={isOpen} />
         ))}

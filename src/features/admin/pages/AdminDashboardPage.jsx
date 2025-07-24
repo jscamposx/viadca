@@ -1,5 +1,5 @@
 import { useState } from "react";
-import Notification from "../components/Notification"; // Importa el componente
+import Notification from "../components/Notification";
 
 const AdminDashboard = () => {
   const [notifications, setNotifications] = useState([]);
@@ -26,22 +26,24 @@ const AdminDashboard = () => {
           </p>
         </header>
 
-        {/* Notificaciones de ejemplo */}
         <div className="flex justify-center gap-4 mb-10">
-            <button
-                onClick={() => addNotification("Paquete creado con éxito", "success")}
-                className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded"
-            >
-                Mostrar Notificación de Éxito
-            </button>
-            <button
-                onClick={() => addNotification("Error al crear el paquete", "error")}
-                className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded"
-            >
-                Mostrar Notificación de Error
-            </button>
+          <button
+            onClick={() =>
+              addNotification("Paquete creado con éxito", "success")
+            }
+            className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded"
+          >
+            Mostrar Notificación de Éxito
+          </button>
+          <button
+            onClick={() =>
+              addNotification("Error al crear el paquete", "error")
+            }
+            className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded"
+          >
+            Mostrar Notificación de Error
+          </button>
         </div>
-
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
           <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-white/50 p-6 transition-all duration-300 hover:shadow-xl">
@@ -494,16 +496,16 @@ const AdminDashboard = () => {
             </div>
           </div>
         </div>
-        {/* Contenedor de notificaciones */}
+
         <div className="fixed bottom-0 right-0 p-4 space-y-2">
-            {notifications.map((notif) => (
+          {notifications.map((notif) => (
             <Notification
-                key={notif.id}
-                message={notif.message}
-                type={notif.type}
-                onDismiss={() => removeNotification(notif.id)}
+              key={notif.id}
+              message={notif.message}
+              type={notif.type}
+              onDismiss={() => removeNotification(notif.id)}
             />
-            ))}
+          ))}
         </div>
       </div>
     </div>

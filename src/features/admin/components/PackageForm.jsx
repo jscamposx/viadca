@@ -1,29 +1,35 @@
 const PackageForm = ({ formData, onFormChange }) => {
-
   const formatNumber = (value) => {
     if (!value) return "";
 
-    const numberValue = parseFloat(value.toString().replace(/,/g, ''));
+    const numberValue = parseFloat(value.toString().replace(/,/g, ""));
     if (isNaN(numberValue)) return "";
 
-    return numberValue.toLocaleString('es-MX');
+    return numberValue.toLocaleString("es-MX");
   };
 
- 
   const handlePriceChange = (e) => {
     const { name, value } = e.target;
-    const rawValue = value.replace(/,/g, '');
+    const rawValue = value.replace(/,/g, "");
 
     if (!isNaN(rawValue) || rawValue === "") {
       onFormChange({ target: { name, value: rawValue } });
     }
   };
-  
+
   return (
     <div className="space-y-6">
       <input type="hidden" name="origen" value={formData.origen || ""} />
-      <input type="hidden" name="origen_lat" value={formData.origen_lat || ""} />
-      <input type="hidden" name="origen_lng" value={formData.origen_lng || ""} />
+      <input
+        type="hidden"
+        name="origen_lat"
+        value={formData.origen_lat || ""}
+      />
+      <input
+        type="hidden"
+        name="origen_lng"
+        value={formData.origen_lng || ""}
+      />
       <input type="hidden" name="destino" value={formData.destino || ""} />
       <input
         type="hidden"

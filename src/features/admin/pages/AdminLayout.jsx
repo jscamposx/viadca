@@ -1,19 +1,22 @@
 import { Outlet, useOutletContext } from "react-router-dom";
 import AdminNav from "../components/AdminNav";
-import { useState, useEffect, createContext, useContext, useCallback } from "react";
-import Notification from "../components/Notification"; // Asegúrate de que este componente exista
+import {
+  useState,
+  useEffect,
+  createContext,
+  useContext,
+  useCallback,
+} from "react";
+import Notification from "../components/Notification";
 
-// 1. Crear el Contexto de Notificaciones
 const NotificationContext = createContext();
 
-// 2. Crear un hook personalizado para usar las notificaciones fácilmente
 export const useNotification = () => useContext(NotificationContext);
 
-// 3. Crear el componente proveedor que manejará el estado
 const NotificationProvider = ({ children }) => {
   const [notifications, setNotifications] = useState([]);
 
-  const addNotification = useCallback((message, type = 'info') => {
+  const addNotification = useCallback((message, type = "info") => {
     const id = new Date().getTime();
     setNotifications((prev) => [...prev, { id, message, type }]);
   }, []);
@@ -25,7 +28,7 @@ const NotificationProvider = ({ children }) => {
   return (
     <NotificationContext.Provider value={{ addNotification }}>
       {children}
-      {/* Contenedor donde se renderizarán las notificaciones */}
+
       <div className="fixed bottom-0 right-0 p-4 space-y-3 z-[100]">
         {notifications.map((notif) => (
           <Notification
@@ -39,7 +42,6 @@ const NotificationProvider = ({ children }) => {
     </NotificationContext.Provider>
   );
 };
-
 
 const AdminLayout = () => {
   const [isMobile, setIsMobile] = useState(() => {
@@ -74,7 +76,6 @@ const AdminLayout = () => {
   }, []);
 
   return (
-    // 4. Envolver el layout con el proveedor
     <NotificationProvider>
       <div className="bg-gray-100 min-h-screen">
         <AdminNav isOpen={isSidebarOpen} setIsOpen={setSidebarOpen} />

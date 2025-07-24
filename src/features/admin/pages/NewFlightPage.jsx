@@ -43,8 +43,11 @@ const NewFlightPage = () => {
           }
         })
         .catch((err) => {
-            console.error("Error al cargar el vuelo:", err);
-            addNotification("No se pudo cargar la información del vuelo.", "error");
+          console.error("Error al cargar el vuelo:", err);
+          addNotification(
+            "No se pudo cargar la información del vuelo.",
+            "error",
+          );
         })
         .finally(() => setLoading(false));
     }
@@ -89,7 +92,8 @@ const NewFlightPage = () => {
     } catch (err) {
       console.error("Error al guardar el vuelo:", err.response || err);
       const errorMessage =
-        err.response?.data?.message?.toString() || "Ocurrió un error inesperado";
+        err.response?.data?.message?.toString() ||
+        "Ocurrió un error inesperado";
       addNotification(`Error: ${errorMessage}`, "error");
     } finally {
       setLoading(false);
@@ -110,10 +114,16 @@ const NewFlightPage = () => {
           </div>
         </div>
 
-        <form onSubmit={handleSubmit} className="bg-white rounded-xl shadow-md p-5 sm:p-6 space-y-6">
+        <form
+          onSubmit={handleSubmit}
+          className="bg-white rounded-xl shadow-md p-5 sm:p-6 space-y-6"
+        >
           <div className="space-y-4">
             <div>
-              <label htmlFor="nombre" className="block text-sm sm:text-base font-medium text-gray-700 mb-2">
+              <label
+                htmlFor="nombre"
+                className="block text-sm sm:text-base font-medium text-gray-700 mb-2"
+              >
                 Nombre del Vuelo
               </label>
               <input
@@ -126,9 +136,12 @@ const NewFlightPage = () => {
                 required
               />
             </div>
-            
+
             <div>
-              <label htmlFor="transporte" className="block text-sm sm:text-base font-medium text-gray-700 mb-2">
+              <label
+                htmlFor="transporte"
+                className="block text-sm sm:text-base font-medium text-gray-700 mb-2"
+              >
                 Transporte
               </label>
               <input
@@ -141,41 +154,43 @@ const NewFlightPage = () => {
                 required
               />
             </div>
-            
+
             <div>
-              <label htmlFor="imagen" className="block text-sm sm:text-base font-medium text-gray-700 mb-2">
+              <label
+                htmlFor="imagen"
+                className="block text-sm sm:text-base font-medium text-gray-700 mb-2"
+              >
                 Imagen del Vuelo
               </label>
-              
+
               <div className="flex flex-col sm:flex-row gap-4">
-                {/* Contenedor de carga de imagen */}
                 <div className="w-full sm:w-1/2">
                   <div className="flex items-center justify-center w-full">
-                    <label 
+                    <label
                       htmlFor="imagen"
                       className="flex flex-col items-center justify-center w-full h-40 border-2 border-dashed rounded-xl cursor-pointer bg-gray-50 hover:bg-gray-100 transition-colors"
                     >
                       <div className="flex flex-col items-center justify-center pt-5 pb-6">
                         <FiUpload className="w-8 h-8 mb-3 text-gray-400" />
                         <p className="mb-2 text-sm text-gray-500 text-center">
-                          <span className="font-semibold">Haz clic para subir</span> o arrastra una imagen
+                          <span className="font-semibold">
+                            Haz clic para subir
+                          </span>{" "}
+                          o arrastra una imagen
                         </p>
-                        <p className="text-xs text-gray-500">
-                          PNG, JPG 
-                        </p>
+                        <p className="text-xs text-gray-500">PNG, JPG</p>
                       </div>
-                      <input 
-                        id="imagen" 
-                        type="file" 
-                        className="hidden" 
+                      <input
+                        id="imagen"
+                        type="file"
+                        className="hidden"
                         accept="image/*"
                         onChange={handleImageChange}
                       />
                     </label>
                   </div>
                 </div>
-                
-                {/* Contenedor de la vista previa */}
+
                 {preview && (
                   <div className="w-full sm:w-1/2">
                     <div className="relative border border-gray-200 rounded-lg overflow-hidden h-40">
@@ -203,16 +218,32 @@ const NewFlightPage = () => {
               <FiArrowLeft className="w-4 h-4" />
               Regresar
             </button>
-            
+
             <button
               type="submit"
               disabled={loading}
               className="flex items-center justify-center gap-2 w-full sm:w-auto px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-medium rounded-lg shadow-md transition-all disabled:opacity-70"
             >
               {loading ? (
-                <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                <svg
+                  className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  ></circle>
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  ></path>
                 </svg>
               ) : (
                 <FiSave className="w-4 h-4" />

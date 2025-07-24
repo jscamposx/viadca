@@ -208,14 +208,15 @@ export const usePackageForm = (initialPackageData = null) => {
     setFormData((prev) => ({ ...prev, itinerario }));
   };
 
-  // 1. Modificar handleSubmit para aceptar 'addNotification'
   const handleSubmit = async (event, addNotification) => {
     event.preventDefault();
 
     if (!formData.origen_lat || !formData.destino_lat) {
-      // 2. Usar addNotification en lugar de alert()
       if (addNotification) {
-        addNotification("Por favor, selecciona el origen y el destino en el mapa.", "error");
+        addNotification(
+          "Por favor, selecciona el origen y el destino en el mapa.",
+          "error",
+        );
       }
       return;
     }
@@ -241,7 +242,7 @@ export const usePackageForm = (initialPackageData = null) => {
     const packageImageIds = await Promise.all(
       (formData.images || []).map((image, index) => processImage(image, index)),
     );
-    
+
     const { images, ...restOfFormData } = formData;
 
     const payload = {
@@ -261,18 +262,23 @@ export const usePackageForm = (initialPackageData = null) => {
     try {
       if (initialPackageData) {
         await api.packages.updatePaquete(initialPackageData.url, payload);
-        // 3. Notificación de éxito para actualización
-        if (addNotification) addNotification("Paquete actualizado con éxito", "success");
+
+        if (addNotification)
+          addNotification("Paquete actualizado con éxito", "success");
       } else {
         await api.packages.createPaquete(payload);
-        // 4. Notificación de éxito para creación
-        if (addNotification) addNotification("Paquete creado con éxito", "success");
+
+        if (addNotification)
+          addNotification("Paquete creado con éxito", "success");
       }
       navigate("/admin/paquetes");
     } catch (error) {
-      // 5. Imprimir el error en consola y mostrar notificación
-      console.error("Error detallado al procesar el paquete:", error.response || error);
-      const errorMessage = error.response?.data?.message || "Ocurrió un error inesperado.";
+      console.error(
+        "Error detallado al procesar el paquete:",
+        error.response || error,
+      );
+      const errorMessage =
+        error.response?.data?.message || "Ocurrió un error inesperado.";
       if (addNotification) addNotification(`Error: ${errorMessage}`, "error");
     }
   };
