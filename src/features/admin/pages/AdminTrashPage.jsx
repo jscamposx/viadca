@@ -80,7 +80,7 @@ const AdminTrashPage = () => {
         `El ${tipo} "${nombre}" ha sido eliminado permanentemente.`,
         "info",
       );
-      await fetchTrashItems(); // Refrescar la lista
+      await fetchTrashItems();
     } catch (err) {
       console.error(`Error al eliminar permanentemente el ${tipo}:`, err);
       addNotification(`Error al eliminar el ${tipo} "${nombre}".`, "error");
@@ -336,7 +336,7 @@ const AdminTrashPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-8 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-white py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-6xl mx-auto">
         <div className="text-center mb-10">
           <h1 className="text-3xl font-bold text-gray-900 bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text  inline-block">

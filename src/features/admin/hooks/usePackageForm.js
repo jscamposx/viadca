@@ -57,6 +57,7 @@ export const usePackageForm = (initialPackageData = null) => {
     destino_lng: "",
     destino_place_id: "",
     precio_base: "",
+     descuento: "",
     itinerario: [{ dia: 1, descripcion: "" }],
     images: [],
     hotel: null,
@@ -256,6 +257,14 @@ export const usePackageForm = (initialPackageData = null) => {
       imageIds: packageImageIds.filter(Boolean),
       hotel: hotelPayload,
     };
+
+
+       if (formData.descuento && !isNaN(parseInt(formData.descuento, 10))) {
+      payload.descuento = parseInt(formData.descuento, 10);
+    } else {
+      delete payload.descuento; // Se elimina si no es válido para no enviarlo
+    }
+
 
     console.log("Payload final a enviar:", payload);
 
