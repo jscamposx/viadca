@@ -211,7 +211,6 @@ export const usePackageForm = (initialPackageData = null) => {
     setFormData((prev) => ({ ...prev, itinerario }));
   };
 
-  // MODIFICADO: Lógica de envío actualizada
   const handleSubmit = async (event) => {
     event.preventDefault();
 
@@ -241,18 +240,20 @@ export const usePackageForm = (initialPackageData = null) => {
     const packageImageIds = await Promise.all(
       (formData.images || []).map((image, index) => processImage(image, index)),
     );
-
-    const { ...restOfFormData } = formData;
+    
+    // ✅ SOLUCIÓN: Excluir 'images' del payload final
+    const { images, ...restOfFormData } = formData;
 
     const payload = {
       ...restOfFormData,
       duracion: parseInt(formData.duracion, 10),
-      precio_base: parseFloat(formData.precio_base),
+      // ✅ SOLUCIÓN: Asegurarse de que precio_base sea un entero
+      precio_base: parseInt(formData.precio_base, 10),
       itinerario: formData.itinerario.map((item) => ({
         ...item,
         dia: parseInt(item.dia, 10),
       })),
-      imageIds: packageImageIds.filter(Boolean), // Se envía 'imageIds' con un arreglo de strings
+      imageIds: packageImageIds.filter(Boolean),
       hotel: hotelPayload,
     };
 
