@@ -258,7 +258,7 @@ const AdminTrashPage = () => {
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-6xl mx-auto">
         <div className="text-center mb-10">
-          <h1 className="text-3xl font-bold text-gray-900 bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent inline-block">
+          <h1 className="text-3xl font-bold text-gray-900 bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text  inline-block">
             Papelera de Reciclaje
           </h1>
           <p className="mt-4 text-lg text-gray-600 max-w-2xl mx-auto">

@@ -1,15 +1,18 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import axios from "axios";
 
 const Spinner = () => (
   <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
 );
 
-const ImageTile = ({ image, onRemove, onDragStart, onDrop }) => (
+const ImageTile = ({ image, onRemove, onDragStart, onDrop, onTouchStart, onTouchEnd, onTouchMove }) => (
   <div
     draggable
     onDragStart={onDragStart}
     onDrop={onDrop}
+    onTouchStart={onTouchStart}
+    onTouchEnd={onTouchEnd}
+    onTouchMove={onTouchMove}
     className="relative group bg-gray-100 rounded-lg overflow-hidden shadow-sm cursor-move"
   >
     <div className="h-48">
@@ -58,6 +61,10 @@ const DestinationImageManager = ({ destination, onImagesChange }) => {
   const [status, setStatus] = useState("idle");
   const [error, setError] = useState(null);
   const [isDragging, setIsDragging] = useState(false);
+  
+  // Referencias para el drag and drop táctil
+  const dragItem = useRef(null);
+  const dragOverItem = useRef(null);
 
   const fetchImagesFromPexels = useCallback(async (destinationName) => {
     if (!destinationName) {
@@ -128,7 +135,7 @@ const DestinationImageManager = ({ destination, onImagesChange }) => {
         const base64 = await fileToBase64(file);
         return {
           id: `uploaded-${file.name}-${Date.now()}`,
-          url: base64, // <-- AHORA ES BASE64
+          url: base64, 
           isUploaded: true,
         };
       }),
@@ -147,6 +154,15 @@ const DestinationImageManager = ({ destination, onImagesChange }) => {
 
   const handleDragStart = (e, index) => {
     e.dataTransfer.setData("imageIndex", index);
+  };
+  
+  const handleSort = () => {
+    const newImages = [...images];
+    const draggedItemContent = newImages.splice(dragItem.current, 1)[0];
+    newImages.splice(dragOverItem.current, 0, draggedItemContent);
+    dragItem.current = null;
+    dragOverItem.current = null;
+    setImages(newImages);
   };
 
   const handleDragOver = (e) => {
@@ -250,6 +266,17 @@ const DestinationImageManager = ({ destination, onImagesChange }) => {
               onRemove={handleRemoveImage}
               onDragStart={(e) => handleDragStart(e, index)}
               onDrop={(e) => handleDrop(e, index)}
+              onTouchStart={() => (dragItem.current = index)}
+              onTouchMove={(e) => {
+                const touch = e.touches[0];
+                const targetElement = document.elementFromPoint(touch.clientX, touch.clientY);
+                const targetNode = targetElement?.closest('[draggable]');
+                if (targetNode) {
+                  const targetIndex = Array.from(targetNode.parentNode.children).indexOf(targetNode);
+                  dragOverItem.current = targetIndex;
+                }
+              }}
+              onTouchEnd={handleSort}
             />
           ))}
         </div>
