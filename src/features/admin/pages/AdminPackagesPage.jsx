@@ -201,7 +201,8 @@ const AdminPaquetes = () => {
                   {sortConfig.key === "precio_base" && "Precio"}
                   {sortConfig.key === "duracion" && "Duración"}
                 </span>
-                {isSortMenuOpen ? <FiArrowUp /> : <FiArrowDown />}
+                {sortConfig.direction === "asc" ? <FiArrowUp /> : <FiArrowDown />}
+
               </button>
 
               {isSortMenuOpen && (
