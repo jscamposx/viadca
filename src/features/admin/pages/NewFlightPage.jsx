@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import api from "../../../api";
 import { FiArrowLeft, FiUpload, FiSave } from "react-icons/fi";
-import { useNotification } from "./AdminLayout"; // 1. Importar el hook de notificación
+import { useNotification } from "./AdminLayout";
 
 const fileToBase64 = (file) =>
   new Promise((resolve, reject) => {
@@ -15,7 +15,7 @@ const fileToBase64 = (file) =>
 const NewFlightPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { addNotification } = useNotification(); // 2. Obtener la función de notificación
+  const { addNotification } = useNotification();
 
   const [nombre, setNombre] = useState("");
   const [transporte, setTransporte] = useState("");
@@ -60,7 +60,6 @@ const NewFlightPage = () => {
     }
   };
 
-  // 3. Modificar handleSubmit para usar notificaciones
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -123,7 +122,7 @@ const NewFlightPage = () => {
                 value={nombre}
                 onChange={(e) => setNombre(e.target.value)}
                 className="block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm sm:text-base"
-                placeholder="Ej: Vuelo 123 - Ciudad de México a Cancún"
+                placeholder="Ej: Volaris"
                 required
               />
             </div>
@@ -138,7 +137,7 @@ const NewFlightPage = () => {
                 value={transporte}
                 onChange={(e) => setTransporte(e.target.value)}
                 className="block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm sm:text-base"
-                placeholder="Ej: Boeing 737, Airbus A320, etc."
+                placeholder="Ej: Avión"
                 required
               />
             </div>
@@ -149,7 +148,8 @@ const NewFlightPage = () => {
               </label>
               
               <div className="flex flex-col sm:flex-row gap-4">
-                <div className="flex-1">
+                {/* Contenedor de carga de imagen */}
+                <div className="w-full sm:w-1/2">
                   <div className="flex items-center justify-center w-full">
                     <label 
                       htmlFor="imagen"
@@ -157,7 +157,7 @@ const NewFlightPage = () => {
                     >
                       <div className="flex flex-col items-center justify-center pt-5 pb-6">
                         <FiUpload className="w-8 h-8 mb-3 text-gray-400" />
-                        <p className="mb-2 text-sm text-gray-500">
+                        <p className="mb-2 text-sm text-gray-500 text-center">
                           <span className="font-semibold">Haz clic para subir</span> o arrastra una imagen
                         </p>
                         <p className="text-xs text-gray-500">
@@ -175,14 +175,17 @@ const NewFlightPage = () => {
                   </div>
                 </div>
                 
+                {/* Contenedor de la vista previa */}
                 {preview && (
-                  <div className="flex-1">
-                    <p className="text-sm font-medium text-gray-700 mb-2">Vista previa:</p>
-                    <div className="border border-gray-200 rounded-lg overflow-hidden">
+                  <div className="w-full sm:w-1/2">
+                    <div className="relative border border-gray-200 rounded-lg overflow-hidden h-40">
+                      <p className="absolute top-2 left-2 bg-gradient-to-r from-blue-600 to-indigo-600 bg-opacity-50 text-white text-xs font-semibold px-2 py-1 rounded-full z-10">
+                        Vista previa
+                      </p>
                       <img
                         src={preview}
                         alt="Vista previa"
-                        className="w-full h-40 object-cover"
+                        className="w-full h-full object-cover"
                       />
                     </div>
                   </div>
