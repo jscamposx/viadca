@@ -81,7 +81,7 @@ const NuevoPaquete = () => {
       apiKey={import.meta.env.VITE_Maps_API_KEY}
       libraries={["places", "geocoding", "marker"]}
     >
-      <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 py-4 sm:py-6 px-3 sm:px-4">
+      <div className="min-h-screen bg-white py-4 sm:py-6 px-3 sm:px-4">
         <div className="max-w-7xl mx-auto">
           <div className="bg-white rounded-xl sm:rounded-2xl shadow-md sm:shadow-xl overflow-hidden mb-5 sm:mb-8">
             <div className="bg-gradient-to-r from-blue-600 to-indigo-700 py-4 sm:py-6 px-4 sm:px-8 flex items-center justify-between gap-4">

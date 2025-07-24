@@ -210,7 +210,7 @@ const DestinationImageManager = ({ destination, onImagesChange }) => {
 
   return (
     <div
-      className={`bg-white p-6 rounded-lg shadow-sm border border-gray-200 space-y-4 ${
+      className={`${
         isDragging ? "border-blue-500 border-dashed border-2" : ""
       }`}
       onDragEnter={handleContainerDragOver}
