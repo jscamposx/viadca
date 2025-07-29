@@ -6,8 +6,6 @@ import AdminPaquetes from "./features/admin/pages/AdminPackagesPage";
 import Home from "./features/home/pages/HomePage";
 import NuevoPaquete from "./features/admin/pages/NewPackagePage";
 import AdminLayout from "./features/admin/pages/AdminLayout";
-import AdminHotelsPage from "./features/admin/pages/AdminHotelsPage";
-import NewHotelPage from "./features/admin/pages/NewHotelPage";
 import AdminMayoristasPage from "./features/admin/pages/AdminMayoristasPage";
 import NewMayoristaPage from "./features/admin/pages/NewMayoristaPage";
 
@@ -21,9 +19,6 @@ function App() {
         <Route path="paquetes" element={<AdminPaquetes />} />
         <Route path="paquetes/nuevo" element={<NuevoPaquete />} />
         <Route path="paquetes/editar/:id" element={<NuevoPaquete />} />
-        <Route path="hoteles" element={<AdminHotelsPage />} />
-        <Route path="hoteles/nuevo" element={<NewHotelPage />} />
-        <Route path="hoteles/editar/:id" element={<NewHotelPage />} />
         <Route path="mayoristas" element={<AdminMayoristasPage />} />
         <Route path="mayoristas/nuevo" element={<NewMayoristaPage />} />
         <Route path="mayoristas/editar/:id" element={<NewMayoristaPage />} />

@@ -6,7 +6,6 @@ import {
   FiChevronRight,
   FiPackage,
   FiHome,
-  FiBriefcase,
   FiMenu,
   FiX,
   FiCompass,
@@ -78,7 +77,6 @@ const AdminNav = ({ isOpen, setIsOpen }) => {
   const navLinks = [
     { to: "/admin", icon: <FiHome size={20} />, label: "Dashboard" },
     { to: "/admin/paquetes", icon: <FiPackage size={20} />, label: "Paquetes" },
-    { to: "/admin/hoteles", icon: <FiBriefcase size={20} />, label: "Hoteles" },
     { to: "/admin/mayoristas", icon: <FiUsers size={20} />, label: "Mayoristas" },
   ];
 

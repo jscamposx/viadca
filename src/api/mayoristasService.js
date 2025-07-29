@@ -31,10 +31,3 @@ export const updateMayorista = (id, mayoristaData) => {
 export const deleteMayorista = (id) => {
   return apiClient.delete(`/admin/mayoristas/${id}`);
 };
-
-// Función para exportar mayorista a Excel (usando ID)
-export const exportToExcel = (id) => {
-  return apiClient.get(`/admin/mayoristas/${id}/export`, {
-    responseType: 'blob',
-  });
-};

@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useMayoristas } from "../hooks/useMayoristas";
 import {
-  FiDownload,
   FiArrowUp,
   FiArrowDown,
   FiSearch,
@@ -30,23 +29,6 @@ const AdminMayoristasPage = () => {
   const [isFiltersOpen, setIsFiltersOpen] = useState(false);
   const [isSortMenuOpen, setIsSortMenuOpen] = useState(false);
   const { addNotification } = useNotification();
-
-  const handleExport = async (mayoristaId) => {
-    try {
-      const response = await api.mayoristas.exportToExcel(mayoristaId);
-      const url = window.URL.createObjectURL(new Blob([response.data]));
-      const link = document.createElement("a");
-      link.href = url;
-      link.setAttribute("download", `mayorista-${mayoristaId}.xlsx`);
-      document.body.appendChild(link);
-      link.click();
-      link.parentNode.removeChild(link);
-      addNotification("La exportación a Excel ha comenzado.", "success");
-    } catch (error) {
-      console.error("Error al exportar a Excel:", error);
-      addNotification("Error al exportar a Excel", "error");
-    }
-  };
 
   const handleDelete = async (mayoristaId) => {
     if (window.confirm("¿Estás seguro de que quieres eliminar este mayorista?")) {
@@ -336,13 +318,6 @@ const AdminMayoristasPage = () => {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                       <div className="flex items-center gap-2 justify-end">
-                        <button
-                          onClick={() => handleExport(mayorista.id)}
-                          className="text-green-600 hover:text-green-700 p-1 rounded hover:bg-green-50"
-                          title="Exportar a Excel"
-                        >
-                          <FiDownload />
-                        </button>
                         <Link
                           to={`/admin/mayoristas/editar/${mayorista.id}`}
                           className="text-blue-600 hover:text-blue-700 p-1 rounded hover:bg-blue-50"
