@@ -7,33 +7,64 @@ const Spinner = () => (
 
 const ImageTile = ({
   image,
+  index,
   onRemove,
   onDragStart,
+  onDragEnd,
+  onDragOver,
   onDrop,
-  onTouchStart,
-  onTouchEnd,
-  onTouchMove,
+  isDragging,
+  isDragOver,
+  draggedIndex,
 }) => (
   <div
     draggable
-    onDragStart={onDragStart}
-    onDrop={onDrop}
-    onTouchStart={onTouchStart}
-    onTouchEnd={onTouchEnd}
-    onTouchMove={onTouchMove}
-    className="relative group bg-gray-100 rounded-lg overflow-hidden shadow-sm cursor-move"
+    onDragStart={(e) => onDragStart(e, index)}
+    onDragEnd={onDragEnd}
+    onDragOver={(e) => onDragOver(e, index)}
+    onDrop={(e) => onDrop(e, index)}
+    className={`relative group bg-gray-100 rounded-lg overflow-hidden shadow-sm cursor-move transition-all duration-200 ${
+      isDragOver && draggedIndex !== index ? "ring-2 ring-blue-400 border-l-4 border-blue-500" : ""
+    } ${isDragging && draggedIndex === index ? "opacity-50 rotate-2 scale-95" : ""} hover:shadow-lg`}
   >
+    {/* Indicador de orden con animación */}
+    <div className={`absolute top-2 left-2 z-20 text-white text-xs font-bold px-2 py-1 rounded-full shadow-md transition-all duration-200 ${
+      index === 0 
+        ? "bg-gradient-to-r from-yellow-500 to-orange-600" 
+        : "bg-blue-600"
+    }`}>
+      #{index + 1}
+    </div>
+    
+    {/* Badge de imagen principal con mejor diseño */}
+    {index === 0 && (
+      <div className="absolute top-2 right-2 z-20 bg-gradient-to-r from-yellow-400 to-orange-500 text-white text-xs font-bold px-2 py-1 rounded-full shadow-md animate-pulse">
+        ⭐ Principal
+      </div>
+    )}
+
+    {/* Indicador visual de posición de drop */}
+    {isDragOver && draggedIndex !== index && (
+      <div className="absolute inset-0 bg-blue-100 bg-opacity-75 flex items-center justify-center z-10">
+        <div className="bg-blue-600 text-white px-3 py-1 rounded-full text-sm font-semibold">
+          Soltar aquí para posición #{index + 1}
+        </div>
+      </div>
+    )}
+
     <div className="h-48">
       <img
         src={image.url}
-        alt="Imagen del destino"
-        className="w-full h-full object-cover"
+        alt={`Imagen del destino - Posición ${index + 1}`}
+        className="w-full h-full object-cover transition-transform duration-200 group-hover:scale-105"
       />
     </div>
-    <div className="absolute top-2 right-2 z-10">
+    
+    {/* Botón de eliminar mejorado */}
+    <div className="absolute top-2 left-16 z-10">
       <button
         onClick={() => onRemove(image.id)}
-        className="p-1.5 bg-red-600 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+        className="p-1.5 bg-red-600 text-white rounded-full opacity-0 group-hover:opacity-100 transition-all duration-200 hover:bg-red-700 hover:scale-110"
         aria-label="Eliminar imagen"
       >
         <svg
@@ -50,8 +81,18 @@ const ImageTile = ({
         </svg>
       </button>
     </div>
-    <div className="absolute bottom-0 left-0 right-0 p-2 bg-black bg-opacity-50 text-white text-xs text-center opacity-0 group-hover:opacity-100 transition-opacity">
-      <p>Arrastra para reordenar</p>
+
+    {/* Indicador de drag handle */}
+    <div className="absolute bottom-2 right-2 z-10 opacity-0 group-hover:opacity-100 transition-opacity">
+      <div className="bg-gray-800 bg-opacity-75 text-white p-1 rounded">
+        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
+        </svg>
+      </div>
+    </div>
+
+    <div className="absolute bottom-0 left-0 right-0 p-2 bg-gradient-to-t from-black via-black to-transparent text-white text-xs text-center opacity-0 group-hover:opacity-100 transition-opacity">
+      <p className="font-medium">🔄 Arrastra para reordenar</p>
     </div>
   </div>
 );
@@ -69,9 +110,8 @@ const DestinationImageManager = ({ destination, onImagesChange }) => {
   const [status, setStatus] = useState("idle");
   const [error, setError] = useState(null);
   const [isDragging, setIsDragging] = useState(false);
-
-  const dragItem = useRef(null);
-  const dragOverItem = useRef(null);
+  const [draggedIndex, setDraggedIndex] = useState(null);
+  const [dragOverIndex, setDragOverIndex] = useState(null);
 
   const fetchImagesFromPexels = useCallback(async (destinationName) => {
     if (!destinationName) {
@@ -160,33 +200,43 @@ const DestinationImageManager = ({ destination, onImagesChange }) => {
   };
 
   const handleDragStart = (e, index) => {
-    e.dataTransfer.setData("imageIndex", index);
+    setDraggedIndex(index);
+    e.dataTransfer.effectAllowed = "move";
+    e.dataTransfer.setData("text/html", e.target);
   };
 
-  const handleSort = () => {
-    const newImages = [...images];
-    const draggedItemContent = newImages.splice(dragItem.current, 1)[0];
-    newImages.splice(dragOverItem.current, 0, draggedItemContent);
-    dragItem.current = null;
-    dragOverItem.current = null;
-    setImages(newImages);
+  const handleDragEnd = () => {
+    setDraggedIndex(null);
+    setDragOverIndex(null);
   };
 
-  const handleDragOver = (e) => {
+  const handleDragOver = (e, index) => {
     e.preventDefault();
+    e.dataTransfer.dropEffect = "move";
+    
+    if (draggedIndex !== null && draggedIndex !== index) {
+      setDragOverIndex(index);
+    }
   };
 
   const handleDrop = (e, dropIndex) => {
     e.preventDefault();
-    e.stopPropagation();
-
-    const dragIndex = e.dataTransfer.getData("imageIndex");
-    if (dragIndex) {
+    
+    if (draggedIndex !== null && draggedIndex !== dropIndex) {
       const newImages = [...images];
-      const [draggedImage] = newImages.splice(dragIndex, 1);
+      const draggedImage = newImages[draggedIndex];
+      
+      // Remover el elemento arrastrado
+      newImages.splice(draggedIndex, 1);
+      
+      // Insertar en la nueva posición
       newImages.splice(dropIndex, 0, draggedImage);
+      
       setImages(newImages);
     }
+    
+    setDraggedIndex(null);
+    setDragOverIndex(null);
   };
 
   const handleContainerDragOver = (e) => {
@@ -262,35 +312,60 @@ const DestinationImageManager = ({ destination, onImagesChange }) => {
       )}
 
       {images.length > 0 && (
-        <div
-          className="grid grid-cols-2 md:grid-cols-4 gap-4"
-          onDragOver={handleDragOver}
-        >
-          {images.map((image, index) => (
-            <ImageTile
-              key={image.id}
-              image={image}
-              onRemove={handleRemoveImage}
-              onDragStart={(e) => handleDragStart(e, index)}
-              onDrop={(e) => handleDrop(e, index)}
-              onTouchStart={() => (dragItem.current = index)}
-              onTouchMove={(e) => {
-                const touch = e.touches[0];
-                const targetElement = document.elementFromPoint(
-                  touch.clientX,
-                  touch.clientY,
-                );
-                const targetNode = targetElement?.closest("[draggable]");
-                if (targetNode) {
-                  const targetIndex = Array.from(
-                    targetNode.parentNode.children,
-                  ).indexOf(targetNode);
-                  dragOverItem.current = targetIndex;
-                }
-              }}
-              onTouchEnd={handleSort}
-            />
-          ))}
+        <div className="space-y-4">
+          {/* Instrucciones de uso */}
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+            <div className="flex items-center space-x-2">
+              <div className="bg-blue-600 text-white text-xs font-bold px-2 py-1 rounded-full">
+                #1
+              </div>
+              <span className="text-sm text-blue-800 font-medium">
+                La primera imagen será la <strong>imagen principal</strong> del paquete
+              </span>
+            </div>
+            <p className="text-xs text-blue-600 mt-1 ml-8">
+              Arrastra las imágenes para cambiar su orden
+            </p>
+          </div>
+
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {images.map((image, index) => (
+              <ImageTile
+                key={image.id}
+                image={image}
+                index={index}
+                onRemove={handleRemoveImage}
+                onDragStart={handleDragStart}
+                onDragEnd={handleDragEnd}
+                onDragOver={handleDragOver}
+                onDrop={handleDrop}
+                isDragging={draggedIndex !== null}
+                isDragOver={dragOverIndex === index}
+                draggedIndex={draggedIndex}
+              />
+            ))}
+          </div>
+
+          {/* Resumen del orden */}
+          {images.length > 1 && (
+            <div className="bg-gray-50 border border-gray-200 rounded-lg p-3">
+              <h4 className="text-sm font-medium text-gray-700 mb-2">Orden actual de las imágenes:</h4>
+              <div className="flex flex-wrap gap-2">
+                {images.map((image, index) => (
+                  <div 
+                    key={image.id}
+                    className={`text-xs px-2 py-1 rounded-full ${
+                      index === 0 
+                        ? "bg-yellow-100 text-yellow-800 font-bold" 
+                        : "bg-gray-100 text-gray-600"
+                    }`}
+                  >
+                    #{index + 1} {index === 0 ? "(Principal)" : ""}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       )}
     </div>

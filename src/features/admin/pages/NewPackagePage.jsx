@@ -9,13 +9,20 @@ import {
   FiCalendar,
   FiInfo,
   FiFileText,
+  FiTag,
+  FiDollarSign,
+  FiUsers,
+  FiSettings,
 } from "react-icons/fi";
 import { usePackage } from "../../package/hooks/usePackage";
 import { usePackageForm } from "../hooks/usePackageForm";
-import PackageForm from "../components/PackageForm";
+import BasicInfoForm from "../components/BasicInfoForm";
+import PricingForm from "../components/PricingForm";
 import LocationSelector from "../components/LocationSelector";
 import DestinationImageManager from "../components/DestinationImageManager";
 import HotelFinder from "../components/HotelFinder";
+import MayoristasForm from "../components/MayoristasForm";
+import ConfigurationForm from "../components/ConfigurationForm";
 import Loading from "../../package/components/Loading";
 import Error from "../../package/components/Error";
 import { useNotification } from "./AdminLayout";
@@ -24,7 +31,7 @@ const NuevoPaquete = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [activeSection, setActiveSection] = useState("informacion");
+  const [activeSection, setActiveSection] = useState("basicos");
   const { addNotification } = useNotification();
 
   const { paquete, loading, error } = usePackage(id, true);
@@ -65,19 +72,25 @@ const NuevoPaquete = () => {
   };
 
   const sectionIcons = {
-    informacion: <FiInfo className="w-4 h-4" />,
-    ubicacion: <FiMapPin className="w-4 h-4" />,
+    basicos: <FiInfo className="w-4 h-4" />,
+    precios: <FiDollarSign className="w-4 h-4" />,
+    ubicaciones: <FiMapPin className="w-4 h-4" />,
     imagenes: <FiImage className="w-4 h-4" />,
     hotel: <FiCalendar className="w-4 h-4" />,
+    mayoristas: <FiUsers className="w-4 h-4" />,
     itinerario: <FiFileText className="w-4 h-4" />,
+    configuracion: <FiSettings className="w-4 h-4" />,
   };
 
   const sections = [
-    { id: "informacion", label: "Información" },
-    { id: "ubicacion", label: "Ubicaciones" },
-    { id: "imagenes", label: "Imágenes" },
-    { id: "hotel", label: "Hotel" },
-    { id: "itinerario", label: "Itinerario" },
+    { id: "basicos", label: "Básicos", description: "Título y fechas" },
+    { id: "precios", label: "Precios", description: "Costos y descuentos" },
+    { id: "ubicaciones", label: "Ubicaciones", description: "Origen y destinos" },
+    { id: "imagenes", label: "Imágenes", description: "Fotos del destino" },
+    { id: "hotel", label: "Hotel", description: "Hospedaje incluido" },
+    { id: "mayoristas", label: "Mayoristas", description: "Socios distribuidores" },
+    { id: "itinerario", label: "Itinerario", description: "Plan de viaje" },
+    { id: "configuracion", label: "Configuración", description: "Estado y notas" },
   ];
 
   useEffect(() => {
@@ -137,7 +150,7 @@ const NuevoPaquete = () => {
                       <button
                         type="button"
                         onClick={() => setActiveSection(section.id)}
-                        className={`flex items-center gap-2 px-3 py-2 rounded-lg font-medium whitespace-nowrap transition-all text-sm ${
+                        className={`flex flex-col items-center gap-1 px-3 py-2 rounded-lg font-medium whitespace-nowrap transition-all text-xs ${
                           isActive
                             ? "bg-white text-blue-800 shadow-md"
                             : isCompleted
@@ -145,13 +158,18 @@ const NuevoPaquete = () => {
                               : "bg-white/10 text-blue-100 hover:bg-white/20"
                         }`}
                       >
-                        <span className={`${isCompleted ? "hidden" : "flex"}`}>
-                          {sectionIcons[section.id]}
+                        <div className="flex items-center gap-1">
+                          <span className={`${isCompleted ? "hidden" : "flex"}`}>
+                            {sectionIcons[section.id]}
+                          </span>
+                          {isCompleted && (
+                            <FiCheckCircle className="w-4 h-4 text-green-300" />
+                          )}
+                          <span className="font-medium">{section.label}</span>
+                        </div>
+                        <span className="text-xs opacity-75 leading-tight">
+                          {section.description}
                         </span>
-                        {isCompleted && (
-                          <FiCheckCircle className="w-4 h-4 text-green-300" />
-                        )}
-                        {section.label}
                       </button>
                     </div>
                   );
@@ -167,7 +185,7 @@ const NuevoPaquete = () => {
           >
             {/* Información Básica */}
             <div
-              className={`${activeSection !== "informacion" ? "hidden" : ""} animate-fadeIn`}
+              className={`${activeSection !== "basicos" ? "hidden" : ""} animate-fadeIn`}
             >
               <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
                 <div className="p-5 sm:p-7 border-b border-gray-200">
@@ -186,7 +204,7 @@ const NuevoPaquete = () => {
                   </div>
                 </div>
                 <div className="p-5 sm:p-7">
-                  <PackageForm
+                  <BasicInfoForm
                     formData={formData}
                     onFormChange={handleFormChange}
                   />
@@ -194,9 +212,38 @@ const NuevoPaquete = () => {
               </div>
             </div>
 
-            {/* Ubicación */}
+            {/* Precios */}
             <div
-              className={`${activeSection !== "ubicacion" ? "hidden" : ""} animate-fadeIn`}
+              className={`${activeSection !== "precios" ? "hidden" : ""} animate-fadeIn`}
+            >
+              <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
+                <div className="p-5 sm:p-7 border-b border-gray-200">
+                  <div className="flex items-center gap-3">
+                    <div className="bg-green-100 p-2 rounded-lg text-green-700">
+                      <FiDollarSign className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <h2 className="text-xl font-semibold text-gray-800">
+                        Precios y Costos
+                      </h2>
+                      <p className="text-gray-600 mt-1">
+                        Define los precios y opciones de descuento
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                <div className="p-5 sm:p-7">
+                  <PricingForm
+                    formData={formData}
+                    onFormChange={handleFormChange}
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Ubicaciones */}
+            <div
+              className={`${activeSection !== "ubicaciones" ? "hidden" : ""} animate-fadeIn`}
             >
               <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
                 <div className="p-5 sm:p-7 border-b border-gray-200">
@@ -292,6 +339,35 @@ const NuevoPaquete = () => {
               </div>
             </div>
 
+            {/* Mayoristas */}
+            <div
+              className={`${activeSection !== "mayoristas" ? "hidden" : ""} animate-fadeIn`}
+            >
+              <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
+                <div className="p-5 sm:p-7 border-b border-gray-200">
+                  <div className="flex items-center gap-3">
+                    <div className="bg-indigo-100 p-2 rounded-lg text-indigo-700">
+                      <FiUsers className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <h2 className="text-xl font-semibold text-gray-800">
+                        Mayoristas Asociados
+                      </h2>
+                      <p className="text-gray-600 mt-1">
+                        Selecciona quiénes pueden vender este paquete
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                <div className="p-5 sm:p-7">
+                  <MayoristasForm
+                    formData={formData}
+                    onFormChange={handleFormChange}
+                  />
+                </div>
+              </div>
+            </div>
+
             {/* Itinerario */}
             <div
               className={`${activeSection !== "itinerario" ? "hidden" : ""} animate-fadeIn`}
@@ -325,6 +401,35 @@ const NuevoPaquete = () => {
               </div>
             </div>
 
+            {/* Configuración */}
+            <div
+              className={`${activeSection !== "configuracion" ? "hidden" : ""} animate-fadeIn`}
+            >
+              <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
+                <div className="p-5 sm:p-7 border-b border-gray-200">
+                  <div className="flex items-center gap-3">
+                    <div className="bg-gray-100 p-2 rounded-lg text-gray-700">
+                      <FiSettings className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <h2 className="text-xl font-semibold text-gray-800">
+                        Configuración y Resumen
+                      </h2>
+                      <p className="text-gray-600 mt-1">
+                        Ajustes finales y revisión del paquete
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                <div className="p-5 sm:p-7">
+                  <ConfigurationForm
+                    formData={formData}
+                    onFormChange={handleFormChange}
+                  />
+                </div>
+              </div>
+            </div>
+
             {/* Navegación y Envío */}
             <div className="sticky bottom-0 bg-white border-t border-gray-200 py-4 px-4 sm:px-6 rounded-xl shadow-lg z-10">
               <div className="flex justify-between items-center gap-3">
@@ -337,9 +442,9 @@ const NuevoPaquete = () => {
                       setActiveSection(sectionIds[currentIndex - 1]);
                     }
                   }}
-                  disabled={activeSection === "informacion"}
+                  disabled={activeSection === "basicos"}
                   className={`flex items-center gap-2 px-4 py-2.5 rounded-lg font-medium text-sm sm:text-base ${
-                    activeSection === "informacion"
+                    activeSection === "basicos"
                       ? "opacity-50 cursor-not-allowed text-gray-500"
                       : "text-blue-600 hover:bg-blue-50"
                   }`}
@@ -348,7 +453,7 @@ const NuevoPaquete = () => {
                   Anterior
                 </button>
 
-                {activeSection !== "itinerario" ? (
+                {activeSection !== "configuracion" ? (
                   <button
                     type="button"
                     onClick={(e) => {
