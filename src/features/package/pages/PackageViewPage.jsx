@@ -358,29 +358,47 @@ function PackageViewPage() {
                     <div className="text-xs sm:text-sm text-slate-500 font-medium">Hotel</div>
                   </div>
                 )}
-                {paquete.imagenes && paquete.imagenes.length > 0 && (
-                  <div className="text-center group cursor-pointer">
-                    <div className="text-xl sm:text-3xl lg:text-4xl font-bold text-purple-600 group-hover:scale-110 transition-transform duration-300">{paquete.imagenes.length}</div>
-                    <div className="text-xs sm:text-sm text-slate-500 font-medium">Fotos</div>
-                  </div>
-                )}
+                {(() => {
+                  const validImages = paquete.imagenes?.filter((img) => {
+                    const contenido = img?.contenido || img?.url;
+                    return contenido && contenido.trim() !== '';
+                  }) || [];
+                  
+                  return validImages.length > 0 && (
+                    <div className="text-center group cursor-pointer">
+                      <div className="text-xl sm:text-3xl lg:text-4xl font-bold text-purple-600 group-hover:scale-110 transition-transform duration-300">{validImages.length}</div>
+                      <div className="text-xs sm:text-sm text-slate-500 font-medium">Fotos</div>
+                    </div>
+                  );
+                })()}
               </div>
             </div>
           </div>
 
           {/* Imagen principal mejorada */}
           <div className="relative h-48 xs:h-60 sm:h-80 md:h-96 lg:h-[500px] xl:h-[700px] rounded-2xl sm:rounded-3xl lg:rounded-[2rem] overflow-hidden shadow-2xl group">
-            <ImageCarousel imagenes={paquete.imagenes} />
+            <ImageCarousel 
+              imagenes={paquete.imagenes} 
+              emptyStateTitle="Sin fotos del paquete"
+              emptyStateDescription="Las imágenes de este paquete turístico se cargarán próximamente"
+            />
             
             {/* Overlay con gradiente mejorado */}
             <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-black/5 to-transparent opacity-40 group-hover:opacity-20 transition-opacity duration-500"></div>
             
             {/* Indicador de más fotos */}
-            {paquete.imagenes && paquete.imagenes.length > 1 && (
-              <div className="absolute top-3 sm:top-6 right-3 sm:right-6 bg-black/30 backdrop-blur-md rounded-full px-2 sm:px-3 py-1 text-white text-xs sm:text-sm">
-                +{paquete.imagenes.length - 1} fotos
-              </div>
-            )}
+            {(() => {
+              const validImages = paquete.imagenes?.filter((img) => {
+                const contenido = img?.contenido || img?.url;
+                return contenido && contenido.trim() !== '';
+              }) || [];
+              
+              return validImages.length > 1 && (
+                <div className="absolute top-3 sm:top-6 right-3 sm:right-6 bg-black/30 backdrop-blur-md rounded-full px-2 sm:px-3 py-1 text-white text-xs sm:text-sm">
+                  +{validImages.length - 1} fotos
+                </div>
+              );
+            })()}
           </div>
         </div>
 
