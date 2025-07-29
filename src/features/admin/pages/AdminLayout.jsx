@@ -51,22 +51,16 @@ const AdminLayout = () => {
     return false;
   });
 
-  const [isSidebarOpen, setSidebarOpen] = useState(() => {
-    if (typeof window !== "undefined") {
-      return window.innerWidth >= 768;
-    }
-    return true;
-  });
+  const [isSidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {
     const handleResize = () => {
       const mobile = window.innerWidth < 768;
       setIsMobile(mobile);
 
+      // Solo cerrar la sidebar en móvil, no abrirla automáticamente en desktop
       if (mobile) {
         setSidebarOpen(false);
-      } else {
-        setSidebarOpen(true);
       }
     };
 

@@ -125,9 +125,16 @@ const AdminNav = ({ isOpen, setIsOpen }) => {
           <button
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             aria-label="Toggle menu"
-            className="p-2 rounded-full bg-white/20 hover:bg-white/30 transition-colors"
+            className="p-3 rounded-xl bg-white/20 hover:bg-white/30 transition-all duration-300
+                       hover:scale-110 transform group active:scale-95"
           >
-            {isMobileMenuOpen ? <FiX size={24} /> : <FiMenu size={24} />}
+            <div className="relative">
+              {isMobileMenuOpen ? (
+                <FiX size={24} className="transition-transform duration-300 group-hover:rotate-90" />
+              ) : (
+                <FiMenu size={24} className="transition-transform duration-300 group-hover:scale-110" />
+              )}
+            </div>
           </button>
         </div>
         {isMobileMenuOpen && (
@@ -171,20 +178,52 @@ const AdminNav = ({ isOpen, setIsOpen }) => {
       className={`fixed top-0 left-0 h-screen bg-gradient-to-b from-slate-50 to-white text-slate-700 p-4
                  flex flex-col z-40 transition-all duration-300 ease-in-out
                  shadow-[0_0_25px_-5px_rgba(0,0,0,0.1)] border-r border-slate-200
-                 ${isOpen ? "w-64" : "w-20"}`}
+                 ${isOpen ? "w-64" : "w-20"} group`}
     >
+      {/* Botón toggle que aparece con hover */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="absolute top-8 -right-3 p-1.5 bg-white hover:bg-blue-600 rounded-full
-                   text-slate-600 hover:text-white transition-all duration-300 shadow-lg flex items-center justify-center
-                   border border-slate-300 hover:border-blue-500 transform z-10"
+        className="absolute top-1/2 -translate-y-1/2 -right-4 p-3 bg-gradient-to-r from-blue-600 to-indigo-700 
+                   hover:from-blue-700 hover:to-indigo-800 rounded-full text-white 
+                   transition-all duration-300 shadow-lg hover:shadow-xl flex items-center justify-center
+                   border-2 border-white hover:scale-110 transform z-20
+                   opacity-0 group-hover:opacity-100 translate-x-2 group-hover:translate-x-0
+                   group"
         aria-label={isOpen ? "Contraer menú" : "Expandir menú"}
       >
-        {isOpen ? <FiChevronLeft size={18} /> : <FiChevronRight size={18} />}
+        <div className="relative">
+          {isOpen ? (
+            <FiChevronLeft size={20} className="transition-transform duration-300 group-hover:scale-110" />
+          ) : (
+            <FiChevronRight size={20} className="transition-transform duration-300 group-hover:scale-110" />
+          )}
+        </div>
+        
+        {/* Tooltip mejorado */}
+        <div className="absolute left-full top-1/2 transform -translate-y-1/2 ml-3 
+                        bg-slate-800 text-white px-3 py-2 rounded-lg shadow-xl 
+                        font-medium text-sm whitespace-nowrap z-50 
+                        opacity-0 group-hover:opacity-100 transition-all duration-300
+                        pointer-events-none">
+          {isOpen ? "Contraer menú" : "Expandir menú"}
+          <div className="absolute right-full top-1/2 transform -translate-y-1/2 
+                          border-4 border-transparent border-r-slate-800"></div>
+        </div>
       </button>
 
-      <div className="flex items-center mb-8 mt-4 px-2 py-3">
-        <div className="bg-gradient-to-r from-blue-600 to-indigo-700 p-2 rounded-xl shadow-lg">
+      {/* Indicador sutil en el borde cuando está comprimida */}
+      {!isOpen && (
+        <div className="absolute top-1/2 -translate-y-1/2 -right-1 w-1 h-12 bg-gradient-to-b from-blue-400 to-blue-600 
+                        rounded-full opacity-0 group-hover:opacity-50 transition-all duration-300
+                        shadow-lg"></div>
+      )}
+
+      <div className="flex items-center mb-8 mt-4 px-2 py-3 cursor-pointer group/logo
+                   hover:bg-blue-50 rounded-xl transition-all duration-300"
+           onClick={() => !isOpen && setIsOpen(true)}
+           title={!isOpen ? "Clic para expandir" : ""}>
+        <div className="bg-gradient-to-r from-blue-600 to-indigo-700 p-2 rounded-xl shadow-lg
+                        transition-all duration-300 group-hover/logo:scale-110 group-hover/logo:shadow-xl">
           <FiCompass className="text-white text-2xl" />
         </div>
         <div
@@ -197,6 +236,19 @@ const AdminNav = ({ isOpen, setIsOpen }) => {
           </h1>
           <p className="text-sm text-slate-500 mt-1">Panel de administración</p>
         </div>
+        
+        {/* Indicador visual cuando está comprimida - mejorado */}
+        {!isOpen && (
+          <div className="absolute left-full top-1/2 transform -translate-y-1/2 ml-4 
+                          bg-gradient-to-r from-blue-600 to-indigo-700 text-white px-3 py-2 rounded-lg shadow-xl 
+                          font-medium text-sm whitespace-nowrap z-50 
+                          opacity-0 group-hover/logo:opacity-100 transition-all duration-300
+                          pointer-events-none scale-95 group-hover/logo:scale-100">
+            Clic para expandir
+            <div className="absolute right-full top-1/2 transform -translate-y-1/2 
+                            border-4 border-transparent border-r-blue-600"></div>
+          </div>
+        )}
       </div>
 
       <ul className="flex flex-col gap-1 flex-grow">

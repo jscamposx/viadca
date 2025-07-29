@@ -1,6 +1,6 @@
 // src/features/admin/hooks/useMayoristas.js
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import api from "../../../api";
 
 export const useMayoristas = () => {
@@ -8,7 +8,7 @@ export const useMayoristas = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const fetchMayoristas = async () => {
+  const fetchMayoristas = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
@@ -20,9 +20,9 @@ export const useMayoristas = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  const createMayorista = async (mayoristaData) => {
+  const createMayorista = useCallback(async (mayoristaData) => {
     try {
       const response = await api.mayoristas.createMayorista(mayoristaData);
       setMayoristas((prev) => [response.data, ...prev]);
@@ -31,9 +31,9 @@ export const useMayoristas = () => {
       console.error("Error al crear mayorista:", err);
       throw err;
     }
-  };
+  }, []);
 
-  const updateMayorista = async (id, mayoristaData) => {
+  const updateMayorista = useCallback(async (id, mayoristaData) => {
     try {
       const response = await api.mayoristas.updateMayorista(id, mayoristaData);
       setMayoristas((prev) =>
@@ -46,9 +46,9 @@ export const useMayoristas = () => {
       console.error("Error al actualizar mayorista:", err);
       throw err;
     }
-  };
+  }, []);
 
-  const deleteMayorista = async (id) => {
+  const deleteMayorista = useCallback(async (id) => {
     try {
       await api.mayoristas.deleteMayorista(id);
       setMayoristas((prev) => prev.filter((mayorista) => mayorista.id !== id));
@@ -56,9 +56,9 @@ export const useMayoristas = () => {
       console.error("Error al eliminar mayorista:", err);
       throw err;
     }
-  };
+  }, []);
 
-  const getMayoristaById = async (id) => {
+  const getMayoristaById = useCallback(async (id) => {
     try {
       const response = await api.mayoristas.getMayoristaById(id);
       return response.data;
@@ -66,11 +66,11 @@ export const useMayoristas = () => {
       console.error("Error al obtener mayorista:", err);
       throw err;
     }
-  };
+  }, []);
 
   useEffect(() => {
     fetchMayoristas();
-  }, []);
+  }, [fetchMayoristas]);
 
   return {
     mayoristas,

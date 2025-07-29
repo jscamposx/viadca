@@ -60,7 +60,7 @@ const NewMayoristaPage = () => {
       };
       loadMayorista();
     }
-  }, [isEditing, id, getMayoristaById, addNotification, navigate]);
+  }, [isEditing, id]); // Removido getMayoristaById, addNotification, navigate de las dependencias
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;

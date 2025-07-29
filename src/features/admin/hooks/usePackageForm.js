@@ -22,13 +22,13 @@ export const usePackageForm = (initialPackageData = null) => {
     titulo: "",
     fecha_inicio: "",
     fecha_fin: "",
-    incluye: "",
-    no_incluye: "",
-    requisitos: "",
+    incluye: null,  // Puede ser null
+    no_incluye: null,  // Puede ser null
+    requisitos: null,  // Puede ser null
     descuento: "",
-    anticipo: "",
+    anticipo: null,  // Puede ser null
     precio_total: "",
-    notas: "",
+    notas: null,  // Puede ser null
     itinerario_texto: "",
     activo: true, // Campo requerido por el backend
     origen: "Durango, México", // Valor por defecto
@@ -40,7 +40,7 @@ export const usePackageForm = (initialPackageData = null) => {
     additionalDestinations: [], // Para destinos adicionales
     destinos: [],
     imagenes: [],
-    hotel: null,
+    hotel: null,  // Puede ser null
     mayoristasIds: [], // Añadido para los IDs de mayoristas
   });
 
@@ -258,13 +258,13 @@ export const usePackageForm = (initialPackageData = null) => {
       origen_lng: formData.origen_lng,
       fecha_inicio: formData.fecha_inicio,
       fecha_fin: formData.fecha_fin,
-      incluye: formData.incluye,
-      no_incluye: formData.no_incluye,
-      requisitos: formData.requisitos,
+      incluye: formData.incluye && formData.incluye.trim() !== "" ? formData.incluye : null,  // Puede ser null
+      no_incluye: formData.no_incluye && formData.no_incluye.trim() !== "" ? formData.no_incluye : null,  // Puede ser null
+      requisitos: formData.requisitos && formData.requisitos.trim() !== "" ? formData.requisitos : null,  // Puede ser null
       precio_total: parseFloat(formData.precio_total),
-      descuento: formData.descuento ? parseFloat(formData.descuento) : null,
-      anticipo: formData.anticipo ? parseFloat(formData.anticipo) : null,
-      notas: formData.notas,
+      descuento: formData.descuento && formData.descuento !== "" ? parseFloat(formData.descuento) : null,
+      anticipo: formData.anticipo && formData.anticipo !== "" ? parseFloat(formData.anticipo) : null,  // Maneja null y string vacío
+      notas: formData.notas && formData.notas.trim() !== "" ? formData.notas : null,  // Puede ser null
       activo: formData.activo,
       mayoristasIds: formData.mayoristasIds,
       itinerario_texto: formData.itinerario_texto,
