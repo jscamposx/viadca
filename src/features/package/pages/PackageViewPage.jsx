@@ -258,9 +258,9 @@ function PackageViewPage() {
 
       {/* Header mejorado */}
       <div className="sticky top-0 z-50 bg-white/70 backdrop-blur-xl border-b border-white/20 shadow-lg">
-        <div className="container mx-auto px-4 py-4 sm:py-5">
-          <div className="flex items-center justify-between">
-            <div className="flex flex-wrap items-center gap-3 flex-1 mr-4">
+        <div className="container mx-auto px-3 sm:px-4 lg:px-6 py-3 sm:py-4 lg:py-5">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
+            <div className="flex flex-wrap items-center gap-2 sm:gap-3 flex-1 w-full sm:w-auto">
               <Badge variant="info" icon={FiMapPin}>
                 {paquete.destinos && paquete.destinos.length > 0 
                   ? paquete.destinos.length === 1 
@@ -274,29 +274,34 @@ function PackageViewPage() {
               </Badge>
               {paquete.precio_total && (
                 <Badge variant="warning" icon={FiDollarSign}>
-                  {parseFloat(paquete.precio_total).toLocaleString("es-MX", {
-                    style: "currency",
-                    currency: "MXN",
-                  })}
+                  <span className="hidden xs:inline">
+                    {parseFloat(paquete.precio_total).toLocaleString("es-MX", {
+                      style: "currency",
+                      currency: "MXN",
+                    })}
+                  </span>
+                  <span className="xs:hidden">
+                    ${Math.round(parseFloat(paquete.precio_total) / 1000)}k
+                  </span>
                 </Badge>
               )}
             </div>
 
-            <div className="flex items-center space-x-3 flex-shrink-0">
+            <div className="flex items-center space-x-2 sm:space-x-3 flex-shrink-0 self-end sm:self-auto">
               <button
                 onClick={() => setIsLiked(!isLiked)}
                 aria-pressed={isLiked}
                 aria-label={
                   isLiked ? "Quitar de favoritos" : "Añadir a favoritos"
                 }
-                className={`group p-3 rounded-full transition-all duration-300 shadow-md hover:shadow-lg transform hover:scale-105 ${
+                className={`group p-2.5 sm:p-3 rounded-full transition-all duration-300 shadow-md hover:shadow-lg transform hover:scale-105 ${
                   isLiked
                     ? "bg-gradient-to-r from-red-500 to-pink-500 text-white"
                     : "bg-white/80 text-slate-500 hover:bg-red-50 hover:text-red-500"
                 }`}
               >
                 <FiHeart
-                  className={`w-5 h-5 transition-all duration-300 ${
+                  className={`w-4 h-4 sm:w-5 sm:h-5 transition-all duration-300 ${
                     isLiked ? "fill-current scale-110" : "group-hover:scale-110"
                   }`}
                 />
@@ -305,9 +310,9 @@ function PackageViewPage() {
               <button
                 onClick={handleShare}
                 aria-label="Compartir paquete"
-                className="group p-3 rounded-full bg-white/80 text-slate-500 hover:bg-blue-50 hover:text-blue-500 transition-all duration-300 shadow-md hover:shadow-lg transform hover:scale-105"
+                className="group p-2.5 sm:p-3 rounded-full bg-white/80 text-slate-500 hover:bg-blue-50 hover:text-blue-500 transition-all duration-300 shadow-md hover:shadow-lg transform hover:scale-105"
               >
-                <FiShare2 className="w-5 h-5 group-hover:scale-110 transition-transform duration-300" />
+                <FiShare2 className="w-4 h-4 sm:w-5 sm:h-5 group-hover:scale-110 transition-transform duration-300" />
               </button>
             </div>
           </div>

@@ -133,10 +133,12 @@ const Itinerary = ({ itinerario = [] }) => {
           </div>
           
           {/* Barra de progreso */}
-          <div className="w-full bg-gray-200 rounded-full h-2">
+          <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
             <div 
               className="bg-gradient-to-r from-blue-500 to-indigo-600 h-2 rounded-full transition-all duration-500 ease-out"
-              style={{ width: `${(visibleItems / itinerario.length) * 100}%` }}
+              style={{ 
+                width: `${Math.min(Math.max((visibleItems / itinerario.length) * 100, 0), 100)}%`
+              }}
             ></div>
           </div>
         </div>
