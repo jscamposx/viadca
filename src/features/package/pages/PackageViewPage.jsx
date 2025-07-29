@@ -473,10 +473,10 @@ function PackageViewPage() {
                         Ruta del Viaje
                       </h2>
                       <p className="text-slate-600 text-sm sm:text-base lg:text-lg">
-                        Desde Durango hacia tus destinos de viaje
+                        Explora todos los destinos de tu aventura
                         {paquete.destinos.length > 1 && (
                           <span className="block text-xs sm:text-sm text-purple-600 font-medium mt-1">
-                            Durango → {paquete.destinos.map(d => d.destino).join(' → ')}
+                            {paquete.destinos.map(d => d.destino).join(' → ')}
                           </span>
                         )}
                       </p>
