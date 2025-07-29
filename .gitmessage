@@ -1,0 +1,19 @@
+# Plantilla de mensaje de commit en español
+# 
+# tipo(alcance): descripción breve en español
+#
+# Explicación más detallada del cambio (opcional)
+#
+# Tipos válidos:
+# feat:     nueva funcionalidad
+# fix:      corrección de errores
+# docs:     documentación
+# style:    formato, espacios en blanco, etc.
+# refactor: refactorización del código
+# test:     agregar o modificar tests
+# chore:    tareas de mantenimiento
+#
+# Ejemplos:
+# feat(hotels): agregar componente de búsqueda de hoteles
+# fix(forms): corregir validación de campos requeridos
+# docs(readme): actualizar instrucciones de instalación

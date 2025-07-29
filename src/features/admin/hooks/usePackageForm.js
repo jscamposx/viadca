@@ -7,115 +7,66 @@ const isUUID = (str) =>
     str,
   );
 
-const processImage = async (image, index) => {
-  if (
-    typeof image === "string" &&
-    (isUUID(image) || image.startsWith("http"))
-  ) {
-    return image;
-  }
-  if (image.id && isUUID(image.id)) {
-    return image.id;
-  }
-  if (image.url && image.url.startsWith("/uploads/")) {
-    const id = image.url.split("/").pop().split(".")[0];
-    if (isUUID(id)) return id;
-  }
-  if (image.url && image.url.startsWith("http")) {
-    return image.url;
-  }
-  if (image.url && image.url.startsWith("data:image")) {
-    try {
-      const response = await api.images.upload({
-        image: image.url,
-        orden: index + 1,
-      });
-      if (response.data && response.data.id) {
-        return response.data.id;
-      }
-    } catch (error) {
-      console.error("Error al subir la imagen Base64:", error);
-      return null;
-    }
-  }
-  console.warn("No se pudo procesar la imagen:", image);
-  return null;
-};
+// Helper para convertir archivos a Base64
+const fileToBase64 = (file) =>
+  new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = (error) => reject(error);
+  });
+
 
 export const usePackageForm = (initialPackageData = null) => {
-  const [flights, setFlights] = useState([]);
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    nombre_paquete: "",
-    duracion: "",
-    id_vuelo: "",
+    titulo: "",
+    fecha_inicio: "",
+    fecha_fin: "",
+    duracion_dias: "",
+    incluye: "",
+    no_incluye: "",
     requisitos: "",
-    origen: "Durango, Dgo.",
-    origen_lat: 24.0277,
-    origen_lng: -104.6532,
-    destino: "",
-    destino_lat: "",
-    destino_lng: "",
-    destino_place_id: "",
-    precio_base: "",
-     descuento: "",
-    itinerario: [{ dia: 1, descripcion: "" }],
-    images: [],
+    descuento: "",
+    anticipo: "",
+    precio_total: "",
+    notas: "",
+    itinerario_texto: "",
+    destinos: [],
+    imagenes: [],
     hotel: null,
+    mayoristasIds: [], // Añadido para los IDs de mayoristas
   });
 
   useEffect(() => {
     if (initialPackageData) {
-      const sortedImages = (initialPackageData.imagenes || []).sort(
-        (a, b) => a.orden - b.orden,
-      );
-      const sortedHotelImages = initialPackageData.hotel
-        ? (initialPackageData.hotel.imagenes || []).sort(
-            (a, b) => a.orden - b.orden,
-          )
-        : [];
-
+      // Mapear datos existentes al nuevo formato del formulario
+      const initialDestino = initialPackageData.destinos?.[0] || {};
       setFormData({
         ...initialPackageData,
-        images: sortedImages,
-        hotel: initialPackageData.hotel
-          ? {
-              ...initialPackageData.hotel,
-              images: sortedHotelImages,
-            }
-          : null,
+        // Asegurarse de que los campos de destino principales estén poblados
+        destino: initialDestino.destino,
+        destino_lat: initialDestino.destino_lat,
+        destino_lng: initialDestino.destino_lng,
       });
     }
   }, [initialPackageData]);
 
+
   const [selectionMode, setSelectionMode] = useState("destino");
   const [searchValue, setSearchValue] = useState("");
-  const navigate = useNavigate();
 
   useEffect(() => {
-    setSearchValue(
-      selectionMode === "origen" ? formData.origen : formData.destino,
-    );
-  }, [selectionMode, formData.origen, formData.destino]);
+    setSearchValue(selectionMode === "destino" ? formData.destino : "");
+  }, [selectionMode, formData.destino]);
 
-  useEffect(() => {
-    const fetchFlights = async () => {
-      try {
-        const response = await api.flights.getVuelos();
-        setFlights(response.data);
-      } catch (error) {
-        console.error("Error al obtener los vuelos:", error);
-      }
-    };
-    fetchFlights();
-  }, []);
 
   const handlePlaceSelected = useCallback(
     (place) => {
-      const { geometry, formatted_address, place_id } = place;
+      const { geometry, formatted_address } = place;
       if (!geometry) return;
 
       const { lat, lng } = geometry.location;
-      const fieldName = selectionMode === "origen" ? "origen" : "destino";
       const simplifiedAddress = formatted_address
         .split(",")
         .slice(0, 2)
@@ -123,14 +74,12 @@ export const usePackageForm = (initialPackageData = null) => {
 
       setFormData((prev) => ({
         ...prev,
-        [`${fieldName}`]: simplifiedAddress,
-        [`${fieldName}_lat`]: lat(),
-        [`${fieldName}_lng`]: lng(),
-        destino_place_id:
-          fieldName === "destino" ? place_id : prev.destino_place_id,
+        destino: simplifiedAddress,
+        destino_lat: lat(),
+        destino_lng: lng(),
       }));
     },
-    [selectionMode],
+    [],
   );
 
   const onMapClick = useCallback(
@@ -142,196 +91,164 @@ export const usePackageForm = (initialPackageData = null) => {
       geocoder.geocode({ location: latLng }, (results, status) => {
         if (status === "OK" && results[0]) {
           const place = results[0];
-          const addressComponents = place.address_components;
-          let city = "";
-          let state = "";
-
-          for (const component of addressComponents) {
-            if (component.types.includes("locality"))
-              city = component.long_name;
-            if (component.types.includes("administrative_area_level_1"))
-              state = component.long_name;
-          }
-
-          const locationName = [city, state].filter(Boolean).join(", ");
-          const fieldName = selectionMode === "origen" ? "origen" : "destino";
-
+          const simplifiedAddress = place.formatted_address
+            .split(",")
+            .slice(0, 2)
+            .join(", ");
+          
           setFormData((prev) => ({
             ...prev,
-            [`${fieldName}`]: locationName,
-            [`${fieldName}_lat`]: latLng.lat,
-            [`${fieldName}_lng`]: latLng.lng,
-            destino_place_id:
-              fieldName === "destino" ? place.place_id : prev.destino_place_id,
+            destino: simplifiedAddress,
+            destino_lat: latLng.lat,
+            destino_lng: latLng.lng,
           }));
-        } else {
-          console.error(
-            `Geocode was not successful for the following reason: ${status}`,
-          );
         }
       });
     },
-    [selectionMode],
+    [],
   );
-
+  
   const handleFormChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
-
+  
   const handleImagesChange = useCallback((newImages) => {
-    setFormData((prev) => ({ ...prev, images: newImages }));
+    setFormData((prev) => ({ ...prev, imagenes: newImages }));
   }, []);
 
   const handleHotelSelected = useCallback((hotel) => {
     setFormData((prev) => ({ ...prev, hotel: hotel }));
   }, []);
 
-  const handleItinerarioChange = (index, event) => {
-    const { name, value } = event.target;
-    const itinerario = [...formData.itinerario];
-    itinerario[index][name] = value;
-    setFormData((prev) => ({ ...prev, itinerario }));
-  };
-
-  const handleAddItinerario = () => {
-    setFormData((prev) => ({
-      ...prev,
-      itinerario: [
-        ...prev.itinerario,
-        { dia: prev.itinerario.length + 1, descripcion: "" },
-      ],
-    }));
-  };
-
-  const handleRemoveItinerario = (index) => {
-    const itinerario = [...formData.itinerario].filter((_, i) => i !== index);
-    setFormData((prev) => ({ ...prev, itinerario }));
-  };
-
   const handleSubmit = async (event, addNotification) => {
     event.preventDefault();
 
-    if (!formData.origen_lat || !formData.destino_lat) {
+    if (!formData.destino_lat) {
       if (addNotification) {
-        addNotification(
-          "Por favor, selecciona el origen y el destino en el mapa.",
-          "error",
-        );
+        addNotification("Por favor, selecciona un destino en el mapa.", "error");
       }
       return;
     }
 
+    // Procesar imágenes del paquete
+    const packageImages = await Promise.all(
+      (formData.imagenes || []).map(async (img, index) => {
+        if (img.url.startsWith('data:')) { // Es una nueva imagen en base64
+          return {
+            orden: index + 1,
+            tipo: "base64",
+            contenido: img.url.split(',')[1], // Solo la parte base64
+            mime_type: img.file.type,
+            nombre: img.file.name,
+          };
+        }
+        // Es una imagen existente (URL)
+        return {
+          orden: index + 1,
+          tipo: "url",
+          contenido: img.url,
+          mime_type: "image/jpeg", // Asumir o derivar si es posible
+          nombre: img.url.split("/").pop(),
+        };
+      })
+    );
+
+    // Procesar imágenes del hotel si existe
     let hotelPayload = null;
     if (formData.hotel) {
-      const hotelImageIds = await Promise.all(
-        (formData.hotel.images || []).map((image, index) =>
-          processImage(image, index),
-        ),
+      const hotelImages = await Promise.all(
+        (formData.hotel.images || []).map(async (img, index) => {
+          if (img.url.startsWith('data:')) {
+            return {
+              orden: index + 1,
+              tipo: 'base64',
+              contenido: img.url.split(',')[1],
+              mime_type: img.file.type,
+              nombre: img.file.name,
+            };
+          }
+          return {
+            orden: index + 1,
+            tipo: 'url',
+            contenido: img.url,
+            mime_type: 'image/jpeg',
+            nombre: img.url.split('/').pop(),
+          };
+        })
       );
-
+      
       hotelPayload = {
         placeId: formData.hotel.place_id || formData.hotel.id,
         nombre: formData.hotel.nombre,
         estrellas: formData.hotel.estrellas,
         isCustom: formData.hotel.isCustom || false,
         total_calificaciones: formData.hotel.total_calificaciones,
-        imageIds: hotelImageIds.filter(Boolean),
+        imagenes: hotelImages,
       };
     }
-
-    const packageImageIds = await Promise.all(
-      (formData.images || []).map((image, index) => processImage(image, index)),
-    );
-
-    const { images, ...restOfFormData } = formData;
-
+    
     const payload = {
-      ...restOfFormData,
-      duracion: parseInt(formData.duracion, 10),
-      precio_base: parseInt(formData.precio_base, 10),
-      itinerario: formData.itinerario.map((item) => ({
-        ...item,
-        dia: parseInt(item.dia, 10),
-      })),
-      imageIds: packageImageIds.filter(Boolean),
+      ...formData,
+      duracion_dias: parseInt(formData.duracion_dias, 10),
+      precio_total: parseFloat(formData.precio_total),
+      descuento: formData.descuento ? parseFloat(formData.descuento) : null,
+      anticipo: formData.anticipo ? parseFloat(formData.anticipo) : null,
+      destinos: [
+        {
+          destino: formData.destino,
+          destino_lng: formData.destino_lng,
+          destino_lat: formData.destino_lat,
+          orden: 1,
+        },
+      ],
+      imagenes: packageImages,
       hotel: hotelPayload,
+      // Aquí puedes agregar la lógica para mayoristasIds si tienes un selector en el formulario
     };
 
-
-       if (formData.descuento && !isNaN(parseInt(formData.descuento, 10))) {
-      payload.descuento = parseInt(formData.descuento, 10);
-    } else {
-      delete payload.descuento; // Se elimina si no es válido para no enviarlo
-    }
-
-
-    console.log("Payload final a enviar:", payload);
+    // Eliminar campos que no van en el payload final
+    delete payload.destino;
+    delete payload.destino_lat;
+    delete payload.destino_lng;
 
     try {
       if (initialPackageData) {
         await api.packages.updatePaquete(initialPackageData.url, payload);
-
-        if (addNotification)
-          addNotification("Paquete actualizado con éxito", "success");
+        if (addNotification) addNotification("Paquete actualizado con éxito", "success");
       } else {
         await api.packages.createPaquete(payload);
-
-        if (addNotification)
-          addNotification("Paquete creado con éxito", "success");
+        if (addNotification) addNotification("Paquete creado con éxito", "success");
       }
       navigate("/admin/paquetes");
     } catch (error) {
-      console.error(
-        "Error detallado al procesar el paquete:",
-        error.response || error,
-      );
-      const errorMessage =
-        error.response?.data?.message || "Ocurrió un error inesperado.";
+      console.error("Error al procesar el paquete:", error.response || error);
+      const errorMessage = error.response?.data?.message || "Ocurrió un error inesperado.";
       if (addNotification) addNotification(`Error: ${errorMessage}`, "error");
     }
   };
-
-  const origin = useMemo(
-    () => ({
-      lat: parseFloat(formData.origen_lat) || null,
-      lng: parseFloat(formData.origen_lng) || null,
-    }),
-    [formData.origen_lat, formData.origen_lng],
-  );
 
   const destination = useMemo(
     () => ({
       lat: parseFloat(formData.destino_lat) || null,
       lng: parseFloat(formData.destino_lng) || null,
-      placeId: formData.destino_place_id,
       name: formData.destino,
     }),
-    [
-      formData.destino_lat,
-      formData.destino_lng,
-      formData.destino_place_id,
-      formData.destino,
-    ],
+    [formData.destino_lat, formData.destino_lng, formData.destino],
   );
 
   return {
     formData,
-    selectionMode,
-    flights,
-    searchValue,
-    origin,
-    destination,
     setFormData,
+    selectionMode,
+    searchValue,
+    destination,
     setSelectionMode,
     setSearchValue,
     handlePlaceSelected,
     onMapClick,
     handleFormChange,
     handleHotelSelected,
-    handleItinerarioChange,
-    handleAddItinerario,
-    handleRemoveItinerario,
     handleImagesChange,
     handleSubmit,
   };

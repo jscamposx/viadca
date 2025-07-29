@@ -1,12 +1,11 @@
 import { APIProvider } from "@vis.gl/react-google-maps";
 import { useParams, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
-import { FiArrowLeft, FiCheckCircle, FiMapPin, FiImage, FiCalendar, FiInfo } from "react-icons/fi";
+import { FiArrowLeft, FiCheckCircle, FiMapPin, FiImage, FiCalendar, FiInfo, FiFileText } from "react-icons/fi";
 import { usePackage } from "../../package/hooks/usePackage";
 import { usePackageForm } from "../hooks/usePackageForm";
 import PackageForm from "../components/PackageForm";
 import LocationSelector from "../components/LocationSelector";
-import ItineraryEditor from "../components/ItineraryEditor";
 import DestinationImageManager from "../components/DestinationImageManager";
 import HotelFinder from "../components/HotelFinder";
 import Loading from "../../package/components/Loading";
@@ -28,9 +27,7 @@ const NuevoPaquete = () => {
     formData,
     setFormData,
     selectionMode,
-    flights,
     searchValue,
-    origin,
     destination,
     setSelectionMode,
     setSearchValue,
@@ -38,9 +35,6 @@ const NuevoPaquete = () => {
     onMapClick,
     handleFormChange,
     handleHotelSelected,
-    handleItinerarioChange,
-    handleAddItinerario,
-    handleRemoveItinerario,
     handleImagesChange,
     handleSubmit: formSubmitHandler,
   } = usePackageForm(paquete);
@@ -65,26 +59,22 @@ const NuevoPaquete = () => {
     }
   };
 
-  // Iconos para cada sección
   const sectionIcons = {
     informacion: <FiInfo className="w-4 h-4" />,
     ubicacion: <FiMapPin className="w-4 h-4" />,
     imagenes: <FiImage className="w-4 h-4" />,
-    vuelo: <FiCalendar className="w-4 h-4" />,
     hotel: <FiCalendar className="w-4 h-4" />,
-    itinerario: <FiCalendar className="w-4 h-4" />,
+    itinerario: <FiFileText className="w-4 h-4" />,
   };
 
   const sections = [
     { id: "informacion", label: "Información" },
     { id: "ubicacion", label: "Ubicación" },
     { id: "imagenes", label: "Imágenes" },
-    { id: "vuelo", label: "Vuelo" },
     { id: "hotel", label: "Hotel" },
     { id: "itinerario", label: "Itinerario" },
   ];
 
-  // Efecto para desplazamiento suave al cambiar sección
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [activeSection]);
@@ -99,7 +89,6 @@ const NuevoPaquete = () => {
     >
       <div className="min-h-screen bg-gray-50 py-4 sm:py-6 px-3 sm:px-4">
         <div className="max-w-7xl mx-auto">
-          {/* Cabecera mejorada */}
           <div className="bg-gradient-to-r from-blue-700 to-indigo-800 rounded-2xl shadow-xl overflow-hidden mb-6 sm:mb-8">
             <div className="py-5 sm:py-7 px-4 sm:px-8 flex items-center justify-between gap-4">
               <div>
@@ -124,7 +113,6 @@ const NuevoPaquete = () => {
               </button>
             </div>
 
-            {/* Barra de navegación por pasos mejorada */}
             <div className="bg-white/10 backdrop-blur-sm py-3 px-4">
               <div className="flex overflow-x-auto gap-1 pb-1">
                 {sections.map((section, index) => {
@@ -192,7 +180,6 @@ const NuevoPaquete = () => {
                   <PackageForm
                     formData={formData}
                     onFormChange={handleFormChange}
-                    flights={flights}
                   />
                 </div>
               </div>
@@ -202,59 +189,23 @@ const NuevoPaquete = () => {
             <div className={`${activeSection !== "ubicacion" ? "hidden" : ""} animate-fadeIn`}>
               <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
                 <div className="p-5 sm:p-7 border-b border-gray-200">
-                  <div className="flex items-center gap-3">
+                   <div className="flex items-center gap-3">
                     <div className="bg-blue-100 p-2 rounded-lg text-blue-700">
                       <FiMapPin className="w-5 h-5" />
                     </div>
                     <div>
                       <h2 className="text-xl font-semibold text-gray-800">
-                        Selección de Ubicación
+                        Ubicación del Destino Principal
                       </h2>
                       <p className="text-gray-600 mt-1">
-                        Define los lugares de origen y destino
+                        Define el lugar principal del viaje
                       </p>
                     </div>
                   </div>
                 </div>
                 <div className="p-5 sm:p-7">
-                  <div className="flex flex-col gap-4 mb-5">
-                    <p className="text-gray-700 font-medium self-center">
-                      Seleccionando:
-                    </p>
-                    <div className="flex flex-wrap justify-center gap-3">
-                      <button
-                        type="button"
-                        onClick={() => setSelectionMode("origen")}
-                        className={`px-4 py-2.5 rounded-xl font-medium transition-colors flex items-center gap-2 ${
-                          selectionMode === "origen"
-                            ? "bg-blue-600 text-white shadow-md"
-                            : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-                        }`}
-                      >
-                        {selectionMode === "origen" && (
-                          <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
-                        )}
-                        <span>Origen</span>
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setSelectionMode("destino")}
-                        className={`px-4 py-2.5 rounded-xl font-medium transition-colors flex items-center gap-2 ${
-                          selectionMode === "destino"
-                            ? "bg-green-600 text-white shadow-md"
-                            : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-                        }`}
-                      >
-                        {selectionMode === "destino" && (
-                          <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
-                        )}
-                        <span>Destino</span>
-                      </button>
-                    </div>
-                  </div>
                   <LocationSelector
                     onMapClick={onMapClick}
-                    origin={origin}
                     destination={destination}
                     onPlaceSelected={handlePlaceSelected}
                     searchValue={searchValue}
@@ -292,35 +243,6 @@ const NuevoPaquete = () => {
               </div>
             </div>
 
-            {/* Vuelo */}
-            <div className={`${activeSection !== "vuelo" ? "hidden" : ""} animate-fadeIn`}>
-              <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
-                <div className="p-5 sm:p-7 border-b border-gray-200">
-                  <div className="flex items-center gap-3">
-                    <div className="bg-blue-100 p-2 rounded-lg text-blue-700">
-                      <FiCalendar className="w-5 h-5" />
-                    </div>
-                    <div>
-                      <h2 className="text-xl font-semibold text-gray-800">
-                        Selección de Vuelo
-                      </h2>
-                      <p className="text-gray-600 mt-1">
-                        Elige el vuelo que se incluirá en este paquete
-                      </p>
-                    </div>
-                  </div>
-                </div>
-                <div className="p-5 sm:p-7">
-               
-                  <FlightCarousel
-                    flights={flights}
-                    onFlightSelect={handleFlightSelect}
-                    selectedFlightId={formData.id_vuelo}
-                  />
-                </div>
-              </div>
-            </div>
-
             {/* Hotel */}
             <div className={`${activeSection !== "hotel" ? "hidden" : ""} animate-fadeIn`}>
               <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
@@ -340,7 +262,6 @@ const NuevoPaquete = () => {
                   </div>
                 </div>
                 <div className="p-5 sm:p-7">
-               
                   <HotelFinder
                     destination={destination}
                     onHotelSelect={handleHotelSelected}
@@ -356,32 +277,34 @@ const NuevoPaquete = () => {
                 <div className="p-5 sm:p-7 border-b border-gray-200">
                   <div className="flex items-center gap-3">
                     <div className="bg-blue-100 p-2 rounded-lg text-blue-700">
-                      <FiCalendar className="w-5 h-5" />
+                      <FiFileText className="w-5 h-5" />
                     </div>
                     <div>
                       <h2 className="text-xl font-semibold text-gray-800">
-                        Itinerario del Viaje
+                        Texto del Itinerario
                       </h2>
                       <p className="text-gray-600 mt-1">
-                        Define las actividades diarias del paquete
+                        Describe el plan de viaje día por día.
                       </p>
                     </div>
                   </div>
                 </div>
                 <div className="p-5 sm:p-7">
-                  <ItineraryEditor
-                    itinerario={formData.itinerario}
-                    onItinerarioChange={handleItinerarioChange}
-                    onAddItinerario={handleAddItinerario}
-                    onRemoveItinerario={handleRemoveItinerario}
-                  />
+                   <textarea
+                      name="itinerario_texto"
+                      value={formData.itinerario_texto || ""}
+                      onChange={handleFormChange}
+                      rows="15"
+                      className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                      placeholder="DÍA 1: Salida de CDMX...\nDÍA 2: Llegada a Madrid..."
+                    />
                 </div>
               </div>
             </div>
 
-            {/* Navegación entre secciones */}
+            {/* Navegación y Envío */}
             <div className="sticky bottom-0 bg-white border-t border-gray-200 py-4 px-4 sm:px-6 rounded-xl shadow-lg z-10">
-              <div className="flex justify-between items-center gap-3">
+               <div className="flex justify-between items-center gap-3">
                 <button
                   type="button"
                   onClick={() => {
@@ -444,8 +367,6 @@ const NuevoPaquete = () => {
           </form>
         </div>
       </div>
-      
-  
     </APIProvider>
   );
 };

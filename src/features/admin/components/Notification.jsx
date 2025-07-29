@@ -13,21 +13,21 @@ const Notification = ({
   const animationRef = useRef(null);
   const notificationRef = useRef(null);
 
-  // Iconos con contorno circular
+  // Iconos más grandes con contorno circular
   const notificationIcons = {
     success: (
-      <div className="flex items-center justify-center w-8 h-8 rounded-full bg-green-100">
-        <FiCheckCircle className="w-5 h-5 text-green-600" />
+      <div className="flex items-center justify-center w-10 h-10 rounded-full bg-green-100">
+        <FiCheckCircle className="w-6 h-6 text-green-600" />
       </div>
     ),
     error: (
-      <div className="flex items-center justify-center w-8 h-8 rounded-full bg-red-100">
-        <FiXCircle className="w-5 h-5 text-red-600" />
+      <div className="flex items-center justify-center w-10 h-10 rounded-full bg-red-100">
+        <FiXCircle className="w-6 h-6 text-red-600" />
       </div>
     ),
     info: (
-      <div className="flex items-center justify-center w-8 h-8 rounded-full bg-blue-100">
-        <FiInfo className="w-5 h-5 text-blue-600" />
+      <div className="flex items-center justify-center w-10 h-10 rounded-full bg-blue-100">
+        <FiInfo className="w-6 h-6 text-blue-600" />
       </div>
     ),
   };
@@ -88,22 +88,22 @@ const Notification = ({
   return (
     <div
       ref={notificationRef}
-      className={`fixed z-50 transition-all duration-300 ease-out
+      className={`fixed z-[1000] transition-all duration-300 ease-out
         ${
           visible
             ? "opacity-100 translate-y-0"
             : "opacity-0 translate-y-10 pointer-events-none"
         }
         /* Posicionamiento responsive */
-        top-4 left-1/2 transform -translate-x-1/2 w-[calc(100%-2rem)] max-w-md
-        sm:top-auto sm:bottom-5 sm:left-auto sm:right-5 sm:translate-x-0 sm:w-auto
+        bottom-4 left-1/2 transform -translate-x-1/2 w-[calc(100%-2rem)] max-w-lg
+        md:bottom-6 md:left-auto md:right-6 md:transform-none md:w-auto
       `}
     >
       <div
-        className={`${notificationColors[type].bg} ${notificationColors[type].border} rounded-lg shadow-lg overflow-hidden`}
+        className={`${notificationColors[type].bg} ${notificationColors[type].border} rounded-xl shadow-xl overflow-hidden min-w-[300px]`}
       >
         {/* Barra de progreso */}
-        <div className="h-1 w-full bg-gray-200">
+        <div className="h-1.5 w-full bg-gray-200">
           <div
             className={`h-full ${
               type === "success"
@@ -116,13 +116,13 @@ const Notification = ({
           ></div>
         </div>
         
-        <div className="p-3 sm:p-4 flex items-start">
-          <div className="mr-3 mt-0.5 flex-shrink-0">
+        <div className="p-4 flex items-start">
+          <div className="mr-3 flex-shrink-0">
             {notificationIcons[type]}
           </div>
-          <div className="flex-1">
+          <div className="flex-1 min-w-0">
             <p
-              className={`font-medium ${notificationColors[type].text} text-sm`}
+              className={`font-semibold ${notificationColors[type].text} text-base`}
             >
               {type === "success"
                 ? "Éxito"
@@ -130,13 +130,13 @@ const Notification = ({
                 ? "Error"
                 : "Información"}
             </p>
-            <p className={`mt-1 text-sm ${notificationColors[type].text}`}>
+            <p className={`mt-1 text-base ${notificationColors[type].text}`}>
               {message}
             </p>
           </div>
           <button
             onClick={handleDismiss}
-            className="ml-2 flex-shrink-0 p-1 rounded-full hover:bg-gray-200 transition-colors"
+            className="ml-2 flex-shrink-0 p-1.5 rounded-full hover:bg-gray-200 transition-colors"
           >
             <FiX className="w-5 h-5 text-gray-500" />
           </button>

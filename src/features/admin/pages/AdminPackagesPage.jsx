@@ -12,7 +12,7 @@ const AdminPaquetes = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredPaquetes, setFilteredPaquetes] = useState([]);
   const [sortConfig, setSortConfig] = useState({
-    key: "nombre_paquete",
+    key: "titulo",
     direction: "asc",
   });
   const [priceFilter, setPriceFilter] = useState({ min: "", max: "" });
@@ -48,9 +48,8 @@ const AdminPaquetes = () => {
         const term = searchTerm.toLowerCase();
         result = result.filter(
           (p) =>
-            p.nombre_paquete.toLowerCase().includes(term) ||
-            (p.destino?.toLowerCase().includes(term) || "") ||
-            p.precio_base.toString().includes(term),
+            p.titulo.toLowerCase().includes(term) ||
+            p.precio_total.toString().includes(term),
         );
       }
 
@@ -60,14 +59,9 @@ const AdminPaquetes = () => {
         const maxPrice = priceFilter.max ? parseFloat(priceFilter.max) : Number.MAX_VALUE;
         
         result = result.filter(p => {
-          const precio = parseFloat(p.precio_base);
+          const precio = parseFloat(p.precio_total);
           return precio >= minPrice && precio <= maxPrice;
         });
-      }
-
-      // Aplicar filtro de duración
-      if (durationFilter) {
-        result = result.filter(p => p.duracion === parseInt(durationFilter));
       }
 
       // Aplicar ordenamiento
@@ -244,39 +238,27 @@ const AdminPaquetes = () => {
             <div className="mt-4 p-4 bg-gray-50 rounded-xl grid grid-cols-1 sm:grid-cols-3 gap-2">
               <button
                 className={`px-4 py-2.5 rounded-lg font-medium transition flex items-center justify-center gap-2 ${
-                  sortConfig.key === "nombre_paquete"
+                  sortConfig.key === "titulo"
                     ? "bg-blue-100 text-blue-700"
                     : "bg-white text-gray-700 hover:bg-gray-100"
                 }`}
-                onClick={() => requestSort("nombre_paquete")}
+                onClick={() => requestSort("titulo")}
               >
                 Nombre{" "}
-                {sortConfig.key === "nombre_paquete" && sortConfig.direction === "asc" && <FiArrowUp />}
-                {sortConfig.key === "nombre_paquete" && sortConfig.direction === "desc" && <FiArrowDown />}
+                {sortConfig.key === "titulo" && sortConfig.direction === "asc" && <FiArrowUp />}
+                {sortConfig.key === "titulo" && sortConfig.direction === "desc" && <FiArrowDown />}
               </button>
               <button
                 className={`px-4 py-2.5 rounded-lg font-medium transition flex items-center justify-center gap-2 ${
-                  sortConfig.key === "precio_base"
+                  sortConfig.key === "precio_total"
                     ? "bg-blue-100 text-blue-700"
                     : "bg-white text-gray-700 hover:bg-gray-100"
                 }`}
-                onClick={() => requestSort("precio_base")}
+                onClick={() => requestSort("precio_total")}
               >
                 Precio{" "}
-                {sortConfig.key === "precio_base" && sortConfig.direction === "asc" && <FiArrowUp />}
-                {sortConfig.key === "precio_base" && sortConfig.direction === "desc" && <FiArrowDown />}
-              </button>
-              <button
-                className={`px-4 py-2.5 rounded-lg font-medium transition flex items-center justify-center gap-2 ${
-                  sortConfig.key === "duracion"
-                    ? "bg-blue-100 text-blue-700"
-                    : "bg-white text-gray-700 hover:bg-gray-100"
-                }`}
-                onClick={() => requestSort("duracion")}
-              >
-                Duración{" "}
-                {sortConfig.key === "duracion" && sortConfig.direction === "asc" && <FiArrowUp />}
-                {sortConfig.key === "duracion" && sortConfig.direction === "desc" && <FiArrowDown />}
+                {sortConfig.key === "precio_total" && sortConfig.direction === "asc" && <FiArrowUp />}
+                {sortConfig.key === "precio_total" && sortConfig.direction === "desc" && <FiArrowDown />}
               </button>
             </div>
           )}
@@ -320,19 +302,6 @@ const AdminPaquetes = () => {
                     </div>
                   </div>
                 </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Duración (días)
-                  </label>
-                  <input
-                    type="number"
-                    placeholder="Ej: 5"
-                    className="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-                    value={durationFilter}
-                    onChange={(e) => setDurationFilter(e.target.value)}
-                  />
-                </div>
               </div>
             </div>
           )}
@@ -341,108 +310,103 @@ const AdminPaquetes = () => {
         {/* Lista de paquetes */}
         {filteredPaquetes.length > 0 ? (
           <div className="grid grid-cols-1 gap-5 sm:gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {filteredPaquetes.map((paquete) => {
-              const imagenPrincipal =
-                paquete.imagenes?.length > 0 ? paquete.imagenes[0] : null;
-
-              return (
-                <div
-                  key={paquete.id}
-                  className="bg-white rounded-2xl shadow-md overflow-hidden border border-gray-100 hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1"
-                >
-                  <div className="h-52 sm:h-60 relative overflow-hidden">
-                    {imagenPrincipal ? (
-                      <img
-                        src={getImageUrl(imagenPrincipal.url)}
-                        alt={paquete.nombre_paquete}
-                        className="w-full h-full object-cover transition-transform duration-500 hover:scale-110"
-                        onError={(e) => {
-                          e.target.onerror = null;
-                          e.target.src =
-                            "https://via.placeholder.com/600x400?text=Imagen+No+Disponible";
-                        }}
-                      />
-                    ) : (
-                      <div className="w-full h-full bg-gradient-to-br from-gray-100 to-gray-200 flex flex-col items-center justify-center text-gray-500 p-4">
-                        <div className="bg-gray-200 border-2 border-dashed rounded-xl w-16 h-16 flex items-center justify-center mb-3">
-                          <FiMapPin className="w-8 h-8 text-gray-400" />
-                        </div>
-                        <span className="text-sm text-center">
-                          Sin imagen disponible
-                        </span>
-                      </div>
-                    )}
-                    <div className="absolute top-3 right-3 bg-blue-600 text-white text-xs sm:text-sm font-semibold px-3 py-1.5 rounded-full shadow-sm">
-                      {parseFloat(paquete.precio_base).toLocaleString("es-MX", {
-                        style: "currency",
-                        currency: "MXN",
-                        minimumFractionDigits: 0,
-                      })}
-                    </div>
-                  </div>
-
-                  <div className="p-5">
-                    <div className="mb-4">
-                      <h2 className="text-lg sm:text-xl font-bold text-gray-800 line-clamp-2 mb-2">
-                        {paquete.nombre_paquete}
-                      </h2>
-                      
-                      <div className="flex items-center gap-3 text-sm text-gray-600">
-                        <div className="flex items-center">
-                          <FiClock className="mr-1.5" />
-                          <span>{paquete.duracion} días</span>
-                        </div>
-                        <div className="flex items-center">
-                          <FiMapPin className="mr-1.5" />
-                          <span className="truncate">{paquete.destino || "Sin destino"}</span>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="flex flex-wrap gap-2">
-                      <Link
-                        to={`/paquetes/${paquete.url}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center gap-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium py-2 px-3 rounded-lg transition text-xs sm:text-sm flex-1 min-w-[100px] justify-center"
-                        title="Vista previa"
-                      >
-                        <FiEye className="w-3.5 h-3.5" />
-                        <span>Vista previa</span>
-                      </Link>
-
-                      <Link
-                        to={`/admin/paquetes/editar/${paquete.url}`}
-                        className="flex items-center gap-1.5 bg-blue-100 hover:bg-blue-200 text-blue-700 font-medium py-2 px-3 rounded-lg transition text-xs sm:text-sm flex-1 min-w-[100px] justify-center"
-                        title="Editar"
-                      >
-                        <FiEdit2 className="w-3.5 h-3.5" />
-                        <span>Editar</span>
-                      </Link>
-
-                      <button
-                        onClick={() => handleExport(paquete.id)}
-                        className="flex items-center gap-1.5 bg-green-100 hover:bg-green-200 text-green-700 font-medium py-2 px-3 rounded-lg transition text-xs sm:text-sm flex-1 min-w-[100px] justify-center"
-                        title="Exportar a Excel"
-                      >
-                        <FiDownload className="w-3.5 h-3.5" />
-                        <span>Excel</span>
-                      </button>
-
-                      <button
-                        onClick={() => handleDelete(paquete.id)}
-                        className="flex items-center gap-1.5 bg-red-100 hover:bg-red-200 text-red-700 font-medium py-2 px-3 rounded-lg transition text-xs sm:text-sm flex-1 min-w-[100px] justify-center"
-                        title="Eliminar"
-                      >
-                        <FiTrash2 className="w-3.5 h-3.5" />
-                        <span>Eliminar</span>
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
+  {filteredPaquetes.map((paquete) => {
+    return (
+      <div
+        key={paquete.id}
+        className="bg-white rounded-2xl shadow-md overflow-hidden border border-gray-100 hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1"
+      >
+        <div className="h-52 sm:h-60 relative overflow-hidden">
+          {paquete.primera_imagen ? (
+            <img
+              src={getImageUrl(paquete.primera_imagen)}
+              alt={paquete.titulo}
+              className="w-full h-full object-cover transition-transform duration-500 hover:scale-110"
+              onError={(e) => {
+                e.target.onerror = null;
+                e.target.src =
+                  "https://via.placeholder.com/600x400?text=Imagen+No+Disponible";
+              }}
+            />
+          ) : (
+            <div className="w-full h-full bg-gradient-to-br from-gray-100 to-gray-200 flex flex-col items-center justify-center text-gray-500 p-4">
+              <div className="bg-gray-200 border-2 border-dashed rounded-xl w-16 h-16 flex items-center justify-center mb-3">
+                <FiMapPin className="w-8 h-8 text-gray-400" />
+              </div>
+              <span className="text-sm text-center">
+                Sin imagen disponible
+              </span>
+            </div>
+          )}
+          {/* Contenedor para las etiquetas de precio y clave */}
+          <div className="absolute top-3 right-3 flex flex-col items-end gap-2">
+            <div className="bg-blue-600 text-white text-xs sm:text-sm font-semibold px-3 py-1.5 rounded-full shadow-sm">
+              {parseFloat(paquete.precio_total).toLocaleString("es-MX", {
+                style: "currency",
+                currency: "MXN",
+                minimumFractionDigits: 0,
+              })}
+            </div>
+            {/* Etiqueta para la clave_mayorista */}
+            {paquete.clave_mayorista && (
+              <div className="bg-gray-700 text-white text-xs font-semibold px-3 py-1.5 rounded-full shadow-sm">
+                {paquete.clave_mayorista}
+              </div>
+            )}
           </div>
+        </div>
+
+        <div className="p-5">
+          <div className="mb-4">
+            <h2 className="text-lg sm:text-xl font-bold text-gray-800 line-clamp-2 mb-2">
+              {paquete.titulo}
+            </h2>
+          </div>
+
+          <div className="flex flex-wrap gap-2">
+            <Link
+              to={`/paquetes/${paquete.url}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium py-2 px-3 rounded-lg transition text-xs sm:text-sm flex-1 min-w-[100px] justify-center"
+              title="Vista previa"
+            >
+              <FiEye className="w-3.5 h-3.5" />
+              <span>Vista previa</span>
+            </Link>
+
+            <Link
+              to={`/admin/paquetes/editar/${paquete.url}`}
+              className="flex items-center gap-1.5 bg-blue-100 hover:bg-blue-200 text-blue-700 font-medium py-2 px-3 rounded-lg transition text-xs sm:text-sm flex-1 min-w-[100px] justify-center"
+              title="Editar"
+            >
+              <FiEdit2 className="w-3.5 h-3.5" />
+              <span>Editar</span>
+            </Link>
+
+            <button
+              onClick={() => handleExport(paquete.id)}
+              className="flex items-center gap-1.5 bg-green-100 hover:bg-green-200 text-green-700 font-medium py-2 px-3 rounded-lg transition text-xs sm:text-sm flex-1 min-w-[100px] justify-center"
+              title="Exportar a Excel"
+            >
+              <FiDownload className="w-3.5 h-3.5" />
+              <span>Excel</span>
+            </button>
+
+            <button
+              onClick={() => handleDelete(paquete.id)}
+              className="flex items-center gap-1.5 bg-red-100 hover:bg-red-200 text-red-700 font-medium py-2 px-3 rounded-lg transition text-xs sm:text-sm flex-1 min-w-[100px] justify-center"
+              title="Eliminar"
+            >
+              <FiTrash2 className="w-3.5 h-3.5" />
+              <span>Eliminar</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  })}
+</div>
         ) : (
           <div className="bg-white rounded-2xl shadow-md p-8 sm:p-10 md:p-12 text-center">
             <div className="max-w-md mx-auto">

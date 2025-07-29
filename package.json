@@ -9,7 +9,9 @@
     "build": "vite build",
     "lint": "eslint .",
     "format": "prettier --write .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "commit": "aicommits",
+    "commit-es": "aicommits --locale es"
   },
   "dependencies": {
     "@heroicons/react": "^2.2.0",
