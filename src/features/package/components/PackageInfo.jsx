@@ -63,7 +63,7 @@ const StatBadge = ({ icon, value, label }) => (
   </div>
 );
 
-const PackageInfo = ({ duracion, precio_base }) => {
+const PackageInfo = ({ paquete }) => {
   const formatPrice = (price) => {
     return parseFloat(price).toLocaleString("es-MX", {
       style: "currency",
@@ -72,7 +72,15 @@ const PackageInfo = ({ duracion, precio_base }) => {
     });
   };
 
-  const pricePerDay = formatPrice(precio_base / duracion);
+  const formatDate = (dateString) => {
+    return new Date(dateString).toLocaleDateString("es-MX", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+  };
+
+  const pricePerDay = formatPrice(paquete.precio_total / paquete.duracion_dias);
 
   return (
     <div className="space-y-8">
@@ -85,12 +93,12 @@ const PackageInfo = ({ duracion, precio_base }) => {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <InfoCard
           icon={<FiCalendar className="w-7 h-7" />}
           title="Duración Total"
-          value={`${duracion} días`}
-          subtitle={`${duracion - 1} noches de aventura`}
+          value={`${paquete.duracion_dias} días`}
+          subtitle={`${paquete.duracion_dias - 1} noches de aventura`}
           colorClass="hover:bg-blue-50/30"
           gradientClass="bg-gradient-to-br from-blue-500 to-cyan-600"
           index={0}
@@ -99,11 +107,31 @@ const PackageInfo = ({ duracion, precio_base }) => {
         <InfoCard
           icon={<FiDollarSign className="w-7 h-7" />}
           title="Precio Total"
-          value={formatPrice(precio_base)}
+          value={formatPrice(paquete.precio_total)}
           subtitle={`${pricePerDay} por día`}
           colorClass="hover:bg-amber-50/30"
           gradientClass="bg-gradient-to-br from-amber-500 to-orange-600"
           index={1}
+        />
+
+        <InfoCard
+          icon={<FiCalendar className="w-7 h-7" />}
+          title="Fecha de Inicio"
+          value={formatDate(paquete.fecha_inicio)}
+          subtitle="Salida programada"
+          colorClass="hover:bg-emerald-50/30"
+          gradientClass="bg-gradient-to-br from-emerald-500 to-green-600"
+          index={2}
+        />
+
+        <InfoCard
+          icon={<FiCalendar className="w-7 h-7" />}
+          title="Fecha de Fin"
+          value={formatDate(paquete.fecha_fin)}
+          subtitle="Regreso programado"
+          colorClass="hover:bg-purple-50/30"
+          gradientClass="bg-gradient-to-br from-purple-500 to-indigo-600"
+          index={3}
         />
       </div>
 

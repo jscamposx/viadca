@@ -3,6 +3,8 @@ import { Calendar, Clock, MapPin, ChevronDown, ChevronUp } from "lucide-react";
 
 const Itinerary = ({ itinerario = [] }) => {
   const [expandedItems, setExpandedItems] = useState(new Set());
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 3;
 
   const toggleExpanded = (id) => {
     setExpandedItems((prev) => {
@@ -14,6 +16,17 @@ const Itinerary = ({ itinerario = [] }) => {
       }
       return newSet;
     });
+  };
+
+  const totalPages = Math.ceil(itinerario.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const currentItems = itinerario.slice(startIndex, endIndex);
+
+  const handleLoadMore = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1);
+    }
   };
 
   if (!itinerario || itinerario.length === 0) {
@@ -47,7 +60,7 @@ const Itinerary = ({ itinerario = [] }) => {
         <div className="absolute left-4 top-0 bottom-0 w-0.5 bg-gradient-to-b from-blue-500 via-blue-400 to-blue-300"></div>
 
         <div className="space-y-6">
-          {itinerario.map((item, index) => {
+          {currentItems.map((item, index) => {
             const isExpanded = expandedItems.has(item.id);
 
             return (
@@ -57,7 +70,7 @@ const Itinerary = ({ itinerario = [] }) => {
                 style={{ animationDelay: `${index * 100}ms` }}
               >
                 <div className="absolute left-0 flex items-center justify-center bg-gradient-to-r from-blue-500 to-blue-600 rounded-full w-8 h-8 text-white font-bold z-10 transition-all duration-300 group-hover:scale-110 group-hover:shadow-lg">
-                  {item.dia}
+                  {item.dia_numero}
                 </div>
 
                 <div className="ml-12 bg-white border border-gray-100 rounded-lg shadow-sm hover:shadow-md transition-all duration-300 hover:border-blue-200 overflow-hidden">
@@ -72,24 +85,13 @@ const Itinerary = ({ itinerario = [] }) => {
                         </div>
                         <div className="flex-1">
                           <h4 className="font-bold text-lg text-gray-800 mb-1 group-hover:text-blue-600 transition-colors duration-200">
-                            Día {item.dia}: {item.titulo}
+                            Día {item.dia_numero}
                           </h4>
 
-                          <div className="flex flex-wrap gap-4 text-sm text-gray-600">
-                            {item.horario && (
-                              <div className="flex items-center gap-1">
-                                <Clock className="w-4 h-4" />
-                                <span>{item.horario}</span>
-                              </div>
-                            )}
-                            {item.lugares && (
-                              <div className="flex items-center gap-1">
-                                <MapPin className="w-4 h-4" />
-                                <span className="truncate max-w-xs">
-                                  {item.lugares}
-                                </span>
-                              </div>
-                            )}
+                          <div className="text-sm text-gray-600">
+                            <p className="line-clamp-2 leading-relaxed">
+                              {item.descripcion}
+                            </p>
                           </div>
                         </div>
                       </div>
@@ -110,35 +112,6 @@ const Itinerary = ({ itinerario = [] }) => {
                         <p className="text-gray-700 leading-relaxed whitespace-pre-line">
                           {item.descripcion}
                         </p>
-
-                        {(item.notas || item.precio || item.duracion) && (
-                          <div className="mt-4 pt-4 border-t border-gray-100">
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-                              {item.duracion && (
-                                <div className="flex items-center gap-2">
-                                  <Clock className="w-4 h-4 text-gray-400" />
-                                  <span className="text-gray-600">
-                                    <strong>Duración:</strong> {item.duracion}
-                                  </span>
-                                </div>
-                              )}
-                              {item.precio && (
-                                <div className="flex items-center gap-2">
-                                  <span className="text-gray-600">
-                                    <strong>Precio:</strong> {item.precio}
-                                  </span>
-                                </div>
-                              )}
-                              {item.notas && (
-                                <div className="md:col-span-3">
-                                  <p className="text-gray-600">
-                                    <strong>Notas:</strong> {item.notas}
-                                  </p>
-                                </div>
-                              )}
-                            </div>
-                          </div>
-                        )}
                       </div>
                     </div>
                   )}
@@ -151,11 +124,27 @@ const Itinerary = ({ itinerario = [] }) => {
 
       <div className="mt-8 pt-6 border-t border-gray-100">
         <div className="flex items-center justify-between text-sm text-gray-600 bg-gray-50 p-4 rounded-lg">
-          <span>Total de días planificados</span>
+          <span>
+            Mostrando {Math.min(currentPage * itemsPerPage, itinerario.length)} de {itinerario.length} días
+          </span>
           <span className="font-semibold text-blue-600">
-            {itinerario.length}
+            Página {currentPage} de {totalPages}
           </span>
         </div>
+        
+        {currentPage < totalPages && (
+          <div className="mt-4 text-center">
+            <button
+              onClick={handleLoadMore}
+              className="inline-flex items-center px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors duration-200 shadow-sm hover:shadow-md"
+            >
+              Mostrar más días
+              <svg className="ml-2 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

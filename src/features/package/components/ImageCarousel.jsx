@@ -76,7 +76,9 @@ const ImageCarousel = ({ imagenes }) => {
     setIsLoading(false);
   };
 
-  const getImageUrl = (url) => {
+  const getImageUrl = (imagen) => {
+    // Usar 'contenido' si existe, sino 'url' para compatibilidad
+    const url = imagen.contenido || imagen.url;
     if (url?.startsWith("http") || url?.startsWith("data:")) {
       return url;
     }
@@ -137,7 +139,7 @@ const ImageCarousel = ({ imagenes }) => {
           <div key={imagen.id || index} className="w-full h-full relative">
             <img
               className="w-full h-full object-cover transition-transform duration-700 hover:scale-105"
-              src={getImageUrl(imagen.url)}
+              src={getImageUrl(imagen)}
               alt={imagen.nombre || `Imagen ${index + 1} del paquete turístico`}
               onLoad={handleImageLoad}
               onError={() => handleImageError(imagen.id)}

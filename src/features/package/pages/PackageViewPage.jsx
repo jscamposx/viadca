@@ -19,6 +19,10 @@ import {
   FiShare2,
   FiHome,
   FiStar,
+  FiCheck,
+  FiX,
+  FiInfo,
+  FiDollarSign,
 } from "react-icons/fi";
 
 function LoadingSpinner() {
@@ -166,8 +170,8 @@ function PackageViewPage() {
     if (!paquete) return;
 
     const shareData = {
-      title: paquete.nombre_paquete,
-      text: `¡Echa un vistazo a este increíble paquete de viaje: ${paquete.nombre_paquete}!`,
+      title: paquete.titulo,
+      text: `¡Echa un vistazo a este increíble paquete de viaje: ${paquete.titulo}!`,
       url: window.location.href,
     };
 
@@ -204,10 +208,10 @@ function PackageViewPage() {
           <div className="flex items-center justify-between">
             <div className="flex flex-wrap items-center gap-2 flex-1 mr-4">
               <Badge variant="info" icon={FiMapPin}>
-                {paquete.origen} → {paquete.destino}
+                {paquete.origen} → {paquete.destinos?.[0]?.destino || 'Destino'}
               </Badge>
               <Badge variant="success" icon={FiCalendar}>
-                {paquete.duracion} días
+                {paquete.duracion_dias} días
               </Badge>
             </div>
 
@@ -247,7 +251,7 @@ function PackageViewPage() {
         <div className="mb-8 sm:mb-12">
           <div className="text-center mb-6 sm:mb-8">
             <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-slate-900 mb-3 sm:mb-4 leading-tight px-2">
-              {paquete.nombre_paquete}
+              {paquete.titulo}
             </h1>
             <p className="text-base sm:text-lg lg:text-xl text-slate-600 max-w-2xl mx-auto leading-relaxed px-4">
               Descubre una experiencia única que combina aventura, cultura y
@@ -269,12 +273,106 @@ function PackageViewPage() {
             >
               <PackageInfo
                 id="info-heading"
-                duracion={paquete.duracion}
-                precio_base={paquete.precio_base}
+                paquete={paquete}
               />
             </section>
 
-            {paquete.itinerario && paquete.itinerario.length > 0 && (
+            {/* Sección Incluye */}
+            {paquete.incluye && (
+              <section
+                aria-labelledby="incluye-heading"
+                className="bg-white rounded-2xl sm:rounded-3xl shadow-xl p-4 sm:p-6 lg:p-8 border border-slate-100"
+              >
+                <div className="flex items-center mb-4 sm:mb-6">
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-emerald-500 to-green-600 rounded-xl sm:rounded-2xl flex items-center justify-center mr-3 sm:mr-4 flex-shrink-0">
+                    <FiCheck
+                      aria-hidden="true"
+                      className="w-5 h-5 sm:w-6 sm:h-6 text-white"
+                    />
+                  </div>
+                  <div>
+                    <h2
+                      id="incluye-heading"
+                      className="text-2xl sm:text-3xl font-bold text-slate-900"
+                    >
+                      ¿Qué incluye?
+                    </h2>
+                    <p className="text-slate-600 text-sm sm:text-base">
+                      Todo lo que está incluido en tu paquete
+                    </p>
+                  </div>
+                </div>
+                <div className="bg-emerald-50 rounded-xl p-4 sm:p-6 border border-emerald-200">
+                  <p className="text-slate-700 leading-relaxed">{paquete.incluye}</p>
+                </div>
+              </section>
+            )}
+
+            {/* Sección No Incluye */}
+            {paquete.no_incluye && (
+              <section
+                aria-labelledby="no-incluye-heading"
+                className="bg-white rounded-2xl sm:rounded-3xl shadow-xl p-4 sm:p-6 lg:p-8 border border-slate-100"
+              >
+                <div className="flex items-center mb-4 sm:mb-6">
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-red-500 to-red-600 rounded-xl sm:rounded-2xl flex items-center justify-center mr-3 sm:mr-4 flex-shrink-0">
+                    <FiX
+                      aria-hidden="true"
+                      className="w-5 h-5 sm:w-6 sm:h-6 text-white"
+                    />
+                  </div>
+                  <div>
+                    <h2
+                      id="no-incluye-heading"
+                      className="text-2xl sm:text-3xl font-bold text-slate-900"
+                    >
+                      ¿Qué no incluye?
+                    </h2>
+                    <p className="text-slate-600 text-sm sm:text-base">
+                      Gastos adicionales no incluidos en el paquete
+                    </p>
+                  </div>
+                </div>
+                <div className="bg-red-50 rounded-xl p-4 sm:p-6 border border-red-200">
+                  <p className="text-slate-700 leading-relaxed">{paquete.no_incluye}</p>
+                </div>
+              </section>
+            )}
+
+            {/* Sección Notas */}
+            {paquete.notas && (
+              <section
+                aria-labelledby="notas-heading"
+                className="bg-white rounded-2xl sm:rounded-3xl shadow-xl p-4 sm:p-6 lg:p-8 border border-slate-100"
+              >
+                <div className="flex items-center mb-4 sm:mb-6">
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-amber-500 to-orange-600 rounded-xl sm:rounded-2xl flex items-center justify-center mr-3 sm:mr-4 flex-shrink-0">
+                    <FiInfo
+                      aria-hidden="true"
+                      className="w-5 h-5 sm:w-6 sm:h-6 text-white"
+                    />
+                  </div>
+                  <div>
+                    <h2
+                      id="notas-heading"
+                      className="text-2xl sm:text-3xl font-bold text-slate-900"
+                    >
+                      Notas importantes
+                    </h2>
+                    <p className="text-slate-600 text-sm sm:text-base">
+                      Información adicional que debes considerar
+                    </p>
+                  </div>
+                </div>
+                <div className="bg-amber-50 rounded-xl p-4 sm:p-6 border border-amber-200">
+                  <p className="text-slate-700 leading-relaxed">{paquete.notas}</p>
+                </div>
+              </section>
+            )}
+
+
+
+            {paquete.itinerarios && paquete.itinerarios.length > 0 && (
               <section
                 aria-labelledby="itinerary-heading"
                 className="bg-white rounded-2xl sm:rounded-3xl shadow-xl p-4 sm:p-6 lg:p-8 border border-slate-100"
@@ -298,7 +396,7 @@ function PackageViewPage() {
                     </p>
                   </div>
                 </div>
-                <Itinerary itinerario={paquete.itinerario} />
+                <Itinerary itinerario={paquete.itinerarios} />
               </section>
             )}
 
@@ -334,8 +432,8 @@ function PackageViewPage() {
 
             {paquete.origen_lat &&
               paquete.origen_lng &&
-              paquete.destino_lat &&
-              paquete.destino_lng && (
+              paquete.destinos?.[0]?.destino_lat &&
+              paquete.destinos?.[0]?.destino_lng && (
                 <section
                   aria-labelledby="routemap-heading"
                   className="bg-white rounded-2xl sm:rounded-3xl shadow-xl p-4 sm:p-6 lg:p-8 border border-slate-100"
@@ -391,7 +489,7 @@ function PackageViewPage() {
               </section>
             )}
 
-            {paquete.destino_lat && paquete.destino_lng && (
+            {paquete.destinos?.[0]?.destino_lat && paquete.destinos?.[0]?.destino_lng && (
               <section
                 aria-labelledby="weather-heading"
                 className="bg-white rounded-2xl sm:rounded-3xl shadow-xl p-4 sm:p-6 lg:p-8 border border-slate-100"
@@ -411,14 +509,14 @@ function PackageViewPage() {
                       Pronóstico del Clima
                     </h2>
                     <p className="text-slate-600 text-sm sm:text-base">
-                      El tiempo en {paquete.destino}
+                      El tiempo en {paquete.destinos?.[0]?.destino}
                     </p>
                   </div>
                 </div>
                 <WeatherForecast
-                  lat={paquete.destino_lat}
-                  lon={paquete.destino_lng}
-                  cityName={paquete.destino}
+                  lat={paquete.destinos?.[0]?.destino_lat}
+                  lon={paquete.destinos?.[0]?.destino_lng}
+                  cityName={paquete.destinos?.[0]?.destino}
                 />
               </section>
             )}
@@ -430,7 +528,7 @@ function PackageViewPage() {
                 <div className="text-center mb-4 sm:mb-6">
                   <div className="flex flex-col sm:flex-row items-center justify-center sm:items-baseline">
                     <span className="text-3xl sm:text-4xl lg:text-5xl font-bold text-slate-900">
-                      {parseFloat(paquete.precio_base).toLocaleString("es-MX", {
+                      {parseFloat(paquete.precio_total).toLocaleString("es-MX", {
                         style: "currency",
                         currency: "MXN",
                       })}
@@ -439,14 +537,43 @@ function PackageViewPage() {
                       / persona
                     </span>
                   </div>
+                  {paquete.descuento && parseFloat(paquete.descuento) > 0 && (
+                    <div className="mt-2">
+                      <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-emerald-100 text-emerald-800">
+                        ¡Descuento de {parseFloat(paquete.descuento).toLocaleString("es-MX", {
+                          style: "currency",
+                          currency: "MXN",
+                        })}!
+                      </span>
+                    </div>
+                  )}
                   <p className="text-slate-600 mt-2 text-sm sm:text-base">
                     Precio todo incluido
                   </p>
                 </div>
 
+                {/* Información de anticipo */}
+                {paquete.anticipo && parseFloat(paquete.anticipo) > 0 && (
+                  <div className="mb-6 sm:mb-8 bg-blue-50 rounded-xl p-4 border border-blue-200">
+                    <div className="flex items-center mb-2">
+                      <FiDollarSign className="w-5 h-5 text-blue-600 mr-2" />
+                      <h3 className="font-semibold text-blue-900">Anticipo requerido</h3>
+                    </div>
+                    <p className="text-2xl font-bold text-blue-800">
+                      {parseFloat(paquete.anticipo).toLocaleString("es-MX", {
+                        style: "currency",
+                        currency: "MXN",
+                      })}
+                    </p>
+                    <p className="text-blue-700 text-sm mt-1">
+                      Para asegurar tu reservación
+                    </p>
+                  </div>
+                )}
+
                 <div className="space-y-3 sm:space-y-4 mb-6 sm:mb-8">
                   <h3 className="font-semibold text-slate-900 text-base sm:text-lg">
-                    ¿Qué incluye?
+                    Resumen del paquete
                   </h3>
                   <ul className="space-y-2 sm:space-y-3">
                     <li className="flex items-center">
@@ -457,20 +584,22 @@ function PackageViewPage() {
                         />
                       </div>
                       <span className="text-slate-700 text-sm sm:text-base">
-                        Alojamiento premium
+                        {paquete.duracion_dias} días de aventura
                       </span>
                     </li>
-                    <li className="flex items-center">
-                      <div className="w-5 h-5 sm:w-6 sm:h-6 bg-emerald-100 rounded-full flex items-center justify-center mr-2 sm:mr-3 flex-shrink-0">
-                        <FiCheckSquare
-                          aria-hidden="true"
-                          className="w-3 h-3 sm:w-4 sm:h-4 text-emerald-600"
-                        />
-                      </div>
-                      <span className="text-slate-700 text-sm sm:text-base">
-                        Actividades exclusivas
-                      </span>
-                    </li>
+                    {paquete.hotel && (
+                      <li className="flex items-center">
+                        <div className="w-5 h-5 sm:w-6 sm:h-6 bg-emerald-100 rounded-full flex items-center justify-center mr-2 sm:mr-3 flex-shrink-0">
+                          <FiCheckSquare
+                            aria-hidden="true"
+                            className="w-3 h-3 sm:w-4 sm:h-4 text-emerald-600"
+                          />
+                        </div>
+                        <span className="text-slate-700 text-sm sm:text-base">
+                          Hotel {paquete.hotel.estrellas} estrellas
+                        </span>
+                      </li>
+                    )}
                   </ul>
                 </div>
 

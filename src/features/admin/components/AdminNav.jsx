@@ -215,20 +215,7 @@ const AdminNav = ({ isOpen, setIsOpen }) => {
           )}
         </div>
 
-        {/* Tooltip mejorado */}
-        <div
-          className="absolute left-full top-1/2 transform -translate-y-1/2 ml-3 
-                        bg-slate-800 text-white px-3 py-2 rounded-lg shadow-xl 
-                        font-medium text-sm whitespace-nowrap z-50 
-                        opacity-0 group-hover:opacity-100 transition-all duration-300
-                        pointer-events-none"
-        >
-          {isOpen ? "Contraer menú" : "Expandir menú"}
-          <div
-            className="absolute right-full top-1/2 transform -translate-y-1/2 
-                          border-4 border-transparent border-r-slate-800"
-          ></div>
-        </div>
+      
       </button>
 
       {/* Indicador sutil en el borde cuando está comprimida */}

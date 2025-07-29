@@ -37,9 +37,16 @@ const RouteMap = ({ paquete }) => {
         parseFloat(paquete.origen_lat),
         parseFloat(paquete.origen_lng),
       ];
+      
+      // Usar el primer destino si existe
+      const firstDestination = paquete.destinos?.[0];
+      if (!firstDestination) {
+        return { valid: false };
+      }
+      
       const destination = [
-        parseFloat(paquete.destino_lat),
-        parseFloat(paquete.destino_lng),
+        parseFloat(firstDestination.destino_lat),
+        parseFloat(firstDestination.destino_lng),
       ];
 
       const isValid = (lat, lng) =>
@@ -109,7 +116,7 @@ const RouteMap = ({ paquete }) => {
             <Popup>
               <div className="p-1">
                 <h3 className="font-bold text-red-600 mb-1">Destino</h3>
-                <p className="text-sm">{paquete.destino}</p>
+                <p className="text-sm">{paquete.destinos?.[0]?.destino}</p>
               </div>
             </Popup>
             <Tooltip direction="top" offset={[0, -20]} permanent>
