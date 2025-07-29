@@ -6,15 +6,13 @@ import {
   FiChevronRight,
   FiPackage,
   FiHome,
-  FiSend,
   FiBriefcase,
   FiMenu,
   FiX,
-  FiTrash,
   FiCompass,
   FiUser,
   FiSettings,
-  FiLogOut
+  FiLogOut,
 } from "react-icons/fi";
 
 const NavItem = ({ to, icon, label, isOpen, isMobile = false }) => {
@@ -24,7 +22,8 @@ const NavItem = ({ to, icon, label, isOpen, isMobile = false }) => {
     boxShadow: "0 4px 6px -1px rgba(59, 130, 246, 0.3)",
   };
 
-  const commonClasses = "flex items-center p-3 rounded-xl relative overflow-hidden hover:bg-blue-50 transition-all duration-300 group";
+  const commonClasses =
+    "flex items-center p-3 rounded-xl relative overflow-hidden hover:bg-blue-50 transition-all duration-300 group";
   const desktopClasses = `${isOpen ? "pl-4" : "justify-center"}`;
 
   return (
@@ -33,18 +32,21 @@ const NavItem = ({ to, icon, label, isOpen, isMobile = false }) => {
         to={to}
         end={to === "/admin"}
         style={({ isActive }) => (isActive ? activeLinkStyle : undefined)}
-        className={({ isActive }) => 
+        className={({ isActive }) =>
           `${commonClasses} ${isMobile ? "" : desktopClasses} ${
-            isActive 
-              ? "text-white font-semibold" 
+            isActive
+              ? "text-white font-semibold"
               : "text-slate-600 hover:text-blue-600"
           }`
         }
         title={!isOpen && !isMobile ? label : undefined}
       >
-        <div className={`transition-all duration-300 ${isOpen || isMobile ? "mr-3" : ""}`}>
+        <div
+          className={`transition-all duration-300 ${isOpen || isMobile ? "mr-3" : ""}`}
+        >
           {React.cloneElement(icon, {
-            className: "transition-transform duration-300 group-hover:scale-110"
+            className:
+              "transition-transform duration-300 group-hover:scale-110",
           })}
         </div>
         <span
@@ -75,13 +77,16 @@ const AdminNav = ({ isOpen, setIsOpen }) => {
   const navLinks = [
     { to: "/admin", icon: <FiHome size={20} />, label: "Dashboard" },
     { to: "/admin/paquetes", icon: <FiPackage size={20} />, label: "Paquetes" },
-    { to: "/admin/vuelos", icon: <FiSend size={20} />, label: "Vuelos" },
-    { to: "/admin/papelera", icon: <FiTrash size={20} />, label: "Papelera" },
+    { to: "/admin/hoteles", icon: <FiBriefcase size={20} />, label: "Hoteles" },
   ];
 
   const userLinks = [
     { to: "/admin/perfil", icon: <FiUser size={20} />, label: "Perfil" },
-    { to: "/admin/configuracion", icon: <FiSettings size={20} />, label: "Configuración" },
+    {
+      to: "/admin/configuracion",
+      icon: <FiSettings size={20} />,
+      label: "Configuración",
+    },
     { to: "/logout", icon: <FiLogOut size={20} />, label: "Cerrar sesión" },
   ];
 
@@ -138,15 +143,17 @@ const AdminNav = ({ isOpen, setIsOpen }) => {
                 </div>
               </div>
             </div>
-            
+
             <ul className="flex flex-col gap-1 p-4">
               {navLinks.map((link) => (
                 <NavItem key={link.to} {...link} isMobile={true} />
               ))}
             </ul>
-            
+
             <div className="p-4 border-t border-slate-200">
-              <h3 className="text-xs uppercase text-slate-500 font-semibold mb-2">Cuenta</h3>
+              <h3 className="text-xs uppercase text-slate-500 font-semibold mb-2">
+                Cuenta
+              </h3>
               <ul className="flex flex-col gap-1">
                 {userLinks.map((link) => (
                   <NavItem key={link.to} {...link} isMobile={true} />
@@ -212,7 +219,7 @@ const AdminNav = ({ isOpen, setIsOpen }) => {
             <p className="text-xs text-slate-500 truncate">admin@viadca.com</p>
           </div>
         </div>
-        
+
         <ul className="flex flex-col gap-1">
           {userLinks.map((link) => (
             <NavItem key={link.to} {...link} isOpen={isOpen} />

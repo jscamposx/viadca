@@ -16,7 +16,6 @@ const fileToBase64 = (file) =>
     reader.onerror = (error) => reject(error);
   });
 
-
 export const usePackageForm = (initialPackageData = null) => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
@@ -52,7 +51,6 @@ export const usePackageForm = (initialPackageData = null) => {
     }
   }, [initialPackageData]);
 
-
   const [selectionMode, setSelectionMode] = useState("destino");
   const [searchValue, setSearchValue] = useState("");
 
@@ -60,59 +58,52 @@ export const usePackageForm = (initialPackageData = null) => {
     setSearchValue(selectionMode === "destino" ? formData.destino : "");
   }, [selectionMode, formData.destino]);
 
+  const handlePlaceSelected = useCallback((place) => {
+    const { geometry, formatted_address } = place;
+    if (!geometry) return;
 
-  const handlePlaceSelected = useCallback(
-    (place) => {
-      const { geometry, formatted_address } = place;
-      if (!geometry) return;
+    const { lat, lng } = geometry.location;
+    const simplifiedAddress = formatted_address
+      .split(",")
+      .slice(0, 2)
+      .join(", ");
 
-      const { lat, lng } = geometry.location;
-      const simplifiedAddress = formatted_address
-        .split(",")
-        .slice(0, 2)
-        .join(", ");
+    setFormData((prev) => ({
+      ...prev,
+      destino: simplifiedAddress,
+      destino_lat: lat(),
+      destino_lng: lng(),
+    }));
+  }, []);
 
-      setFormData((prev) => ({
-        ...prev,
-        destino: simplifiedAddress,
-        destino_lat: lat(),
-        destino_lng: lng(),
-      }));
-    },
-    [],
-  );
+  const onMapClick = useCallback((event) => {
+    const latLng = event.detail.latLng;
+    if (!latLng) return;
 
-  const onMapClick = useCallback(
-    (event) => {
-      const latLng = event.detail.latLng;
-      if (!latLng) return;
+    const geocoder = new window.google.maps.Geocoder();
+    geocoder.geocode({ location: latLng }, (results, status) => {
+      if (status === "OK" && results[0]) {
+        const place = results[0];
+        const simplifiedAddress = place.formatted_address
+          .split(",")
+          .slice(0, 2)
+          .join(", ");
 
-      const geocoder = new window.google.maps.Geocoder();
-      geocoder.geocode({ location: latLng }, (results, status) => {
-        if (status === "OK" && results[0]) {
-          const place = results[0];
-          const simplifiedAddress = place.formatted_address
-            .split(",")
-            .slice(0, 2)
-            .join(", ");
-          
-          setFormData((prev) => ({
-            ...prev,
-            destino: simplifiedAddress,
-            destino_lat: latLng.lat,
-            destino_lng: latLng.lng,
-          }));
-        }
-      });
-    },
-    [],
-  );
-  
+        setFormData((prev) => ({
+          ...prev,
+          destino: simplifiedAddress,
+          destino_lat: latLng.lat,
+          destino_lng: latLng.lng,
+        }));
+      }
+    });
+  }, []);
+
   const handleFormChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
-  
+
   const handleImagesChange = useCallback((newImages) => {
     setFormData((prev) => ({ ...prev, imagenes: newImages }));
   }, []);
@@ -126,7 +117,10 @@ export const usePackageForm = (initialPackageData = null) => {
 
     if (!formData.destino_lat) {
       if (addNotification) {
-        addNotification("Por favor, selecciona un destino en el mapa.", "error");
+        addNotification(
+          "Por favor, selecciona un destino en el mapa.",
+          "error",
+        );
       }
       return;
     }
@@ -134,11 +128,12 @@ export const usePackageForm = (initialPackageData = null) => {
     // Procesar imágenes del paquete
     const packageImages = await Promise.all(
       (formData.imagenes || []).map(async (img, index) => {
-        if (img.url.startsWith('data:')) { // Es una nueva imagen en base64
+        if (img.url.startsWith("data:")) {
+          // Es una nueva imagen en base64
           return {
             orden: index + 1,
             tipo: "base64",
-            contenido: img.url.split(',')[1], // Solo la parte base64
+            contenido: img.url.split(",")[1], // Solo la parte base64
             mime_type: img.file.type,
             nombre: img.file.name,
           };
@@ -151,7 +146,7 @@ export const usePackageForm = (initialPackageData = null) => {
           mime_type: "image/jpeg", // Asumir o derivar si es posible
           nombre: img.url.split("/").pop(),
         };
-      })
+      }),
     );
 
     // Procesar imágenes del hotel si existe
@@ -159,25 +154,25 @@ export const usePackageForm = (initialPackageData = null) => {
     if (formData.hotel) {
       const hotelImages = await Promise.all(
         (formData.hotel.images || []).map(async (img, index) => {
-          if (img.url.startsWith('data:')) {
+          if (img.url.startsWith("data:")) {
             return {
               orden: index + 1,
-              tipo: 'base64',
-              contenido: img.url.split(',')[1],
+              tipo: "base64",
+              contenido: img.url.split(",")[1],
               mime_type: img.file.type,
               nombre: img.file.name,
             };
           }
           return {
             orden: index + 1,
-            tipo: 'url',
+            tipo: "url",
             contenido: img.url,
-            mime_type: 'image/jpeg',
-            nombre: img.url.split('/').pop(),
+            mime_type: "image/jpeg",
+            nombre: img.url.split("/").pop(),
           };
-        })
+        }),
       );
-      
+
       hotelPayload = {
         placeId: formData.hotel.place_id || formData.hotel.id,
         nombre: formData.hotel.nombre,
@@ -187,7 +182,7 @@ export const usePackageForm = (initialPackageData = null) => {
         imagenes: hotelImages,
       };
     }
-    
+
     const payload = {
       ...formData,
       duracion_dias: parseInt(formData.duracion_dias, 10),
@@ -215,15 +210,18 @@ export const usePackageForm = (initialPackageData = null) => {
     try {
       if (initialPackageData) {
         await api.packages.updatePaquete(initialPackageData.url, payload);
-        if (addNotification) addNotification("Paquete actualizado con éxito", "success");
+        if (addNotification)
+          addNotification("Paquete actualizado con éxito", "success");
       } else {
         await api.packages.createPaquete(payload);
-        if (addNotification) addNotification("Paquete creado con éxito", "success");
+        if (addNotification)
+          addNotification("Paquete creado con éxito", "success");
       }
       navigate("/admin/paquetes");
     } catch (error) {
       console.error("Error al procesar el paquete:", error.response || error);
-      const errorMessage = error.response?.data?.message || "Ocurrió un error inesperado.";
+      const errorMessage =
+        error.response?.data?.message || "Ocurrió un error inesperado.";
       if (addNotification) addNotification(`Error: ${errorMessage}`, "error");
     }
   };

@@ -1,7 +1,20 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useAllPackages } from "../../package/hooks/useAllPackages";
-import { FiDownload, FiArrowUp, FiArrowDown, FiSearch, FiPlus, FiEye, FiEdit2, FiTrash2, FiClock, FiMapPin, FiFilter, FiX } from "react-icons/fi";
+import {
+  FiDownload,
+  FiArrowUp,
+  FiArrowDown,
+  FiSearch,
+  FiPlus,
+  FiEye,
+  FiEdit2,
+  FiTrash2,
+  FiClock,
+  FiMapPin,
+  FiFilter,
+  FiX,
+} from "react-icons/fi";
 import api from "../../../api";
 import { useNotification } from "./AdminLayout";
 
@@ -56,9 +69,11 @@ const AdminPaquetes = () => {
       // Aplicar filtro de precio
       if (priceFilter.min || priceFilter.max) {
         const minPrice = priceFilter.min ? parseFloat(priceFilter.min) : 0;
-        const maxPrice = priceFilter.max ? parseFloat(priceFilter.max) : Number.MAX_VALUE;
-        
-        result = result.filter(p => {
+        const maxPrice = priceFilter.max
+          ? parseFloat(priceFilter.max)
+          : Number.MAX_VALUE;
+
+        result = result.filter((p) => {
           const precio = parseFloat(p.precio_total);
           return precio >= minPrice && precio <= maxPrice;
         });
@@ -69,7 +84,7 @@ const AdminPaquetes = () => {
         result.sort((a, b) => {
           const aValue = a[sortConfig.key];
           const bValue = b[sortConfig.key];
-          
+
           if (aValue < bValue) {
             return sortConfig.direction === "asc" ? -1 : 1;
           }
@@ -79,7 +94,7 @@ const AdminPaquetes = () => {
           return 0;
         });
       }
-      
+
       setFilteredPaquetes(result);
     }
   }, [paquetes, searchTerm, sortConfig, priceFilter, durationFilter]);
@@ -105,7 +120,7 @@ const AdminPaquetes = () => {
     try {
       await api.packages.deletePaquete(id);
       setPaquetes((prevPaquetes) => prevPaquetes.filter((p) => p.id !== id));
-      addNotification("Paquete movido a la papelera.", "success");
+      addNotification("Paquete eliminado exitosamente.", "success");
     } catch (err) {
       console.error("Error al eliminar el paquete:", err);
       addNotification(
@@ -210,7 +225,11 @@ const AdminPaquetes = () => {
                     : "bg-gray-100 text-gray-700 hover:bg-gray-200"
                 }`}
               >
-                {sortConfig.direction === "asc" ? <FiArrowUp /> : <FiArrowDown />}
+                {sortConfig.direction === "asc" ? (
+                  <FiArrowUp />
+                ) : (
+                  <FiArrowDown />
+                )}
                 Ordenar
               </button>
             </div>
@@ -220,8 +239,11 @@ const AdminPaquetes = () => {
                 <span className="font-bold">{filteredPaquetes.length}</span>
                 {filteredPaquetes.length === 1 ? "paquete" : "paquetes"}
               </div>
-              
-              {(searchTerm || priceFilter.min || priceFilter.max || durationFilter) && (
+
+              {(searchTerm ||
+                priceFilter.min ||
+                priceFilter.max ||
+                durationFilter) && (
                 <button
                   onClick={clearFilters}
                   className="flex items-center gap-2 bg-red-50 hover:bg-red-100 text-red-600 font-medium py-3 px-4 rounded-xl transition text-sm sm:text-base w-full justify-center"
@@ -245,8 +267,10 @@ const AdminPaquetes = () => {
                 onClick={() => requestSort("titulo")}
               >
                 Nombre{" "}
-                {sortConfig.key === "titulo" && sortConfig.direction === "asc" && <FiArrowUp />}
-                {sortConfig.key === "titulo" && sortConfig.direction === "desc" && <FiArrowDown />}
+                {sortConfig.key === "titulo" &&
+                  sortConfig.direction === "asc" && <FiArrowUp />}
+                {sortConfig.key === "titulo" &&
+                  sortConfig.direction === "desc" && <FiArrowDown />}
               </button>
               <button
                 className={`px-4 py-2.5 rounded-lg font-medium transition flex items-center justify-center gap-2 ${
@@ -257,8 +281,10 @@ const AdminPaquetes = () => {
                 onClick={() => requestSort("precio_total")}
               >
                 Precio{" "}
-                {sortConfig.key === "precio_total" && sortConfig.direction === "asc" && <FiArrowUp />}
-                {sortConfig.key === "precio_total" && sortConfig.direction === "desc" && <FiArrowDown />}
+                {sortConfig.key === "precio_total" &&
+                  sortConfig.direction === "asc" && <FiArrowUp />}
+                {sortConfig.key === "precio_total" &&
+                  sortConfig.direction === "desc" && <FiArrowDown />}
               </button>
             </div>
           )}
@@ -267,15 +293,17 @@ const AdminPaquetes = () => {
           {isFiltersOpen && (
             <div className="mt-4 p-5 bg-gray-50 rounded-xl">
               <div className="flex justify-between items-center mb-4">
-                <h3 className="text-lg font-semibold text-gray-800">Filtros avanzados</h3>
-                <button 
+                <h3 className="text-lg font-semibold text-gray-800">
+                  Filtros avanzados
+                </h3>
+                <button
                   onClick={() => setIsFiltersOpen(false)}
                   className="p-2 rounded-full hover:bg-gray-200 transition"
                 >
                   <FiX className="w-5 h-5 text-gray-500" />
                 </button>
               </div>
-              
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -288,7 +316,12 @@ const AdminPaquetes = () => {
                         placeholder="Mínimo"
                         className="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
                         value={priceFilter.min}
-                        onChange={(e) => setPriceFilter({...priceFilter, min: e.target.value})}
+                        onChange={(e) =>
+                          setPriceFilter({
+                            ...priceFilter,
+                            min: e.target.value,
+                          })
+                        }
                       />
                     </div>
                     <div>
@@ -297,7 +330,12 @@ const AdminPaquetes = () => {
                         placeholder="Máximo"
                         className="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
                         value={priceFilter.max}
-                        onChange={(e) => setPriceFilter({...priceFilter, max: e.target.value})}
+                        onChange={(e) =>
+                          setPriceFilter({
+                            ...priceFilter,
+                            max: e.target.value,
+                          })
+                        }
                       />
                     </div>
                   </div>
@@ -310,103 +348,106 @@ const AdminPaquetes = () => {
         {/* Lista de paquetes */}
         {filteredPaquetes.length > 0 ? (
           <div className="grid grid-cols-1 gap-5 sm:gap-6 md:grid-cols-2 lg:grid-cols-3">
-  {filteredPaquetes.map((paquete) => {
-    return (
-      <div
-        key={paquete.id}
-        className="bg-white rounded-2xl shadow-md overflow-hidden border border-gray-100 hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1"
-      >
-        <div className="h-52 sm:h-60 relative overflow-hidden">
-          {paquete.primera_imagen ? (
-            <img
-              src={getImageUrl(paquete.primera_imagen)}
-              alt={paquete.titulo}
-              className="w-full h-full object-cover transition-transform duration-500 hover:scale-110"
-              onError={(e) => {
-                e.target.onerror = null;
-                e.target.src =
-                  "https://via.placeholder.com/600x400?text=Imagen+No+Disponible";
-              }}
-            />
-          ) : (
-            <div className="w-full h-full bg-gradient-to-br from-gray-100 to-gray-200 flex flex-col items-center justify-center text-gray-500 p-4">
-              <div className="bg-gray-200 border-2 border-dashed rounded-xl w-16 h-16 flex items-center justify-center mb-3">
-                <FiMapPin className="w-8 h-8 text-gray-400" />
-              </div>
-              <span className="text-sm text-center">
-                Sin imagen disponible
-              </span>
-            </div>
-          )}
-          {/* Contenedor para las etiquetas de precio y clave */}
-          <div className="absolute top-3 right-3 flex flex-col items-end gap-2">
-            <div className="bg-blue-600 text-white text-xs sm:text-sm font-semibold px-3 py-1.5 rounded-full shadow-sm">
-              {parseFloat(paquete.precio_total).toLocaleString("es-MX", {
-                style: "currency",
-                currency: "MXN",
-                minimumFractionDigits: 0,
-              })}
-            </div>
-            {/* Etiqueta para la clave_mayorista */}
-            {paquete.clave_mayorista && (
-              <div className="bg-gray-700 text-white text-xs font-semibold px-3 py-1.5 rounded-full shadow-sm">
-                {paquete.clave_mayorista}
-              </div>
-            )}
+            {filteredPaquetes.map((paquete) => {
+              return (
+                <div
+                  key={paquete.id}
+                  className="bg-white rounded-2xl shadow-md overflow-hidden border border-gray-100 hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1"
+                >
+                  <div className="h-52 sm:h-60 relative overflow-hidden">
+                    {paquete.primera_imagen ? (
+                      <img
+                        src={getImageUrl(paquete.primera_imagen)}
+                        alt={paquete.titulo}
+                        className="w-full h-full object-cover transition-transform duration-500 hover:scale-110"
+                        onError={(e) => {
+                          e.target.onerror = null;
+                          e.target.src =
+                            "https://via.placeholder.com/600x400?text=Imagen+No+Disponible";
+                        }}
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-gradient-to-br from-gray-100 to-gray-200 flex flex-col items-center justify-center text-gray-500 p-4">
+                        <div className="bg-gray-200 border-2 border-dashed rounded-xl w-16 h-16 flex items-center justify-center mb-3">
+                          <FiMapPin className="w-8 h-8 text-gray-400" />
+                        </div>
+                        <span className="text-sm text-center">
+                          Sin imagen disponible
+                        </span>
+                      </div>
+                    )}
+                    {/* Contenedor para las etiquetas de precio y clave */}
+                    <div className="absolute top-3 right-3 flex flex-col items-end gap-2">
+                      <div className="bg-blue-600 text-white text-xs sm:text-sm font-semibold px-3 py-1.5 rounded-full shadow-sm">
+                        {parseFloat(paquete.precio_total).toLocaleString(
+                          "es-MX",
+                          {
+                            style: "currency",
+                            currency: "MXN",
+                            minimumFractionDigits: 0,
+                          },
+                        )}
+                      </div>
+                      {/* Etiqueta para la clave_mayorista */}
+                      {paquete.clave_mayorista && (
+                        <div className="bg-gray-700 text-white text-xs font-semibold px-3 py-1.5 rounded-full shadow-sm">
+                          {paquete.clave_mayorista}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="p-5">
+                    <div className="mb-4">
+                      <h2 className="text-lg sm:text-xl font-bold text-gray-800 line-clamp-2 mb-2">
+                        {paquete.titulo}
+                      </h2>
+                    </div>
+
+                    <div className="flex flex-wrap gap-2">
+                      <Link
+                        to={`/paquetes/${paquete.url}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium py-2 px-3 rounded-lg transition text-xs sm:text-sm flex-1 min-w-[100px] justify-center"
+                        title="Vista previa"
+                      >
+                        <FiEye className="w-3.5 h-3.5" />
+                        <span>Vista previa</span>
+                      </Link>
+
+                      <Link
+                        to={`/admin/paquetes/editar/${paquete.url}`}
+                        className="flex items-center gap-1.5 bg-blue-100 hover:bg-blue-200 text-blue-700 font-medium py-2 px-3 rounded-lg transition text-xs sm:text-sm flex-1 min-w-[100px] justify-center"
+                        title="Editar"
+                      >
+                        <FiEdit2 className="w-3.5 h-3.5" />
+                        <span>Editar</span>
+                      </Link>
+
+                      <button
+                        onClick={() => handleExport(paquete.id)}
+                        className="flex items-center gap-1.5 bg-green-100 hover:bg-green-200 text-green-700 font-medium py-2 px-3 rounded-lg transition text-xs sm:text-sm flex-1 min-w-[100px] justify-center"
+                        title="Exportar a Excel"
+                      >
+                        <FiDownload className="w-3.5 h-3.5" />
+                        <span>Excel</span>
+                      </button>
+
+                      <button
+                        onClick={() => handleDelete(paquete.id)}
+                        className="flex items-center gap-1.5 bg-red-100 hover:bg-red-200 text-red-700 font-medium py-2 px-3 rounded-lg transition text-xs sm:text-sm flex-1 min-w-[100px] justify-center"
+                        title="Eliminar"
+                      >
+                        <FiTrash2 className="w-3.5 h-3.5" />
+                        <span>Eliminar</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
           </div>
-        </div>
-
-        <div className="p-5">
-          <div className="mb-4">
-            <h2 className="text-lg sm:text-xl font-bold text-gray-800 line-clamp-2 mb-2">
-              {paquete.titulo}
-            </h2>
-          </div>
-
-          <div className="flex flex-wrap gap-2">
-            <Link
-              to={`/paquetes/${paquete.url}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium py-2 px-3 rounded-lg transition text-xs sm:text-sm flex-1 min-w-[100px] justify-center"
-              title="Vista previa"
-            >
-              <FiEye className="w-3.5 h-3.5" />
-              <span>Vista previa</span>
-            </Link>
-
-            <Link
-              to={`/admin/paquetes/editar/${paquete.url}`}
-              className="flex items-center gap-1.5 bg-blue-100 hover:bg-blue-200 text-blue-700 font-medium py-2 px-3 rounded-lg transition text-xs sm:text-sm flex-1 min-w-[100px] justify-center"
-              title="Editar"
-            >
-              <FiEdit2 className="w-3.5 h-3.5" />
-              <span>Editar</span>
-            </Link>
-
-            <button
-              onClick={() => handleExport(paquete.id)}
-              className="flex items-center gap-1.5 bg-green-100 hover:bg-green-200 text-green-700 font-medium py-2 px-3 rounded-lg transition text-xs sm:text-sm flex-1 min-w-[100px] justify-center"
-              title="Exportar a Excel"
-            >
-              <FiDownload className="w-3.5 h-3.5" />
-              <span>Excel</span>
-            </button>
-
-            <button
-              onClick={() => handleDelete(paquete.id)}
-              className="flex items-center gap-1.5 bg-red-100 hover:bg-red-200 text-red-700 font-medium py-2 px-3 rounded-lg transition text-xs sm:text-sm flex-1 min-w-[100px] justify-center"
-              title="Eliminar"
-            >
-              <FiTrash2 className="w-3.5 h-3.5" />
-              <span>Eliminar</span>
-            </button>
-          </div>
-        </div>
-      </div>
-    );
-  })}
-</div>
         ) : (
           <div className="bg-white rounded-2xl shadow-md p-8 sm:p-10 md:p-12 text-center">
             <div className="max-w-md mx-auto">

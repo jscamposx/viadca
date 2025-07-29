@@ -1,11 +1,11 @@
 import { useState, useEffect, useRef } from "react";
 import { FiCheckCircle, FiXCircle, FiInfo, FiX } from "react-icons/fi";
 
-const Notification = ({ 
-  message, 
-  type = "info", 
+const Notification = ({
+  message,
+  type = "info",
   onDismiss,
-  duration = 5000 
+  duration = 5000,
 }) => {
   const [visible, setVisible] = useState(false);
   const [progress, setProgress] = useState(100);
@@ -54,7 +54,7 @@ const Notification = ({
   useEffect(() => {
     // Animación de entrada
     setVisible(true);
-    
+
     // Barra de progreso
     const startTime = Date.now();
     progressInterval.current = setInterval(() => {
@@ -62,7 +62,7 @@ const Notification = ({
       const remaining = Math.max(0, duration - elapsed);
       setProgress((remaining / duration) * 100);
     }, 50);
-    
+
     // Temporizador para desvanecer
     const timer = setTimeout(() => {
       handleDismiss();
@@ -79,7 +79,7 @@ const Notification = ({
     if (animationRef.current) {
       cancelAnimationFrame(animationRef.current);
     }
-    
+
     // Animación de salida
     setVisible(false);
     setTimeout(onDismiss, 300);
@@ -109,17 +109,15 @@ const Notification = ({
               type === "success"
                 ? "bg-green-500"
                 : type === "error"
-                ? "bg-red-500"
-                : "bg-blue-500"
+                  ? "bg-red-500"
+                  : "bg-blue-500"
             }`}
             style={{ width: `${progress}%`, transition: "width 50ms linear" }}
           ></div>
         </div>
-        
+
         <div className="p-4 flex items-start">
-          <div className="mr-3 flex-shrink-0">
-            {notificationIcons[type]}
-          </div>
+          <div className="mr-3 flex-shrink-0">{notificationIcons[type]}</div>
           <div className="flex-1 min-w-0">
             <p
               className={`font-semibold ${notificationColors[type].text} text-base`}
@@ -127,8 +125,8 @@ const Notification = ({
               {type === "success"
                 ? "Éxito"
                 : type === "error"
-                ? "Error"
-                : "Información"}
+                  ? "Error"
+                  : "Información"}
             </p>
             <p className={`mt-1 text-base ${notificationColors[type].text}`}>
               {message}

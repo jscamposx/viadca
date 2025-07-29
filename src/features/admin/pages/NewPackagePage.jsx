@@ -1,7 +1,15 @@
 import { APIProvider } from "@vis.gl/react-google-maps";
 import { useParams, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
-import { FiArrowLeft, FiCheckCircle, FiMapPin, FiImage, FiCalendar, FiInfo, FiFileText } from "react-icons/fi";
+import {
+  FiArrowLeft,
+  FiCheckCircle,
+  FiMapPin,
+  FiImage,
+  FiCalendar,
+  FiInfo,
+  FiFileText,
+} from "react-icons/fi";
 import { usePackage } from "../../package/hooks/usePackage";
 import { usePackageForm } from "../hooks/usePackageForm";
 import PackageForm from "../components/PackageForm";
@@ -10,9 +18,7 @@ import DestinationImageManager from "../components/DestinationImageManager";
 import HotelFinder from "../components/HotelFinder";
 import Loading from "../../package/components/Loading";
 import Error from "../../package/components/Error";
-import FlightCarousel from "../components/FlightCarousel";
 import { useNotification } from "./AdminLayout";
-
 
 const NuevoPaquete = () => {
   const { url } = useParams();
@@ -38,10 +44,6 @@ const NuevoPaquete = () => {
     handleImagesChange,
     handleSubmit: formSubmitHandler,
   } = usePackageForm(paquete);
-
-  const handleFlightSelect = (flightId) => {
-    setFormData((prev) => ({ ...prev, id_vuelo: flightId }));
-  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -76,7 +78,7 @@ const NuevoPaquete = () => {
   ];
 
   useEffect(() => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({ top: 0, behavior: "smooth" });
   }, [activeSection]);
 
   if (url && loading) return <Loading />;
@@ -116,27 +118,31 @@ const NuevoPaquete = () => {
             <div className="bg-white/10 backdrop-blur-sm py-3 px-4">
               <div className="flex overflow-x-auto gap-1 pb-1">
                 {sections.map((section, index) => {
-                  const currentIndex = sections.findIndex(s => s.id === activeSection);
+                  const currentIndex = sections.findIndex(
+                    (s) => s.id === activeSection,
+                  );
                   const isCompleted = index < currentIndex;
                   const isActive = activeSection === section.id;
-                  
+
                   return (
                     <div key={section.id} className="flex items-center">
                       {index > 0 && (
-                        <div className={`w-4 h-0.5 mx-1 ${isCompleted || isActive ? 'bg-blue-400' : 'bg-gray-400'}`}></div>
+                        <div
+                          className={`w-4 h-0.5 mx-1 ${isCompleted || isActive ? "bg-blue-400" : "bg-gray-400"}`}
+                        ></div>
                       )}
                       <button
                         type="button"
                         onClick={() => setActiveSection(section.id)}
                         className={`flex items-center gap-2 px-3 py-2 rounded-lg font-medium whitespace-nowrap transition-all text-sm ${
                           isActive
-                            ? 'bg-white text-blue-800 shadow-md'
+                            ? "bg-white text-blue-800 shadow-md"
                             : isCompleted
-                              ? 'bg-blue-500/20 text-blue-100 hover:bg-blue-500/30'
-                              : 'bg-white/10 text-blue-100 hover:bg-white/20'
+                              ? "bg-blue-500/20 text-blue-100 hover:bg-blue-500/30"
+                              : "bg-white/10 text-blue-100 hover:bg-white/20"
                         }`}
                       >
-                        <span className={`${isCompleted ? 'hidden' : 'flex'}`}>
+                        <span className={`${isCompleted ? "hidden" : "flex"}`}>
                           {sectionIcons[section.id]}
                         </span>
                         {isCompleted && (
@@ -186,10 +192,12 @@ const NuevoPaquete = () => {
             </div>
 
             {/* Ubicación */}
-            <div className={`${activeSection !== "ubicacion" ? "hidden" : ""} animate-fadeIn`}>
+            <div
+              className={`${activeSection !== "ubicacion" ? "hidden" : ""} animate-fadeIn`}
+            >
               <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
                 <div className="p-5 sm:p-7 border-b border-gray-200">
-                   <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-3">
                     <div className="bg-blue-100 p-2 rounded-lg text-blue-700">
                       <FiMapPin className="w-5 h-5" />
                     </div>
@@ -216,7 +224,9 @@ const NuevoPaquete = () => {
             </div>
 
             {/* Imágenes */}
-            <div className={`${activeSection !== "imagenes" ? "hidden" : ""} animate-fadeIn`}>
+            <div
+              className={`${activeSection !== "imagenes" ? "hidden" : ""} animate-fadeIn`}
+            >
               <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
                 <div className="p-5 sm:p-7 border-b border-gray-200">
                   <div className="flex items-center gap-3">
@@ -244,7 +254,9 @@ const NuevoPaquete = () => {
             </div>
 
             {/* Hotel */}
-            <div className={`${activeSection !== "hotel" ? "hidden" : ""} animate-fadeIn`}>
+            <div
+              className={`${activeSection !== "hotel" ? "hidden" : ""} animate-fadeIn`}
+            >
               <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
                 <div className="p-5 sm:p-7 border-b border-gray-200">
                   <div className="flex items-center gap-3">
@@ -272,7 +284,9 @@ const NuevoPaquete = () => {
             </div>
 
             {/* Itinerario */}
-            <div className={`${activeSection !== "itinerario" ? "hidden" : ""} animate-fadeIn`}>
+            <div
+              className={`${activeSection !== "itinerario" ? "hidden" : ""} animate-fadeIn`}
+            >
               <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
                 <div className="p-5 sm:p-7 border-b border-gray-200">
                   <div className="flex items-center gap-3">
@@ -290,21 +304,21 @@ const NuevoPaquete = () => {
                   </div>
                 </div>
                 <div className="p-5 sm:p-7">
-                   <textarea
-                      name="itinerario_texto"
-                      value={formData.itinerario_texto || ""}
-                      onChange={handleFormChange}
-                      rows="15"
-                      className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
-                      placeholder="DÍA 1: Salida de CDMX...\nDÍA 2: Llegada a Madrid..."
-                    />
+                  <textarea
+                    name="itinerario_texto"
+                    value={formData.itinerario_texto || ""}
+                    onChange={handleFormChange}
+                    rows="15"
+                    className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                    placeholder="DÍA 1: Salida de CDMX...\nDÍA 2: Llegada a Madrid..."
+                  />
                 </div>
               </div>
             </div>
 
             {/* Navegación y Envío */}
             <div className="sticky bottom-0 bg-white border-t border-gray-200 py-4 px-4 sm:px-6 rounded-xl shadow-lg z-10">
-               <div className="flex justify-between items-center gap-3">
+              <div className="flex justify-between items-center gap-3">
                 <button
                   type="button"
                   onClick={() => {
@@ -349,9 +363,25 @@ const NuevoPaquete = () => {
                   >
                     {isSubmitting ? (
                       <>
-                        <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        <svg
+                          className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                        >
+                          <circle
+                            className="opacity-25"
+                            cx="12"
+                            cy="12"
+                            r="10"
+                            stroke="currentColor"
+                            strokeWidth="4"
+                          ></circle>
+                          <path
+                            className="opacity-75"
+                            fill="currentColor"
+                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                          ></path>
                         </svg>
                         {url ? "Actualizando..." : "Creando..."}
                       </>

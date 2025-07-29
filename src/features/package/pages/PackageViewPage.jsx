@@ -270,7 +270,6 @@ function PackageViewPage() {
               <PackageInfo
                 id="info-heading"
                 duracion={paquete.duracion}
-                vuelo={paquete.vuelo}
                 precio_base={paquete.precio_base}
               />
             </section>
@@ -450,17 +449,6 @@ function PackageViewPage() {
                     ¿Qué incluye?
                   </h3>
                   <ul className="space-y-2 sm:space-y-3">
-                    <li className="flex items-center">
-                      <div className="w-5 h-5 sm:w-6 sm:h-6 bg-emerald-100 rounded-full flex items-center justify-center mr-2 sm:mr-3 flex-shrink-0">
-                        <FiCheckSquare
-                          aria-hidden="true"
-                          className="w-3 h-3 sm:w-4 sm:h-4 text-emerald-600"
-                        />
-                      </div>
-                      <span className="text-slate-700 text-sm sm:text-base">
-                        Vuelo redondo incluido
-                      </span>
-                    </li>
                     <li className="flex items-center">
                       <div className="w-5 h-5 sm:w-6 sm:h-6 bg-emerald-100 rounded-full flex items-center justify-center mr-2 sm:mr-3 flex-shrink-0">
                         <FiCheckSquare

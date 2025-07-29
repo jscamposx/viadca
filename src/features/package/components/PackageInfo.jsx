@@ -3,7 +3,6 @@ import {
   FiSend,
   FiDollarSign,
   FiCalendar,
-  FiAirplay,
   FiTrendingUp,
 } from "react-icons/fi";
 
@@ -64,7 +63,7 @@ const StatBadge = ({ icon, value, label }) => (
   </div>
 );
 
-const PackageInfo = ({ duracion, vuelo, precio_base }) => {
+const PackageInfo = ({ duracion, precio_base }) => {
   const formatPrice = (price) => {
     return parseFloat(price).toLocaleString("es-MX", {
       style: "currency",
@@ -86,7 +85,7 @@ const PackageInfo = ({ duracion, vuelo, precio_base }) => {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <InfoCard
           icon={<FiCalendar className="w-7 h-7" />}
           title="Duración Total"
@@ -98,25 +97,13 @@ const PackageInfo = ({ duracion, vuelo, precio_base }) => {
         />
 
         <InfoCard
-          icon={<FiAirplay className="w-7 h-7" />}
-          title="Vuelo Incluido"
-          value={vuelo ? vuelo.nombre : "Vuelo Premium"}
-          subtitle={
-            vuelo ? `Transporte: ${vuelo.transporte}` : "Ida y vuelta incluido"
-          }
-          colorClass="hover:bg-emerald-50/30"
-          gradientClass="bg-gradient-to-br from-emerald-500 to-teal-600"
-          index={1}
-        />
-
-        <InfoCard
           icon={<FiDollarSign className="w-7 h-7" />}
           title="Precio Total"
           value={formatPrice(precio_base)}
           subtitle={`${pricePerDay} por día`}
           colorClass="hover:bg-amber-50/30"
           gradientClass="bg-gradient-to-br from-amber-500 to-orange-600"
-          index={2}
+          index={1}
         />
       </div>
 
@@ -160,8 +147,8 @@ const PackageInfo = ({ duracion, vuelo, precio_base }) => {
               💡 Precio todo incluido
             </h4>
             <p className="text-blue-800 text-sm leading-relaxed">
-              Este precio incluye vuelos, alojamiento, actividades y guía
-              especializado. Sin costos ocultos ni sorpresas.
+              Este precio incluye alojamiento, actividades y guía especializado.
+              Sin costos ocultos ni sorpresas.
             </p>
           </div>
         </div>
