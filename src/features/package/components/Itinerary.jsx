@@ -3,7 +3,7 @@ import { Calendar, Clock, MapPin, ChevronDown, ChevronUp } from "lucide-react";
 
 const Itinerary = ({ itinerario = [] }) => {
   const [expandedItems, setExpandedItems] = useState(new Set());
-  const [currentPage, setCurrentPage] = useState(1);
+  const [visibleItems, setVisibleItems] = useState(3);
   const itemsPerPage = 3;
 
   const toggleExpanded = (id) => {
@@ -18,16 +18,16 @@ const Itinerary = ({ itinerario = [] }) => {
     });
   };
 
-  const totalPages = Math.ceil(itinerario.length / itemsPerPage);
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const endIndex = startIndex + itemsPerPage;
-  const currentItems = itinerario.slice(startIndex, endIndex);
-
-  const handleLoadMore = () => {
-    if (currentPage < totalPages) {
-      setCurrentPage(currentPage + 1);
-    }
+  const showMoreItems = () => {
+    setVisibleItems(prev => Math.min(prev + itemsPerPage, itinerario.length));
   };
+
+  const showLessItems = () => {
+    setVisibleItems(itemsPerPage);
+  };
+
+  const currentItems = itinerario.slice(0, visibleItems);
+  const hasMoreItems = visibleItems < itinerario.length;
 
   if (!itinerario || itinerario.length === 0) {
     return (
@@ -122,27 +122,61 @@ const Itinerary = ({ itinerario = [] }) => {
         </div>
       </div>
 
-      <div className="mt-8 pt-6 border-t border-gray-100">
-        <div className="flex items-center justify-between text-sm text-gray-600 bg-gray-50 p-4 rounded-lg">
-          <span>
-            Mostrando {Math.min(currentPage * itemsPerPage, itinerario.length)} de {itinerario.length} días
-          </span>
-          <span className="font-semibold text-blue-600">
-            Página {currentPage} de {totalPages}
-          </span>
+      <div className="mt-8 pt-6 border-t border-gray-100 space-y-4">
+        {/* Progreso visual */}
+        <div className="bg-gray-50 rounded-lg p-4">
+          <div className="flex items-center justify-between text-sm text-gray-600 mb-2">
+            <span>Días mostrados</span>
+            <span className="font-semibold text-blue-600">
+              {visibleItems} de {itinerario.length}
+            </span>
+          </div>
+          
+          {/* Barra de progreso */}
+          <div className="w-full bg-gray-200 rounded-full h-2">
+            <div 
+              className="bg-gradient-to-r from-blue-500 to-indigo-600 h-2 rounded-full transition-all duration-500 ease-out"
+              style={{ width: `${(visibleItems / itinerario.length) * 100}%` }}
+            ></div>
+          </div>
         </div>
         
-        {currentPage < totalPages && (
-          <div className="mt-4 text-center">
+        {/* Botones de navegación */}
+        <div className="flex gap-3 justify-center">
+          {hasMoreItems && (
             <button
-              onClick={handleLoadMore}
-              className="inline-flex items-center px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors duration-200 shadow-sm hover:shadow-md"
+              onClick={showMoreItems}
+              className="inline-flex items-center px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-all duration-200 shadow-sm hover:shadow-md transform hover:-translate-y-0.5"
             >
-              Mostrar más días
+              <span>Ver {Math.min(itemsPerPage, itinerario.length - visibleItems)} días más</span>
               <svg className="ml-2 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
               </svg>
             </button>
+          )}
+          
+          {visibleItems > itemsPerPage && (
+            <button
+              onClick={showLessItems}
+              className="inline-flex items-center px-6 py-3 bg-gray-600 text-white font-medium rounded-lg hover:bg-gray-700 transition-all duration-200 shadow-sm hover:shadow-md transform hover:-translate-y-0.5"
+            >
+              <svg className="mr-2 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+              </svg>
+              <span>Mostrar menos</span>
+            </button>
+          )}
+        </div>
+
+        {/* Mensaje informativo */}
+        {!hasMoreItems && itinerario.length > itemsPerPage && (
+          <div className="text-center">
+            <div className="inline-flex items-center px-4 py-2 bg-green-50 text-green-700 rounded-full text-sm font-medium border border-green-200">
+              <svg className="mr-2 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              </svg>
+              ¡Has visto todo el itinerario!
+            </div>
           </div>
         )}
       </div>

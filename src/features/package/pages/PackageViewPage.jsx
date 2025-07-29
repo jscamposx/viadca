@@ -27,16 +27,38 @@ import {
 
 function LoadingSpinner() {
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-slate-50 to-blue-50 px-4">
-      <div role="status" className="text-center space-y-4 sm:space-y-6">
-        <div className="mx-auto w-16 h-16 sm:w-20 sm:h-20 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
-        <div className="space-y-2">
-          <p className="text-slate-700 font-semibold text-base sm:text-lg">
-            Preparando tu experiencia de viaje
-          </p>
-          <p className="text-slate-500 text-sm">
-            Cargando los mejores momentos...
-          </p>
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-indigo-50 via-white to-cyan-50 px-4 relative overflow-hidden">
+      {/* Elementos decorativos de fondo */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-blue-400/10 to-purple-400/10 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-br from-emerald-400/10 to-blue-400/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
+      </div>
+      
+      <div role="status" className="text-center space-y-6 sm:space-y-8 relative z-10">
+        {/* Spinner mejorado */}
+        <div className="relative mx-auto w-20 h-20 sm:w-24 sm:h-24">
+          <div className="absolute inset-0 border-4 border-blue-200 rounded-full"></div>
+          <div className="absolute inset-0 border-4 border-transparent border-t-blue-600 border-r-blue-500 rounded-full animate-spin"></div>
+          <div className="absolute inset-2 border-4 border-transparent border-t-purple-500 rounded-full animate-spin animate-reverse"></div>
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="w-3 h-3 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full animate-pulse"></div>
+          </div>
+        </div>
+        
+        <div className="space-y-3 max-w-sm mx-auto">
+          <div className="space-y-2">
+            <p className="font-bold text-lg sm:text-xl bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+              Preparando tu experiencia de viaje
+            </p>
+            <p className="text-slate-600 text-sm sm:text-base">
+              Cargando los mejores momentos...
+            </p>
+          </div>
+          
+          {/* Barra de progreso animada */}
+          <div className="w-full bg-slate-200 rounded-full h-1.5 overflow-hidden">
+            <div className="h-full bg-gradient-to-r from-blue-500 to-purple-500 rounded-full animate-pulse w-2/3"></div>
+          </div>
         </div>
       </div>
     </div>
@@ -47,14 +69,22 @@ function ErrorMessage({ message, onRetry }) {
   return (
     <div
       role="alert"
-      className="min-h-screen flex items-center justify-center bg-gradient-to-br from-red-50 to-orange-50 p-4 sm:p-6"
+      className="min-h-screen flex items-center justify-center bg-gradient-to-br from-red-50 via-orange-50 to-amber-50 p-4 sm:p-6 relative overflow-hidden"
     >
-      <div className="max-w-md w-full bg-white rounded-2xl sm:rounded-3xl shadow-2xl p-6 sm:p-8 text-center backdrop-blur-sm border border-red-100">
-        <div className="w-20 h-20 sm:w-24 sm:h-24 bg-gradient-to-br from-red-100 to-red-200 rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-6">
+      {/* Elementos decorativos */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-red-200/20 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-orange-200/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
+      </div>
+
+      <div className="max-w-lg w-full bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl p-8 text-center border border-red-100/50 relative z-10">
+        {/* Icono mejorado */}
+        <div className="relative w-24 h-24 bg-gradient-to-br from-red-100 to-red-200 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
+          <div className="absolute inset-0 bg-gradient-to-br from-red-500/20 to-orange-500/20 rounded-full animate-ping"></div>
           <svg
             aria-hidden="true"
             xmlns="http://www.w3.org/2000/svg"
-            className="h-10 w-10 sm:h-12 sm:w-12 text-red-500"
+            className="h-12 w-12 text-red-500 relative z-10"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
@@ -62,25 +92,29 @@ function ErrorMessage({ message, onRetry }) {
             <path
               strokeLinecap="round"
               strokeLinejoin="round"
-              strokeWidth={1.5}
+              strokeWidth={2}
               d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"
             />
           </svg>
         </div>
+
         <h3
           id="error-heading"
-          className="text-2xl sm:text-3xl font-bold text-slate-800 mb-2 sm:mb-3"
+          className="text-3xl font-bold bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent mb-4"
         >
           ¡Ups! Algo salió mal
         </h3>
-        <p className="text-slate-600 mb-6 sm:mb-8 leading-relaxed text-sm sm:text-base">
+        
+        <p className="text-slate-600 mb-8 leading-relaxed text-base">
           {message}
         </p>
+        
         <button
           onClick={onRetry}
-          className="w-full py-3 sm:py-4 px-4 sm:px-6 bg-gradient-to-r from-red-500 to-red-600 text-white font-semibold rounded-xl sm:rounded-2xl hover:shadow-lg transform hover:-translate-y-1 transition-all duration-300 hover:from-red-600 hover:to-red-700 text-sm sm:text-base"
+          className="group w-full py-4 px-6 bg-gradient-to-r from-red-500 via-red-600 to-red-700 text-white font-semibold rounded-2xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 hover:from-red-600 hover:via-red-700 hover:to-red-800 text-base relative overflow-hidden"
         >
-          Intentar de nuevo
+          <span className="absolute inset-0 bg-white/20 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 skew-x-12"></span>
+          <span className="relative">Intentar de nuevo</span>
         </button>
       </div>
     </div>
@@ -91,14 +125,22 @@ function NotFoundMessage() {
   return (
     <div
       role="alert"
-      className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-blue-50 p-4 sm:p-6"
+      className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 p-4 sm:p-6 relative overflow-hidden"
     >
-      <div className="max-w-md w-full bg-white rounded-2xl sm:rounded-3xl shadow-2xl p-6 sm:p-8 text-center backdrop-blur-sm border border-slate-100">
-        <div className="w-20 h-20 sm:w-24 sm:h-24 bg-gradient-to-br from-slate-100 to-slate-200 rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-6">
+      {/* Elementos decorativos */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-1/3 left-1/3 w-72 h-72 bg-blue-200/20 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute bottom-1/3 right-1/3 w-96 h-96 bg-indigo-200/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
+      </div>
+
+      <div className="max-w-lg w-full bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl p-8 text-center border border-slate-100/50 relative z-10">
+        {/* Icono mejorado */}
+        <div className="relative w-24 h-24 bg-gradient-to-br from-slate-100 to-slate-200 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
+          <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-indigo-500/10 rounded-full animate-pulse"></div>
           <svg
             aria-hidden="true"
             xmlns="http://www.w3.org/2000/svg"
-            className="h-10 w-10 sm:h-12 sm:w-12 text-slate-400"
+            className="h-12 w-12 text-slate-500 relative z-10"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
@@ -106,23 +148,27 @@ function NotFoundMessage() {
             <path
               strokeLinecap="round"
               strokeLinejoin="round"
-              strokeWidth={1.5}
-              d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+              strokeWidth={2}
+              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
             />
           </svg>
         </div>
-        <h3 className="text-2xl sm:text-3xl font-bold text-slate-800 mb-2 sm:mb-3">
+
+        <h3 className="text-3xl font-bold bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent mb-4">
           Paquete no encontrado
         </h3>
-        <p className="text-slate-600 mb-6 sm:mb-8 leading-relaxed text-sm sm:text-base">
+        
+        <p className="text-slate-600 mb-8 leading-relaxed text-base">
           Lo sentimos, no pudimos encontrar el paquete que buscas. Puede que
           haya sido movido o ya no esté disponible.
         </p>
+        
         <button
           onClick={() => window.history.back()}
-          className="w-full py-3 sm:py-4 px-4 sm:px-6 bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-semibold rounded-xl sm:rounded-2xl hover:shadow-lg transform hover:-translate-y-1 transition-all duration-300 hover:from-blue-600 hover:to-indigo-700 text-sm sm:text-base"
+          className="group w-full py-4 px-6 bg-gradient-to-r from-blue-500 via-indigo-600 to-purple-600 text-white font-semibold rounded-2xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 hover:from-blue-600 hover:via-indigo-700 hover:to-purple-700 text-base relative overflow-hidden"
         >
-          Explorar otros paquetes
+          <span className="absolute inset-0 bg-white/20 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 skew-x-12"></span>
+          <span className="relative">Explorar otros paquetes</span>
         </button>
       </div>
     </div>
@@ -131,20 +177,20 @@ function NotFoundMessage() {
 
 function Badge({ children, variant = "default", icon: Icon }) {
   const variants = {
-    default: "bg-slate-100 text-slate-700 border-slate-200",
-    success: "bg-emerald-100 text-emerald-700 border-emerald-200",
-    warning: "bg-amber-100 text-amber-700 border-amber-200",
-    info: "bg-blue-100 text-blue-700 border-blue-200",
+    default: "bg-white/80 text-slate-700 border-slate-200/50 shadow-sm hover:shadow-md",
+    success: "bg-emerald-50/80 text-emerald-700 border-emerald-200/50 shadow-sm hover:shadow-md hover:bg-emerald-100/80",
+    warning: "bg-amber-50/80 text-amber-700 border-amber-200/50 shadow-sm hover:shadow-md hover:bg-amber-100/80",
+    info: "bg-blue-50/80 text-blue-700 border-blue-200/50 shadow-sm hover:shadow-md hover:bg-blue-100/80",
   };
 
   return (
     <span
-      className={`inline-flex items-center px-2 py-1 sm:px-3 sm:py-1.5 rounded-full text-xs sm:text-sm font-medium border ${variants[variant]} backdrop-blur-sm`}
+      className={`inline-flex items-center px-3 py-2 sm:px-4 sm:py-2 rounded-full text-xs sm:text-sm font-semibold border backdrop-blur-sm transition-all duration-300 ${variants[variant]}`}
     >
       {Icon && (
         <Icon
           aria-hidden="true"
-          className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-1.5"
+          className="w-3 h-3 sm:w-4 sm:h-4 mr-1.5 sm:mr-2"
         />
       )}
       <span className="truncate">{children}</span>
@@ -202,35 +248,56 @@ function PackageViewPage() {
   if (!paquete) return <NotFoundMessage />;
 
   return (
-    <div className="bg-gradient-to-br from-slate-50 via-white to-blue-50 min-h-screen">
-      <div className="sticky top-0 z-50 bg-white/80 backdrop-blur-lg border-b border-slate-200/50">
-        <div className="container mx-auto px-4 py-3 sm:py-4">
+    <div className="bg-gradient-to-br from-slate-50 via-white to-indigo-50 min-h-screen relative">
+      {/* Elementos decorativos de fondo */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-0 left-1/4 w-96 h-96 bg-gradient-to-br from-blue-400/5 to-purple-400/5 rounded-full blur-3xl"></div>
+        <div className="absolute top-1/3 right-1/4 w-80 h-80 bg-gradient-to-br from-emerald-400/5 to-blue-400/5 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-1/4 left-1/3 w-72 h-72 bg-gradient-to-br from-purple-400/5 to-pink-400/5 rounded-full blur-3xl"></div>
+      </div>
+
+      {/* Header mejorado */}
+      <div className="sticky top-0 z-50 bg-white/70 backdrop-blur-xl border-b border-white/20 shadow-lg">
+        <div className="container mx-auto px-4 py-4 sm:py-5">
           <div className="flex items-center justify-between">
-            <div className="flex flex-wrap items-center gap-2 flex-1 mr-4">
+            <div className="flex flex-wrap items-center gap-3 flex-1 mr-4">
               <Badge variant="info" icon={FiMapPin}>
-                {paquete.origen} → {paquete.destinos?.[0]?.destino || 'Destino'}
+                {paquete.destinos && paquete.destinos.length > 0 
+                  ? paquete.destinos.length === 1 
+                    ? paquete.destinos[0].destino
+                    : `${paquete.destinos.length} destinos`
+                  : 'Destino'
+                }
               </Badge>
               <Badge variant="success" icon={FiCalendar}>
                 {paquete.duracion_dias} días
               </Badge>
+              {paquete.precio_total && (
+                <Badge variant="warning" icon={FiDollarSign}>
+                  {parseFloat(paquete.precio_total).toLocaleString("es-MX", {
+                    style: "currency",
+                    currency: "MXN",
+                  })}
+                </Badge>
+              )}
             </div>
 
-            <div className="flex items-center space-x-2 sm:space-x-3 flex-shrink-0">
+            <div className="flex items-center space-x-3 flex-shrink-0">
               <button
                 onClick={() => setIsLiked(!isLiked)}
                 aria-pressed={isLiked}
                 aria-label={
                   isLiked ? "Quitar de favoritos" : "Añadir a favoritos"
                 }
-                className={`p-2 rounded-full transition-all duration-300 ${
+                className={`group p-3 rounded-full transition-all duration-300 shadow-md hover:shadow-lg transform hover:scale-105 ${
                   isLiked
-                    ? "bg-red-100 text-red-500"
-                    : "bg-slate-100 text-slate-500 hover:bg-slate-200"
+                    ? "bg-gradient-to-r from-red-500 to-pink-500 text-white"
+                    : "bg-white/80 text-slate-500 hover:bg-red-50 hover:text-red-500"
                 }`}
               >
                 <FiHeart
-                  className={`w-4 h-4 sm:w-5 sm:h-5 ${
-                    isLiked ? "fill-current" : ""
+                  className={`w-5 h-5 transition-all duration-300 ${
+                    isLiked ? "fill-current scale-110" : "group-hover:scale-110"
                   }`}
                 />
               </button>
@@ -238,38 +305,83 @@ function PackageViewPage() {
               <button
                 onClick={handleShare}
                 aria-label="Compartir paquete"
-                className="p-2 rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200 transition-all duration-300"
+                className="group p-3 rounded-full bg-white/80 text-slate-500 hover:bg-blue-50 hover:text-blue-500 transition-all duration-300 shadow-md hover:shadow-lg transform hover:scale-105"
               >
-                <FiShare2 className="w-4 h-4 sm:w-5 sm:h-5" />
+                <FiShare2 className="w-5 h-5 group-hover:scale-110 transition-transform duration-300" />
               </button>
             </div>
           </div>
         </div>
       </div>
 
-      <main className="container mx-auto px-4 py-6 sm:py-8">
-        <div className="mb-8 sm:mb-12">
-          <div className="text-center mb-6 sm:mb-8">
-            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-slate-900 mb-3 sm:mb-4 leading-tight px-2">
-              {paquete.titulo}
-            </h1>
-            <p className="text-base sm:text-lg lg:text-xl text-slate-600 max-w-2xl mx-auto leading-relaxed px-4">
-              Descubre una experiencia única que combina aventura, cultura y
-              momentos inolvidables
-            </p>
+      <main className="container mx-auto px-4 py-8 sm:py-12 relative z-10">
+        {/* Hero Section mejorado */}
+        <div className="mb-12 sm:mb-16">
+          <div className="text-center mb-8 sm:mb-12">
+            <div className="space-y-6">
+              <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-transparent bg-gradient-to-r from-slate-900 via-blue-800 to-indigo-800 bg-clip-text leading-tight px-2">
+                {paquete.titulo}
+              </h1>
+
+              <div className="max-w-3xl mx-auto">
+                <p className="text-lg sm:text-xl lg:text-2xl text-slate-600 leading-relaxed px-4">
+                  Descubre una experiencia única que combina 
+                  <span className="font-semibold text-blue-600"> aventura</span>, 
+                  <span className="font-semibold text-emerald-600"> cultura</span> y 
+                  <span className="font-semibold text-purple-600"> momentos inolvidables</span>
+                </p>
+              </div>
+              
+              {/* Estadísticas rápidas */}
+              <div className="flex flex-wrap justify-center gap-6 sm:gap-8 mt-8">
+                <div className="text-center group cursor-pointer">
+                  <div className="text-3xl sm:text-4xl font-bold text-blue-600 group-hover:scale-110 transition-transform duration-300">{paquete.duracion_dias}</div>
+                  <div className="text-sm text-slate-500 font-medium">Días</div>
+                </div>
+                {paquete.destinos && (
+                  <div className="text-center group cursor-pointer">
+                    <div className="text-3xl sm:text-4xl font-bold text-emerald-600 group-hover:scale-110 transition-transform duration-300">{paquete.destinos.length}</div>
+                    <div className="text-sm text-slate-500 font-medium">{paquete.destinos.length === 1 ? 'Destino' : 'Destinos'}</div>
+                  </div>
+                )}
+                {paquete.hotel && (
+                  <div className="text-center group cursor-pointer">
+                    <div className="text-3xl sm:text-4xl font-bold text-amber-600 group-hover:scale-110 transition-transform duration-300">{paquete.hotel.estrellas}★</div>
+                    <div className="text-sm text-slate-500 font-medium">Hotel</div>
+                  </div>
+                )}
+                {paquete.imagenes && paquete.imagenes.length > 0 && (
+                  <div className="text-center group cursor-pointer">
+                    <div className="text-3xl sm:text-4xl font-bold text-purple-600 group-hover:scale-110 transition-transform duration-300">{paquete.imagenes.length}</div>
+                    <div className="text-sm text-slate-500 font-medium">Fotos</div>
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
 
-          <div className="relative h-64 sm:h-80 md:h-96 lg:h-[600px] rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl group">
+          {/* Imagen principal mejorada */}
+          <div className="relative h-80 sm:h-96 md:h-[500px] lg:h-[700px] rounded-3xl sm:rounded-[2rem] overflow-hidden shadow-2xl group">
             <ImageCarousel imagenes={paquete.imagenes} />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            
+            {/* Overlay con gradiente mejorado */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-black/5 to-transparent opacity-40 group-hover:opacity-20 transition-opacity duration-500"></div>
+            
+            {/* Indicador de más fotos */}
+            {paquete.imagenes && paquete.imagenes.length > 1 && (
+              <div className="absolute top-6 right-6 bg-black/30 backdrop-blur-md rounded-full px-3 py-1 text-white text-sm">
+                +{paquete.imagenes.length - 1} fotos
+              </div>
+            )}
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8 lg:gap-12">
-          <div className="lg:col-span-2 space-y-8 sm:space-y-12 lg:space-y-16">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 sm:gap-10 lg:gap-16">
+          <div className="lg:col-span-2 space-y-10 sm:space-y-14 lg:space-y-20">
+            {/* Información del Paquete */}
             <section
               aria-labelledby="info-heading"
-              className="bg-white rounded-2xl sm:rounded-3xl shadow-xl p-4 sm:p-6 lg:p-8 border border-slate-100"
+              className="group bg-white/60 backdrop-blur-xl rounded-3xl sm:rounded-[2rem] shadow-xl hover:shadow-2xl p-6 sm:p-8 lg:p-10 border border-white/20 transition-all duration-500 hover:-translate-y-2"
             >
               <PackageInfo
                 id="info-heading"
@@ -277,64 +389,137 @@ function PackageViewPage() {
               />
             </section>
 
-            {/* Sección Incluye */}
-            {paquete.incluye && (
+            {/* Pronóstico del Clima */}
+            {paquete.destinos && paquete.destinos.length > 0 && paquete.destinos[0]?.destino_lat && paquete.destinos[0]?.destino_lng && (
               <section
-                aria-labelledby="incluye-heading"
-                className="bg-white rounded-2xl sm:rounded-3xl shadow-xl p-4 sm:p-6 lg:p-8 border border-slate-100"
+                aria-labelledby="weather-heading"
+                className="group bg-white/60 backdrop-blur-xl rounded-3xl sm:rounded-[2rem] shadow-xl hover:shadow-2xl p-6 sm:p-8 lg:p-10 border border-white/20 transition-all duration-500 hover:-translate-y-2"
               >
-                <div className="flex items-center mb-4 sm:mb-6">
-                  <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-emerald-500 to-green-600 rounded-xl sm:rounded-2xl flex items-center justify-center mr-3 sm:mr-4 flex-shrink-0">
-                    <FiCheck
+                <div className="flex items-center mb-6 sm:mb-8">
+                  <div className="relative w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-br from-sky-500 to-blue-600 rounded-2xl flex items-center justify-center mr-4 sm:mr-6 flex-shrink-0 shadow-lg group-hover:scale-110 transition-transform duration-500">
+                    <div className="absolute inset-0 bg-sky-400/50 rounded-2xl blur-xl group-hover:blur-2xl transition-all duration-500"></div>
+                    <FiSun
                       aria-hidden="true"
-                      className="w-5 h-5 sm:w-6 sm:h-6 text-white"
+                      className="w-7 h-7 sm:w-8 sm:h-8 text-white relative z-10"
                     />
                   </div>
                   <div>
                     <h2
-                      id="incluye-heading"
-                      className="text-2xl sm:text-3xl font-bold text-slate-900"
+                      id="weather-heading"
+                      className="text-2xl sm:text-3xl lg:text-4xl font-bold bg-gradient-to-r from-slate-900 to-sky-700 bg-clip-text text-transparent"
                     >
-                      ¿Qué incluye?
+                      Pronóstico del Clima
                     </h2>
-                    <p className="text-slate-600 text-sm sm:text-base">
-                      Todo lo que está incluido en tu paquete
+                    <p className="text-slate-600 text-base sm:text-lg">
+                      El tiempo en {paquete.destinos[0].destino}
                     </p>
                   </div>
                 </div>
-                <div className="bg-emerald-50 rounded-xl p-4 sm:p-6 border border-emerald-200">
-                  <p className="text-slate-700 leading-relaxed">{paquete.incluye}</p>
+                <WeatherForecast
+                  lat={paquete.destinos[0].destino_lat}
+                  lon={paquete.destinos[0].destino_lng}
+                  cityName={paquete.destinos[0].destino}
+                />
+              </section>
+            )}
+
+            {/* Mapa de Ruta */}
+            {paquete.destinos &&
+              paquete.destinos.length > 0 &&
+              paquete.destinos.some(d => d.destino_lat && d.destino_lng) && (
+                <section
+                  aria-labelledby="routemap-heading"
+                  className="group bg-white/60 backdrop-blur-xl rounded-3xl sm:rounded-[2rem] shadow-xl hover:shadow-2xl p-6 sm:p-8 lg:p-10 border border-white/20 transition-all duration-500 hover:-translate-y-2"
+                >
+                  <div className="flex items-center mb-6 sm:mb-8">
+                    <div className="relative w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-br from-purple-500 to-pink-600 rounded-2xl flex items-center justify-center mr-4 sm:mr-6 flex-shrink-0 shadow-lg group-hover:scale-110 transition-transform duration-500">
+                      <div className="absolute inset-0 bg-purple-400/50 rounded-2xl blur-xl group-hover:blur-2xl transition-all duration-500"></div>
+                      <FiMapPin
+                        aria-hidden="true"
+                        className="w-7 h-7 sm:w-8 sm:h-8 text-white relative z-10"
+                      />
+                    </div>
+                    <div>
+                      <h2
+                        id="routemap-heading"
+                        className="text-2xl sm:text-3xl lg:text-4xl font-bold bg-gradient-to-r from-slate-900 to-purple-700 bg-clip-text text-transparent"
+                      >
+                        Ruta del Viaje
+                      </h2>
+                      <p className="text-slate-600 text-base sm:text-lg">
+                        Desde Durango hacia tus destinos de viaje
+                        {paquete.destinos.length > 1 && (
+                          <span className="block text-sm text-purple-600 font-medium mt-1">
+                            Durango → {paquete.destinos.map(d => d.destino).join(' → ')}
+                          </span>
+                        )}
+                      </p>
+                    </div>
+                  </div>
+                  <RouteMap paquete={paquete} />
+                </section>
+              )}
+
+            {/* Itinerario */}
+            {paquete.itinerarios && paquete.itinerarios.length > 0 && (
+              <section
+                aria-labelledby="itinerary-heading"
+                className="group bg-white/60 backdrop-blur-xl rounded-3xl sm:rounded-[2rem] shadow-xl hover:shadow-2xl p-6 sm:p-8 lg:p-10 border border-white/20 transition-all duration-500 hover:-translate-y-2"
+              >
+                <div className="flex items-center mb-6 sm:mb-8">
+                  <div className="relative w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center mr-4 sm:mr-6 flex-shrink-0 shadow-lg group-hover:scale-110 transition-transform duration-500">
+                    <div className="absolute inset-0 bg-blue-400/50 rounded-2xl blur-xl group-hover:blur-2xl transition-all duration-500"></div>
+                    <FiCalendar
+                      aria-hidden="true"
+                      className="w-7 h-7 sm:w-8 sm:h-8 text-white relative z-10"
+                    />
+                  </div>
+                  <div>
+                    <h2
+                      id="itinerary-heading"
+                      className="text-2xl sm:text-3xl lg:text-4xl font-bold bg-gradient-to-r from-slate-900 to-blue-700 bg-clip-text text-transparent"
+                    >
+                      Itinerario
+                    </h2>
+                    <p className="text-slate-600 text-base sm:text-lg">
+                      Tu aventura día a día
+                    </p>
+                  </div>
+                </div>
+                <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl p-6 sm:p-8 border border-blue-200/50 backdrop-blur-sm">
+                  <Itinerary itinerario={paquete.itinerarios} />
                 </div>
               </section>
             )}
 
-            {/* Sección No Incluye */}
-            {paquete.no_incluye && (
+            {/* Hotel */}
+            {paquete.hotel && (
               <section
-                aria-labelledby="no-incluye-heading"
-                className="bg-white rounded-2xl sm:rounded-3xl shadow-xl p-4 sm:p-6 lg:p-8 border border-slate-100"
+                aria-labelledby="hotel-heading"
+                className="group bg-white/60 backdrop-blur-xl rounded-3xl sm:rounded-[2rem] shadow-xl hover:shadow-2xl p-6 sm:p-8 lg:p-10 border border-white/20 transition-all duration-500 hover:-translate-y-2"
               >
-                <div className="flex items-center mb-4 sm:mb-6">
-                  <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-red-500 to-red-600 rounded-xl sm:rounded-2xl flex items-center justify-center mr-3 sm:mr-4 flex-shrink-0">
-                    <FiX
+                <div className="flex items-center mb-6 sm:mb-8">
+                  <div className="relative w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-br from-amber-500 to-orange-600 rounded-2xl flex items-center justify-center mr-4 sm:mr-6 flex-shrink-0 shadow-lg group-hover:scale-110 transition-transform duration-500">
+                    <div className="absolute inset-0 bg-amber-400/50 rounded-2xl blur-xl group-hover:blur-2xl transition-all duration-500"></div>
+                    <FiHome
                       aria-hidden="true"
-                      className="w-5 h-5 sm:w-6 sm:h-6 text-white"
+                      className="w-7 h-7 sm:w-8 sm:h-8 text-white relative z-10"
                     />
                   </div>
                   <div>
                     <h2
-                      id="no-incluye-heading"
-                      className="text-2xl sm:text-3xl font-bold text-slate-900"
+                      id="hotel-heading"
+                      className="text-2xl sm:text-3xl lg:text-4xl font-bold bg-gradient-to-r from-slate-900 to-amber-700 bg-clip-text text-transparent"
                     >
-                      ¿Qué no incluye?
+                      Alojamiento
                     </h2>
-                    <p className="text-slate-600 text-sm sm:text-base">
-                      Gastos adicionales no incluidos en el paquete
+                    <p className="text-slate-600 text-base sm:text-lg">
+                      Tu hogar durante el viaje
                     </p>
                   </div>
                 </div>
-                <div className="bg-red-50 rounded-xl p-4 sm:p-6 border border-red-200">
-                  <p className="text-slate-700 leading-relaxed">{paquete.no_incluye}</p>
+                <div className="h-80 sm:h-96 lg:h-[450px] overflow-hidden rounded-2xl shadow-lg">
+                  <HotelInfo hotel={paquete.hotel} />
                 </div>
               </section>
             )}
@@ -343,144 +528,56 @@ function PackageViewPage() {
             {paquete.notas && (
               <section
                 aria-labelledby="notas-heading"
-                className="bg-white rounded-2xl sm:rounded-3xl shadow-xl p-4 sm:p-6 lg:p-8 border border-slate-100"
+                className="group bg-white/60 backdrop-blur-xl rounded-3xl sm:rounded-[2rem] shadow-xl hover:shadow-2xl p-6 sm:p-8 lg:p-10 border border-white/20 transition-all duration-500 hover:-translate-y-2"
               >
-                <div className="flex items-center mb-4 sm:mb-6">
-                  <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-amber-500 to-orange-600 rounded-xl sm:rounded-2xl flex items-center justify-center mr-3 sm:mr-4 flex-shrink-0">
+                <div className="flex items-center mb-6 sm:mb-8">
+                  <div className="relative w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-br from-amber-500 to-orange-600 rounded-2xl flex items-center justify-center mr-4 sm:mr-6 flex-shrink-0 shadow-lg group-hover:scale-110 transition-transform duration-500">
+                    <div className="absolute inset-0 bg-amber-400/50 rounded-2xl blur-xl group-hover:blur-2xl transition-all duration-500"></div>
                     <FiInfo
                       aria-hidden="true"
-                      className="w-5 h-5 sm:w-6 sm:h-6 text-white"
+                      className="w-7 h-7 sm:w-8 sm:h-8 text-white relative z-10"
                     />
                   </div>
                   <div>
                     <h2
                       id="notas-heading"
-                      className="text-2xl sm:text-3xl font-bold text-slate-900"
+                      className="text-2xl sm:text-3xl lg:text-4xl font-bold bg-gradient-to-r from-slate-900 to-amber-700 bg-clip-text text-transparent"
                     >
                       Notas importantes
                     </h2>
-                    <p className="text-slate-600 text-sm sm:text-base">
+                    <p className="text-slate-600 text-base sm:text-lg">
                       Información adicional que debes considerar
                     </p>
                   </div>
                 </div>
-                <div className="bg-amber-50 rounded-xl p-4 sm:p-6 border border-amber-200">
-                  <p className="text-slate-700 leading-relaxed">{paquete.notas}</p>
+                <div className="bg-gradient-to-br from-amber-50 to-orange-50 rounded-2xl p-6 sm:p-8 border border-amber-200/50 backdrop-blur-sm">
+                  <p className="text-slate-700 leading-relaxed text-base sm:text-lg">{paquete.notas}</p>
                 </div>
               </section>
             )}
 
-
-
-            {paquete.itinerarios && paquete.itinerarios.length > 0 && (
-              <section
-                aria-labelledby="itinerary-heading"
-                className="bg-white rounded-2xl sm:rounded-3xl shadow-xl p-4 sm:p-6 lg:p-8 border border-slate-100"
-              >
-                <div className="flex items-center mb-4 sm:mb-6">
-                  <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl sm:rounded-2xl flex items-center justify-center mr-3 sm:mr-4 flex-shrink-0">
-                    <FiCalendar
-                      aria-hidden="true"
-                      className="w-5 h-5 sm:w-6 sm:h-6 text-white"
-                    />
-                  </div>
-                  <div>
-                    <h2
-                      id="itinerary-heading"
-                      className="text-2xl sm:text-3xl font-bold text-slate-900"
-                    >
-                      Itinerario
-                    </h2>
-                    <p className="text-slate-600 text-sm sm:text-base">
-                      Tu aventura día a día
-                    </p>
-                  </div>
-                </div>
-                <Itinerary itinerario={paquete.itinerarios} />
-              </section>
-            )}
-
-            {paquete.hotel && (
-              <section
-                aria-labelledby="hotel-heading"
-                className="bg-white rounded-2xl sm:rounded-3xl shadow-xl p-4 sm:p-6 lg:p-8 border border-slate-100"
-              >
-                <div className="flex items-center mb-4 sm:mb-6">
-                  <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-amber-500 to-orange-600 rounded-xl sm:rounded-2xl flex items-center justify-center mr-3 sm:mr-4 flex-shrink-0">
-                    <FiHome
-                      aria-hidden="true"
-                      className="w-5 h-5 sm:w-6 sm:h-6 text-white"
-                    />
-                  </div>
-                  <div>
-                    <h2
-                      id="hotel-heading"
-                      className="text-2xl sm:text-3xl font-bold text-slate-900"
-                    >
-                      Alojamiento
-                    </h2>
-                    <p className="text-slate-600 text-sm sm:text-base">
-                      Tu hogar durante el viaje
-                    </p>
-                  </div>
-                </div>
-                <div className="h-80 sm:h-96 lg:h-[400px] overflow-hidden rounded-xl sm:rounded-2xl">
-                  <HotelInfo hotel={paquete.hotel} />
-                </div>
-              </section>
-            )}
-
-            {paquete.origen_lat &&
-              paquete.origen_lng &&
-              paquete.destinos?.[0]?.destino_lat &&
-              paquete.destinos?.[0]?.destino_lng && (
-                <section
-                  aria-labelledby="routemap-heading"
-                  className="bg-white rounded-2xl sm:rounded-3xl shadow-xl p-4 sm:p-6 lg:p-8 border border-slate-100"
-                >
-                  <div className="flex items-center mb-4 sm:mb-6">
-                    <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-purple-500 to-pink-600 rounded-xl sm:rounded-2xl flex items-center justify-center mr-3 sm:mr-4 flex-shrink-0">
-                      <FiMapPin
-                        aria-hidden="true"
-                        className="w-5 h-5 sm:w-6 sm:h-6 text-white"
-                      />
-                    </div>
-                    <div>
-                      <h2
-                        id="routemap-heading"
-                        className="text-2xl sm:text-3xl font-bold text-slate-900"
-                      >
-                        Ruta del Viaje
-                      </h2>
-                      <p className="text-slate-600 text-sm sm:text-base">
-                        Visualiza tu trayecto
-                      </p>
-                    </div>
-                  </div>
-                  <RouteMap paquete={paquete} />
-                </section>
-              )}
-
+            {/* Requisitos */}
             {paquete.requisitos && (
               <section
                 aria-labelledby="requirements-heading"
-                className="bg-white rounded-2xl sm:rounded-3xl shadow-xl p-4 sm:p-6 lg:p-8 border border-slate-100"
+                className="group bg-white/60 backdrop-blur-xl rounded-3xl sm:rounded-[2rem] shadow-xl hover:shadow-2xl p-6 sm:p-8 lg:p-10 border border-white/20 transition-all duration-500 hover:-translate-y-2"
               >
-                <div className="flex items-center mb-4 sm:mb-6">
-                  <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-emerald-500 to-green-600 rounded-xl sm:rounded-2xl flex items-center justify-center mr-3 sm:mr-4 flex-shrink-0">
+                <div className="flex items-center mb-6 sm:mb-8">
+                  <div className="relative w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center mr-4 sm:mr-6 flex-shrink-0 shadow-lg group-hover:scale-110 transition-transform duration-500">
+                    <div className="absolute inset-0 bg-blue-400/50 rounded-2xl blur-xl group-hover:blur-2xl transition-all duration-500"></div>
                     <FiCheckSquare
                       aria-hidden="true"
-                      className="w-5 h-5 sm:w-6 sm:h-6 text-white"
+                      className="w-7 h-7 sm:w-8 sm:h-8 text-white relative z-10"
                     />
                   </div>
                   <div>
                     <h2
                       id="requirements-heading"
-                      className="text-2xl sm:text-3xl font-bold text-slate-900"
+                      className="text-2xl sm:text-3xl lg:text-4xl font-bold bg-gradient-to-r from-slate-900 to-blue-700 bg-clip-text text-transparent"
                     >
                       Requisitos
                     </h2>
-                    <p className="text-slate-600 text-sm sm:text-base">
+                    <p className="text-slate-600 text-base sm:text-lg">
                       Lo que necesitas para tu viaje
                     </p>
                   </div>
@@ -489,149 +586,234 @@ function PackageViewPage() {
               </section>
             )}
 
-            {paquete.destinos?.[0]?.destino_lat && paquete.destinos?.[0]?.destino_lng && (
+            {/* Sección Incluye */}
+            {paquete.incluye && (
               <section
-                aria-labelledby="weather-heading"
-                className="bg-white rounded-2xl sm:rounded-3xl shadow-xl p-4 sm:p-6 lg:p-8 border border-slate-100"
+                aria-labelledby="incluye-heading"
+                className="group bg-white/60 backdrop-blur-xl rounded-3xl sm:rounded-[2rem] shadow-xl hover:shadow-2xl p-6 sm:p-8 lg:p-10 border border-white/20 transition-all duration-500 hover:-translate-y-2"
               >
-                <div className="flex items-center mb-4 sm:mb-6">
-                  <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-sky-500 to-blue-600 rounded-xl sm:rounded-2xl flex items-center justify-center mr-3 sm:mr-4 flex-shrink-0">
-                    <FiSun
+                <div className="flex items-center mb-6 sm:mb-8">
+                  <div className="relative w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center mr-4 sm:mr-6 flex-shrink-0 shadow-lg group-hover:scale-110 transition-transform duration-500">
+                    <div className="absolute inset-0 bg-blue-400/50 rounded-2xl blur-xl group-hover:blur-2xl transition-all duration-500"></div>
+                    <FiCheck
                       aria-hidden="true"
-                      className="w-5 h-5 sm:w-6 sm:h-6 text-white"
+                      className="w-7 h-7 sm:w-8 sm:h-8 text-white relative z-10"
                     />
                   </div>
                   <div>
                     <h2
-                      id="weather-heading"
-                      className="text-2xl sm:text-3xl font-bold text-slate-900"
+                      id="incluye-heading"
+                      className="text-2xl sm:text-3xl lg:text-4xl font-bold bg-gradient-to-r from-slate-900 to-blue-700 bg-clip-text text-transparent"
                     >
-                      Pronóstico del Clima
+                      ¿Qué incluye?
                     </h2>
-                    <p className="text-slate-600 text-sm sm:text-base">
-                      El tiempo en {paquete.destinos?.[0]?.destino}
+                    <p className="text-slate-600 text-base sm:text-lg">
+                      Todo lo que está incluido en tu paquete
                     </p>
                   </div>
                 </div>
-                <WeatherForecast
-                  lat={paquete.destinos?.[0]?.destino_lat}
-                  lon={paquete.destinos?.[0]?.destino_lng}
-                  cityName={paquete.destinos?.[0]?.destino}
-                />
+                <div className="bg-white/40 rounded-2xl p-6 sm:p-8 border border-slate-200/50 backdrop-blur-sm">
+                  <p className="text-slate-700 leading-relaxed text-base sm:text-lg">{paquete.incluye}</p>
+                </div>
+              </section>
+            )}
+
+            {/* Sección No Incluye */}
+            {paquete.no_incluye && (
+              <section
+                aria-labelledby="no-incluye-heading"
+                className="group bg-white/60 backdrop-blur-xl rounded-3xl sm:rounded-[2rem] shadow-xl hover:shadow-2xl p-6 sm:p-8 lg:p-10 border border-white/20 transition-all duration-500 hover:-translate-y-2"
+              >
+                <div className="flex items-center mb-6 sm:mb-8">
+                  <div className="relative w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-br from-slate-500 to-slate-600 rounded-2xl flex items-center justify-center mr-4 sm:mr-6 flex-shrink-0 shadow-lg group-hover:scale-110 transition-transform duration-500">
+                    <div className="absolute inset-0 bg-slate-400/50 rounded-2xl blur-xl group-hover:blur-2xl transition-all duration-500"></div>
+                    <FiX
+                      aria-hidden="true"
+                      className="w-7 h-7 sm:w-8 sm:h-8 text-white relative z-10"
+                    />
+                  </div>
+                  <div>
+                    <h2
+                      id="no-incluye-heading"
+                      className="text-2xl sm:text-3xl lg:text-4xl font-bold bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-transparent"
+                    >
+                      ¿Qué no incluye?
+                    </h2>
+                    <p className="text-slate-600 text-base sm:text-lg">
+                      Gastos adicionales no incluidos en el paquete
+                    </p>
+                  </div>
+                </div>
+                <div className="bg-white/40 rounded-2xl p-6 sm:p-8 border border-slate-200/50 backdrop-blur-sm">
+                  <p className="text-slate-700 leading-relaxed text-base sm:text-lg">{paquete.no_incluye}</p>
+                </div>
               </section>
             )}
           </div>
 
+          {/* Sidebar de Precio y Reservación */}
           <aside className="lg:col-span-1">
             <div className="lg:sticky lg:top-32">
-              <div className="bg-white rounded-2xl sm:rounded-3xl shadow-2xl p-4 sm:p-6 lg:p-8 border border-slate-100 backdrop-blur-sm">
-                <div className="text-center mb-4 sm:mb-6">
-                  <div className="flex flex-col sm:flex-row items-center justify-center sm:items-baseline">
-                    <span className="text-3xl sm:text-4xl lg:text-5xl font-bold text-slate-900">
-                      {parseFloat(paquete.precio_total).toLocaleString("es-MX", {
-                        style: "currency",
-                        currency: "MXN",
-                      })}
-                    </span>
-                    <span className="ml-0 sm:ml-2 text-slate-500 text-base sm:text-lg">
-                      / persona
-                    </span>
+              <div className="group bg-white/80 backdrop-blur-xl rounded-3xl sm:rounded-[2rem] shadow-2xl hover:shadow-3xl p-6 sm:p-8 lg:p-10 border border-white/20 transition-all duration-500 hover:-translate-y-2">
+                {/* Precio Principal */}
+                <div className="text-center mb-6 sm:mb-8">
+                  <div className="mb-4">
+                    {paquete.descuento && parseFloat(paquete.descuento) > 0 ? (
+                      <div className="space-y-3">
+                        {/* Precio original tachado */}
+                        <div className="text-2xl sm:text-3xl font-bold text-slate-400 line-through">
+                          {(parseFloat(paquete.precio_total) + parseFloat(paquete.descuento)).toLocaleString("es-MX", {
+                            style: "currency",
+                            currency: "MXN",
+                          })}
+                        </div>
+                        
+                        {/* Precio con descuento */}
+                        <div className="flex flex-col sm:flex-row items-center justify-center sm:items-baseline space-y-2 sm:space-y-0">
+                          <span className="text-4xl sm:text-5xl lg:text-6xl font-black bg-gradient-to-r from-emerald-600 via-green-600 to-teal-600 bg-clip-text text-transparent">
+                            {parseFloat(paquete.precio_total).toLocaleString("es-MX", {
+                              style: "currency",
+                              currency: "MXN",
+                            })}
+                          </span>
+                          <span className="ml-0 sm:ml-3 text-slate-500 text-lg sm:text-xl font-medium">
+                            / persona
+                          </span>
+                        </div>
+                        
+                        {/* Badge de descuento */}
+                        <div className="flex justify-center">
+                          <span className="inline-flex items-center px-4 py-2 rounded-full text-base font-bold bg-gradient-to-r from-red-500 to-pink-500 text-white shadow-lg">
+                            🔥 ¡Ahorras {parseFloat(paquete.descuento).toLocaleString("es-MX", {
+                              style: "currency",
+                              currency: "MXN",
+                            })}!
+                          </span>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="flex flex-col sm:flex-row items-center justify-center sm:items-baseline space-y-2 sm:space-y-0">
+                        <span className="text-4xl sm:text-5xl lg:text-6xl font-black bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 bg-clip-text text-transparent">
+                          {parseFloat(paquete.precio_total).toLocaleString("es-MX", {
+                            style: "currency",
+                            currency: "MXN",
+                          })}
+                        </span>
+                        <span className="ml-0 sm:ml-3 text-slate-500 text-lg sm:text-xl font-medium">
+                          / persona
+                        </span>
+                      </div>
+                    )}
                   </div>
-                  {paquete.descuento && parseFloat(paquete.descuento) > 0 && (
-                    <div className="mt-2">
-                      <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-emerald-100 text-emerald-800">
-                        ¡Descuento de {parseFloat(paquete.descuento).toLocaleString("es-MX", {
-                          style: "currency",
-                          currency: "MXN",
-                        })}!
-                      </span>
-                    </div>
-                  )}
-                  <p className="text-slate-600 mt-2 text-sm sm:text-base">
+                  <p className="text-slate-600 text-base sm:text-lg font-medium">
                     Precio todo incluido
                   </p>
                 </div>
 
                 {/* Información de anticipo */}
                 {paquete.anticipo && parseFloat(paquete.anticipo) > 0 && (
-                  <div className="mb-6 sm:mb-8 bg-blue-50 rounded-xl p-4 border border-blue-200">
-                    <div className="flex items-center mb-2">
-                      <FiDollarSign className="w-5 h-5 text-blue-600 mr-2" />
-                      <h3 className="font-semibold text-blue-900">Anticipo requerido</h3>
+                  <div className="mb-8 sm:mb-10 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl p-6 border border-blue-200/50 backdrop-blur-sm">
+                    <div className="flex items-center mb-3">
+                      <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full flex items-center justify-center mr-3">
+                        <FiDollarSign className="w-5 h-5 text-white" />
+                      </div>
+                      <h3 className="font-bold text-blue-900 text-lg">Anticipo requerido</h3>
                     </div>
-                    <p className="text-2xl font-bold text-blue-800">
+                    <p className="text-3xl font-black text-blue-800 mb-2">
                       {parseFloat(paquete.anticipo).toLocaleString("es-MX", {
                         style: "currency",
                         currency: "MXN",
                       })}
                     </p>
-                    <p className="text-blue-700 text-sm mt-1">
+                    <p className="text-blue-700 text-base">
                       Para asegurar tu reservación
                     </p>
                   </div>
                 )}
 
-                <div className="space-y-3 sm:space-y-4 mb-6 sm:mb-8">
-                  <h3 className="font-semibold text-slate-900 text-base sm:text-lg">
-                    Resumen del paquete
+                {/* Resumen del paquete */}
+                <div className="space-y-4 sm:space-y-5 mb-8 sm:mb-10">
+                  <h3 className="font-bold text-slate-900 text-lg sm:text-xl">
+                    ✨ Resumen del paquete
                   </h3>
-                  <ul className="space-y-2 sm:space-y-3">
-                    <li className="flex items-center">
-                      <div className="w-5 h-5 sm:w-6 sm:h-6 bg-emerald-100 rounded-full flex items-center justify-center mr-2 sm:mr-3 flex-shrink-0">
+                  <ul className="space-y-3 sm:space-y-4">
+                    <li className="flex items-center group">
+                      <div className="w-8 h-8 bg-gradient-to-r from-emerald-100 to-green-100 rounded-full flex items-center justify-center mr-3 flex-shrink-0 group-hover:scale-110 transition-transform duration-300">
                         <FiCheckSquare
                           aria-hidden="true"
-                          className="w-3 h-3 sm:w-4 sm:h-4 text-emerald-600"
+                          className="w-4 h-4 text-emerald-600"
                         />
                       </div>
-                      <span className="text-slate-700 text-sm sm:text-base">
+                      <span className="text-slate-700 text-base sm:text-lg font-medium">
                         {paquete.duracion_dias} días de aventura
                       </span>
                     </li>
                     {paquete.hotel && (
-                      <li className="flex items-center">
-                        <div className="w-5 h-5 sm:w-6 sm:h-6 bg-emerald-100 rounded-full flex items-center justify-center mr-2 sm:mr-3 flex-shrink-0">
-                          <FiCheckSquare
+                      <li className="flex items-center group">
+                        <div className="w-8 h-8 bg-gradient-to-r from-amber-100 to-orange-100 rounded-full flex items-center justify-center mr-3 flex-shrink-0 group-hover:scale-110 transition-transform duration-300">
+                          <FiStar
                             aria-hidden="true"
-                            className="w-3 h-3 sm:w-4 sm:h-4 text-emerald-600"
+                            className="w-4 h-4 text-amber-600"
                           />
                         </div>
-                        <span className="text-slate-700 text-sm sm:text-base">
+                        <span className="text-slate-700 text-base sm:text-lg font-medium">
                           Hotel {paquete.hotel.estrellas} estrellas
+                        </span>
+                      </li>
+                    )}
+                    {paquete.destinos && (
+                      <li className="flex items-center group">
+                        <div className="w-8 h-8 bg-gradient-to-r from-blue-100 to-indigo-100 rounded-full flex items-center justify-center mr-3 flex-shrink-0 group-hover:scale-110 transition-transform duration-300">
+                          <FiMapPin
+                            aria-hidden="true"
+                            className="w-4 h-4 text-blue-600"
+                          />
+                        </div>
+                        <span className="text-slate-700 text-base sm:text-lg font-medium">
+                          {paquete.destinos.length} destino{paquete.destinos.length > 1 ? 's' : ''} increíble{paquete.destinos.length > 1 ? 's' : ''}
                         </span>
                       </li>
                     )}
                   </ul>
                 </div>
 
-                <button className="w-full bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 text-white font-bold py-4 sm:py-5 px-4 rounded-xl sm:rounded-2xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 hover:from-blue-700 hover:via-indigo-700 hover:to-purple-700 mb-3 sm:mb-4">
-                  <span className="text-base sm:text-lg">
-                    🚀 Reservar Aventura
+                {/* Botón de reservación */}
+                <button className="group w-full bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold py-5 sm:py-6 px-6 rounded-2xl sm:rounded-3xl shadow-xl hover:shadow-2xl transform hover:-translate-y-2 transition-all duration-500 hover:from-blue-600 hover:to-blue-700 mb-6 relative overflow-hidden">
+                  <span className="absolute inset-0 bg-white/20 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 skew-x-12"></span>
+                  <span className="text-lg sm:text-xl relative z-10 flex items-center justify-center">
+                    <span className="mr-2">🚀</span>
+                    Reservar Aventura
+                    <span className="ml-2">✨</span>
                   </span>
                 </button>
 
-                <div className="mt-4 sm:mt-6 bg-gradient-to-r from-emerald-50 to-teal-50 rounded-xl sm:rounded-2xl p-4 sm:p-6 border border-emerald-200">
+                {/* Calificación mejorada */}
+                <div className="bg-gradient-to-br from-emerald-50 via-teal-50 to-green-50 rounded-2xl sm:rounded-3xl p-6 sm:p-8 border border-emerald-200/50 backdrop-blur-sm">
                   <div
-                    className="flex items-center justify-center mb-2 sm:mb-3"
+                    className="flex items-center justify-center mb-4"
                     aria-label="Calificación: 4.9 de 5 estrellas"
                     role="img"
                   >
-                    <div className="flex items-center" aria-hidden="true">
+                    <div className="flex items-center space-x-1" aria-hidden="true">
                       {[...Array(5)].map((_, i) => (
                         <FiStar
                           key={i}
-                          className="w-4 h-4 sm:w-5 sm:h-5 text-yellow-400 fill-current"
+                          className="w-6 h-6 text-yellow-400 fill-current drop-shadow-sm"
                         />
                       ))}
                     </div>
                     <span
-                      className="ml-2 font-semibold text-slate-700 text-sm sm:text-base"
+                      className="ml-3 font-black text-slate-700 text-xl"
                       aria-hidden="true"
                     >
                       4.9
                     </span>
                   </div>
-                  <p className="text-center text-slate-600 text-xs sm:text-sm">
+                  <p className="text-center text-slate-600 text-base font-medium">
                     Más de 1,000 viajeros satisfechos
+                  </p>
+                  <p className="text-center text-slate-500 text-sm mt-2">
+                    "Una experiencia inolvidable" ⭐
                   </p>
                 </div>
               </div>
