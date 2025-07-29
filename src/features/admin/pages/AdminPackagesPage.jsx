@@ -417,7 +417,7 @@ const AdminPaquetes = () => {
                       </Link>
 
                       <Link
-                        to={`/admin/paquetes/editar/${paquete.url}`}
+                        to={`/admin/paquetes/editar/${paquete.id}`}
                         className="flex items-center gap-1.5 bg-blue-100 hover:bg-blue-200 text-blue-700 font-medium py-2 px-3 rounded-lg transition text-xs sm:text-sm flex-1 min-w-[100px] justify-center"
                         title="Editar"
                       >

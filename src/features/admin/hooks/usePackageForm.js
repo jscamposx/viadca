@@ -209,7 +209,7 @@ export const usePackageForm = (initialPackageData = null) => {
 
     try {
       if (initialPackageData) {
-        await api.packages.updatePaquete(initialPackageData.url, payload);
+        await api.packages.updatePaquete(initialPackageData.id, payload);
         if (addNotification)
           addNotification("Paquete actualizado con éxito", "success");
       } else {

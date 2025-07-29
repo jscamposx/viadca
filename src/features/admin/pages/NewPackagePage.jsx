@@ -21,13 +21,13 @@ import Error from "../../package/components/Error";
 import { useNotification } from "./AdminLayout";
 
 const NuevoPaquete = () => {
-  const { url } = useParams();
+  const { id } = useParams();
   const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [activeSection, setActiveSection] = useState("informacion");
   const { addNotification } = useNotification();
 
-  const { paquete, loading, error } = usePackage(url);
+  const { paquete, loading, error } = usePackage(id, true);
 
   const {
     formData,

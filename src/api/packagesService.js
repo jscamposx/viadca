@@ -12,10 +12,9 @@ export const getPaqueteById = (id) => {
   return apiClient.get(`/admin/paquetes/${id}`);
 };
 
-// Corresponde a: GET /admin/paquetes/url/:codigoUrl
-export const getPaqueteByUrl = (url) => {
-  // Esta ya estaba bien, la dejamos como está para la vista pública.
-  return apiClient.get(`/admin/paquetes/url/${url}`);
+// Corresponde a: GET /paquetes/:codigoUrl (endpoint público)
+export const getPaqueteByUrl = (codigoUrl) => {
+  return apiClient.get(`/paquetes/${codigoUrl}`);
 };
 
 // Corresponde a: POST /admin/paquetes
@@ -25,7 +24,6 @@ export const createPaquete = (paqueteData) => {
 
 // Corresponde a: PATCH /admin/paquetes/:id
 export const updatePaquete = (id, paqueteData) => {
-  // Asegúrate de pasar el ID y no la URL aquí
   return apiClient.patch(`/admin/paquetes/${id}`, paqueteData);
 };
 
@@ -34,4 +32,9 @@ export const deletePaquete = (id) => {
   return apiClient.delete(`/admin/paquetes/${id}`);
 };
 
-// ... (otras funciones como exportToExcel pueden quedar igual)
+// Función para exportar paquete a Excel (usando ID)
+export const exportToExcel = (id) => {
+  return apiClient.get(`/admin/paquetes/${id}/export`, {
+    responseType: 'blob',
+  });
+};

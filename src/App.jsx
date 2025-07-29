@@ -18,7 +18,7 @@ function App() {
         <Route index element={<AdminDashboard />} />
         <Route path="paquetes" element={<AdminPaquetes />} />
         <Route path="paquetes/nuevo" element={<NuevoPaquete />} />
-        <Route path="paquetes/editar/:url" element={<NuevoPaquete />} />
+        <Route path="paquetes/editar/:id" element={<NuevoPaquete />} />
         <Route path="hoteles" element={<AdminHotelsPage />} />
         <Route path="hoteles/nuevo" element={<NewHotelPage />} />
         <Route path="hoteles/editar/:id" element={<NewHotelPage />} />
