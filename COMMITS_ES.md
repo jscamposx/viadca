@@ -62,17 +62,39 @@ chore: limpiar código comentado
 
 ## Comandos útiles
 
-### Para usar aicommits
+### Para usar aicommits con prompts en español
 
-```bash
+```powershell
 # Agregar archivos al staging
 git add .
 
-# Generar commit con IA en español
-aicommits
+# Generar commit con IA especificando que sea en español
+aicommits -t "conventional commit message in Spanish"
+
+# O usando el tipo específico
+aicommits -t "Spanish conventional commit"
 ```
 
-### Para usar el script personalizado
+### Para usar el script de PowerShell
+
+```powershell
+# Cargar las funciones personalizadas
+. .\PowerShell-Commits.ps1
+
+# Analizar cambios y obtener sugerencias
+Commit-Spanish
+
+# Commit directo con mensaje
+Commit-Spanish "feat: agregar nueva funcionalidad"
+
+# Add + commit en una sola acción
+Commit-Spanish -All "fix: corregir error de validación"
+
+# Usando el alias corto
+ces "docs: actualizar README"
+```
+
+### Para usar el script de bash (Git Bash/WSL)
 
 ```bash
 # Hacer ejecutable el script
@@ -82,11 +104,21 @@ chmod +x commit-es.sh
 ./commit-es.sh
 ```
 
+### Para usar template de git
+
+```powershell
+# Configurar template globalmente
+git config --global commit.template .gitmessage
+
+# Hacer commit (abrirá editor con template)
+git commit
+```
+
 ## Configuración de IA personalizada
 
 Si usas GitHub Copilot o otra herramienta de IA, puedes usar este prompt:
 
-```
+```text
 Genera un mensaje de commit en español siguiendo estas reglas:
 
 1. Usa la convención de commits: tipo(scope): descripción
@@ -96,4 +128,40 @@ Genera un mensaje de commit en español siguiendo estas reglas:
 5. Usa presente imperativo: "agregar" no "agregado"
 
 Basándote en estos cambios: [pegar diff de git]
+```
+
+## Solución de problemas
+
+### Si aicommits genera commits en inglés:
+
+1. **Usa el parámetro -t para especificar idioma:**
+   ```powershell
+   aicommits -t "mensaje de commit convencional en español"
+   ```
+
+2. **Cargar el script de PowerShell:**
+   ```powershell
+   . .\PowerShell-Commits.ps1
+   Commit-Spanish
+   ```
+
+3. **Configurar template de git:**
+   ```powershell
+   git config --global commit.template .gitmessage
+   git commit  # Abrirá editor con template en español
+   ```
+
+### Para commits automáticos en español:
+
+Agrega esta función a tu perfil de PowerShell (`$PROFILE`):
+
+```powershell
+function cs { 
+    param([string]$msg)
+    if ($msg) { 
+        git commit -m $msg 
+    } else { 
+        aicommits -t "conventional commit in Spanish" 
+    }
+}
 ```
