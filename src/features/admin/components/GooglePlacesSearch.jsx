@@ -4,14 +4,45 @@ import { MagnifyingGlassIcon, XMarkIcon } from "@heroicons/react/24/solid";
 
 // Lista de ciudades internacionales conocidas para mejorar la búsqueda
 const INTERNATIONAL_CITIES = [
-  'madrid', 'barcelona', 'paris', 'london', 'rome', 'berlin', 'amsterdam', 
-  'tokyo', 'new york', 'los angeles', 'miami', 'chicago', 'toronto', 
-  'vancouver', 'buenos aires', 'santiago', 'lima', 'bogota', 'caracas',
-  'dubai', 'istanbul', 'moscow', 'beijing', 'hong kong', 'singapore',
-  'sydney', 'melbourne', 'mumbai', 'delhi', 'bangkok', 'seoul'
+  "madrid",
+  "barcelona",
+  "paris",
+  "london",
+  "rome",
+  "berlin",
+  "amsterdam",
+  "tokyo",
+  "new york",
+  "los angeles",
+  "miami",
+  "chicago",
+  "toronto",
+  "vancouver",
+  "buenos aires",
+  "santiago",
+  "lima",
+  "bogota",
+  "caracas",
+  "dubai",
+  "istanbul",
+  "moscow",
+  "beijing",
+  "hong kong",
+  "singapore",
+  "sydney",
+  "melbourne",
+  "mumbai",
+  "delhi",
+  "bangkok",
+  "seoul",
 ];
 
-const GooglePlacesSearch = ({ onPlaceSelected, value, onChange, placeholder = "Buscar una ciudad..." }) => {
+const GooglePlacesSearch = ({
+  onPlaceSelected,
+  value,
+  onChange,
+  placeholder = "Buscar una ciudad...",
+}) => {
   const inputRef = useRef(null);
   const autocompleteRef = useRef(null);
   const places = useMapsLibrary("places");
@@ -23,10 +54,15 @@ const GooglePlacesSearch = ({ onPlaceSelected, value, onChange, placeholder = "B
     const originalWarn = console.warn;
     console.warn = (...args) => {
       const message = args[0];
-      if (typeof message === 'string' && (
-        message.includes('google.maps.places.Autocomplete is not available to new customers') ||
-        message.includes('google.maps.places.PlacesService is not available to new customers')
-      )) {
+      if (
+        typeof message === "string" &&
+        (message.includes(
+          "google.maps.places.Autocomplete is not available to new customers",
+        ) ||
+          message.includes(
+            "google.maps.places.PlacesService is not available to new customers",
+          ))
+      ) {
         return; // Suprimir estos warnings específicos de Google Places
       }
       originalWarn.apply(console, args);
@@ -39,21 +75,24 @@ const GooglePlacesSearch = ({ onPlaceSelected, value, onChange, placeholder = "B
         // Sin restricciones de país para permitir búsquedas globales
         // Sin región específica para obtener mejores resultados internacionales
         fields: [
-          "place_id", 
-          "formatted_address", 
-          "geometry", 
-          "name", 
-          "address_components"
-        ]
+          "place_id",
+          "formatted_address",
+          "geometry",
+          "name",
+          "address_components",
+        ],
       });
     }
 
-    const listener = autocompleteRef.current.addListener("place_changed", () => {
-      const place = autocompleteRef.current.getPlace();
-      if (place.geometry) {
-        onPlaceSelected(place);
-      }
-    });
+    const listener = autocompleteRef.current.addListener(
+      "place_changed",
+      () => {
+        const place = autocompleteRef.current.getPlace();
+        if (place.geometry) {
+          onPlaceSelected(place);
+        }
+      },
+    );
 
     // Restaurar console.warn
     console.warn = originalWarn;

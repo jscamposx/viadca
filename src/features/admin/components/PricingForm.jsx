@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { FiDollarSign, FiTag, FiX } from 'react-icons/fi';
+import React, { useState } from "react";
+import { FiDollarSign, FiTag, FiX } from "react-icons/fi";
 
 const PricingForm = ({ formData, onFormChange }) => {
   const [showDiscount, setShowDiscount] = useState(!!formData.descuento);
@@ -40,7 +40,7 @@ const PricingForm = ({ formData, onFormChange }) => {
             />
           </div>
         </div>
-        
+
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
             Anticipo
@@ -59,7 +59,7 @@ const PricingForm = ({ formData, onFormChange }) => {
             />
           </div>
         </div>
-        
+
         <div>
           {!showDiscount ? (
             <div className="flex flex-col justify-end h-full">

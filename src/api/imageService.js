@@ -4,7 +4,7 @@ import apiClient from "./axiosConfig";
 export const uploadImageToPaquete = (paqueteId, formData) => {
   return apiClient.post(`/admin/paquetes/${paqueteId}/imagenes`, formData, {
     headers: {
-      'Content-Type': 'multipart/form-data',
+      "Content-Type": "multipart/form-data",
     },
   });
 };

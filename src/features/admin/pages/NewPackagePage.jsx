@@ -85,12 +85,24 @@ const NuevoPaquete = () => {
   const sections = [
     { id: "basicos", label: "Básicos", description: "Título y fechas" },
     { id: "precios", label: "Precios", description: "Costos y descuentos" },
-    { id: "ubicaciones", label: "Ubicaciones", description: "Origen y destinos" },
+    {
+      id: "ubicaciones",
+      label: "Ubicaciones",
+      description: "Origen y destinos",
+    },
     { id: "imagenes", label: "Imágenes", description: "Fotos del destino" },
     { id: "hotel", label: "Hotel", description: "Hospedaje incluido" },
-    { id: "mayoristas", label: "Mayoristas", description: "Socios distribuidores" },
+    {
+      id: "mayoristas",
+      label: "Mayoristas",
+      description: "Socios distribuidores",
+    },
     { id: "itinerario", label: "Itinerario", description: "Plan de viaje" },
-    { id: "configuracion", label: "Configuración", description: "Estado y notas" },
+    {
+      id: "configuracion",
+      label: "Configuración",
+      description: "Estado y notas",
+    },
   ];
 
   useEffect(() => {
@@ -162,7 +174,9 @@ const NuevoPaquete = () => {
                         }`}
                       >
                         <div className="flex items-center gap-1">
-                          <span className={`${isCompleted ? "hidden" : "flex"}`}>
+                          <span
+                            className={`${isCompleted ? "hidden" : "flex"}`}
+                          >
                             {sectionIcons[section.id]}
                           </span>
                           {isCompleted && (

@@ -22,13 +22,13 @@ export const usePackageForm = (initialPackageData = null) => {
     titulo: "",
     fecha_inicio: "",
     fecha_fin: "",
-    incluye: null,  // Puede ser null
-    no_incluye: null,  // Puede ser null
-    requisitos: null,  // Puede ser null
+    incluye: null, // Puede ser null
+    no_incluye: null, // Puede ser null
+    requisitos: null, // Puede ser null
     descuento: "",
-    anticipo: null,  // Puede ser null
+    anticipo: null, // Puede ser null
     precio_total: "",
-    notas: null,  // Puede ser null
+    notas: null, // Puede ser null
     itinerario_texto: "",
     activo: true, // Campo requerido por el backend
     origen: "Durango, México", // Valor por defecto
@@ -40,7 +40,7 @@ export const usePackageForm = (initialPackageData = null) => {
     additionalDestinations: [], // Para destinos adicionales
     destinos: [],
     imagenes: [],
-    hotel: null,  // Puede ser null
+    hotel: null, // Puede ser null
     mayoristasIds: [], // Añadido para los IDs de mayoristas
   });
 
@@ -56,15 +56,17 @@ export const usePackageForm = (initialPackageData = null) => {
         origen_lng: initialPackageData.origen_lng || -104.6532,
         // Asegurar que los campos de destino estén poblados desde el destino principal
         destino: initialDestino.destino || initialPackageData.destino,
-        destino_lat: initialDestino.destino_lat || initialPackageData.destino_lat,
-        destino_lng: initialDestino.destino_lng || initialPackageData.destino_lng,
+        destino_lat:
+          initialDestino.destino_lat || initialPackageData.destino_lat,
+        destino_lng:
+          initialDestino.destino_lng || initialPackageData.destino_lng,
         // Mapear destinos adicionales
         additionalDestinations: (initialPackageData.destinos || [])
           .slice(1) // Omitir el primer destino (principal)
-          .map(dest => ({
+          .map((dest) => ({
             name: dest.destino,
             lat: dest.destino_lat,
-            lng: dest.destino_lng
+            lng: dest.destino_lng,
           })),
       });
     }
@@ -75,72 +77,79 @@ export const usePackageForm = (initialPackageData = null) => {
 
   useEffect(() => {
     setSearchValue(
-      selectionMode === "destino" 
-        ? formData.destino 
-        : formData.origen
+      selectionMode === "destino" ? formData.destino : formData.origen,
     );
   }, [selectionMode, formData.origen, formData.destino]);
 
-  const handlePlaceSelected = useCallback((place) => {
-    const { geometry, formatted_address } = place;
-    if (!geometry) return;
+  const handlePlaceSelected = useCallback(
+    (place) => {
+      const { geometry, formatted_address } = place;
+      if (!geometry) return;
 
-    const { lat, lng } = geometry.location;
-    const simplifiedAddress = formatted_address
-      .split(",")
-      .slice(0, 2)
-      .join(", ");
+      const { lat, lng } = geometry.location;
+      const simplifiedAddress = formatted_address
+        .split(",")
+        .slice(0, 2)
+        .join(", ");
 
-    setFormData((prev) => ({
-      ...prev,
-      ...(selectionMode === "destino"
-        ? {
-            destino: simplifiedAddress,
-            destino_lat: lat(),
-            destino_lng: lng(),
+      setFormData((prev) => ({
+        ...prev,
+        ...(selectionMode === "destino"
+          ? {
+              destino: simplifiedAddress,
+              destino_lat: lat(),
+              destino_lng: lng(),
+            }
+          : {
+              origen: simplifiedAddress,
+              origen_lat: lat(),
+              origen_lng: lng(),
+            }),
+      }));
+    },
+    [selectionMode],
+  );
+
+  const onMapClick = useCallback(
+    (event) => {
+      const latLng = event.detail.latLng;
+      if (!latLng) return;
+
+      const geocoder = new window.google.maps.Geocoder();
+      geocoder.geocode(
+        {
+          location: latLng,
+          language: "es",
+          region: "MX", // Preferencia por México, pero no restricción
+        },
+        (results, status) => {
+          if (status === "OK" && results[0]) {
+            const place = results[0];
+            const simplifiedAddress = place.formatted_address
+              .split(",")
+              .slice(0, 2)
+              .join(", ");
+
+            setFormData((prev) => ({
+              ...prev,
+              ...(selectionMode === "destino"
+                ? {
+                    destino: simplifiedAddress,
+                    destino_lat: latLng.lat,
+                    destino_lng: latLng.lng,
+                  }
+                : {
+                    origen: simplifiedAddress,
+                    origen_lat: latLng.lat,
+                    origen_lng: latLng.lng,
+                  }),
+            }));
           }
-        : {
-            origen: simplifiedAddress,
-            origen_lat: lat(),
-            origen_lng: lng(),
-          })
-    }));
-  }, [selectionMode]);
-
-  const onMapClick = useCallback((event) => {
-    const latLng = event.detail.latLng;
-    if (!latLng) return;
-
-    const geocoder = new window.google.maps.Geocoder();
-    geocoder.geocode({ 
-      location: latLng,
-      language: "es",
-      region: "MX" // Preferencia por México, pero no restricción
-    }, (results, status) => {
-      if (status === "OK" && results[0]) {
-        const place = results[0];
-        const simplifiedAddress = place.formatted_address
-          .split(",")
-          .slice(0, 2)
-          .join(", ");
-
-        setFormData((prev) => ({
-          ...prev,
-          ...(selectionMode === "destino"
-            ? {
-                destino: simplifiedAddress,
-                destino_lat: latLng.lat,
-                destino_lng: latLng.lng,
-              }
-            : {
-                origen: simplifiedAddress,
-                origen_lat: latLng.lat,
-                origen_lng: latLng.lng,
-              })
-        }));
-      }
-    });
-  }, [selectionMode]);
+        },
+      );
+    },
+    [selectionMode],
+  );
 
   const handleFormChange = (e) => {
     const { name, value } = e.target;
@@ -155,28 +164,38 @@ export const usePackageForm = (initialPackageData = null) => {
     setFormData((prev) => ({ ...prev, hotel: hotel }));
   }, []);
 
-  const handleAddDestination = useCallback((destination) => {
-    // Verificar que no sea duplicado
-    const isDuplicate = 
-      (formData.destino === destination.name) ||
-      (formData.additionalDestinations || []).some(dest => dest.name === destination.name);
-    
-    if (isDuplicate) {
-      console.warn('Destino duplicado, no se agregará:', destination.name);
-      return false;
-    }
+  const handleAddDestination = useCallback(
+    (destination) => {
+      // Verificar que no sea duplicado
+      const isDuplicate =
+        formData.destino === destination.name ||
+        (formData.additionalDestinations || []).some(
+          (dest) => dest.name === destination.name,
+        );
 
-    setFormData((prev) => ({
-      ...prev,
-      additionalDestinations: [...(prev.additionalDestinations || []), destination]
-    }));
-    return true;
-  }, [formData.destino, formData.additionalDestinations]);
+      if (isDuplicate) {
+        console.warn("Destino duplicado, no se agregará:", destination.name);
+        return false;
+      }
+
+      setFormData((prev) => ({
+        ...prev,
+        additionalDestinations: [
+          ...(prev.additionalDestinations || []),
+          destination,
+        ],
+      }));
+      return true;
+    },
+    [formData.destino, formData.additionalDestinations],
+  );
 
   const handleRemoveDestination = useCallback((index) => {
     setFormData((prev) => ({
       ...prev,
-      additionalDestinations: prev.additionalDestinations.filter((_, i) => i !== index)
+      additionalDestinations: prev.additionalDestinations.filter(
+        (_, i) => i !== index,
+      ),
     }));
   }, []);
 
@@ -258,13 +277,29 @@ export const usePackageForm = (initialPackageData = null) => {
       origen_lng: formData.origen_lng,
       fecha_inicio: formData.fecha_inicio,
       fecha_fin: formData.fecha_fin,
-      incluye: formData.incluye && formData.incluye.trim() !== "" ? formData.incluye : null,  // Puede ser null
-      no_incluye: formData.no_incluye && formData.no_incluye.trim() !== "" ? formData.no_incluye : null,  // Puede ser null
-      requisitos: formData.requisitos && formData.requisitos.trim() !== "" ? formData.requisitos : null,  // Puede ser null
+      incluye:
+        formData.incluye && formData.incluye.trim() !== ""
+          ? formData.incluye
+          : null, // Puede ser null
+      no_incluye:
+        formData.no_incluye && formData.no_incluye.trim() !== ""
+          ? formData.no_incluye
+          : null, // Puede ser null
+      requisitos:
+        formData.requisitos && formData.requisitos.trim() !== ""
+          ? formData.requisitos
+          : null, // Puede ser null
       precio_total: parseFloat(formData.precio_total),
-      descuento: formData.descuento && formData.descuento !== "" ? parseFloat(formData.descuento) : null,
-      anticipo: formData.anticipo && formData.anticipo !== "" ? parseFloat(formData.anticipo) : null,  // Maneja null y string vacío
-      notas: formData.notas && formData.notas.trim() !== "" ? formData.notas : null,  // Puede ser null
+      descuento:
+        formData.descuento && formData.descuento !== ""
+          ? parseFloat(formData.descuento)
+          : null,
+      anticipo:
+        formData.anticipo && formData.anticipo !== ""
+          ? parseFloat(formData.anticipo)
+          : null, // Maneja null y string vacío
+      notas:
+        formData.notas && formData.notas.trim() !== "" ? formData.notas : null, // Puede ser null
       activo: formData.activo,
       mayoristasIds: formData.mayoristasIds,
       itinerario_texto: formData.itinerario_texto,

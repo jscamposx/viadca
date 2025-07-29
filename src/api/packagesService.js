@@ -35,6 +35,6 @@ export const deletePaquete = (id) => {
 // Función para exportar paquete a Excel (usando ID)
 export const exportToExcel = (id) => {
   return apiClient.get(`/admin/paquetes/${id}/export`, {
-    responseType: 'blob',
+    responseType: "blob",
   });
 };

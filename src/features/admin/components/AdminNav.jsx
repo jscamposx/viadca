@@ -77,7 +77,11 @@ const AdminNav = ({ isOpen, setIsOpen }) => {
   const navLinks = [
     { to: "/admin", icon: <FiHome size={20} />, label: "Dashboard" },
     { to: "/admin/paquetes", icon: <FiPackage size={20} />, label: "Paquetes" },
-    { to: "/admin/mayoristas", icon: <FiUsers size={20} />, label: "Mayoristas" },
+    {
+      to: "/admin/mayoristas",
+      icon: <FiUsers size={20} />,
+      label: "Mayoristas",
+    },
   ];
 
   const userLinks = [
@@ -130,9 +134,15 @@ const AdminNav = ({ isOpen, setIsOpen }) => {
           >
             <div className="relative">
               {isMobileMenuOpen ? (
-                <FiX size={24} className="transition-transform duration-300 group-hover:rotate-90" />
+                <FiX
+                  size={24}
+                  className="transition-transform duration-300 group-hover:rotate-90"
+                />
               ) : (
-                <FiMenu size={24} className="transition-transform duration-300 group-hover:scale-110" />
+                <FiMenu
+                  size={24}
+                  className="transition-transform duration-300 group-hover:scale-110"
+                />
               )}
             </div>
           </button>
@@ -193,37 +203,53 @@ const AdminNav = ({ isOpen, setIsOpen }) => {
       >
         <div className="relative">
           {isOpen ? (
-            <FiChevronLeft size={20} className="transition-transform duration-300 group-hover:scale-110" />
+            <FiChevronLeft
+              size={20}
+              className="transition-transform duration-300 group-hover:scale-110"
+            />
           ) : (
-            <FiChevronRight size={20} className="transition-transform duration-300 group-hover:scale-110" />
+            <FiChevronRight
+              size={20}
+              className="transition-transform duration-300 group-hover:scale-110"
+            />
           )}
         </div>
-        
+
         {/* Tooltip mejorado */}
-        <div className="absolute left-full top-1/2 transform -translate-y-1/2 ml-3 
+        <div
+          className="absolute left-full top-1/2 transform -translate-y-1/2 ml-3 
                         bg-slate-800 text-white px-3 py-2 rounded-lg shadow-xl 
                         font-medium text-sm whitespace-nowrap z-50 
                         opacity-0 group-hover:opacity-100 transition-all duration-300
-                        pointer-events-none">
+                        pointer-events-none"
+        >
           {isOpen ? "Contraer menú" : "Expandir menú"}
-          <div className="absolute right-full top-1/2 transform -translate-y-1/2 
-                          border-4 border-transparent border-r-slate-800"></div>
+          <div
+            className="absolute right-full top-1/2 transform -translate-y-1/2 
+                          border-4 border-transparent border-r-slate-800"
+          ></div>
         </div>
       </button>
 
       {/* Indicador sutil en el borde cuando está comprimida */}
       {!isOpen && (
-        <div className="absolute top-1/2 -translate-y-1/2 -right-1 w-1 h-12 bg-gradient-to-b from-blue-400 to-blue-600 
+        <div
+          className="absolute top-1/2 -translate-y-1/2 -right-1 w-1 h-12 bg-gradient-to-b from-blue-400 to-blue-600 
                         rounded-full opacity-0 group-hover:opacity-50 transition-all duration-300
-                        shadow-lg"></div>
+                        shadow-lg"
+        ></div>
       )}
 
-      <div className="flex items-center mb-8 mt-4 px-2 py-3 cursor-pointer group/logo
+      <div
+        className="flex items-center mb-8 mt-4 px-2 py-3 cursor-pointer group/logo
                    hover:bg-blue-50 rounded-xl transition-all duration-300"
-           onClick={() => !isOpen && setIsOpen(true)}
-           title={!isOpen ? "Clic para expandir" : ""}>
-        <div className="bg-gradient-to-r from-blue-600 to-indigo-700 p-2 rounded-xl shadow-lg
-                        transition-all duration-300 group-hover/logo:scale-110 group-hover/logo:shadow-xl">
+        onClick={() => !isOpen && setIsOpen(true)}
+        title={!isOpen ? "Clic para expandir" : ""}
+      >
+        <div
+          className="bg-gradient-to-r from-blue-600 to-indigo-700 p-2 rounded-xl shadow-lg
+                        transition-all duration-300 group-hover/logo:scale-110 group-hover/logo:shadow-xl"
+        >
           <FiCompass className="text-white text-2xl" />
         </div>
         <div
@@ -236,17 +262,21 @@ const AdminNav = ({ isOpen, setIsOpen }) => {
           </h1>
           <p className="text-sm text-slate-500 mt-1">Panel de administración</p>
         </div>
-        
+
         {/* Indicador visual cuando está comprimida - mejorado */}
         {!isOpen && (
-          <div className="absolute left-full top-1/2 transform -translate-y-1/2 ml-4 
+          <div
+            className="absolute left-full top-1/2 transform -translate-y-1/2 ml-4 
                           bg-gradient-to-r from-blue-600 to-indigo-700 text-white px-3 py-2 rounded-lg shadow-xl 
                           font-medium text-sm whitespace-nowrap z-50 
                           opacity-0 group-hover/logo:opacity-100 transition-all duration-300
-                          pointer-events-none scale-95 group-hover/logo:scale-100">
+                          pointer-events-none scale-95 group-hover/logo:scale-100"
+          >
             Clic para expandir
-            <div className="absolute right-full top-1/2 transform -translate-y-1/2 
-                            border-4 border-transparent border-r-blue-600"></div>
+            <div
+              className="absolute right-full top-1/2 transform -translate-y-1/2 
+                            border-4 border-transparent border-r-blue-600"
+            ></div>
           </div>
         )}
       </div>

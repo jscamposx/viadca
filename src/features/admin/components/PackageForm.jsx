@@ -23,14 +23,14 @@ const PackageForm = ({ formData, onFormChange }) => {
   const handleMayoristaChange = (mayoristaId) => {
     const currentIds = formData.mayoristasIds || [];
     let newIds;
-    
+
     if (currentIds.includes(mayoristaId)) {
-      newIds = currentIds.filter(id => id !== mayoristaId);
+      newIds = currentIds.filter((id) => id !== mayoristaId);
     } else {
       newIds = [...currentIds, mayoristaId];
     }
-    
-    onFormChange({ target: { name: 'mayoristasIds', value: newIds } });
+
+    onFormChange({ target: { name: "mayoristasIds", value: newIds } });
   };
 
   return (
@@ -216,14 +216,20 @@ const PackageForm = ({ formData, onFormChange }) => {
                 >
                   <input
                     type="checkbox"
-                    checked={(formData.mayoristasIds || []).includes(mayorista.id)}
+                    checked={(formData.mayoristasIds || []).includes(
+                      mayorista.id,
+                    )}
                     onChange={() => handleMayoristaChange(mayorista.id)}
                     className="mr-3 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
                   />
                   <div className="flex-1">
-                    <div className="font-medium text-gray-900">{mayorista.nombre}</div>
+                    <div className="font-medium text-gray-900">
+                      {mayorista.nombre}
+                    </div>
                     {mayorista.email && (
-                      <div className="text-sm text-gray-500">{mayorista.email}</div>
+                      <div className="text-sm text-gray-500">
+                        {mayorista.email}
+                      </div>
                     )}
                   </div>
                 </label>
@@ -239,7 +245,11 @@ const PackageForm = ({ formData, onFormChange }) => {
               type="checkbox"
               name="activo"
               checked={formData.activo || false}
-              onChange={(e) => onFormChange({ target: { name: 'activo', value: e.target.checked } })}
+              onChange={(e) =>
+                onFormChange({
+                  target: { name: "activo", value: e.target.checked },
+                })
+              }
               className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
             />
             <span className="text-sm font-medium text-gray-700">

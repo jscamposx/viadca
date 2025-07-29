@@ -18,7 +18,8 @@ import api from "../../../api";
 import { useNotification } from "./AdminLayout";
 
 const AdminMayoristasPage = () => {
-  const { mayoristas, setMayoristas, loading, error, deleteMayorista } = useMayoristas();
+  const { mayoristas, setMayoristas, loading, error, deleteMayorista } =
+    useMayoristas();
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredMayoristas, setFilteredMayoristas] = useState([]);
   const [sortConfig, setSortConfig] = useState({
@@ -31,7 +32,9 @@ const AdminMayoristasPage = () => {
   const { addNotification } = useNotification();
 
   const handleDelete = async (mayoristaId) => {
-    if (window.confirm("¿Estás seguro de que quieres eliminar este mayorista?")) {
+    if (
+      window.confirm("¿Estás seguro de que quieres eliminar este mayorista?")
+    ) {
       try {
         await deleteMayorista(mayoristaId);
         addNotification("Mayorista eliminado correctamente", "success");
@@ -57,26 +60,29 @@ const AdminMayoristasPage = () => {
     setSortConfig({ key: "nombre", direction: "asc" });
   };
 
-  // Filtrado y ordenamiento
   useEffect(() => {
     let filtered = [...mayoristas];
 
-    // Filtro por búsqueda
+  
     if (searchTerm) {
       filtered = filtered.filter(
         (mayorista) =>
           mayorista.nombre?.toLowerCase().includes(searchTerm.toLowerCase()) ||
           mayorista.clave?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          mayorista.tipo_producto?.toLowerCase().includes(searchTerm.toLowerCase())
+          mayorista.tipo_producto
+            ?.toLowerCase()
+            .includes(searchTerm.toLowerCase()),
       );
     }
 
-    // Filtro por tipo de producto
+    
     if (tipoFilter) {
-      filtered = filtered.filter((mayorista) => mayorista.tipo_producto === tipoFilter);
+      filtered = filtered.filter(
+        (mayorista) => mayorista.tipo_producto === tipoFilter,
+      );
     }
 
-    // Ordenamiento
+   
     if (sortConfig.key) {
       filtered.sort((a, b) => {
         let aValue = a[sortConfig.key];
@@ -100,8 +106,10 @@ const AdminMayoristasPage = () => {
     setFilteredMayoristas(filtered);
   }, [mayoristas, searchTerm, tipoFilter, sortConfig]);
 
-  // Obtener tipos únicos para el filtro
-  const tiposUnicos = [...new Set(mayoristas.map((m) => m.tipo_producto))].filter(Boolean);
+
+  const tiposUnicos = [
+    ...new Set(mayoristas.map((m) => m.tipo_producto)),
+  ].filter(Boolean);
 
   if (loading) {
     return (
@@ -275,9 +283,14 @@ const AdminMayoristasPage = () => {
             <tbody className="bg-white divide-y divide-gray-200">
               {filteredMayoristas.length === 0 ? (
                 <tr>
-                  <td colSpan="5" className="px-6 py-12 text-center text-gray-500">
+                  <td
+                    colSpan="5"
+                    className="px-6 py-12 text-center text-gray-500"
+                  >
                     <FiUsers className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-                    <p className="text-lg font-medium">No se encontraron mayoristas</p>
+                    <p className="text-lg font-medium">
+                      No se encontraron mayoristas
+                    </p>
                     <p className="text-sm">
                       {mayoristas.length === 0
                         ? "Comienza creando tu primer mayorista"
@@ -345,7 +358,8 @@ const AdminMayoristasPage = () => {
       {/* Estadísticas */}
       {filteredMayoristas.length > 0 && (
         <div className="mt-6 text-sm text-gray-500 text-center">
-          Mostrando {filteredMayoristas.length} de {mayoristas.length} mayoristas
+          Mostrando {filteredMayoristas.length} de {mayoristas.length}{" "}
+          mayoristas
         </div>
       )}
     </div>

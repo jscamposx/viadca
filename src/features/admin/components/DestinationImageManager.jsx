@@ -24,18 +24,22 @@ const ImageTile = ({
     onDragOver={(e) => onDragOver(e, index)}
     onDrop={(e) => onDrop(e, index)}
     className={`relative group bg-gray-100 rounded-lg overflow-hidden shadow-sm cursor-move transition-all duration-200 ${
-      isDragOver && draggedIndex !== index ? "ring-2 ring-blue-400 border-l-4 border-blue-500" : ""
+      isDragOver && draggedIndex !== index
+        ? "ring-2 ring-blue-400 border-l-4 border-blue-500"
+        : ""
     } ${isDragging && draggedIndex === index ? "opacity-50 rotate-2 scale-95" : ""} hover:shadow-lg`}
   >
     {/* Indicador de orden con animación */}
-    <div className={`absolute top-2 left-2 z-20 text-white text-xs font-bold px-2 py-1 rounded-full shadow-md transition-all duration-200 ${
-      index === 0 
-        ? "bg-gradient-to-r from-yellow-500 to-orange-600" 
-        : "bg-blue-600"
-    }`}>
+    <div
+      className={`absolute top-2 left-2 z-20 text-white text-xs font-bold px-2 py-1 rounded-full shadow-md transition-all duration-200 ${
+        index === 0
+          ? "bg-gradient-to-r from-yellow-500 to-orange-600"
+          : "bg-blue-600"
+      }`}
+    >
       #{index + 1}
     </div>
-    
+
     {/* Badge de imagen principal con mejor diseño */}
     {index === 0 && (
       <div className="absolute top-2 right-2 z-20 bg-gradient-to-r from-yellow-400 to-orange-500 text-white text-xs font-bold px-2 py-1 rounded-full shadow-md animate-pulse">
@@ -59,7 +63,7 @@ const ImageTile = ({
         className="w-full h-full object-cover transition-transform duration-200 group-hover:scale-105"
       />
     </div>
-    
+
     {/* Botón de eliminar mejorado */}
     <div className="absolute top-2 left-16 z-10">
       <button
@@ -85,8 +89,19 @@ const ImageTile = ({
     {/* Indicador de drag handle */}
     <div className="absolute bottom-2 right-2 z-10 opacity-0 group-hover:opacity-100 transition-opacity">
       <div className="bg-gray-800 bg-opacity-75 text-white p-1 rounded">
-        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          className="h-4 w-4"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"
+          />
         </svg>
       </div>
     </div>
@@ -141,11 +156,11 @@ const DestinationImageManager = ({ destination, onImagesChange }) => {
         `${destinationName} monumentos`,
         `${destinationName} arquitectura`,
         `${destinationName} paisajes`,
-        `${destinationName} atracciones turisticas`
+        `${destinationName} atracciones turisticas`,
       ];
 
       // Hacer múltiples búsquedas para obtener imágenes más relevantes
-      const searchPromises = searchQueries.map(query =>
+      const searchPromises = searchQueries.map((query) =>
         axios.get(`https://api.pexels.com/v1/search`, {
           headers: {
             Authorization: PEXELS_API_KEY,
@@ -153,24 +168,25 @@ const DestinationImageManager = ({ destination, onImagesChange }) => {
           params: {
             query: query,
             per_page: 6, // 6 imágenes por búsqueda para un total de ~30
-            orientation: 'landscape', // Preferir imágenes horizontales
+            orientation: "landscape", // Preferir imágenes horizontales
           },
-        })
+        }),
       );
 
       const responses = await Promise.all(searchPromises);
-      
+
       // Combinar todas las fotos y eliminar duplicados
       const allPhotos = [];
-      responses.forEach(response => {
+      responses.forEach((response) => {
         if (response.data.photos) {
           allPhotos.push(...response.data.photos);
         }
       });
 
       // Eliminar duplicados basados en el ID
-      const uniquePhotos = allPhotos.filter((photo, index, self) => 
-        index === self.findIndex(p => p.id === photo.id)
+      const uniquePhotos = allPhotos.filter(
+        (photo, index, self) =>
+          index === self.findIndex((p) => p.id === photo.id),
       );
 
       if (uniquePhotos.length > 0) {
@@ -179,7 +195,7 @@ const DestinationImageManager = ({ destination, onImagesChange }) => {
           url: photo.src.large,
           isUploaded: false,
         }));
-        
+
         setAllAvailableImages(photoData);
         // Mostrar solo las primeras 10 imágenes inicialmente
         setImages(photoData.slice(0, 10));
@@ -224,7 +240,7 @@ const DestinationImageManager = ({ destination, onImagesChange }) => {
         };
       }),
     );
-    
+
     // Agregar a ambas listas
     setImages((prevImages) => [...prevImages, ...newImages]);
     setAllAvailableImages((prevImages) => [...prevImages, ...newImages]);
@@ -239,10 +255,10 @@ const DestinationImageManager = ({ destination, onImagesChange }) => {
     // Remover de ambas listas
     const newImages = images.filter((img) => img.id !== id);
     const newAllImages = allAvailableImages.filter((img) => img.id !== id);
-    
+
     setImages(newImages);
     setAllAvailableImages(newAllImages);
-    
+
     // Si estamos en modo "mostrar todas" y ahora hay menos de 10, cambiar el estado
     if (showAllImages && newAllImages.length <= 10) {
       setShowAllImages(false);
@@ -263,7 +279,7 @@ const DestinationImageManager = ({ destination, onImagesChange }) => {
   const handleDragOver = (e, index) => {
     e.preventDefault();
     e.dataTransfer.dropEffect = "move";
-    
+
     if (draggedIndex !== null && draggedIndex !== index) {
       setDragOverIndex(index);
     }
@@ -271,35 +287,39 @@ const DestinationImageManager = ({ destination, onImagesChange }) => {
 
   const handleDrop = (e, dropIndex) => {
     e.preventDefault();
-    
+
     if (draggedIndex !== null && draggedIndex !== dropIndex) {
       const newImages = [...images];
       const draggedImage = newImages[draggedIndex];
-      
+
       // Remover el elemento arrastrado
       newImages.splice(draggedIndex, 1);
-      
+
       // Insertar en la nueva posición
       newImages.splice(dropIndex, 0, draggedImage);
-      
+
       setImages(newImages);
-      
+
       // También actualizar allAvailableImages si es necesario
       if (showAllImages) {
         setAllAvailableImages(newImages);
       } else {
         // Mantener el orden en allAvailableImages pero solo para los primeros elementos
         const newAllImages = [...allAvailableImages];
-        const draggedImageInAll = newAllImages.find(img => img.id === draggedImage.id);
+        const draggedImageInAll = newAllImages.find(
+          (img) => img.id === draggedImage.id,
+        );
         if (draggedImageInAll) {
-          const oldIndexInAll = newAllImages.findIndex(img => img.id === draggedImage.id);
+          const oldIndexInAll = newAllImages.findIndex(
+            (img) => img.id === draggedImage.id,
+          );
           newAllImages.splice(oldIndexInAll, 1);
           newAllImages.splice(dropIndex, 0, draggedImageInAll);
           setAllAvailableImages(newAllImages);
         }
       }
     }
-    
+
     setDraggedIndex(null);
     setDragOverIndex(null);
   };
@@ -397,7 +417,8 @@ const DestinationImageManager = ({ destination, onImagesChange }) => {
                 #1
               </div>
               <span className="text-sm text-blue-800 font-medium">
-                La primera imagen será la <strong>imagen principal</strong> del paquete
+                La primera imagen será la <strong>imagen principal</strong> del
+                paquete
               </span>
             </div>
             <p className="text-xs text-blue-600 mt-1 ml-8">
@@ -426,14 +447,16 @@ const DestinationImageManager = ({ destination, onImagesChange }) => {
           {/* Resumen del orden */}
           {images.length > 1 && (
             <div className="bg-gray-50 border border-gray-200 rounded-lg p-3">
-              <h4 className="text-sm font-medium text-gray-700 mb-2">Orden actual de las imágenes:</h4>
+              <h4 className="text-sm font-medium text-gray-700 mb-2">
+                Orden actual de las imágenes:
+              </h4>
               <div className="flex flex-wrap gap-2">
                 {images.map((image, index) => (
-                  <div 
+                  <div
                     key={image.id}
                     className={`text-xs px-2 py-1 rounded-full ${
-                      index === 0 
-                        ? "bg-yellow-100 text-yellow-800 font-bold" 
+                      index === 0
+                        ? "bg-yellow-100 text-yellow-800 font-bold"
                         : "bg-gray-100 text-gray-600"
                     }`}
                   >

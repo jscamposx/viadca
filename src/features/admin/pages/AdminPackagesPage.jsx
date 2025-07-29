@@ -56,7 +56,7 @@ const AdminPaquetes = () => {
     if (paquetes) {
       let result = [...paquetes];
 
-      // Aplicar filtro de búsqueda
+    
       if (searchTerm) {
         const term = searchTerm.toLowerCase();
         result = result.filter(
@@ -66,7 +66,7 @@ const AdminPaquetes = () => {
         );
       }
 
-      // Aplicar filtro de precio
+
       if (priceFilter.min || priceFilter.max) {
         const minPrice = priceFilter.min ? parseFloat(priceFilter.min) : 0;
         const maxPrice = priceFilter.max
@@ -79,7 +79,6 @@ const AdminPaquetes = () => {
         });
       }
 
-      // Aplicar ordenamiento
       if (sortConfig.key) {
         result.sort((a, b) => {
           const aValue = a[sortConfig.key];

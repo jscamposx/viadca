@@ -40,17 +40,22 @@ const HotelFinder = ({ destination, onHotelSelect, selectedHotel }) => {
         const originalWarn = console.warn;
         console.warn = (...args) => {
           const message = args[0];
-          if (typeof message === 'string' && (
-            message.includes('google.maps.places.PlacesService is not available to new customers') ||
-            message.includes('google.maps.places.Autocomplete is not available to new customers')
-          )) {
+          if (
+            typeof message === "string" &&
+            (message.includes(
+              "google.maps.places.PlacesService is not available to new customers",
+            ) ||
+              message.includes(
+                "google.maps.places.Autocomplete is not available to new customers",
+              ))
+          ) {
             return; // Suprimir estos warnings específicos de Google Places
           }
           originalWarn.apply(console, args);
         };
 
         const service = new places.PlacesService(document.createElement("div"));
-        
+
         // Restaurar console.warn
         console.warn = originalWarn;
 

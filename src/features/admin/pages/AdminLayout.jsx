@@ -58,7 +58,7 @@ const AdminLayout = () => {
       const mobile = window.innerWidth < 768;
       setIsMobile(mobile);
 
-      // Solo cerrar la sidebar en móvil, no abrirla automáticamente en desktop
+
       if (mobile) {
         setSidebarOpen(false);
       }

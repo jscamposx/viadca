@@ -135,11 +135,13 @@ Basándote en estos cambios: [pegar diff de git]
 ### Si aicommits genera commits en inglés:
 
 1. **Usa el parámetro -t para especificar idioma:**
+
    ```powershell
    aicommits -t "mensaje de commit convencional en español"
    ```
 
 2. **Cargar el script de PowerShell:**
+
    ```powershell
    . .\PowerShell-Commits.ps1
    Commit-Spanish
@@ -156,12 +158,12 @@ Basándote en estos cambios: [pegar diff de git]
 Agrega esta función a tu perfil de PowerShell (`$PROFILE`):
 
 ```powershell
-function cs { 
+function cs {
     param([string]$msg)
-    if ($msg) { 
-        git commit -m $msg 
-    } else { 
-        aicommits -t "conventional commit in Spanish" 
+    if ($msg) {
+        git commit -m $msg
+    } else {
+        aicommits -t "conventional commit in Spanish"
     }
 }
 ```

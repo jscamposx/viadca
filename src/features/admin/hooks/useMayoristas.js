@@ -38,8 +38,8 @@ export const useMayoristas = () => {
       const response = await api.mayoristas.updateMayorista(id, mayoristaData);
       setMayoristas((prev) =>
         prev.map((mayorista) =>
-          mayorista.id === id ? response.data : mayorista
-        )
+          mayorista.id === id ? response.data : mayorista,
+        ),
       );
       return response.data;
     } catch (err) {

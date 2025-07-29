@@ -15,7 +15,8 @@ const NewMayoristaPage = () => {
   const navigate = useNavigate();
   const { id } = useParams();
   const isEditing = Boolean(id);
-  const { createMayorista, updateMayorista, getMayoristaById } = useMayoristas();
+  const { createMayorista, updateMayorista, getMayoristaById } =
+    useMayoristas();
   const { addNotification } = useNotification();
 
   const [formData, setFormData] = useState({
@@ -97,7 +98,7 @@ const NewMayoristaPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (!validateForm()) {
       return;
     }
@@ -121,14 +122,14 @@ const NewMayoristaPage = () => {
       navigate("/admin/mayoristas");
     } catch (error) {
       console.error("Error al guardar mayorista:", error);
-      
+
       // Manejar errores específicos del servidor
       if (error.response?.data?.message) {
         addNotification(error.response.data.message, "error");
       } else {
         addNotification(
           `Error al ${isEditing ? "actualizar" : "crear"} el mayorista`,
-          "error"
+          "error",
         );
       }
     } finally {
@@ -196,7 +197,10 @@ const NewMayoristaPage = () => {
 
             {/* Nombre */}
             <div>
-              <label htmlFor="nombre" className="block text-sm font-medium text-gray-700 mb-2">
+              <label
+                htmlFor="nombre"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
                 Nombre del Mayorista *
               </label>
               <input
@@ -220,7 +224,10 @@ const NewMayoristaPage = () => {
 
             {/* Tipo de Producto */}
             <div>
-              <label htmlFor="tipo_producto" className="block text-sm font-medium text-gray-700 mb-2">
+              <label
+                htmlFor="tipo_producto"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
                 Tipo de Producto *
               </label>
               <select
@@ -253,10 +260,13 @@ const NewMayoristaPage = () => {
             <div className="flex items-start gap-3">
               <FiAlertCircle className="text-blue-600 mt-0.5" />
               <div>
-                <h4 className="text-sm font-medium text-blue-900">Información importante</h4>
+                <h4 className="text-sm font-medium text-blue-900">
+                  Información importante
+                </h4>
                 <p className="text-sm text-blue-700 mt-1">
-                  La clave del mayorista se generará automáticamente una vez guardado el registro.
-                  Esta clave será única y se utilizará para identificar al mayorista en el sistema.
+                  La clave del mayorista se generará automáticamente una vez
+                  guardado el registro. Esta clave será única y se utilizará
+                  para identificar al mayorista en el sistema.
                 </p>
               </div>
             </div>
