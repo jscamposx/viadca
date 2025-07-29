@@ -34,6 +34,7 @@ const NuevoPaquete = () => {
     setFormData,
     selectionMode,
     searchValue,
+    origin,
     destination,
     setSelectionMode,
     setSearchValue,
@@ -42,6 +43,8 @@ const NuevoPaquete = () => {
     handleFormChange,
     handleHotelSelected,
     handleImagesChange,
+    handleAddDestination,
+    handleRemoveDestination,
     handleSubmit: formSubmitHandler,
   } = usePackageForm(paquete);
 
@@ -71,7 +74,7 @@ const NuevoPaquete = () => {
 
   const sections = [
     { id: "informacion", label: "Información" },
-    { id: "ubicacion", label: "Ubicación" },
+    { id: "ubicacion", label: "Ubicaciones" },
     { id: "imagenes", label: "Imágenes" },
     { id: "hotel", label: "Hotel" },
     { id: "itinerario", label: "Itinerario" },
@@ -203,10 +206,10 @@ const NuevoPaquete = () => {
                     </div>
                     <div>
                       <h2 className="text-xl font-semibold text-gray-800">
-                        Ubicación del Destino Principal
+                        Ubicaciones del Viaje
                       </h2>
                       <p className="text-gray-600 mt-1">
-                        Define el lugar principal del viaje
+                        Define el lugar de origen y destino del viaje
                       </p>
                     </div>
                   </div>
@@ -214,10 +217,16 @@ const NuevoPaquete = () => {
                 <div className="p-5 sm:p-7">
                   <LocationSelector
                     onMapClick={onMapClick}
+                    origin={origin}
                     destination={destination}
                     onPlaceSelected={handlePlaceSelected}
                     searchValue={searchValue}
                     onSearchValueChange={setSearchValue}
+                    selectionMode={selectionMode}
+                    setSelectionMode={setSelectionMode}
+                    additionalDestinations={formData.additionalDestinations}
+                    onAddDestination={handleAddDestination}
+                    onRemoveDestination={handleRemoveDestination}
                   />
                 </div>
               </div>

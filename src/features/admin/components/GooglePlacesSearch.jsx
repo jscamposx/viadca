@@ -2,7 +2,7 @@ import { useRef, useEffect } from "react";
 import { useMapsLibrary } from "@vis.gl/react-google-maps";
 import { MagnifyingGlassIcon, XMarkIcon } from "@heroicons/react/24/solid";
 
-const GooglePlacesSearch = ({ onPlaceSelected, value, onChange }) => {
+const GooglePlacesSearch = ({ onPlaceSelected, value, onChange, placeholder = "Buscar una ciudad..." }) => {
   const inputRef = useRef(null);
   const placeAutocomplete = useRef(null);
   const listenerRef = useRef(null);
@@ -52,7 +52,7 @@ const GooglePlacesSearch = ({ onPlaceSelected, value, onChange }) => {
       <input
         ref={inputRef}
         type="text"
-        placeholder="Buscar una ciudad..."
+        placeholder={placeholder}
         className="w-full rounded  bg-white p-2 pl-10 pr-10 "
         value={value || ""}
         onChange={(e) => onChange(e.target.value)}
