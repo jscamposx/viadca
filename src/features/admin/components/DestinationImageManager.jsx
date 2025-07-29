@@ -112,11 +112,15 @@ const DestinationImageManager = ({ destination, onImagesChange }) => {
   const [isDragging, setIsDragging] = useState(false);
   const [draggedIndex, setDraggedIndex] = useState(null);
   const [dragOverIndex, setDragOverIndex] = useState(null);
+  const [showAllImages, setShowAllImages] = useState(false);
+  const [allAvailableImages, setAllAvailableImages] = useState([]);
 
   const fetchImagesFromPexels = useCallback(async (destinationName) => {
     if (!destinationName) {
       setImages([]);
+      setAllAvailableImages([]);
       setStatus("idle");
+      setShowAllImages(false);
       return;
     }
 
@@ -131,32 +135,63 @@ const DestinationImageManager = ({ destination, onImagesChange }) => {
     }
 
     try {
-      const response = await axios.get(`https://api.pexels.com/v1/search`, {
-        headers: {
-          Authorization: PEXELS_API_KEY,
-        },
-        params: {
-          query: "lugares turísticos en " + destinationName,
-          per_page: 4,
-        },
+      // Crear búsquedas más específicas para el destino
+      const searchQueries = [
+        `${destinationName} turismo lugares`,
+        `${destinationName} monumentos`,
+        `${destinationName} arquitectura`,
+        `${destinationName} paisajes`,
+        `${destinationName} atracciones turisticas`
+      ];
+
+      // Hacer múltiples búsquedas para obtener imágenes más relevantes
+      const searchPromises = searchQueries.map(query =>
+        axios.get(`https://api.pexels.com/v1/search`, {
+          headers: {
+            Authorization: PEXELS_API_KEY,
+          },
+          params: {
+            query: query,
+            per_page: 6, // 6 imágenes por búsqueda para un total de ~30
+            orientation: 'landscape', // Preferir imágenes horizontales
+          },
+        })
+      );
+
+      const responses = await Promise.all(searchPromises);
+      
+      // Combinar todas las fotos y eliminar duplicados
+      const allPhotos = [];
+      responses.forEach(response => {
+        if (response.data.photos) {
+          allPhotos.push(...response.data.photos);
+        }
       });
 
-      if (response.data.photos && response.data.photos.length > 0) {
-        const photoData = response.data.photos.map((photo) => ({
+      // Eliminar duplicados basados en el ID
+      const uniquePhotos = allPhotos.filter((photo, index, self) => 
+        index === self.findIndex(p => p.id === photo.id)
+      );
+
+      if (uniquePhotos.length > 0) {
+        const photoData = uniquePhotos.map((photo) => ({
           id: `pexels-${photo.id}`,
           url: photo.src.large,
           isUploaded: false,
         }));
-        setImages(photoData);
+        
+        setAllAvailableImages(photoData);
+        // Mostrar solo las primeras 10 imágenes inicialmente
+        setImages(photoData.slice(0, 10));
         setStatus("success");
       } else {
         setImages([]);
+        setAllAvailableImages([]);
         setStatus("no_photos");
       }
-    } catch (err) {
-      console.error(err);
-      setError("No se pudieron cargar las imágenes desde Pexels.");
-      setImages([]);
+    } catch (error) {
+      console.error("Error al buscar imágenes:", error);
+      setError("Error al buscar imágenes en Pexels.");
       setStatus("error");
     }
   }, []);
@@ -166,7 +201,9 @@ const DestinationImageManager = ({ destination, onImagesChange }) => {
       fetchImagesFromPexels(destination.name);
     } else {
       setImages([]);
+      setAllAvailableImages([]);
       setStatus("idle");
+      setShowAllImages(false);
     }
   }, [destination, fetchImagesFromPexels]);
 
@@ -187,7 +224,10 @@ const DestinationImageManager = ({ destination, onImagesChange }) => {
         };
       }),
     );
+    
+    // Agregar a ambas listas
     setImages((prevImages) => [...prevImages, ...newImages]);
+    setAllAvailableImages((prevImages) => [...prevImages, ...newImages]);
     setStatus("success");
   };
 
@@ -196,7 +236,17 @@ const DestinationImageManager = ({ destination, onImagesChange }) => {
   };
 
   const handleRemoveImage = (id) => {
-    setImages((prevImages) => prevImages.filter((img) => img.id !== id));
+    // Remover de ambas listas
+    const newImages = images.filter((img) => img.id !== id);
+    const newAllImages = allAvailableImages.filter((img) => img.id !== id);
+    
+    setImages(newImages);
+    setAllAvailableImages(newAllImages);
+    
+    // Si estamos en modo "mostrar todas" y ahora hay menos de 10, cambiar el estado
+    if (showAllImages && newAllImages.length <= 10) {
+      setShowAllImages(false);
+    }
   };
 
   const handleDragStart = (e, index) => {
@@ -233,6 +283,21 @@ const DestinationImageManager = ({ destination, onImagesChange }) => {
       newImages.splice(dropIndex, 0, draggedImage);
       
       setImages(newImages);
+      
+      // También actualizar allAvailableImages si es necesario
+      if (showAllImages) {
+        setAllAvailableImages(newImages);
+      } else {
+        // Mantener el orden en allAvailableImages pero solo para los primeros elementos
+        const newAllImages = [...allAvailableImages];
+        const draggedImageInAll = newAllImages.find(img => img.id === draggedImage.id);
+        if (draggedImageInAll) {
+          const oldIndexInAll = newAllImages.findIndex(img => img.id === draggedImage.id);
+          newAllImages.splice(oldIndexInAll, 1);
+          newAllImages.splice(dropIndex, 0, draggedImageInAll);
+          setAllAvailableImages(newAllImages);
+        }
+      }
     }
     
     setDraggedIndex(null);
@@ -256,6 +321,18 @@ const DestinationImageManager = ({ destination, onImagesChange }) => {
       handleFiles(e.dataTransfer.files);
       e.dataTransfer.clearData();
     }
+  };
+
+  const handleShowMoreImages = () => {
+    if (allAvailableImages.length > images.length) {
+      setImages(allAvailableImages);
+      setShowAllImages(true);
+    }
+  };
+
+  const handleShowLessImages = () => {
+    setImages(allAvailableImages.slice(0, 10));
+    setShowAllImages(false);
   };
 
   return (
@@ -364,6 +441,30 @@ const DestinationImageManager = ({ destination, onImagesChange }) => {
                   </div>
                 ))}
               </div>
+            </div>
+          )}
+
+          {/* Botón para mostrar más imágenes */}
+          {!showAllImages && allAvailableImages.length > 10 && (
+            <div className="flex justify-center">
+              <button
+                onClick={handleShowMoreImages}
+                className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg shadow-md hover:bg-blue-700 transition-all duration-200"
+              >
+                Ver más imágenes ({allAvailableImages.length - 10} restantes)
+              </button>
+            </div>
+          )}
+
+          {/* Botón para mostrar menos imágenes */}
+          {showAllImages && (
+            <div className="flex justify-center">
+              <button
+                onClick={handleShowLessImages}
+                className="mt-4 px-4 py-2 bg-gray-300 text-gray-800 rounded-lg shadow-md hover:bg-gray-400 transition-all duration-200"
+              >
+                Mostrar menos imágenes
+              </button>
             </div>
           )}
         </div>

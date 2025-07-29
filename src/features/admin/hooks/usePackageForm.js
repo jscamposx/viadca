@@ -70,7 +70,7 @@ export const usePackageForm = (initialPackageData = null) => {
     }
   }, [initialPackageData]);
 
-  const [selectionMode, setSelectionMode] = useState("origen");
+  const [selectionMode, setSelectionMode] = useState("destino");
   const [searchValue, setSearchValue] = useState("");
 
   useEffect(() => {

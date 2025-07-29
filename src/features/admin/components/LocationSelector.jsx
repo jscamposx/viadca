@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Map, AdvancedMarker, Pin } from "@vis.gl/react-google-maps";
 import GooglePlacesSearch from "./GooglePlacesSearch";
 
@@ -31,6 +31,18 @@ const LocationSelector = ({
   const [tempDestination, setTempDestination] = useState(null);
   const [message, setMessage] = useState(null);
   const [newDestinationSearch, setNewDestinationSearch] = useState("");
+  const [showAdvancedOptions, setShowAdvancedOptions] = useState(false);
+
+  // Mostrar opciones avanzadas automáticamente si ya hay datos
+  useEffect(() => {
+    if (origin || (additionalDestinations && additionalDestinations.length > 0)) {
+      setShowAdvancedOptions(true);
+    } else if (!destination) {
+      // Si no hay destino, asegurar que esté en modo simple y selección de destino
+      setShowAdvancedOptions(false);
+      setSelectionMode("destino");
+    }
+  }, [origin, additionalDestinations, destination, setSelectionMode]);
 
   const handleAddNewDestination = () => {
     setIsAddingDestination(true);
@@ -126,44 +138,118 @@ const LocationSelector = ({
 
   return (
   <div className="space-y-4">
-    {/* Selector de modo */}
-    <div className="flex gap-3 p-1 bg-gray-100 rounded-lg">
-      <button
-        type="button"
-        onClick={() => setSelectionMode("origen")}
-        className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors ${
-          selectionMode === "origen"
-            ? "bg-blue-600 text-white shadow-md"
-            : "text-gray-600 hover:text-gray-800 hover:bg-gray-200"
-        }`}
-      >
-        📍 Seleccionar Origen
-      </button>
-      <button
-        type="button"
-        onClick={() => setSelectionMode("destino")}
-        className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors ${
-          selectionMode === "destino"
-            ? "bg-green-600 text-white shadow-md"
-            : "text-gray-600 hover:text-gray-800 hover:bg-gray-200"
-        }`}
-      >
-        🎯 Seleccionar Destino
-      </button>
-      {isAddingDestination && (
-        <button
-          type="button"
-          onClick={() => setSelectionMode("nuevo_destino")}
-          className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors ${
-            selectionMode === "nuevo_destino"
-              ? "bg-orange-600 text-white shadow-md"
-              : "text-gray-600 hover:text-gray-800 hover:bg-gray-200"
-          }`}
-        >
-          ➕ Nuevo Destino
-        </button>
-      )}
-    </div>
+    {/* Vista simplificada inicial */}
+    {!showAdvancedOptions && !destination && (
+      <div className="space-y-3">
+        <div className="text-center">
+          <h3 className="text-lg font-medium text-gray-900 mb-2">¿A dónde vas?</h3>
+          <p className="text-sm text-gray-600">Busca el destino principal de tu paquete turístico</p>
+        </div>
+        
+        <div className="w-full h-[400px] rounded-lg relative">
+          <div className="absolute top-2.5 left-1/2 -translate-x-1/2 z-10 w-11/12 sm:w-3/4 md:w-1/2">
+            <GooglePlacesSearch
+              onPlaceSelected={onPlaceSelected}
+              value={searchValue}
+              onChange={onSearchValueChange}
+              placeholder="Busca tu destino (ej: París, Cancún, Barcelona...)"
+            />
+          </div>
+          <Map
+            defaultCenter={center}
+            defaultZoom={3}
+            onClick={onMapClick}
+            mapId="b21b4a042011d515"
+            fullscreenControl={false}
+            mapTypeControl={false}
+            streetViewControl={false}
+          >
+            {isValidLatLng(destination) && (
+              <AdvancedMarker position={destination} title="Destino Principal">
+                <Pin
+                  background={"#22c55e"}
+                  borderColor={"#166534"}
+                  glyphColor={"#ffffff"}
+                />
+              </AdvancedMarker>
+            )}
+          </Map>
+        </div>
+
+        {destination && (
+          <div className="text-center space-y-3">
+            <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
+              <h4 className="font-medium text-green-800">✅ Destino seleccionado</h4>
+              <p className="text-green-700 mt-1">{destination.name}</p>
+            </div>
+            
+            <button
+              type="button"
+              onClick={() => setShowAdvancedOptions(true)}
+              className="text-blue-600 hover:text-blue-800 text-sm underline"
+            >
+              + Configurar origen o agregar más destinos
+            </button>
+          </div>
+        )}
+      </div>
+    )}
+
+    {/* Vista avanzada */}
+    {showAdvancedOptions && (
+      <div className="space-y-4">
+        {/* Botón para volver a vista simple */}
+        {showAdvancedOptions && (
+          <div className="flex justify-between items-center">
+            <h3 className="text-lg font-medium text-gray-900">Configuración de ubicaciones</h3>
+            <button
+              type="button"
+              onClick={() => setShowAdvancedOptions(false)}
+              className="text-gray-500 hover:text-gray-700 text-sm"
+            >
+              Simplificar vista
+            </button>
+          </div>
+        )}
+
+        {/* Selector de modo */}
+        <div className="flex gap-3 p-1 bg-gray-100 rounded-lg">
+          <button
+            type="button"
+            onClick={() => setSelectionMode("origen")}
+            className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors ${
+              selectionMode === "origen"
+                ? "bg-blue-600 text-white shadow-md"
+                : "text-gray-600 hover:text-gray-800 hover:bg-gray-200"
+            }`}
+          >
+            📍 Seleccionar Origen
+          </button>
+          <button
+            type="button"
+            onClick={() => setSelectionMode("destino")}
+            className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors ${
+              selectionMode === "destino"
+                ? "bg-green-600 text-white shadow-md"
+                : "text-gray-600 hover:text-gray-800 hover:bg-gray-200"
+            }`}
+          >
+            🎯 Seleccionar Destino
+          </button>
+          {isAddingDestination && (
+            <button
+              type="button"
+              onClick={() => setSelectionMode("nuevo_destino")}
+              className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors ${
+                selectionMode === "nuevo_destino"
+                  ? "bg-orange-600 text-white shadow-md"
+                  : "text-gray-600 hover:text-gray-800 hover:bg-gray-200"
+              }`}
+            >
+              ➕ Nuevo Destino
+            </button>
+          )}
+        </div>
 
     {/* Mensaje de estado */}
     {message && (
@@ -264,80 +350,82 @@ const LocationSelector = ({
       </div>
     )}
 
-    {/* Mapa */}
-    <div className="w-full h-[400px] rounded-lg relative">
-      <div className="absolute top-2.5 left-1/2 -translate-x-1/2 z-10 w-11/12 sm:w-3/4 md:w-1/2">
-        <GooglePlacesSearch
-          onPlaceSelected={handlePlaceSelected}
-          value={selectionMode === "nuevo_destino" ? newDestinationSearch : searchValue}
-          onChange={handleSearchChange}
-          placeholder={
-            selectionMode === "origen" 
-              ? "Buscar origen..." 
-              : selectionMode === "nuevo_destino"
-              ? "Buscar nuevo destino..."
-              : "Buscar destino principal..."
-          }
-        />
+        {/* Mapa para vista avanzada */}
+        <div className="w-full h-[400px] rounded-lg relative">
+          <div className="absolute top-2.5 left-1/2 -translate-x-1/2 z-10 w-11/12 sm:w-3/4 md:w-1/2">
+            <GooglePlacesSearch
+              onPlaceSelected={handlePlaceSelected}
+              value={selectionMode === "nuevo_destino" ? newDestinationSearch : searchValue}
+              onChange={handleSearchChange}
+              placeholder={
+                selectionMode === "origen" 
+                  ? "Buscar origen..." 
+                  : selectionMode === "nuevo_destino"
+                  ? "Buscar nuevo destino..."
+                  : "Buscar destino principal..."
+              }
+            />
+          </div>
+          <Map
+            defaultCenter={center}
+            defaultZoom={5}
+            onClick={handleMapClick}
+            mapId="b21b4a042011d515"
+            fullscreenControl={false}
+            mapTypeControl={false}
+            streetViewControl={false}
+          >
+            {isValidLatLng(origin) && (
+              <AdvancedMarker position={origin} title="Origen">
+                <Pin
+                  background={"#2563eb"}
+                  borderColor={"#1e40af"}
+                  glyphColor={"#ffffff"}
+                />
+              </AdvancedMarker>
+            )}
+
+            {isValidLatLng(destination) && (
+              <AdvancedMarker position={destination} title="Destino Principal">
+                <Pin
+                  background={"#22c55e"}
+                  borderColor={"#166534"}
+                  glyphColor={"#ffffff"}
+                />
+              </AdvancedMarker>
+            )}
+
+            {/* Destino temporal */}
+            {isValidLatLng(tempDestination) && (
+              <AdvancedMarker position={tempDestination} title={`Nuevo destino: ${tempDestination.name}`}>
+                <Pin
+                  background={"#f59e0b"}
+                  borderColor={"#d97706"}
+                  glyphColor={"#ffffff"}
+                />
+              </AdvancedMarker>
+            )}
+
+            {/* Destinos adicionales */}
+            {additionalDestinations && additionalDestinations.map((dest, index) => 
+              isValidLatLng(dest) ? (
+                <AdvancedMarker 
+                  key={index} 
+                  position={dest} 
+                  title={`Destino ${index + 2}: ${dest.name}`}
+                >
+                  <Pin
+                    background={"#f97316"}
+                    borderColor={"#ea580c"}
+                    glyphColor={"#ffffff"}
+                  />
+                </AdvancedMarker>
+              ) : null
+            )}
+          </Map>
+        </div>
       </div>
-      <Map
-        defaultCenter={center}
-        defaultZoom={5}
-        onClick={handleMapClick}
-        mapId="b21b4a042011d515"
-        fullscreenControl={false}
-        mapTypeControl={false}
-        streetViewControl={false}
-      >
-        {isValidLatLng(origin) && (
-          <AdvancedMarker position={origin} title="Origen">
-            <Pin
-              background={"#2563eb"}
-              borderColor={"#1e40af"}
-              glyphColor={"#ffffff"}
-            />
-          </AdvancedMarker>
-        )}
-
-        {isValidLatLng(destination) && (
-          <AdvancedMarker position={destination} title="Destino Principal">
-            <Pin
-              background={"#22c55e"}
-              borderColor={"#166534"}
-              glyphColor={"#ffffff"}
-            />
-          </AdvancedMarker>
-        )}
-
-        {/* Destino temporal */}
-        {isValidLatLng(tempDestination) && (
-          <AdvancedMarker position={tempDestination} title={`Nuevo destino: ${tempDestination.name}`}>
-            <Pin
-              background={"#f59e0b"}
-              borderColor={"#d97706"}
-              glyphColor={"#ffffff"}
-            />
-          </AdvancedMarker>
-        )}
-
-        {/* Destinos adicionales */}
-        {additionalDestinations && additionalDestinations.map((dest, index) => 
-          isValidLatLng(dest) ? (
-            <AdvancedMarker 
-              key={index} 
-              position={dest} 
-              title={`Destino ${index + 2}: ${dest.name}`}
-            >
-              <Pin
-                background={"#f97316"}
-                borderColor={"#ea580c"}
-                glyphColor={"#ffffff"}
-              />
-            </AdvancedMarker>
-          ) : null
-        )}
-      </Map>
-    </div>
+    )}
   </div>
   );
 };
