@@ -185,12 +185,12 @@ function Badge({ children, variant = "default", icon: Icon }) {
 
   return (
     <span
-      className={`inline-flex items-center px-3 py-2 sm:px-4 sm:py-2 rounded-full text-xs sm:text-sm font-semibold border backdrop-blur-sm transition-all duration-300 ${variants[variant]}`}
+      className={`inline-flex items-center px-2 py-1 sm:px-3 sm:py-1.5 lg:px-4 lg:py-2 rounded-full text-xs sm:text-sm font-semibold border backdrop-blur-sm transition-all duration-300 ${variants[variant]}`}
     >
       {Icon && (
         <Icon
           aria-hidden="true"
-          className="w-3 h-3 sm:w-4 sm:h-4 mr-1.5 sm:mr-2"
+          className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-1.5 lg:mr-2 flex-shrink-0"
         />
       )}
       <span className="truncate">{children}</span>
@@ -248,7 +248,8 @@ function PackageViewPage() {
   if (!paquete) return <NotFoundMessage />;
 
   return (
-    <div className="bg-gradient-to-br from-slate-50 via-white to-indigo-50 min-h-screen relative">
+
+      <div className="bg-gradient-to-br from-slate-50 via-white to-indigo-50 min-h-screen relative">
       {/* Elementos decorativos de fondo */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-0 left-1/4 w-96 h-96 bg-gradient-to-br from-blue-400/5 to-purple-400/5 rounded-full blur-3xl"></div>
@@ -258,9 +259,10 @@ function PackageViewPage() {
 
       {/* Header mejorado */}
       <div className="sticky top-0 z-50 bg-white/70 backdrop-blur-xl border-b border-white/20 shadow-lg">
-        <div className="container mx-auto px-3 sm:px-4 lg:px-6 py-3 sm:py-4 lg:py-5">
+        <div className="container mx-auto px-3 sm:px-4 lg:px-6 xl:px-8 py-3 sm:py-4 lg:py-5">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
-            <div className="flex flex-wrap items-center gap-2 sm:gap-3 flex-1 w-full sm:w-auto">
+            {/* Badges responsivos */}
+            <div className="flex flex-wrap items-center gap-2 sm:gap-3 flex-1 w-full sm:w-auto sm:mr-4">
               <Badge variant="info" icon={FiMapPin}>
                 {paquete.destinos && paquete.destinos.length > 0 
                   ? paquete.destinos.length === 1 
@@ -287,7 +289,8 @@ function PackageViewPage() {
               )}
             </div>
 
-            <div className="flex items-center space-x-2 sm:space-x-3 flex-shrink-0 self-end sm:self-auto">
+            {/* Botones de acción */}
+            <div className="flex items-center space-x-2 sm:space-x-3 flex-shrink-0 self-end sm:self-center">
               <button
                 onClick={() => setIsLiked(!isLiked)}
                 aria-pressed={isLiked}
@@ -319,17 +322,17 @@ function PackageViewPage() {
         </div>
       </div>
 
-      <main className="container mx-auto px-4 py-8 sm:py-12 relative z-10">
+      <main className="container mx-auto px-3 sm:px-4 lg:px-6 py-4 sm:py-8 lg:py-12 relative z-10">
         {/* Hero Section mejorado */}
-        <div className="mb-12 sm:mb-16">
-          <div className="text-center mb-8 sm:mb-12">
-            <div className="space-y-6">
-              <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-transparent bg-gradient-to-r from-slate-900 via-blue-800 to-indigo-800 bg-clip-text leading-tight px-2">
+        <div className="mb-8 sm:mb-12 lg:mb-16">
+          <div className="text-center mb-6 sm:mb-8 lg:mb-12">
+            <div className="space-y-4 sm:space-y-6">
+              <h1 className="text-2xl xs:text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-black text-transparent bg-gradient-to-r from-slate-900 via-blue-800 to-indigo-800 bg-clip-text leading-tight px-2">
                 {paquete.titulo}
               </h1>
 
-              <div className="max-w-3xl mx-auto">
-                <p className="text-lg sm:text-xl lg:text-2xl text-slate-600 leading-relaxed px-4">
+              <div className="max-w-xs sm:max-w-2xl lg:max-w-3xl mx-auto">
+                <p className="text-sm sm:text-lg md:text-xl lg:text-2xl text-slate-600 leading-relaxed px-2 sm:px-4">
                   Descubre una experiencia única que combina 
                   <span className="font-semibold text-blue-600"> aventura</span>, 
                   <span className="font-semibold text-emerald-600"> cultura</span> y 
@@ -338,27 +341,27 @@ function PackageViewPage() {
               </div>
               
               {/* Estadísticas rápidas */}
-              <div className="flex flex-wrap justify-center gap-6 sm:gap-8 mt-8">
+              <div className="grid grid-cols-2 sm:flex sm:flex-wrap justify-center gap-3 sm:gap-6 lg:gap-8 mt-6 sm:mt-8">
                 <div className="text-center group cursor-pointer">
-                  <div className="text-3xl sm:text-4xl font-bold text-blue-600 group-hover:scale-110 transition-transform duration-300">{paquete.duracion_dias}</div>
-                  <div className="text-sm text-slate-500 font-medium">Días</div>
+                  <div className="text-xl sm:text-3xl lg:text-4xl font-bold text-blue-600 group-hover:scale-110 transition-transform duration-300">{paquete.duracion_dias}</div>
+                  <div className="text-xs sm:text-sm text-slate-500 font-medium">Días</div>
                 </div>
                 {paquete.destinos && (
                   <div className="text-center group cursor-pointer">
-                    <div className="text-3xl sm:text-4xl font-bold text-emerald-600 group-hover:scale-110 transition-transform duration-300">{paquete.destinos.length}</div>
-                    <div className="text-sm text-slate-500 font-medium">{paquete.destinos.length === 1 ? 'Destino' : 'Destinos'}</div>
+                    <div className="text-xl sm:text-3xl lg:text-4xl font-bold text-emerald-600 group-hover:scale-110 transition-transform duration-300">{paquete.destinos.length}</div>
+                    <div className="text-xs sm:text-sm text-slate-500 font-medium">{paquete.destinos.length === 1 ? 'Destino' : 'Destinos'}</div>
                   </div>
                 )}
                 {paquete.hotel && (
                   <div className="text-center group cursor-pointer">
-                    <div className="text-3xl sm:text-4xl font-bold text-amber-600 group-hover:scale-110 transition-transform duration-300">{paquete.hotel.estrellas}★</div>
-                    <div className="text-sm text-slate-500 font-medium">Hotel</div>
+                    <div className="text-xl sm:text-3xl lg:text-4xl font-bold text-amber-600 group-hover:scale-110 transition-transform duration-300">{paquete.hotel.estrellas}★</div>
+                    <div className="text-xs sm:text-sm text-slate-500 font-medium">Hotel</div>
                   </div>
                 )}
                 {paquete.imagenes && paquete.imagenes.length > 0 && (
                   <div className="text-center group cursor-pointer">
-                    <div className="text-3xl sm:text-4xl font-bold text-purple-600 group-hover:scale-110 transition-transform duration-300">{paquete.imagenes.length}</div>
-                    <div className="text-sm text-slate-500 font-medium">Fotos</div>
+                    <div className="text-xl sm:text-3xl lg:text-4xl font-bold text-purple-600 group-hover:scale-110 transition-transform duration-300">{paquete.imagenes.length}</div>
+                    <div className="text-xs sm:text-sm text-slate-500 font-medium">Fotos</div>
                   </div>
                 )}
               </div>
@@ -366,7 +369,7 @@ function PackageViewPage() {
           </div>
 
           {/* Imagen principal mejorada */}
-          <div className="relative h-80 sm:h-96 md:h-[500px] lg:h-[700px] rounded-3xl sm:rounded-[2rem] overflow-hidden shadow-2xl group">
+          <div className="relative h-48 xs:h-60 sm:h-80 md:h-96 lg:h-[500px] xl:h-[700px] rounded-2xl sm:rounded-3xl lg:rounded-[2rem] overflow-hidden shadow-2xl group">
             <ImageCarousel imagenes={paquete.imagenes} />
             
             {/* Overlay con gradiente mejorado */}
@@ -374,19 +377,19 @@ function PackageViewPage() {
             
             {/* Indicador de más fotos */}
             {paquete.imagenes && paquete.imagenes.length > 1 && (
-              <div className="absolute top-6 right-6 bg-black/30 backdrop-blur-md rounded-full px-3 py-1 text-white text-sm">
+              <div className="absolute top-3 sm:top-6 right-3 sm:right-6 bg-black/30 backdrop-blur-md rounded-full px-2 sm:px-3 py-1 text-white text-xs sm:text-sm">
                 +{paquete.imagenes.length - 1} fotos
               </div>
             )}
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 sm:gap-10 lg:gap-16">
-          <div className="lg:col-span-2 space-y-10 sm:space-y-14 lg:space-y-20">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8 lg:gap-12 xl:gap-16">
+          <div className="lg:col-span-2 space-y-8 sm:space-y-10 lg:space-y-12 xl:space-y-16">
             {/* Información del Paquete */}
             <section
               aria-labelledby="info-heading"
-              className="group bg-white/60 backdrop-blur-xl rounded-3xl sm:rounded-[2rem] shadow-xl hover:shadow-2xl p-6 sm:p-8 lg:p-10 border border-white/20 transition-all duration-500 hover:-translate-y-2"
+              className="group bg-white/60 backdrop-blur-xl rounded-2xl sm:rounded-3xl lg:rounded-[2rem] shadow-xl hover:shadow-2xl p-4 sm:p-6 lg:p-8 xl:p-10 border border-white/20 transition-all duration-500 hover:-translate-y-2"
             >
               <PackageInfo
                 id="info-heading"
@@ -398,24 +401,24 @@ function PackageViewPage() {
             {paquete.destinos && paquete.destinos.length > 0 && paquete.destinos[0]?.destino_lat && paquete.destinos[0]?.destino_lng && (
               <section
                 aria-labelledby="weather-heading"
-                className="group bg-white/60 backdrop-blur-xl rounded-3xl sm:rounded-[2rem] shadow-xl hover:shadow-2xl p-6 sm:p-8 lg:p-10 border border-white/20 transition-all duration-500 hover:-translate-y-2"
+                className="group bg-white/60 backdrop-blur-xl rounded-2xl sm:rounded-3xl lg:rounded-[2rem] shadow-xl hover:shadow-2xl p-4 sm:p-6 lg:p-8 xl:p-10 border border-white/20 transition-all duration-500 hover:-translate-y-2"
               >
-                <div className="flex items-center mb-6 sm:mb-8">
-                  <div className="relative w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-br from-sky-500 to-blue-600 rounded-2xl flex items-center justify-center mr-4 sm:mr-6 flex-shrink-0 shadow-lg group-hover:scale-110 transition-transform duration-500">
-                    <div className="absolute inset-0 bg-sky-400/50 rounded-2xl blur-xl group-hover:blur-2xl transition-all duration-500"></div>
+                <div className="flex items-center mb-4 sm:mb-6 lg:mb-8">
+                  <div className="relative w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 bg-gradient-to-br from-sky-500 to-blue-600 rounded-xl sm:rounded-2xl flex items-center justify-center mr-3 sm:mr-4 lg:mr-6 flex-shrink-0 shadow-lg group-hover:scale-110 transition-transform duration-500">
+                    <div className="absolute inset-0 bg-sky-400/50 rounded-xl sm:rounded-2xl blur-xl group-hover:blur-2xl transition-all duration-500"></div>
                     <FiSun
                       aria-hidden="true"
-                      className="w-7 h-7 sm:w-8 sm:h-8 text-white relative z-10"
+                      className="w-6 h-6 sm:w-7 sm:h-7 lg:w-8 lg:h-8 text-white relative z-10"
                     />
                   </div>
                   <div>
                     <h2
                       id="weather-heading"
-                      className="text-2xl sm:text-3xl lg:text-4xl font-bold bg-gradient-to-r from-slate-900 to-sky-700 bg-clip-text text-transparent"
+                      className="text-lg sm:text-2xl lg:text-3xl xl:text-4xl font-bold bg-gradient-to-r from-slate-900 to-sky-700 bg-clip-text text-transparent"
                     >
                       Pronóstico del Clima
                     </h2>
-                    <p className="text-slate-600 text-base sm:text-lg">
+                    <p className="text-slate-600 text-sm sm:text-base lg:text-lg">
                       El tiempo en {paquete.destinos[0].destino}
                     </p>
                   </div>
@@ -434,27 +437,27 @@ function PackageViewPage() {
               paquete.destinos.some(d => d.destino_lat && d.destino_lng) && (
                 <section
                   aria-labelledby="routemap-heading"
-                  className="group bg-white/60 backdrop-blur-xl rounded-3xl sm:rounded-[2rem] shadow-xl hover:shadow-2xl p-6 sm:p-8 lg:p-10 border border-white/20 transition-all duration-500 hover:-translate-y-2"
+                  className="group bg-white/60 backdrop-blur-xl rounded-2xl sm:rounded-3xl lg:rounded-[2rem] shadow-xl hover:shadow-2xl p-4 sm:p-6 lg:p-8 xl:p-10 border border-white/20 transition-all duration-500 hover:-translate-y-2"
                 >
-                  <div className="flex items-center mb-6 sm:mb-8">
-                    <div className="relative w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-br from-purple-500 to-pink-600 rounded-2xl flex items-center justify-center mr-4 sm:mr-6 flex-shrink-0 shadow-lg group-hover:scale-110 transition-transform duration-500">
-                      <div className="absolute inset-0 bg-purple-400/50 rounded-2xl blur-xl group-hover:blur-2xl transition-all duration-500"></div>
+                  <div className="flex items-center mb-4 sm:mb-6 lg:mb-8">
+                    <div className="relative w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 bg-gradient-to-br from-purple-500 to-pink-600 rounded-xl sm:rounded-2xl flex items-center justify-center mr-3 sm:mr-4 lg:mr-6 flex-shrink-0 shadow-lg group-hover:scale-110 transition-transform duration-500">
+                      <div className="absolute inset-0 bg-purple-400/50 rounded-xl sm:rounded-2xl blur-xl group-hover:blur-2xl transition-all duration-500"></div>
                       <FiMapPin
                         aria-hidden="true"
-                        className="w-7 h-7 sm:w-8 sm:h-8 text-white relative z-10"
+                        className="w-6 h-6 sm:w-7 sm:h-7 lg:w-8 lg:h-8 text-white relative z-10"
                       />
                     </div>
                     <div>
                       <h2
                         id="routemap-heading"
-                        className="text-2xl sm:text-3xl lg:text-4xl font-bold bg-gradient-to-r from-slate-900 to-purple-700 bg-clip-text text-transparent"
+                        className="text-lg sm:text-2xl lg:text-3xl xl:text-4xl font-bold bg-gradient-to-r from-slate-900 to-purple-700 bg-clip-text text-transparent"
                       >
                         Ruta del Viaje
                       </h2>
-                      <p className="text-slate-600 text-base sm:text-lg">
+                      <p className="text-slate-600 text-sm sm:text-base lg:text-lg">
                         Desde Durango hacia tus destinos de viaje
                         {paquete.destinos.length > 1 && (
-                          <span className="block text-sm text-purple-600 font-medium mt-1">
+                          <span className="block text-xs sm:text-sm text-purple-600 font-medium mt-1">
                             Durango → {paquete.destinos.map(d => d.destino).join(' → ')}
                           </span>
                         )}
@@ -657,16 +660,16 @@ function PackageViewPage() {
           </div>
 
           {/* Sidebar de Precio y Reservación */}
-          <aside className="lg:col-span-1">
-            <div className="lg:sticky lg:top-32">
-              <div className="group bg-white/80 backdrop-blur-xl rounded-3xl sm:rounded-[2rem] shadow-2xl hover:shadow-3xl p-6 sm:p-8 lg:p-10 border border-white/20 transition-all duration-500 hover:-translate-y-2">
+          <aside className="lg:col-span-1 order-first lg:order-last">
+            <div className="lg:sticky lg:top-32 lg:max-h-screen lg:overflow-y-auto scrollbar-hide">
+              <div className="group bg-white/80 backdrop-blur-xl rounded-2xl sm:rounded-3xl lg:rounded-[2rem] shadow-2xl hover:shadow-3xl p-4 sm:p-6 lg:p-8 xl:p-10 border border-white/20 transition-all duration-500 hover:-translate-y-2">
                 {/* Precio Principal */}
-                <div className="text-center mb-6 sm:mb-8">
-                  <div className="mb-4">
+                <div className="text-center mb-4 sm:mb-6 lg:mb-8">
+                  <div className="mb-3 sm:mb-4">
                     {paquete.descuento && parseFloat(paquete.descuento) > 0 ? (
-                      <div className="space-y-3">
+                      <div className="space-y-2 sm:space-y-3">
                         {/* Precio original tachado */}
-                        <div className="text-2xl sm:text-3xl font-bold text-slate-400 line-through">
+                        <div className="text-lg sm:text-xl lg:text-2xl font-bold text-slate-400 line-through">
                           {(parseFloat(paquete.precio_total) + parseFloat(paquete.descuento)).toLocaleString("es-MX", {
                             style: "currency",
                             currency: "MXN",
@@ -674,21 +677,21 @@ function PackageViewPage() {
                         </div>
                         
                         {/* Precio con descuento */}
-                        <div className="flex flex-col sm:flex-row items-center justify-center sm:items-baseline space-y-2 sm:space-y-0">
-                          <span className="text-4xl sm:text-5xl lg:text-6xl font-black bg-gradient-to-r from-emerald-600 via-green-600 to-teal-600 bg-clip-text text-transparent">
+                        <div className="flex flex-col items-center justify-center space-y-1">
+                          <span className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-black bg-gradient-to-r from-emerald-600 via-green-600 to-teal-600 bg-clip-text text-transparent leading-tight">
                             {parseFloat(paquete.precio_total).toLocaleString("es-MX", {
                               style: "currency",
                               currency: "MXN",
                             })}
                           </span>
-                          <span className="ml-0 sm:ml-3 text-slate-500 text-lg sm:text-xl font-medium">
+                          <span className="text-slate-500 text-sm sm:text-base lg:text-lg font-medium">
                             / persona
                           </span>
                         </div>
                         
                         {/* Badge de descuento */}
                         <div className="flex justify-center">
-                          <span className="inline-flex items-center px-4 py-2 rounded-full text-base font-bold bg-gradient-to-r from-red-500 to-pink-500 text-white shadow-lg">
+                          <span className="inline-flex items-center px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-sm sm:text-base font-bold bg-gradient-to-r from-red-500 to-pink-500 text-white shadow-lg">
                             🔥 ¡Ahorras {parseFloat(paquete.descuento).toLocaleString("es-MX", {
                               style: "currency",
                               currency: "MXN",
@@ -697,84 +700,84 @@ function PackageViewPage() {
                         </div>
                       </div>
                     ) : (
-                      <div className="flex flex-col sm:flex-row items-center justify-center sm:items-baseline space-y-2 sm:space-y-0">
-                        <span className="text-4xl sm:text-5xl lg:text-6xl font-black bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 bg-clip-text text-transparent">
+                      <div className="flex flex-col items-center justify-center space-y-1">
+                        <span className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-black bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 bg-clip-text text-transparent leading-tight">
                           {parseFloat(paquete.precio_total).toLocaleString("es-MX", {
                             style: "currency",
                             currency: "MXN",
                           })}
                         </span>
-                        <span className="ml-0 sm:ml-3 text-slate-500 text-lg sm:text-xl font-medium">
+                        <span className="text-slate-500 text-sm sm:text-base lg:text-lg font-medium">
                           / persona
                         </span>
                       </div>
                     )}
                   </div>
-                  <p className="text-slate-600 text-base sm:text-lg font-medium">
+                  <p className="text-slate-600 text-sm sm:text-base lg:text-lg font-medium">
                     Precio todo incluido
                   </p>
                 </div>
 
                 {/* Información de anticipo */}
                 {paquete.anticipo && parseFloat(paquete.anticipo) > 0 && (
-                  <div className="mb-8 sm:mb-10 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl p-6 border border-blue-200/50 backdrop-blur-sm">
-                    <div className="flex items-center mb-3">
-                      <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full flex items-center justify-center mr-3">
-                        <FiDollarSign className="w-5 h-5 text-white" />
+                  <div className="mb-6 sm:mb-8 lg:mb-10 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl sm:rounded-2xl p-4 sm:p-6 border border-blue-200/50 backdrop-blur-sm">
+                    <div className="flex items-center mb-2 sm:mb-3">
+                      <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full flex items-center justify-center mr-3">
+                        <FiDollarSign className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
                       </div>
-                      <h3 className="font-bold text-blue-900 text-lg">Anticipo requerido</h3>
+                      <h3 className="font-bold text-blue-900 text-base sm:text-lg">Anticipo requerido</h3>
                     </div>
-                    <p className="text-3xl font-black text-blue-800 mb-2">
+                    <p className="text-xl sm:text-2xl lg:text-3xl font-black text-blue-800 mb-2">
                       {parseFloat(paquete.anticipo).toLocaleString("es-MX", {
                         style: "currency",
                         currency: "MXN",
                       })}
                     </p>
-                    <p className="text-blue-700 text-base">
+                    <p className="text-blue-700 text-sm sm:text-base">
                       Para asegurar tu reservación
                     </p>
                   </div>
                 )}
 
                 {/* Resumen del paquete */}
-                <div className="space-y-4 sm:space-y-5 mb-8 sm:mb-10">
-                  <h3 className="font-bold text-slate-900 text-lg sm:text-xl">
+                <div className="space-y-3 sm:space-y-4 lg:space-y-5 mb-6 sm:mb-8 lg:mb-10">
+                  <h3 className="font-bold text-slate-900 text-base sm:text-lg lg:text-xl">
                     ✨ Resumen del paquete
                   </h3>
-                  <ul className="space-y-3 sm:space-y-4">
+                  <ul className="space-y-2 sm:space-y-3 lg:space-y-4">
                     <li className="flex items-center group">
-                      <div className="w-8 h-8 bg-gradient-to-r from-emerald-100 to-green-100 rounded-full flex items-center justify-center mr-3 flex-shrink-0 group-hover:scale-110 transition-transform duration-300">
+                      <div className="w-7 h-7 sm:w-8 sm:h-8 bg-gradient-to-r from-emerald-100 to-green-100 rounded-full flex items-center justify-center mr-3 flex-shrink-0 group-hover:scale-110 transition-transform duration-300">
                         <FiCheckSquare
                           aria-hidden="true"
-                          className="w-4 h-4 text-emerald-600"
+                          className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-600"
                         />
                       </div>
-                      <span className="text-slate-700 text-base sm:text-lg font-medium">
+                      <span className="text-slate-700 text-sm sm:text-base lg:text-lg font-medium">
                         {paquete.duracion_dias} días de aventura
                       </span>
                     </li>
                     {paquete.hotel && (
                       <li className="flex items-center group">
-                        <div className="w-8 h-8 bg-gradient-to-r from-amber-100 to-orange-100 rounded-full flex items-center justify-center mr-3 flex-shrink-0 group-hover:scale-110 transition-transform duration-300">
+                        <div className="w-7 h-7 sm:w-8 sm:h-8 bg-gradient-to-r from-amber-100 to-orange-100 rounded-full flex items-center justify-center mr-3 flex-shrink-0 group-hover:scale-110 transition-transform duration-300">
                           <FiStar
                             aria-hidden="true"
-                            className="w-4 h-4 text-amber-600"
+                            className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-600"
                           />
                         </div>
-                        <span className="text-slate-700 text-base sm:text-lg font-medium">
+                        <span className="text-slate-700 text-sm sm:text-base lg:text-lg font-medium">
                           Hotel {paquete.hotel.estrellas} estrellas
                         </span>
                       </li>
                     )}
                     {paquete.destinos && (
                       <li className="flex items-center group">
-                        <div className="w-8 h-8 bg-gradient-to-r from-blue-100 to-indigo-100 rounded-full flex items-center justify-center mr-3 flex-shrink-0 group-hover:scale-110 transition-transform duration-300">
+                        <div className="w-7 h-7 sm:w-8 sm:h-8 bg-gradient-to-r from-blue-100 to-indigo-100 rounded-full flex items-center justify-center mr-3 flex-shrink-0 group-hover:scale-110 transition-transform duration-300">
                           <FiMapPin
                             aria-hidden="true"
-                            className="w-4 h-4 text-blue-600"
+                            className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-blue-600"
                           />
                         </div>
-                        <span className="text-slate-700 text-base sm:text-lg font-medium">
+                        <span className="text-slate-700 text-sm sm:text-base lg:text-lg font-medium">
                           {paquete.destinos.length} destino{paquete.destinos.length > 1 ? 's' : ''} increíble{paquete.destinos.length > 1 ? 's' : ''}
                         </span>
                       </li>
@@ -783,9 +786,9 @@ function PackageViewPage() {
                 </div>
 
                 {/* Botón de reservación */}
-                <button className="group w-full bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold py-5 sm:py-6 px-6 rounded-2xl sm:rounded-3xl shadow-xl hover:shadow-2xl transform hover:-translate-y-2 transition-all duration-500 hover:from-blue-600 hover:to-blue-700 mb-6 relative overflow-hidden">
+                <button className="group w-full bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold py-4 sm:py-5 lg:py-6 px-4 sm:px-6 rounded-xl sm:rounded-2xl lg:rounded-3xl shadow-xl hover:shadow-2xl transform hover:-translate-y-2 transition-all duration-500 hover:from-blue-600 hover:to-blue-700 mb-4 sm:mb-6 relative overflow-hidden">
                   <span className="absolute inset-0 bg-white/20 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 skew-x-12"></span>
-                  <span className="text-lg sm:text-xl relative z-10 flex items-center justify-center">
+                  <span className="text-base sm:text-lg lg:text-xl relative z-10 flex items-center justify-center">
                     <span className="mr-2">🚀</span>
                     Reservar Aventura
                     <span className="ml-2">✨</span>
@@ -793,9 +796,9 @@ function PackageViewPage() {
                 </button>
 
                 {/* Calificación mejorada */}
-                <div className="bg-gradient-to-br from-emerald-50 via-teal-50 to-green-50 rounded-2xl sm:rounded-3xl p-6 sm:p-8 border border-emerald-200/50 backdrop-blur-sm">
+                <div className="bg-gradient-to-br from-emerald-50 via-teal-50 to-green-50 rounded-xl sm:rounded-2xl lg:rounded-3xl p-4 sm:p-6 lg:p-8 border border-emerald-200/50 backdrop-blur-sm">
                   <div
-                    className="flex items-center justify-center mb-4"
+                    className="flex items-center justify-center mb-3 sm:mb-4"
                     aria-label="Calificación: 4.9 de 5 estrellas"
                     role="img"
                   >
@@ -803,21 +806,21 @@ function PackageViewPage() {
                       {[...Array(5)].map((_, i) => (
                         <FiStar
                           key={i}
-                          className="w-6 h-6 text-yellow-400 fill-current drop-shadow-sm"
+                          className="w-5 h-5 sm:w-6 sm:h-6 text-yellow-400 fill-current drop-shadow-sm"
                         />
                       ))}
                     </div>
                     <span
-                      className="ml-3 font-black text-slate-700 text-xl"
+                      className="ml-2 sm:ml-3 font-black text-slate-700 text-lg sm:text-xl"
                       aria-hidden="true"
                     >
                       4.9
                     </span>
                   </div>
-                  <p className="text-center text-slate-600 text-base font-medium">
+                  <p className="text-center text-slate-600 text-sm sm:text-base font-medium">
                     Más de 1,000 viajeros satisfechos
                   </p>
-                  <p className="text-center text-slate-500 text-sm mt-2">
+                  <p className="text-center text-slate-500 text-xs sm:text-sm mt-2">
                     "Una experiencia inolvidable" ⭐
                   </p>
                 </div>

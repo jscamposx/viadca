@@ -126,17 +126,17 @@ const WeatherForecast = ({ lat, lon = "Ubicación Actual" }) => {
 
   if (error) {
     return (
-      <div className="bg-red-50 rounded-xl p-6 border border-red-200 mt-6">
-        <div className="flex items-center gap-3 mb-4">
-          <AlertCircle className="text-red-500 w-6 h-6" />
-          <h3 className="text-xl font-bold text-gray-800">
+      <div className="bg-red-50 rounded-xl sm:rounded-2xl p-4 sm:p-6 border border-red-200 mt-4 sm:mt-6">
+        <div className="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
+          <AlertCircle className="text-red-500 w-5 h-5 sm:w-6 sm:h-6 flex-shrink-0" />
+          <h3 className="text-lg sm:text-xl font-bold text-gray-800">
             Pronóstico del Clima
           </h3>
         </div>
-        <p className="text-red-600 mb-4">{error}</p>
+        <p className="text-red-600 mb-3 sm:mb-4 text-sm sm:text-base">{error}</p>
         <button
           onClick={() => fetchWeather()}
-          className="flex items-center gap-2 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors duration-200"
+          className="flex items-center gap-2 px-3 sm:px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors duration-200 text-sm sm:text-base"
         >
           <RefreshCw className="w-4 h-4" />
           Reintentar
@@ -146,11 +146,11 @@ const WeatherForecast = ({ lat, lon = "Ubicación Actual" }) => {
   }
 
   return (
-    <div className="bg-white ">
-      <div className="flex items-center justify-end mb-6">
-        <div className="flex items-center gap-3">
+    <div className="bg-white">
+      <div className="flex items-center justify-end mb-4 sm:mb-6">
+        <div className="flex items-center gap-2 sm:gap-3">
           {lastUpdate && (
-            <p className="text-xs text-gray-500">
+            <p className="text-xs text-gray-500 hidden sm:block">
               Actualizado:{" "}
               {lastUpdate.toLocaleTimeString("es-MX", {
                 hour: "2-digit",
@@ -161,34 +161,34 @@ const WeatherForecast = ({ lat, lon = "Ubicación Actual" }) => {
           <button
             onClick={handleRefresh}
             disabled={refreshing}
-            className="p-2 rounded-lg hover:bg-gray-100 transition-colors duration-200 disabled:opacity-50"
+            className="p-1.5 sm:p-2 rounded-lg hover:bg-gray-100 transition-colors duration-200 disabled:opacity-50"
           >
             <RefreshCw
-              className={`w-5 h-5 text-gray-600 ${refreshing ? "animate-spin" : ""}`}
+              className={`w-4 h-4 sm:w-5 sm:h-5 text-gray-600 ${refreshing ? "animate-spin" : ""}`}
             />
           </button>
         </div>
       </div>
 
       {loading ? (
-        <div className="flex flex-col items-center justify-center py-12">
-          <Loader2 className="animate-spin text-4xl text-blue-500 mb-4" />
-          <p className="text-gray-600">Cargando pronóstico del tiempo...</p>
+        <div className="flex flex-col items-center justify-center py-8 sm:py-12">
+          <Loader2 className="animate-spin text-2xl sm:text-4xl text-blue-500 mb-3 sm:mb-4" />
+          <p className="text-gray-600 text-sm sm:text-base text-center px-4">Cargando pronóstico del tiempo...</p>
         </div>
       ) : (
         <>
           {currentWeather && (
-            <div className="bg-gray-50 rounded-lg p-4 mb-6 border border-gray-200">
+            <div className="bg-gray-50 rounded-lg p-3 sm:p-4 mb-4 sm:mb-6 border border-gray-200">
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-4">
-                  <div className="text-3xl font-bold text-gray-800">
+                <div className="flex items-center gap-2 sm:gap-4">
+                  <div className="text-2xl sm:text-3xl font-bold text-gray-800">
                     {Math.round(currentWeather.main.temp)}°C
                   </div>
                   <div>
-                    <p className="text-lg font-semibold text-gray-700 capitalize">
+                    <p className="text-base sm:text-lg font-semibold text-gray-700 capitalize">
                       {currentWeather.weather[0].description}
                     </p>
-                    <p className="text-sm text-gray-500">
+                    <p className="text-xs sm:text-sm text-gray-500">
                       Sensación térmica:{" "}
                       {Math.round(currentWeather.main.feels_like)}°C
                     </p>
@@ -197,32 +197,32 @@ const WeatherForecast = ({ lat, lon = "Ubicación Actual" }) => {
                 <img
                   src={`https://openweathermap.org/img/wn/${currentWeather.weather[0].icon}@4x.png`}
                   alt={currentWeather.weather[0].description}
-                  className="w-20 h-20"
+                  className="w-16 h-16 sm:w-20 sm:h-20"
                 />
               </div>
 
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4 pt-4 border-t border-gray-200">
-                <div className="flex items-center gap-2">
-                  <Droplets className="w-4 h-4 text-blue-500" />
-                  <span className="text-sm text-gray-600">
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-4 mt-3 sm:mt-4 pt-3 sm:pt-4 border-t border-gray-200">
+                <div className="flex items-center gap-1.5 sm:gap-2">
+                  <Droplets className="w-3 h-3 sm:w-4 sm:h-4 text-blue-500 flex-shrink-0" />
+                  <span className="text-xs sm:text-sm text-gray-600">
                     {currentWeather.main.humidity}%
                   </span>
                 </div>
-                <div className="flex items-center gap-2">
-                  <Wind className="w-4 h-4 text-gray-500" />
-                  <span className="text-sm text-gray-600">
+                <div className="flex items-center gap-1.5 sm:gap-2">
+                  <Wind className="w-3 h-3 sm:w-4 sm:h-4 text-gray-500 flex-shrink-0" />
+                  <span className="text-xs sm:text-sm text-gray-600">
                     {Math.round(currentWeather.wind.speed)} m/s
                   </span>
                 </div>
-                <div className="flex items-center gap-2">
-                  <Eye className="w-4 h-4 text-gray-500" />
-                  <span className="text-sm text-gray-600">
+                <div className="flex items-center gap-1.5 sm:gap-2">
+                  <Eye className="w-3 h-3 sm:w-4 sm:h-4 text-gray-500 flex-shrink-0" />
+                  <span className="text-xs sm:text-sm text-gray-600">
                     {Math.round(currentWeather.visibility / 1000)} km
                   </span>
                 </div>
-                <div className="flex items-center gap-2">
-                  <Thermometer className="w-4 h-4 text-gray-500" />
-                  <span className="text-sm text-gray-600">
+                <div className="flex items-center gap-1.5 sm:gap-2">
+                  <Thermometer className="w-3 h-3 sm:w-4 sm:h-4 text-gray-500 flex-shrink-0" />
+                  <span className="text-xs sm:text-sm text-gray-600">
                     {currentWeather.main.pressure} hPa
                   </span>
                 </div>
@@ -230,7 +230,7 @@ const WeatherForecast = ({ lat, lon = "Ubicación Actual" }) => {
             </div>
           )}
 
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 sm:gap-3">
             {forecast.map((day, index) => (
               <DayForecast
                 key={`${day.date.toISOString()}-${index}`}
@@ -261,10 +261,10 @@ const DayForecast = ({ day, isToday }) => {
       `}
       onClick={() => setIsExpanded(!isExpanded)}
     >
-      <div className="p-4">
-        <div className="text-center mb-3">
+      <div className="p-2 sm:p-3 lg:p-4">
+        <div className="text-center mb-2 sm:mb-3">
           <p
-            className={`font-bold text-sm ${isToday ? "text-white" : "text-gray-800"}`}
+            className={`font-bold text-xs sm:text-sm ${isToday ? "text-white" : "text-gray-800"}`}
           >
             {isToday ? "Hoy" : day.day}
           </p>
@@ -275,22 +275,22 @@ const DayForecast = ({ day, isToday }) => {
           </p>
         </div>
 
-        <div className="flex justify-center mb-3">
+        <div className="flex justify-center mb-2 sm:mb-3">
           <img
             src={`https://openweathermap.org/img/wn/${day.weather.icon}@2x.png`}
             alt={day.weather.description}
-            className="w-12 h-12"
+            className="w-10 h-10 sm:w-12 sm:h-12"
             loading="lazy"
           />
         </div>
 
         <p
-          className={`text-xs text-center capitalize mb-3 ${isToday ? "text-blue-100" : "text-gray-600"}`}
+          className={`text-xs text-center capitalize mb-2 sm:mb-3 ${isToday ? "text-blue-100" : "text-gray-600"} leading-tight px-1`}
         >
           {day.weather.description}
         </p>
 
-        <div className="flex justify-center space-x-3 mb-2">
+        <div className="flex justify-center space-x-2 sm:space-x-3 mb-2">
           <div className="text-center">
             <span
               className={`block text-xs ${isToday ? "text-blue-100" : "text-gray-500"}`}
@@ -320,15 +320,15 @@ const DayForecast = ({ day, isToday }) => {
 
         {isExpanded && (
           <div
-            className={`mt-3 pt-3 border-t ${isToday ? "border-blue-400" : "border-gray-200"} animate-in slide-in-from-top-2 duration-300`}
+            className={`mt-2 sm:mt-3 pt-2 sm:pt-3 border-t ${isToday ? "border-blue-400" : "border-gray-200"} animate-in slide-in-from-top-2 duration-300`}
           >
-            <div className="grid grid-cols-2 gap-2 text-xs">
+            <div className="grid grid-cols-2 gap-1 sm:gap-2 text-xs">
               <div className="flex items-center gap-1">
-                <Droplets className="w-3 h-3" />
+                <Droplets className="w-3 h-3 flex-shrink-0" />
                 <span>{day.humidity}%</span>
               </div>
               <div className="flex items-center gap-1">
-                <Wind className="w-3 h-3" />
+                <Wind className="w-3 h-3 flex-shrink-0" />
                 <span>{day.windSpeed} m/s</span>
               </div>
             </div>
