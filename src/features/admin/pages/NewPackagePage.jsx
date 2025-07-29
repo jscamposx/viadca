@@ -81,8 +81,8 @@ const NuevoPaquete = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, [activeSection]);
 
-  if (url && loading) return <Loading />;
-  if (url && error) return <Error message={error} />;
+  if (id && loading) return <Loading />;
+  if (id && error) return <Error message={error} />;
 
   return (
     <APIProvider
@@ -95,7 +95,7 @@ const NuevoPaquete = () => {
             <div className="py-5 sm:py-7 px-4 sm:px-8 flex items-center justify-between gap-4">
               <div>
                 <h1 className="text-2xl sm:text-3xl font-bold text-white">
-                  {url
+                  {id
                     ? "Editar Paquete Turístico"
                     : "Crear nuevo paquete turístico"}
                 </h1>
@@ -383,9 +383,9 @@ const NuevoPaquete = () => {
                             d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                           ></path>
                         </svg>
-                        {url ? "Actualizando..." : "Creando..."}
+                        {id ? "Actualizando..." : "Creando..."}
                       </>
-                    ) : url ? (
+                    ) : id ? (
                       "Actualizar Paquete"
                     ) : (
                       "Crear Paquete"
