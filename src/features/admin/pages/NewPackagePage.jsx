@@ -104,6 +104,9 @@ const NuevoPaquete = () => {
     <APIProvider
       apiKey={import.meta.env.VITE_Maps_API_KEY}
       libraries={["places", "geocoding", "marker"]}
+      language="es"
+      region="MX"
+      version="beta"
     >
       <div className="min-h-screen bg-gray-50 py-4 sm:py-6 px-3 sm:px-4">
         <div className="max-w-7xl mx-auto">

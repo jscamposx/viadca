@@ -2,37 +2,62 @@ import { useRef, useEffect } from "react";
 import { useMapsLibrary } from "@vis.gl/react-google-maps";
 import { MagnifyingGlassIcon, XMarkIcon } from "@heroicons/react/24/solid";
 
+// Lista de ciudades internacionales conocidas para mejorar la búsqueda
+const INTERNATIONAL_CITIES = [
+  'madrid', 'barcelona', 'paris', 'london', 'rome', 'berlin', 'amsterdam', 
+  'tokyo', 'new york', 'los angeles', 'miami', 'chicago', 'toronto', 
+  'vancouver', 'buenos aires', 'santiago', 'lima', 'bogota', 'caracas',
+  'dubai', 'istanbul', 'moscow', 'beijing', 'hong kong', 'singapore',
+  'sydney', 'melbourne', 'mumbai', 'delhi', 'bangkok', 'seoul'
+];
+
 const GooglePlacesSearch = ({ onPlaceSelected, value, onChange, placeholder = "Buscar una ciudad..." }) => {
   const inputRef = useRef(null);
-  const placeAutocomplete = useRef(null);
-  const listenerRef = useRef(null);
+  const autocompleteRef = useRef(null);
   const places = useMapsLibrary("places");
 
   useEffect(() => {
-    if (!places || !inputRef.current) {
-      return;
-    }
+    if (!places || !inputRef.current) return;
 
-    if (!placeAutocomplete.current) {
-      placeAutocomplete.current = new places.Autocomplete(inputRef.current, {
-        types: ["(cities)"],
+    // Suprimir temporalmente el warning de depreciación
+    const originalWarn = console.warn;
+    console.warn = (...args) => {
+      const message = args[0];
+      if (typeof message === 'string' && message.includes('google.maps.places.Autocomplete is not available to new customers')) {
+        return; // Suprimir este warning específico
+      }
+      originalWarn.apply(console, args);
+    };
+
+    if (!autocompleteRef.current) {
+      autocompleteRef.current = new places.Autocomplete(inputRef.current, {
+        types: ["(cities)"], // Solo ciudades
+        language: "es", // Idioma español
+        // Sin restricciones de país para permitir búsquedas globales
+        // Sin región específica para obtener mejores resultados internacionales
+        fields: [
+          "place_id", 
+          "formatted_address", 
+          "geometry", 
+          "name", 
+          "address_components"
+        ]
       });
     }
 
-    listenerRef.current = placeAutocomplete.current.addListener(
-      "place_changed",
-      () => {
-        const place = placeAutocomplete.current.getPlace();
-        if (place.geometry) {
-          onPlaceSelected(place);
-        }
-      },
-    );
+    const listener = autocompleteRef.current.addListener("place_changed", () => {
+      const place = autocompleteRef.current.getPlace();
+      if (place.geometry) {
+        onPlaceSelected(place);
+      }
+    });
+
+    // Restaurar console.warn
+    console.warn = originalWarn;
 
     return () => {
-      if (listenerRef.current) {
-        window.google.maps.event.removeListener(listenerRef.current);
-        listenerRef.current = null;
+      if (listener) {
+        window.google.maps.event.removeListener(listener);
       }
     };
   }, [places, onPlaceSelected]);
@@ -53,7 +78,7 @@ const GooglePlacesSearch = ({ onPlaceSelected, value, onChange, placeholder = "B
         ref={inputRef}
         type="text"
         placeholder={placeholder}
-        className="w-full rounded  bg-white p-2 pl-10 pr-10 "
+        className="w-full rounded bg-white p-2 pl-10 pr-10 border border-gray-300"
         value={value || ""}
         onChange={(e) => onChange(e.target.value)}
       />

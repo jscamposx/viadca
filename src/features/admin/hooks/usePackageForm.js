@@ -112,7 +112,11 @@ export const usePackageForm = (initialPackageData = null) => {
     if (!latLng) return;
 
     const geocoder = new window.google.maps.Geocoder();
-    geocoder.geocode({ location: latLng }, (results, status) => {
+    geocoder.geocode({ 
+      location: latLng,
+      language: "es",
+      region: "MX" // Preferencia por México, pero no restricción
+    }, (results, status) => {
       if (status === "OK" && results[0]) {
         const place = results[0];
         const simplifiedAddress = place.formatted_address
@@ -152,11 +156,22 @@ export const usePackageForm = (initialPackageData = null) => {
   }, []);
 
   const handleAddDestination = useCallback((destination) => {
+    // Verificar que no sea duplicado
+    const isDuplicate = 
+      (formData.destino === destination.name) ||
+      (formData.additionalDestinations || []).some(dest => dest.name === destination.name);
+    
+    if (isDuplicate) {
+      console.warn('Destino duplicado, no se agregará:', destination.name);
+      return false;
+    }
+
     setFormData((prev) => ({
       ...prev,
       additionalDestinations: [...(prev.additionalDestinations || []), destination]
     }));
-  }, []);
+    return true;
+  }, [formData.destino, formData.additionalDestinations]);
 
   const handleRemoveDestination = useCallback((index) => {
     setFormData((prev) => ({
