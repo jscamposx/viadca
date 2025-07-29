@@ -13,6 +13,7 @@ import {
   FiUser,
   FiSettings,
   FiLogOut,
+  FiUsers,
 } from "react-icons/fi";
 
 const NavItem = ({ to, icon, label, isOpen, isMobile = false }) => {
@@ -78,6 +79,7 @@ const AdminNav = ({ isOpen, setIsOpen }) => {
     { to: "/admin", icon: <FiHome size={20} />, label: "Dashboard" },
     { to: "/admin/paquetes", icon: <FiPackage size={20} />, label: "Paquetes" },
     { to: "/admin/hoteles", icon: <FiBriefcase size={20} />, label: "Hoteles" },
+    { to: "/admin/mayoristas", icon: <FiUsers size={20} />, label: "Mayoristas" },
   ];
 
   const userLinks = [
