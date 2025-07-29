@@ -239,23 +239,54 @@ export const usePackageForm = (initialPackageData = null) => {
     // Procesar imágenes del hotel si existe
     let hotelPayload = null;
     if (formData.hotel) {
-      const hotelImages = await Promise.all(
-        (formData.hotel.images || []).map(async (img, index) => {
-          if (img.url.startsWith("data:")) {
+      let hotelImages = [];
+      
+      // Usar imagenes (nueva estructura) o images (estructura antigua) como fallback
+      const imageList = formData.hotel.imagenes || formData.hotel.images || [];
+      
+      hotelImages = await Promise.all(
+        imageList.map(async (img, index) => {
+          // Si la imagen es una URL de Google Places
+          if (img.tipo === "google_places_url" && img.contenido) {
+            return {
+              orden: index + 1,
+              tipo: "google_places_url",
+              contenido: img.contenido, // URL de Google Places para que el backend la procese
+              mime_type: img.mime_type || "image/jpeg",
+              nombre: img.nombre || `hotel-imagen-${index + 1}.jpg`,
+            };
+          }
+          
+          // Si la imagen ya está en base64 (de conversiones anteriores)
+          if (img.tipo === "base64" && img.contenido) {
             return {
               orden: index + 1,
               tipo: "base64",
-              contenido: img.url.split(",")[1],
+              contenido: img.contenido, // Ya está sin el prefijo data:image
+              mime_type: img.mime_type || "image/jpeg",
+              nombre: img.nombre || `hotel-imagen-${index + 1}.jpg`,
+            };
+          }
+          
+          // Si la imagen tiene el campo 'file', es una imagen personalizada
+          if (img.file && img.contenido && img.contenido.startsWith("data:")) {
+            return {
+              orden: index + 1,
+              tipo: "base64",
+              contenido: img.contenido.split(",")[1],
               mime_type: img.file.type,
               nombre: img.file.name,
             };
           }
+          
+          // Si es una URL genérica (ya sea personalizada)
+          const imageUrl = img.contenido || img.url;
           return {
             orden: index + 1,
             tipo: "url",
-            contenido: img.url,
-            mime_type: "image/jpeg",
-            nombre: img.url.split("/").pop(),
+            contenido: imageUrl,
+            mime_type: img.mime_type || "image/jpeg",
+            nombre: img.nombre || imageUrl.split("/").pop(),
           };
         }),
       );
@@ -268,6 +299,13 @@ export const usePackageForm = (initialPackageData = null) => {
         total_calificaciones: formData.hotel.total_calificaciones,
         imagenes: hotelImages,
       };
+      
+      console.log(`Hotel payload preparado con ${hotelImages.length} imágenes:`, {
+        nombre: formData.hotel.nombre,
+        isCustom: formData.hotel.isCustom,
+        totalImagenes: hotelImages.length,
+        tiposImagenes: hotelImages.map(img => ({ orden: img.orden, tipo: img.tipo, nombre: img.nombre }))
+      });
     }
 
     const payload = {

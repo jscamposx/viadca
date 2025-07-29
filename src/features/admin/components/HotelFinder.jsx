@@ -11,6 +11,7 @@ const HotelFinder = ({ destination, onHotelSelect, selectedHotel }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedHotelInfo, setSelectedHotelInfo] = useState(null);
   const [isManualFormVisible, setIsManualFormVisible] = useState(false);
+  const [isLoadingHotelImages, setIsLoadingHotelImages] = useState(false);
   const [customHotel, setCustomHotel] = useState({
     nombre: "",
     estrellas: 3,
@@ -90,9 +91,12 @@ const HotelFinder = ({ destination, onHotelSelect, selectedHotel }) => {
           nombre: place.name,
           estrellas: place.rating || 0,
           total_calificaciones: place.user_ratings_total || 0,
-          previewImageUrl: place.photos
+          previewImageUrl: place.photos && place.photos.length > 0
             ? place.photos[0].getUrl({ maxWidth: 800 })
             : null,
+          // Almacenar todas las fotos disponibles para procesarlas después
+          googlePhotos: place.photos || [],
+          totalPhotos: place.photos ? place.photos.length : 0,
           images: null,
           isCustom: false,
         }));
@@ -117,9 +121,167 @@ const HotelFinder = ({ destination, onHotelSelect, selectedHotel }) => {
     }
   }, [destination, fetchHotels]);
 
-  const handleSelectHotel = (hotel) => {
-    onHotelSelect(hotel);
-    setSelectedHotelInfo(hotel);
+  const handleSelectHotel = async (hotel) => {
+    setIsLoadingHotelImages(true);
+    let hotelWithImages = { ...hotel };
+    
+    // Si es un hotel de Google Places (no personalizado), procesar las imágenes
+    if (!hotel.isCustom && hotel.place_id) {
+      try {
+        // Obtener detalles completos del lugar para conseguir más fotos
+        const service = new places.PlacesService(document.createElement("div"));
+        
+        const placeDetails = await new Promise((resolve, reject) => {
+          service.getDetails({
+            placeId: hotel.place_id,
+            fields: ['photos', 'name', 'rating', 'user_ratings_total']
+          }, (place, status) => {
+            if (status === places.PlacesServiceStatus.OK) {
+              resolve(place);
+            } else {
+              reject(new Error(`Error fetching place details: ${status}`));
+            }
+          });
+        });
+
+        // Usar las fotos del detalle del lugar (más completas) o las originales como fallback
+        const photosToUse = placeDetails.photos || hotel.googlePhotos || [];
+        
+        console.log(`Hotel ${hotel.nombre}: Fotos disponibles desde detalles: ${placeDetails.photos?.length || 0}, desde búsqueda: ${hotel.googlePhotos?.length || 0}`);
+        
+        if (photosToUse.length > 0) {
+          // Obtener URLs de hasta 3 imágenes para enviar al backend
+          const imageUrls = [];
+          
+          for (let i = 0; i < Math.min(photosToUse.length, 3); i++) {
+            try {
+              const photo = photosToUse[i];
+              
+              // Intentar diferentes configuraciones de tamaño
+              const sizes = [
+                { maxWidth: 800, maxHeight: 600 },
+                { maxWidth: 600, maxHeight: 400 },
+                { maxWidth: 400, maxHeight: 300 }
+              ];
+              
+              let photoUrl = null;
+              for (const size of sizes) {
+                try {
+                  photoUrl = photo.getUrl(size);
+                  if (photoUrl) break;
+                } catch (sizeError) {
+                  console.warn(`Error with size ${size.maxWidth}x${size.maxHeight}:`, sizeError);
+                }
+              }
+              
+              if (photoUrl) {
+                console.log(`Foto ${i + 1} URL generada:`, photoUrl);
+                
+                imageUrls.push({
+                  orden: i + 1,
+                  tipo: "google_places_url",
+                  contenido: photoUrl,
+                  mime_type: "image/jpeg",
+                  nombre: `hotel-${hotel.nombre.toLowerCase().replace(/\s+/g, '-')}-${i + 1}.jpg`
+                });
+                console.log(`Foto ${i + 1} URL añadida para procesamiento en backend`);
+              } else {
+                console.warn(`No se pudo generar URL para la foto ${i + 1}`);
+              }
+            } catch (photoError) {
+              console.error(`Error processing photo ${i}:`, photoError);
+            }
+          }
+          
+          console.log(`Procesadas ${imageUrls.length} URLs de imágenes para el hotel ${hotel.nombre}`);
+          
+          hotelWithImages = {
+            ...hotel,
+            imagenes: imageUrls,
+            // Limpiar las referencias a googlePhotos ya que no son serializables
+            googlePhotos: undefined,
+            // No incluir previewImageUrl para que no se muestre en la vista previa
+            previewImageUrl: null
+          };
+        } else {
+          // Si no hay fotos, usar imagen de placeholder o vacío
+          hotelWithImages = {
+            ...hotel,
+            imagenes: [],
+            googlePhotos: undefined
+          };
+        }
+      } catch (error) {
+        console.error("Error procesando imágenes del hotel:", error);
+        // Si hay error, intentar usar las fotos básicas
+        if (hotel.googlePhotos && hotel.googlePhotos.length > 0) {
+          try {
+            const fallbackImages = [];
+            
+            for (let i = 0; i < Math.min(hotel.googlePhotos.length, 3); i++) {
+              try {
+                const photo = hotel.googlePhotos[i];
+                const photoUrl = photo.getUrl({ maxWidth: 800, maxHeight: 600 });
+                
+                if (photoUrl) {
+                  console.log(`Fallback: Usando URL de Google Places para foto ${i + 1}...`);
+                  
+                  fallbackImages.push({
+                    orden: i + 1,
+                    tipo: "google_places_url",
+                    contenido: photoUrl,
+                    mime_type: "image/jpeg",
+                    nombre: `hotel-${hotel.nombre.toLowerCase().replace(/\s+/g, '-')}-${i + 1}.jpg`
+                  });
+                }
+              } catch (individualPhotoError) {
+                console.warn(`Error con foto individual ${i}:`, individualPhotoError);
+              }
+            }
+            
+            hotelWithImages = {
+              ...hotel,
+              imagenes: fallbackImages,
+              googlePhotos: undefined,
+              previewImageUrl: null
+            };
+          } catch (fallbackError) {
+            console.error("Error con imágenes de fallback:", fallbackError);
+            hotelWithImages = {
+              ...hotel,
+              imagenes: [],
+              googlePhotos: undefined,
+              previewImageUrl: null
+            };
+          }
+        } else {
+          hotelWithImages = {
+            ...hotel,
+            imagenes: [],
+            googlePhotos: undefined,
+            previewImageUrl: null
+          };
+        }
+      }
+    } else if (hotel.isCustom && hotel.images) {
+      // Para hoteles personalizados, formatear las imágenes correctamente
+      hotelWithImages = {
+        ...hotel,
+        imagenes: hotel.images.map((img, index) => ({
+          orden: index + 1,
+          tipo: img.file ? "file" : "url",
+          contenido: img.url,
+          mime_type: img.file ? img.file.type : "image/jpeg",
+          nombre: img.file ? img.file.name : `custom-hotel-${index + 1}.jpeg`,
+          file: img.file // Mantener referencia al archivo para subirlo
+        })),
+        images: undefined // Limpiar la propiedad images antigua
+      };
+    }
+    
+    setIsLoadingHotelImages(false);
+    onHotelSelect(hotelWithImages);
+    setSelectedHotelInfo(hotelWithImages);
     setIsManualFormVisible(false);
   };
 
@@ -139,9 +301,13 @@ const HotelFinder = ({ destination, onHotelSelect, selectedHotel }) => {
       id: `custom-${Date.now()}`,
       nombre: customHotel.nombre,
       estrellas: customHotel.estrellas,
-      images: customHotel.images.map((img, index) => ({
-        ...img,
+      imagenes: customHotel.images.map((img, index) => ({
         orden: index + 1,
+        tipo: img.file ? "file" : "url",
+        contenido: img.url,
+        mime_type: img.file ? img.file.type : "image/jpeg",
+        nombre: img.file ? img.file.name : `custom-hotel-${index + 1}.jpeg`,
+        file: img.file // Mantener referencia al archivo para subirlo
       })),
       isCustom: true,
       total_calificaciones: null,
@@ -304,8 +470,10 @@ const HotelFinder = ({ destination, onHotelSelect, selectedHotel }) => {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {getCurrentHotels().map((hotel) => {
                     const isSelected = hotel.id === selectedHotelInfo?.id;
+                    // Para hoteles de Google Places, siempre mostrar la imagen preview
+                    // Para hoteles personalizados, mostrar la primera imagen
                     const imageUrl = hotel.isCustom
-                      ? hotel.imagenes?.[0]?.url || hotel.images?.[0]?.url
+                      ? hotel.imagenes?.[0]?.contenido || hotel.images?.[0]?.url
                       : hotel.previewImageUrl;
 
                     return (
@@ -343,6 +511,11 @@ const HotelFinder = ({ destination, onHotelSelect, selectedHotel }) => {
                                 Seleccionado
                               </div>
                             )}
+                            {!hotel.isCustom && hotel.totalPhotos > 1 && !isSelected && (
+                              <div className="absolute bottom-2 left-2 bg-black bg-opacity-60 text-white text-xs px-2 py-1 rounded">
+                                {Math.min(hotel.totalPhotos, 3)} fotos disponibles
+                              </div>
+                            )}
                           </div>
                         ) : (
                           <div className="h-48 bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
@@ -377,15 +550,42 @@ const HotelFinder = ({ destination, onHotelSelect, selectedHotel }) => {
                           </div>
                           <button
                             type="button"
-                            className={`w-full mt-2 text-white py-2.5 px-4 rounded-lg transition-all duration-200 ${
+                            className={`w-full mt-2 text-white py-2.5 px-4 rounded-lg transition-all duration-200 flex items-center justify-center ${
                               isSelected
                                 ? "bg-green-500 hover:bg-green-600 shadow-inner"
                                 : "bg-blue-500 hover:bg-blue-600 shadow-md"
-                            }`}
+                            } ${isLoadingHotelImages ? "opacity-75 cursor-wait" : ""}`}
+                            disabled={isLoadingHotelImages}
                           >
-                            {isSelected
-                              ? "✓ Seleccionado"
-                              : "Seleccionar este hotel"}
+                            {isLoadingHotelImages ? (
+                              <>
+                                <svg
+                                  className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  fill="none"
+                                  viewBox="0 0 24 24"
+                                >
+                                  <circle
+                                    className="opacity-25"
+                                    cx="12"
+                                    cy="12"
+                                    r="10"
+                                    stroke="currentColor"
+                                    strokeWidth="4"
+                                  ></circle>
+                                  <path
+                                    className="opacity-75"
+                                    fill="currentColor"
+                                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                                  ></path>
+                                </svg>
+                                Cargando imágenes...
+                              </>
+                            ) : isSelected ? (
+                              "✓ Seleccionado"
+                            ) : (
+                              "Seleccionar este hotel"
+                            )}
                           </button>
                         </div>
                       </div>

@@ -55,6 +55,18 @@ const NuevoPaquete = () => {
     handleSubmit: formSubmitHandler,
   } = usePackageForm(paquete);
 
+  const handleHotelSelectedWrapper = async (hotel) => {
+    try {
+      await handleHotelSelected(hotel);
+    } catch (error) {
+      console.error("Error seleccionando hotel:", error);
+      addNotification(
+        "Error al procesar las imágenes del hotel",
+        "error",
+      );
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -349,7 +361,7 @@ const NuevoPaquete = () => {
                 <div className="p-5 sm:p-7">
                   <HotelFinder
                     destination={destination}
-                    onHotelSelect={handleHotelSelected}
+                    onHotelSelect={handleHotelSelectedWrapper}
                     selectedHotel={formData.hotel}
                   />
                 </div>
