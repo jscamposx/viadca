@@ -1,6 +1,6 @@
 import { useState } from "react";
-import "react-responsive-carousel/lib/styles/carousel.min.css";
 import { Carousel } from "react-responsive-carousel";
+import "react-responsive-carousel/lib/styles/carousel.min.css";
 import { FiChevronLeft, FiChevronRight, FiCamera, FiEye } from "react-icons/fi";
 
 const API_URL = import.meta.env.VITE_API_URL;
@@ -45,10 +45,7 @@ const CustomIndicator = ({ isSelected, index, onClick }) => (
   />
 );
 
-const EmptyState = ({
-  title = "Sin imágenes",
-  description = "Las imágenes de este destino se cargarán próximamente",
-}) => (
+const EmptyState = ({ title = "Sin imágenes", description = "Las imágenes de este destino se cargarán próximamente" }) => (
   <div className="w-full h-full bg-gradient-to-br from-slate-100 via-slate-200 to-slate-300 flex items-center justify-center relative overflow-hidden">
     <div className="absolute inset-0 opacity-10">
       <div className="absolute top-4 sm:top-10 left-4 sm:left-10 w-16 h-16 sm:w-32 sm:h-32 bg-white rounded-full"></div>
@@ -60,9 +57,7 @@ const EmptyState = ({
       <div className="w-16 h-16 sm:w-20 sm:h-20 bg-slate-300 rounded-2xl flex items-center justify-center mx-auto mb-3 sm:mb-4">
         <FiCamera className="w-8 h-8 sm:w-10 sm:h-10 text-slate-500" />
       </div>
-      <h3 className="text-lg sm:text-xl lg:text-2xl font-bold text-slate-600 mb-2">
-        {title}
-      </h3>
+      <h3 className="text-lg sm:text-xl lg:text-2xl font-bold text-slate-600 mb-2">{title}</h3>
       <p className="text-sm sm:text-base text-slate-500 max-w-xs mx-auto">
         {description}
       </p>
@@ -70,81 +65,81 @@ const EmptyState = ({
   </div>
 );
 
-const ImageCarousel = ({
-  imagenes,
-  emptyStateTitle,
-  emptyStateDescription,
-}) => {
+const ImageCarousel = ({ imagenes, emptyStateTitle, emptyStateDescription }) => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
-  const [imageErrors, setImageErrors] = useState(new Set());
-
-  const handleImageError = (imagen) => {
-    const imageId = imagen.id || imagen.nombre || Math.random().toString();
-    setImageErrors((prev) => new Set(prev).add(imageId));
-    console.warn(
-      `Error cargando imagen: ${imagen.nombre || "Sin nombre"}`,
-      imagen,
-    );
+  const [invalidImages, setInvalidImages] = useState(new Set());
+  
+  // Función para manejar errores de imagen
+  const handleImageError = (imageId) => {
+    setInvalidImages(prev => new Set([...prev, imageId]));
   };
+
+  // Función para obtener URL optimizada de imagen
+  const getOptimizedImageUrl = (imagen) => {
+    if (!imagen) return '';
+    
+    // Primero verificar si es una imagen base64 completa
+    if (imagen.contenido && imagen.contenido.startsWith('data:')) {
+      return imagen.contenido;
+    }
+    
+    // Si tiene URL completa, usarla directamente
+    if (imagen.url && (imagen.url.startsWith('http') || imagen.url.startsWith('data:'))) {
+      return imagen.url;
+    }
+    
+    // Si el contenido es una URL (no base64)
+    if (imagen.contenido && (imagen.contenido.startsWith('http') || imagen.contenido.includes('://'))) {
+      return imagen.contenido;
+    }
+    
+    // Si es una imagen con contenido base64 (sin prefijo data:)
+    if (imagen.contenido && !imagen.contenido.startsWith('http') && !imagen.contenido.includes('://')) {
+      return `data:image/jpeg;base64,${imagen.contenido}`;
+    }
+    
+    // Si tiene ruta relativa, construir URL completa
+    if (imagen.ruta) {
+      return `${API_URL}${imagen.ruta}`;
+    }
+    
+    // Si tiene nombre de archivo, construir URL
+    if (imagen.nombre) {
+      const fileName = imagen.nombre.startsWith('/') ? imagen.nombre : `/${imagen.nombre}`;
+      return `${API_URL}/uploads/images${fileName}`;
+    }
+    
+    // Fallback - intentar usar la URL directamente
+    if (imagen.url) {
+      return `${API_URL}${imagen.url}`;
+    }
+    
+    return '';
+  };
+
+  // Filtrar imágenes válidas
+  const validImages = Array.isArray(imagenes) ? imagenes.filter(imagen => {
+    if (!imagen) return false;
+    
+    const imageId = imagen.id || imagen.nombre || imagen.url || imagen.contenido;
+    if (invalidImages.has(imageId)) return false;
+    
+    // Verificar que tenga una URL válida o contenido base64
+    const hasValidUrl = imagen.url || imagen.ruta || imagen.nombre || imagen.contenido;
+    return hasValidUrl;
+  }) : [];
 
   const handleImageLoad = () => {
     setIsLoading(false);
   };
 
-  const getImageUrl = (imagen) => {
-    // Prioridad: contenido base64 > contenido URL > url legacy
-    const contenido = imagen.contenido || imagen.url;
-
-    if (!contenido) {
-      return null;
-    }
-
-    // Si es una imagen base64, crear data URL
-    if (
-      imagen.tipo === "base64" &&
-      contenido &&
-      !contenido.startsWith("data:")
-    ) {
-      const mimeType = imagen.mime_type || "image/jpeg";
-      return `data:${mimeType};base64,${contenido}`;
-    }
-
-    // Si ya tiene data: o http: al inicio, usar directamente
-    if (contenido.startsWith("data:") || contenido.startsWith("http")) {
-      return contenido;
-    }
-
-    // Si es una URL relativa del servidor
-    if (contenido.startsWith("/")) {
-      return `${API_URL}${contenido}`;
-    }
-
-    // Fallback: asumir que es una ruta relativa
-    return `${API_URL}/${contenido}`;
-  };
-
-  const validImages =
-    imagenes?.filter((img) => {
-      if (!img) return false;
-
-      // Verificar si la imagen tiene errores conocidos
-      if (imageErrors.has(img.id || img.nombre)) return false;
-
-      // Verificar que tenga contenido o URL
-      const contenido = img.contenido || img.url;
-      if (!contenido) return false;
-
-      // Verificar que no sea una cadena vacía
-      if (typeof contenido === "string" && contenido.trim() === "")
-        return false;
-
-      return true;
-    }) || [];
-
   if (!validImages || validImages.length === 0) {
     return (
-      <EmptyState title={emptyStateTitle} description={emptyStateDescription} />
+      <EmptyState 
+        title={emptyStateTitle}
+        description={emptyStateDescription}
+      />
     );
   }
 
@@ -192,22 +187,20 @@ const ImageCarousel = ({
         className="h-full [&_.carousel]:h-full [&_.carousel_.slider-wrapper]:h-full [&_.carousel_.slider]:h-full [&_.carousel_.slide]:h-full [&_.carousel-slider]:overflow-visible"
       >
         {validImages.map((imagen, index) => {
-          const imageUrl = getImageUrl(imagen);
-          const imageId = imagen.id || imagen.nombre || index;
-
+          const imageUrl = getOptimizedImageUrl(imagen);
+          const imageId = imagen.id || imagen.nombre || imagen.contenido || index;
+          
           return (
             <div key={imageId} className="w-full h-full relative">
               <img
                 className="w-full h-full object-cover transition-transform duration-700 hover:scale-105"
                 src={imageUrl}
-                alt={
-                  imagen.nombre ||
-                  imagen.alt ||
-                  `Imagen ${index + 1} del paquete turístico`
-                }
+                alt={imagen.alt || imagen.nombre || `Imagen ${index + 1} del paquete turístico`}
                 onLoad={handleImageLoad}
-                onError={() => handleImageError(imagen)}
+                onError={() => handleImageError(imageId)}
                 loading={index === 0 ? "eager" : "lazy"}
+                fetchPriority={index === 0 ? "high" : "low"}
+                decoding={index === 0 ? "sync" : "async"}
               />
             </div>
           );

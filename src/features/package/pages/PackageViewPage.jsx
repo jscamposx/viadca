@@ -383,11 +383,11 @@ function PackageViewPage() {
                   </div>
                 )}
                 {(() => {
-                  const validImages =
-                    paquete.imagenes?.filter((img) => {
-                      const contenido = img?.contenido || img?.url;
-                      return contenido && contenido.trim() !== "";
-                    }) || [];
+                  const validImages = paquete.imagenes?.filter((img) => {
+                    if (!img) return false;
+                    // Verificar que tenga contenido válido
+                    return img.contenido || img.url || img.ruta || img.nombre;
+                  }) || [];
 
                   return (
                     validImages.length > 0 && (
@@ -409,7 +409,7 @@ function PackageViewPage() {
           {/* Imagen principal mejorada */}
           <div className="relative h-48 xs:h-60 sm:h-80 md:h-96 lg:h-[500px] xl:h-[700px] rounded-2xl sm:rounded-3xl lg:rounded-[2rem] overflow-hidden shadow-2xl group">
             <ImageCarousel
-              imagenes={paquete.imagenes}
+              imagenes={paquete.imagenes || []}
               emptyStateTitle="Sin fotos del paquete"
               emptyStateDescription="Las imágenes de este paquete turístico se cargarán próximamente"
             />
@@ -419,11 +419,11 @@ function PackageViewPage() {
 
             {/* Indicador de más fotos */}
             {(() => {
-              const validImages =
-                paquete.imagenes?.filter((img) => {
-                  const contenido = img?.contenido || img?.url;
-                  return contenido && contenido.trim() !== "";
-                }) || [];
+              const validImages = paquete.imagenes?.filter((img) => {
+                if (!img) return false;
+                // Verificar que tenga contenido válido
+                return img.contenido || img.url || img.ruta || img.nombre;
+              }) || [];
 
               return (
                 validImages.length > 1 && (
