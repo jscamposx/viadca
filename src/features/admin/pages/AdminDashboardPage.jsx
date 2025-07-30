@@ -1,17 +1,9 @@
 import { useState } from "react";
-import Notification from "../components/Notification";
+
+import { useNotifications } from "../hooks/useNotifications";
 
 const AdminDashboard = () => {
-  const [notifications, setNotifications] = useState([]);
-
-  const addNotification = (message, type) => {
-    const id = new Date().getTime();
-    setNotifications((prev) => [...prev, { id, message, type }]);
-  };
-
-  const removeNotification = (id) => {
-    setNotifications((prev) => prev.filter((n) => n.id !== id));
-  };
+  const { notify } = useNotifications();
 
   return (
     <div className="min-h-screen bg-white p-4 sm:p-6 lg:p-8">
@@ -26,24 +18,6 @@ const AdminDashboard = () => {
           </p>
         </header>
 
-        <div className="flex justify-center gap-4 mb-10">
-          <button
-            onClick={() =>
-              addNotification("Paquete creado con éxito", "success")
-            }
-            className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded"
-          >
-            Mostrar Notificación de Éxito
-          </button>
-          <button
-            onClick={() =>
-              addNotification("Error al crear el paquete", "error")
-            }
-            className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded"
-          >
-            Mostrar Notificación de Error
-          </button>
-        </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
           <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-white/50 p-6 transition-all duration-300 hover:shadow-xl">
@@ -495,17 +469,6 @@ const AdminDashboard = () => {
               </div>
             </div>
           </div>
-        </div>
-
-        <div className="fixed bottom-0 right-0 p-4 space-y-2">
-          {notifications.map((notif) => (
-            <Notification
-              key={notif.id}
-              message={notif.message}
-              type={notif.type}
-              onDismiss={() => removeNotification(notif.id)}
-            />
-          ))}
         </div>
       </div>
     </div>

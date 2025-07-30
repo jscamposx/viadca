@@ -28,13 +28,14 @@ import ConfigurationForm from "../components/ConfigurationForm";
 import Loading from "../../package/components/Loading";
 import Error from "../../package/components/Error";
 import { useNotification } from "./AdminLayout";
+import { useNotifications } from "../hooks/useNotifications";
 
 const NuevoPaquete = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [activeSection, setActiveSection] = useState("basicos");
-  const { addNotification } = useNotification();
+  const { notify } = useNotifications();
 
   const { paquete, loading, error } = usePackage(id, true);
 
@@ -62,21 +63,32 @@ const NuevoPaquete = () => {
       await handleHotelSelected(hotel);
     } catch (error) {
       console.error("Error seleccionando hotel:", error);
-      addNotification("Error al procesar las imágenes del hotel", "error");
+      notify.error("Error al procesar las imágenes del hotel", {
+        title: "Error de procesamiento"
+      });
     }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
+    
     try {
-      await formSubmitHandler(e, addNotification);
+      // Usar el nuevo sistema de notificaciones con promesa
+      await notify.promise(
+        formSubmitHandler(e, notify.addNotification),
+        {
+          loading: id ? "Actualizando paquete..." : "Creando paquete...",
+          success: id ? "Paquete actualizado exitosamente" : "Paquete creado exitosamente",
+          error: "Error al procesar el paquete"
+        }
+      );
     } catch (err) {
       console.error("Error inesperado en el componente de envío:", err);
-      addNotification(
-        "Ocurrió un error inesperado al enviar el formulario.",
-        "error",
-      );
+      notify.error("Ocurrió un error inesperado al enviar el formulario.", {
+        title: "Error inesperado",
+        persistent: true
+      });
     } finally {
       setIsSubmitting(false);
     }
