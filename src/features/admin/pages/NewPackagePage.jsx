@@ -13,6 +13,8 @@ import {
   FiDollarSign,
   FiUsers,
   FiSettings,
+  FiCheck,
+  FiChevronRight,
 } from "react-icons/fi";
 import { usePackage } from "../../package/hooks/usePackage";
 import { usePackageForm } from "../hooks/usePackageForm";
@@ -81,38 +83,39 @@ const NuevoPaquete = () => {
   };
 
   const sectionIcons = {
-    basicos: <FiInfo className="w-4 h-4" />,
-    precios: <FiDollarSign className="w-4 h-4" />,
-    ubicaciones: <FiMapPin className="w-4 h-4" />,
-    imagenes: <FiImage className="w-4 h-4" />,
-    hotel: <FiCalendar className="w-4 h-4" />,
-    mayoristas: <FiUsers className="w-4 h-4" />,
-    itinerario: <FiFileText className="w-4 h-4" />,
-    configuracion: <FiSettings className="w-4 h-4" />,
+    basicos: <FiInfo className="w-5 h-5" />,
+    precios: <FiDollarSign className="w-5 h-5" />,
+    ubicaciones: <FiMapPin className="w-5 h-5" />,
+    imagenes: <FiImage className="w-5 h-5" />,
+    hotel: <FiCalendar className="w-5 h-5" />,
+    mayoristas: <FiUsers className="w-5 h-5" />,
+    itinerario: <FiFileText className="w-5 h-5" />,
+    configuracion: <FiSettings className="w-5 h-5" />,
   };
 
   const sections = [
-    { id: "basicos", label: "Básicos", description: "Título y fechas" },
-    { id: "precios", label: "Precios", description: "Costos y descuentos" },
-    {
-      id: "ubicaciones",
-      label: "Ubicaciones",
-      description: "Origen y destinos",
-    },
-    { id: "imagenes", label: "Imágenes", description: "Fotos del destino" },
-    { id: "hotel", label: "Hotel", description: "Hospedaje incluido" },
-    {
-      id: "mayoristas",
-      label: "Mayoristas",
-      description: "Socios distribuidores",
-    },
-    { id: "itinerario", label: "Itinerario", description: "Plan de viaje" },
-    {
-      id: "configuracion",
-      label: "Configuración",
-      description: "Estado y notas",
-    },
+    { id: "basicos", label: "Básicos", description: "Título y fechas", color: "blue" },
+    { id: "precios", label: "Precios", description: "Costos y descuentos", color: "emerald" },
+    { id: "ubicaciones", label: "Ubicaciones", description: "Origen y destinos", color: "purple" },
+    { id: "imagenes", label: "Imágenes", description: "Fotos del destino", color: "orange" },
+    { id: "hotel", label: "Hotel", description: "Hospedaje incluido", color: "teal" },
+    { id: "mayoristas", label: "Mayoristas", description: "Socios distribuidores", color: "indigo" },
+    { id: "itinerario", label: "Itinerario", description: "Plan de viaje", color: "rose" },
+    { id: "configuracion", label: "Configuración", description: "Estado y notas", color: "gray" },
   ];
+
+  const getCurrentSectionIndex = () => {
+    return sections.findIndex((s) => s.id === activeSection);
+  };
+
+  const navigateToSection = (direction) => {
+    const currentIndex = getCurrentSectionIndex();
+    const newIndex = direction === 'next' ? currentIndex + 1 : currentIndex - 1;
+    
+    if (newIndex >= 0 && newIndex < sections.length) {
+      setActiveSection(sections[newIndex].id);
+    }
+  };
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -120,6 +123,9 @@ const NuevoPaquete = () => {
 
   if (id && loading) return <Loading />;
   if (id && error) return <Error message={error} />;
+
+  const currentSection = sections.find(s => s.id === activeSection);
+  const progress = ((getCurrentSectionIndex() + 1) / sections.length) * 100;
 
   return (
     <APIProvider
@@ -129,412 +135,272 @@ const NuevoPaquete = () => {
       region="MX"
       version="beta"
     >
-      <div className="min-h-screen bg-gray-50 py-4 sm:py-6 px-3 sm:px-4">
-        <div className="max-w-7xl mx-auto">
-          <div className="bg-gradient-to-r from-blue-700 to-indigo-800 rounded-2xl shadow-xl overflow-hidden mb-6 sm:mb-8">
-            <div className="py-5 sm:py-7 px-4 sm:px-8 flex items-center justify-between gap-4">
-              <div>
-                <h1 className="text-2xl sm:text-3xl font-bold text-white">
-                  {id
-                    ? "Editar Paquete Turístico"
-                    : "Crear nuevo paquete turístico"}
-                </h1>
-                <p className="text-blue-100 mt-1.5 text-base">
-                  Complete toda la información para crear un paquete atractivo
-                </p>
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50">
+        {/* Header mejorado */}
+        <div className="sticky top-0 z-50 bg-white/80 backdrop-blur-xl border-b border-slate-200/60">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex items-center justify-between h-16 sm:h-20">
+              <div className="flex items-center gap-4">
+                <button
+                  type="button"
+                  onClick={() => navigate("/admin/paquetes")}
+                  className="p-2 hover:bg-slate-100 rounded-lg transition-colors"
+                >
+                  <FiArrowLeft className="w-5 h-5 text-slate-600" />
+                </button>
+                <div>
+                  <h1 className="text-xl sm:text-2xl font-bold text-slate-900">
+                    {id ? "Editar Paquete" : "Nuevo Paquete"}
+                  </h1>
+                  <p className="text-sm text-slate-500 hidden sm:block">
+                    {currentSection?.description}
+                  </p>
+                </div>
               </div>
-
-              <button
-                type="button"
-                onClick={() => navigate("/admin/paquetes")}
-                aria-label="Regresar a paquetes"
-                className="flex-shrink-0 p-2.5 rounded-lg text-white bg-white/15 hover:bg-white/25 transition-colors duration-200 flex items-center gap-2"
-              >
-                <FiArrowLeft className="w-5 h-5" />
-                <span className="hidden sm:inline">Volver</span>
-              </button>
-            </div>
-
-            <div className="bg-white/10 backdrop-blur-sm py-3 px-4">
-              <div className="flex overflow-x-auto gap-1 pb-1">
-                {sections.map((section, index) => {
-                  const currentIndex = sections.findIndex(
-                    (s) => s.id === activeSection,
-                  );
-                  const isCompleted = index < currentIndex;
-                  const isActive = activeSection === section.id;
-
-                  return (
-                    <div key={section.id} className="flex items-center">
-                      {index > 0 && (
-                        <div
-                          className={`w-4 h-0.5 mx-1 ${isCompleted || isActive ? "bg-blue-400" : "bg-gray-400"}`}
-                        ></div>
-                      )}
-                      <button
-                        type="button"
-                        onClick={() => setActiveSection(section.id)}
-                        className={`flex flex-col items-center gap-1 px-3 py-2 rounded-lg font-medium whitespace-nowrap transition-all text-xs ${
-                          isActive
-                            ? "bg-white text-blue-800 shadow-md"
-                            : isCompleted
-                              ? "bg-blue-500/20 text-blue-100 hover:bg-blue-500/30"
-                              : "bg-white/10 text-blue-100 hover:bg-white/20"
-                        }`}
-                      >
-                        <div className="flex items-center gap-1">
-                          <span
-                            className={`${isCompleted ? "hidden" : "flex"}`}
-                          >
-                            {sectionIcons[section.id]}
-                          </span>
-                          {isCompleted && (
-                            <FiCheckCircle className="w-4 h-4 text-green-300" />
-                          )}
-                          <span className="font-medium">{section.label}</span>
-                        </div>
-                        <span className="text-xs opacity-75 leading-tight">
-                          {section.description}
-                        </span>
-                      </button>
-                    </div>
-                  );
-                })}
+              
+              {/* Progress indicator */}
+              <div className="flex items-center gap-3">
+                <div className="hidden sm:flex text-sm text-slate-500">
+                  {getCurrentSectionIndex() + 1} de {sections.length}
+                </div>
+                <div className="w-24 h-2 bg-slate-200 rounded-full overflow-hidden">
+                  <div 
+                    className="h-full bg-gradient-to-r from-blue-500 to-purple-500 transition-all duration-500 ease-out"
+                    style={{ width: `${progress}%` }}
+                  />
+                </div>
               </div>
             </div>
           </div>
+        </div>
 
-          <form
-            onSubmit={handleSubmit}
-            className="space-y-5 sm:space-y-7"
-            noValidate
-          >
-            {/* Información Básica */}
-            <div
-              className={`${activeSection !== "basicos" ? "hidden" : ""} animate-fadeIn`}
-            >
-              <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
-                <div className="p-5 sm:p-7 border-b border-gray-200">
-                  <div className="flex items-center gap-3">
-                    <div className="bg-blue-100 p-2 rounded-lg text-blue-700">
-                      <FiInfo className="w-5 h-5" />
-                    </div>
-                    <div>
-                      <h2 className="text-xl font-semibold text-gray-800">
-                        Información Básica
-                      </h2>
-                      <p className="text-gray-600 mt-1">
-                        Detalles esenciales del paquete turístico
-                      </p>
-                    </div>
-                  </div>
-                </div>
-                <div className="p-5 sm:p-7">
-                  <BasicInfoForm
-                    formData={formData}
-                    onFormChange={handleFormChange}
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* Precios */}
-            <div
-              className={`${activeSection !== "precios" ? "hidden" : ""} animate-fadeIn`}
-            >
-              <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
-                <div className="p-5 sm:p-7 border-b border-gray-200">
-                  <div className="flex items-center gap-3">
-                    <div className="bg-green-100 p-2 rounded-lg text-green-700">
-                      <FiDollarSign className="w-5 h-5" />
-                    </div>
-                    <div>
-                      <h2 className="text-xl font-semibold text-gray-800">
-                        Precios y Costos
-                      </h2>
-                      <p className="text-gray-600 mt-1">
-                        Define los precios y opciones de descuento
-                      </p>
-                    </div>
-                  </div>
-                </div>
-                <div className="p-5 sm:p-7">
-                  <PricingForm
-                    formData={formData}
-                    onFormChange={handleFormChange}
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* Ubicaciones */}
-            <div
-              className={`${activeSection !== "ubicaciones" ? "hidden" : ""} animate-fadeIn`}
-            >
-              <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
-                <div className="p-5 sm:p-7 border-b border-gray-200">
-                  <div className="flex items-center gap-3">
-                    <div className="bg-blue-100 p-2 rounded-lg text-blue-700">
-                      <FiMapPin className="w-5 h-5" />
-                    </div>
-                    <div>
-                      <h2 className="text-xl font-semibold text-gray-800">
-                        Ubicaciones del Viaje
-                      </h2>
-                      <p className="text-gray-600 mt-1">
-                        Define el lugar de origen y destino del viaje
-                      </p>
-                    </div>
-                  </div>
-                </div>
-                <div className="p-5 sm:p-7">
-                  <LocationSelector
-                    onMapClick={onMapClick}
-                    origin={origin}
-                    destination={destination}
-                    onPlaceSelected={handlePlaceSelected}
-                    searchValue={searchValue}
-                    onSearchValueChange={setSearchValue}
-                    selectionMode={selectionMode}
-                    setSelectionMode={setSelectionMode}
-                    additionalDestinations={formData.additionalDestinations}
-                    onAddDestination={handleAddDestination}
-                    onRemoveDestination={handleRemoveDestination}
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* Imágenes */}
-            <div
-              className={`${activeSection !== "imagenes" ? "hidden" : ""} animate-fadeIn`}
-            >
-              <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
-                <div className="p-5 sm:p-7 border-b border-gray-200">
-                  <div className="flex items-center gap-3">
-                    <div className="bg-blue-100 p-2 rounded-lg text-blue-700">
-                      <FiImage className="w-5 h-5" />
-                    </div>
-                    <div>
-                      <h2 className="text-xl font-semibold text-gray-800">
-                        Imágenes del Destino
-                      </h2>
-                      <p className="text-gray-600 mt-1">
-                        Agrega imágenes atractivas para mostrar el destino
-                      </p>
-                    </div>
-                  </div>
-                </div>
-                <div className="p-5 sm:p-7">
-                  <DestinationImageManager
-                    destination={destination}
-                    onImagesChange={handleImagesChange}
-                    initialImages={formData.imagenes}
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* Hotel */}
-            <div
-              className={`${activeSection !== "hotel" ? "hidden" : ""} animate-fadeIn`}
-            >
-              <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
-                <div className="p-5 sm:p-7 border-b border-gray-200">
-                  <div className="flex items-center gap-3">
-                    <div className="bg-blue-100 p-2 rounded-lg text-blue-700">
-                      <FiCalendar className="w-5 h-5" />
-                    </div>
-                    <div>
-                      <h2 className="text-xl font-semibold text-gray-800">
-                        Selección de Hotel
-                      </h2>
-                      <p className="text-gray-600 mt-1">
-                        Elige el hotel que se incluirá en este paquete
-                      </p>
-                    </div>
-                  </div>
-                </div>
-                <div className="p-5 sm:p-7">
-                  <HotelFinder
-                    destination={destination}
-                    onHotelSelect={handleHotelSelectedWrapper}
-                    selectedHotel={formData.hotel}
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* Mayoristas */}
-            <div
-              className={`${activeSection !== "mayoristas" ? "hidden" : ""} animate-fadeIn`}
-            >
-              <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
-                <div className="p-5 sm:p-7 border-b border-gray-200">
-                  <div className="flex items-center gap-3">
-                    <div className="bg-indigo-100 p-2 rounded-lg text-indigo-700">
-                      <FiUsers className="w-5 h-5" />
-                    </div>
-                    <div>
-                      <h2 className="text-xl font-semibold text-gray-800">
-                        Mayoristas Asociados
-                      </h2>
-                      <p className="text-gray-600 mt-1">
-                        Selecciona quiénes pueden vender este paquete
-                      </p>
-                    </div>
-                  </div>
-                </div>
-                <div className="p-5 sm:p-7">
-                  <MayoristasForm
-                    formData={formData}
-                    onFormChange={handleFormChange}
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* Itinerario */}
-            <div
-              className={`${activeSection !== "itinerario" ? "hidden" : ""} animate-fadeIn`}
-            >
-              <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
-                <div className="p-5 sm:p-7 border-b border-gray-200">
-                  <div className="flex items-center gap-3">
-                    <div className="bg-blue-100 p-2 rounded-lg text-blue-700">
-                      <FiFileText className="w-5 h-5" />
-                    </div>
-                    <div>
-                      <h2 className="text-xl font-semibold text-gray-800">
-                        Texto del Itinerario
-                      </h2>
-                      <p className="text-gray-600 mt-1">
-                        Describe el plan de viaje día por día.
-                      </p>
-                    </div>
-                  </div>
-                </div>
-                <div className="p-5 sm:p-7">
-                  <textarea
-                    name="itinerario_texto"
-                    value={formData.itinerario_texto || ""}
-                    onChange={handleFormChange}
-                    rows="15"
-                    className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
-                    placeholder="DÍA 1: Salida de CDMX...\nDÍA 2: Llegada a Madrid..."
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* Configuración */}
-            <div
-              className={`${activeSection !== "configuracion" ? "hidden" : ""} animate-fadeIn`}
-            >
-              <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
-                <div className="p-5 sm:p-7 border-b border-gray-200">
-                  <div className="flex items-center gap-3">
-                    <div className="bg-gray-100 p-2 rounded-lg text-gray-700">
-                      <FiSettings className="w-5 h-5" />
-                    </div>
-                    <div>
-                      <h2 className="text-xl font-semibold text-gray-800">
-                        Configuración y Resumen
-                      </h2>
-                      <p className="text-gray-600 mt-1">
-                        Ajustes finales y revisión del paquete
-                      </p>
-                    </div>
-                  </div>
-                </div>
-                <div className="p-5 sm:p-7">
-                  <ConfigurationForm
-                    formData={formData}
-                    onFormChange={handleFormChange}
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* Navegación y Envío */}
-            <div className="sticky bottom-0 bg-white border-t border-gray-200 py-4 px-4 sm:px-6 rounded-xl shadow-lg z-10">
-              <div className="flex justify-between items-center gap-3">
-                <button
-                  type="button"
-                  onClick={() => {
-                    const sectionIds = sections.map((s) => s.id);
-                    const currentIndex = sectionIds.indexOf(activeSection);
-                    if (currentIndex > 0) {
-                      setActiveSection(sectionIds[currentIndex - 1]);
-                    }
-                  }}
-                  disabled={activeSection === "basicos"}
-                  className={`flex items-center gap-2 px-4 py-2.5 rounded-lg font-medium text-sm sm:text-base ${
-                    activeSection === "basicos"
-                      ? "opacity-50 cursor-not-allowed text-gray-500"
-                      : "text-blue-600 hover:bg-blue-50"
-                  }`}
-                >
-                  <FiArrowLeft className="w-4 h-4" />
-                  Anterior
-                </button>
-
-                {activeSection !== "configuracion" ? (
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      const sectionIds = sections.map((s) => s.id);
-                      const currentIndex = sectionIds.indexOf(activeSection);
-                      if (currentIndex < sections.length - 1) {
-                        setActiveSection(sectionIds[currentIndex + 1]);
-                      }
-                    }}
-                    className="flex items-center gap-2 px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors text-sm sm:text-base"
-                  >
-                    Siguiente
-                    <FiArrowLeft className="w-4 h-4 transform rotate-180" />
-                  </button>
-                ) : (
-                  <button
-                    type="submit"
-                    className="px-6 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold rounded-lg shadow-md transition-all text-sm sm:text-base disabled:opacity-70 disabled:cursor-wait flex items-center gap-2"
-                    disabled={isSubmitting}
-                  >
-                    {isSubmitting ? (
-                      <>
-                        <svg
-                          className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
-                          xmlns="http://www.w3.org/2000/svg"
-                          fill="none"
-                          viewBox="0 0 24 24"
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8">
+          <div className="grid lg:grid-cols-12 gap-6 lg:gap-8">
+            {/* Sidebar de navegación */}
+            <div className="lg:col-span-3">
+              <div className="sticky top-28">
+                <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-4">
+                  <h3 className="font-semibold text-slate-900 mb-4">Secciones</h3>
+                  <div className="space-y-2">
+                    {sections.map((section, index) => {
+                      const isCompleted = index < getCurrentSectionIndex();
+                      const isActive = activeSection === section.id;
+                      
+                      return (
+                        <button
+                          key={section.id}
+                          type="button"
+                          onClick={() => setActiveSection(section.id)}
+                          className={`w-full flex items-center gap-3 p-3 rounded-xl text-left transition-all ${
+                            isActive
+                              ? `bg-${section.color}-50 text-${section.color}-700 border border-${section.color}-200`
+                              : isCompleted
+                              ? "bg-green-50 text-green-700 hover:bg-green-100"
+                              : "text-slate-600 hover:bg-slate-50"
+                          }`}
                         >
-                          <circle
-                            className="opacity-25"
-                            cx="12"
-                            cy="12"
-                            r="10"
-                            stroke="currentColor"
-                            strokeWidth="4"
-                          ></circle>
-                          <path
-                            className="opacity-75"
-                            fill="currentColor"
-                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                          ></path>
-                        </svg>
-                        {id ? "Actualizando..." : "Creando..."}
-                      </>
-                    ) : id ? (
-                      "Actualizar Paquete"
-                    ) : (
-                      "Crear Paquete"
-                    )}
-                  </button>
-                )}
+                          <div className={`flex items-center justify-center w-8 h-8 rounded-lg ${
+                            isActive
+                              ? `bg-${section.color}-100`
+                              : isCompleted
+                              ? "bg-green-100"
+                              : "bg-slate-100"
+                          }`}>
+                            {isCompleted ? (
+                              <FiCheck className="w-4 h-4 text-green-600" />
+                            ) : (
+                              <span className={isActive ? `text-${section.color}-600` : "text-slate-500"}>
+                                {sectionIcons[section.id]}
+                              </span>
+                            )}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="font-medium truncate">{section.label}</p>
+                            <p className="text-xs opacity-75 truncate">{section.description}</p>
+                          </div>
+                          {isActive && <FiChevronRight className="w-4 h-4" />}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
               </div>
             </div>
-          </form>
+
+            {/* Contenido principal */}
+            <div className="lg:col-span-9">
+              <form onSubmit={handleSubmit} className="space-y-6">
+                {/* Header de sección */}
+                <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 sm:p-8">
+                  <div className="flex items-center gap-4 mb-6">
+                    <div className={`p-3 rounded-xl bg-${currentSection?.color}-50`}>
+                      <span className={`text-${currentSection?.color}-600`}>
+                        {sectionIcons[activeSection]}
+                      </span>
+                    </div>
+                    <div>
+                      <h2 className="text-2xl font-bold text-slate-900">
+                        {currentSection?.label}
+                      </h2>
+                      <p className="text-slate-600 mt-1">
+                        {currentSection?.description}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Contenido de cada sección */}
+                  <div className="animate-fadeIn">
+                    {activeSection === "basicos" && (
+                      <BasicInfoForm
+                        formData={formData}
+                        onFormChange={handleFormChange}
+                      />
+                    )}
+
+                    {activeSection === "precios" && (
+                      <PricingForm
+                        formData={formData}
+                        onFormChange={handleFormChange}
+                      />
+                    )}
+
+                    {activeSection === "ubicaciones" && (
+                      <LocationSelector
+                        onMapClick={onMapClick}
+                        origin={origin}
+                        destination={destination}
+                        onPlaceSelected={handlePlaceSelected}
+                        searchValue={searchValue}
+                        onSearchValueChange={setSearchValue}
+                        selectionMode={selectionMode}
+                        setSelectionMode={setSelectionMode}
+                        additionalDestinations={formData.additionalDestinations}
+                        onAddDestination={handleAddDestination}
+                        onRemoveDestination={handleRemoveDestination}
+                      />
+                    )}
+
+                    {activeSection === "imagenes" && (
+                      <DestinationImageManager
+                        destination={destination}
+                        onImagesChange={handleImagesChange}
+                        initialImages={formData.imagenes}
+                      />
+                    )}
+
+                    {activeSection === "hotel" && (
+                      <HotelFinder
+                        destination={destination}
+                        onHotelSelect={handleHotelSelectedWrapper}
+                        selectedHotel={formData.hotel}
+                      />
+                    )}
+
+                    {activeSection === "mayoristas" && (
+                      <MayoristasForm
+                        formData={formData}
+                        onFormChange={handleFormChange}
+                      />
+                    )}
+
+                    {activeSection === "itinerario" && (
+                      <div className="space-y-4">
+                        <label className="block text-sm font-medium text-slate-700">
+                          Descripción del itinerario
+                        </label>
+                        <textarea
+                          name="itinerario_texto"
+                          value={formData.itinerario_texto || ""}
+                          onChange={handleFormChange}
+                          rows="12"
+                          className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                          placeholder="DÍA 1: Salida de CDMX...&#10;DÍA 2: Llegada a Madrid...&#10;&#10;Describe el plan día por día con todos los detalles importantes."
+                        />
+                      </div>
+                    )}
+
+                    {activeSection === "configuracion" && (
+                      <ConfigurationForm
+                        formData={formData}
+                        onFormChange={handleFormChange}
+                      />
+                    )}
+                  </div>
+                </div>
+
+                {/* Navegación flotante */}
+                <div className="sticky bottom-6 bg-white rounded-2xl shadow-lg border border-slate-200 p-4">
+                  <div className="flex items-center justify-between">
+                    <button
+                      type="button"
+                      onClick={() => navigateToSection('prev')}
+                      disabled={getCurrentSectionIndex() === 0}
+                      className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-medium transition-all ${
+                        getCurrentSectionIndex() === 0
+                          ? "text-slate-400 cursor-not-allowed"
+                          : "text-slate-600 hover:bg-slate-100"
+                      }`}
+                    >
+                      <FiArrowLeft className="w-4 h-4" />
+                      <span className="hidden sm:inline">Anterior</span>
+                    </button>
+
+                    <div className="flex items-center gap-2">
+                      {sections.map((_, index) => (
+                        <div
+                          key={index}
+                          className={`w-2 h-2 rounded-full transition-all ${
+                            index === getCurrentSectionIndex()
+                              ? "bg-blue-500 w-6"
+                              : index < getCurrentSectionIndex()
+                              ? "bg-green-400"
+                              : "bg-slate-300"
+                          }`}
+                        />
+                      ))}
+                    </div>
+
+                    <div className="flex items-center gap-3">
+                      {getCurrentSectionIndex() < sections.length - 1 && (
+                        <button
+                          type="button"
+                          onClick={() => navigateToSection('next')}
+                          className="flex items-center gap-2 px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-xl transition-colors"
+                        >
+                          <span className="hidden sm:inline">Siguiente</span>
+                          <FiChevronRight className="w-4 h-4" />
+                        </button>
+                      )}
+                      
+                      {getCurrentSectionIndex() === sections.length - 1 && (
+                        <button
+                          type="submit"
+                          disabled={isSubmitting}
+                          className="flex items-center gap-2 px-6 py-2.5 bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 text-white font-bold rounded-xl shadow-lg transition-all disabled:opacity-70 disabled:cursor-wait"
+                        >
+                          {isSubmitting ? (
+                            <>
+                              <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                              <span>
+                                {id ? "Actualizando..." : "Creando..."}
+                              </span>
+                            </>
+                          ) : (
+                            <>
+                              <FiCheckCircle className="w-5 h-5" />
+                              <span>
+                                {id ? "Actualizar Paquete" : "Crear Paquete"}
+                              </span>
+                            </>
+                          )}
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
         </div>
       </div>
     </APIProvider>
