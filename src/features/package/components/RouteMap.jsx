@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { MapContainer, TileLayer, Marker, Popup, Polyline } from "react-leaflet";
 import L from "leaflet";
-import { FiMapPin, FiNavigation } from "react-icons/fi";
+import { FiMapPin, FiRefreshCw } from "react-icons/fi";
 
 // Fix para los iconos de Leaflet
 delete L.Icon.Default.prototype._getIconUrl;
@@ -67,7 +67,7 @@ const RouteMap = ({ paquete }) => {
     );
   }
 
-  // Calcular el centro del mapa y los bounds
+  // Calcular el centro del mapa y zoom apropiado
   const calculateMapCenter = () => {
     if (destinosConCoordenadas.length === 1) {
       return [
@@ -85,7 +85,32 @@ const RouteMap = ({ paquete }) => {
     ];
   };
 
+  // Calcular zoom apropiado para ver toda la ruta
+  const calculateZoom = () => {
+    if (destinosConCoordenadas.length === 1) {
+      return 10; // Zoom más alejado para un solo destino
+    }
+    
+    // Calcular la diferencia máxima entre coordenadas
+    const lats = destinosConCoordenadas.map(dest => parseFloat(dest.destino_lat));
+    const lngs = destinosConCoordenadas.map(dest => parseFloat(dest.destino_lng));
+    
+    const latRange = Math.max(...lats) - Math.min(...lats);
+    const lngRange = Math.max(...lngs) - Math.min(...lngs);
+    const maxRange = Math.max(latRange, lngRange);
+    
+    // Calcular zoom basado en el rango
+    if (maxRange > 10) return 4;
+    if (maxRange > 5) return 5;
+    if (maxRange > 2) return 6;
+    if (maxRange > 1) return 7;
+    if (maxRange > 0.5) return 8;
+    if (maxRange > 0.1) return 9;
+    return 10;
+  };
+
   const mapCenter = calculateMapCenter();
+  const mapZoom = calculateZoom();
   
   // Crear coordenadas para la polilínea
   const routeCoordinates = destinosConCoordenadas.map(dest => [
@@ -101,7 +126,7 @@ const RouteMap = ({ paquete }) => {
       <MapContainer
         key={mapKey}
         center={mapCenter}
-        zoom={destinosConCoordenadas.length === 1 ? 12 : 8}
+        zoom={mapZoom}
         style={{ height: '100%', width: '100%' }}
         className="z-10"
         scrollWheelZoom={true}
@@ -159,9 +184,9 @@ const RouteMap = ({ paquete }) => {
         <button
           onClick={() => setMapKey(prev => prev + 1)}
           className="bg-white/90 backdrop-blur p-2 rounded-lg shadow-lg hover:bg-white transition-colors"
-          title="Recargar mapa"
+          title="Actualizar mapa"
         >
-          <FiNavigation className="w-4 h-4 text-blue-600" />
+          <FiRefreshCw className="w-4 h-4 text-blue-600" />
         </button>
       </div>
     </div>
