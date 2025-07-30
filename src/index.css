@@ -1,5 +1,8 @@
 @import "tailwindcss";
 
+/* Importar estilos de Leaflet */
+@import 'leaflet/dist/leaflet.css';
+
 /* Ocultar scrollbar pero mantener funcionalidad */
 .scrollbar-hide {
   /* Firefox */
@@ -35,4 +38,43 @@
 
 .scrollbar-thin::-webkit-scrollbar-thumb:hover {
   background-color: rgb(148 163 184);
+}
+
+/* Estilos personalizados para el mapa */
+.leaflet-container {
+  font-family: inherit;
+}
+
+.leaflet-popup-content-wrapper {
+  border-radius: 8px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+.leaflet-popup-tip {
+  background: white;
+}
+
+.custom-marker {
+  background: transparent;
+  border: none;
+}
+
+/* Estilos para el loading del mapa */
+.leaflet-container.leaflet-loading {
+  background: #f8fafc;
+}
+
+.leaflet-control-zoom {
+  border-radius: 8px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.leaflet-control-zoom a {
+  border-radius: 6px;
+  color: #3b82f6;
+  font-weight: bold;
+}
+
+.leaflet-control-zoom a:hover {
+  background-color: #eff6ff;
 }

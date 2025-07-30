@@ -1,140 +1,168 @@
-import { FiMapPin, FiNavigation, FiMap } from "react-icons/fi";
+import { useState } from "react";
+import { MapContainer, TileLayer, Marker, Popup, Polyline } from "react-leaflet";
+import L from "leaflet";
+import { FiMapPin, FiNavigation } from "react-icons/fi";
+
+// Fix para los iconos de Leaflet
+delete L.Icon.Default.prototype._getIconUrl;
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon-2x.png',
+  iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon.png',
+  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png',
+});
+
+// Iconos personalizados
+const createCustomIcon = (color) => {
+  return L.divIcon({
+    className: 'custom-marker',
+    html: `<div style="
+      width: 24px;
+      height: 24px;
+      background-color: ${color};
+      border: 3px solid white;
+      border-radius: 50%;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+      position: relative;
+    ">
+      <div style="
+        width: 6px;
+        height: 6px;
+        background-color: white;
+        border-radius: 50%;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+      "></div>
+    </div>`,
+    iconSize: [24, 24],
+    iconAnchor: [12, 12],
+  });
+};
 
 const RouteMap = ({ paquete }) => {
-  // Obtener destinos del paquete
+  const [mapKey, setMapKey] = useState(0);
   const destinos = paquete?.destinos || [];
-  const origen = paquete?.origen || "Lima";
-  const destino = paquete?.destino || "Destino";
 
-  return (
-    <div className="bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 rounded-2xl p-6 border border-blue-200/50 min-h-[400px]">
-      {/* Header del mapa */}
-      <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center space-x-3">
-          <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center">
-            <FiMap className="w-5 h-5 text-white" />
-          </div>
-          <div>
-            <h3 className="text-lg font-semibold text-blue-800">
-              Ruta del Viaje
-            </h3>
-            <p className="text-sm text-blue-600">
-              {origen} → {destino}
-            </p>
-          </div>
-        </div>
-        <div className="px-3 py-1 bg-blue-100 rounded-full">
-          <span className="text-xs font-medium text-blue-700">
-            {destinos.length || 1} destino
-            {(destinos.length || 1) > 1 ? "s" : ""}
-          </span>
+  // Filtrar destinos que tienen coordenadas válidas
+  const destinosConCoordenadas = destinos.filter(
+    (dest) => dest.destino_lat && dest.destino_lng && 
+    !isNaN(parseFloat(dest.destino_lat)) && !isNaN(parseFloat(dest.destino_lng))
+  );
+
+  // Si no hay destinos con coordenadas, mostrar mensaje
+  if (destinosConCoordenadas.length === 0) {
+    return (
+      <div className="bg-white rounded-xl p-6 border border-gray-100 min-h-[280px] flex items-center justify-center">
+        <div className="text-center">
+          <FiMapPin className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+          <h4 className="text-lg font-medium text-gray-700 mb-2">
+            Mapa no disponible
+          </h4>
+          <p className="text-gray-500">
+            Este paquete aún no tiene coordenadas geográficas configuradas.
+          </p>
         </div>
       </div>
+    );
+  }
 
-      {/* Contenido del mapa */}
-      <div className="relative bg-white/80 rounded-xl p-6 border border-blue-100 min-h-[280px]">
-        {/* Simulación visual de ruta */}
-        <div className="flex flex-col space-y-4">
-          {/* Punto de origen */}
-          <div className="flex items-center space-x-4">
-            <div className="relative">
-              <div className="w-4 h-4 bg-green-500 rounded-full shadow-lg"></div>
-              <div className="absolute -inset-1 bg-green-400/30 rounded-full animate-pulse"></div>
-            </div>
-            <div className="flex-1">
-              <div className="flex items-center justify-between">
-                <span className="font-medium text-gray-800">{origen}</span>
-                <span className="text-xs px-2 py-1 bg-green-100 text-green-700 rounded-full">
-                  Origen
-                </span>
-              </div>
-            </div>
-          </div>
+  // Calcular el centro del mapa y los bounds
+  const calculateMapCenter = () => {
+    if (destinosConCoordenadas.length === 1) {
+      return [
+        parseFloat(destinosConCoordenadas[0].destino_lat),
+        parseFloat(destinosConCoordenadas[0].destino_lng)
+      ];
+    }
+    
+    const latSum = destinosConCoordenadas.reduce((sum, dest) => sum + parseFloat(dest.destino_lat), 0);
+    const lngSum = destinosConCoordenadas.reduce((sum, dest) => sum + parseFloat(dest.destino_lng), 0);
+    
+    return [
+      latSum / destinosConCoordenadas.length,
+      lngSum / destinosConCoordenadas.length
+    ];
+  };
 
-          {/* Línea de conexión */}
-          <div className="ml-2 border-l-2 border-dashed border-blue-300 h-8"></div>
+  const mapCenter = calculateMapCenter();
+  
+  // Crear coordenadas para la polilínea
+  const routeCoordinates = destinosConCoordenadas.map(dest => [
+    parseFloat(dest.destino_lat),
+    parseFloat(dest.destino_lng)
+  ]);
 
-          {/* Destinos intermedios */}
-          {destinos.map((dest, index) => (
-            <div key={index}>
-              <div className="flex items-center space-x-4">
-                <div className="relative">
-                  <div className="w-4 h-4 bg-blue-500 rounded-full shadow-lg"></div>
-                  <div className="absolute -inset-1 bg-blue-400/30 rounded-full"></div>
-                </div>
-                <div className="flex-1">
-                  <div className="flex items-center justify-between">
-                    <span className="font-medium text-gray-800">
-                      {dest.destino || `Destino ${index + 1}`}
-                    </span>
-                    <span className="text-xs px-2 py-1 bg-blue-100 text-blue-700 rounded-full">
-                      Parada {index + 1}
-                    </span>
-                  </div>
+  // Iconos de colores - todos azules
+  const blueIcon = createCustomIcon('#3b82f6'); // Azul para todos
+
+  return (
+    <div className="relative bg-white rounded-xl overflow-hidden border border-gray-100 h-80">
+      <MapContainer
+        key={mapKey}
+        center={mapCenter}
+        zoom={destinosConCoordenadas.length === 1 ? 12 : 8}
+        style={{ height: '100%', width: '100%' }}
+        className="z-10"
+        scrollWheelZoom={true}
+      >
+        <TileLayer
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          maxZoom={18}
+        />
+        
+        {/* Marcadores de destinos */}
+        {destinosConCoordenadas.map((dest, index) => {
+          const lat = parseFloat(dest.destino_lat);
+          const lng = parseFloat(dest.destino_lng);
+          
+          return (
+            <Marker
+              key={index}
+              position={[lat, lng]}
+              icon={blueIcon}
+            >
+              <Popup>
+                <div className="text-center p-1">
+                  <h4 className="font-semibold text-gray-800 mb-1">
+                    Destino {index + 1}
+                  </h4>
+                  <p className="text-sm text-blue-600 mb-1">
+                    {dest.destino}
+                  </p>
                   {dest.descripcion && (
-                    <p className="text-sm text-gray-600 mt-1">
+                    <p className="text-xs text-gray-600">
                       {dest.descripcion}
                     </p>
                   )}
                 </div>
-              </div>
-              {index < destinos.length - 1 && (
-                <div className="ml-2 border-l-2 border-dashed border-blue-300 h-8"></div>
-              )}
-            </div>
-          ))}
+              </Popup>
+            </Marker>
+          );
+        })}
 
-          {/* Si no hay destinos específicos, mostrar destino final */}
-          {destinos.length === 0 && (
-            <>
-              <div className="ml-2 border-l-2 border-dashed border-blue-300 h-8"></div>
-              <div className="flex items-center space-x-4">
-                <div className="relative">
-                  <div className="w-4 h-4 bg-red-500 rounded-full shadow-lg"></div>
-                  <div className="absolute -inset-1 bg-red-400/30 rounded-full animate-pulse"></div>
-                </div>
-                <div className="flex-1">
-                  <div className="flex items-center justify-between">
-                    <span className="font-medium text-gray-800">{destino}</span>
-                    <span className="text-xs px-2 py-1 bg-red-100 text-red-700 rounded-full">
-                      Destino Final
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </>
-          )}
-        </div>
+        {/* Línea de ruta (solo si hay múltiples destinos) */}
+        {destinosConCoordenadas.length > 1 && (
+          <Polyline
+            positions={routeCoordinates}
+            color="#3b82f6"
+            weight={4}
+            opacity={0.8}
+            dashArray="10, 10"
+          />
+        )}
+      </MapContainer>
 
-        {/* Footer del mapa */}
-        <div className="mt-8 pt-4 border-t border-blue-100">
-          <div className="flex items-center justify-center space-x-6 text-sm text-gray-600">
-            <div className="flex items-center space-x-2">
-              <FiNavigation className="w-4 h-4 text-blue-500" />
-              <span>Ruta optimizada</span>
-            </div>
-            <div className="flex items-center space-x-2">
-              <FiMapPin className="w-4 h-4 text-green-500" />
-              <span>Ubicaciones verificadas</span>
-            </div>
-          </div>
-
-          {/* Información adicional */}
-          {paquete?.duracion && (
-            <div className="mt-3 text-center">
-              <span className="text-xs px-3 py-1 bg-gradient-to-r from-blue-100 to-purple-100 text-blue-700 rounded-full">
-                Duración total: {paquete.duracion}
-              </span>
-            </div>
-          )}
-        </div>
-
-        {/* Overlay de "próximamente" */}
-        <div className="absolute top-4 right-4 px-3 py-1 bg-yellow-100 border border-yellow-300 rounded-lg">
-          <span className="text-xs text-yellow-700 font-medium">
-            Mapa interactivo próximamente
-          </span>
-        </div>
+      {/* Control de recarga */}
+      <div className="absolute top-4 right-4 z-20">
+        <button
+          onClick={() => setMapKey(prev => prev + 1)}
+          className="bg-white/90 backdrop-blur p-2 rounded-lg shadow-lg hover:bg-white transition-colors"
+          title="Recargar mapa"
+        >
+          <FiNavigation className="w-4 h-4 text-blue-600" />
+        </button>
       </div>
     </div>
   );
