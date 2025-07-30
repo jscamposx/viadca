@@ -29,8 +29,8 @@ export default defineConfig({
       output: {
         manualChunks: {
           vendor: ["react", "react-dom"],
-          maps: ["@vis.gl/react-google-maps", "@react-google-maps/api"],
-          ui: ["@heroicons/react", "lucide-react", "react-icons"],
+          maps: ["@vis.gl/react-google-maps"],
+          ui: ["react-icons"],
         },
       },
     },
