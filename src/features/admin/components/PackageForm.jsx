@@ -36,7 +36,6 @@ const PackageForm = ({ formData, onFormChange }) => {
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Título del Paquete */}
         <div className="md:col-span-2">
           <label className="block text-sm font-medium text-gray-700 mb-1">
             Título del Paquete *
@@ -52,7 +51,6 @@ const PackageForm = ({ formData, onFormChange }) => {
           />
         </div>
 
-        {/* Fechas y Duración */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
             Fecha de Inicio *
@@ -80,7 +78,6 @@ const PackageForm = ({ formData, onFormChange }) => {
           />
         </div>
 
-        {/* Precios */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
             Precio Total *
@@ -158,7 +155,6 @@ const PackageForm = ({ formData, onFormChange }) => {
           )}
         </div>
 
-        {/* Textos descriptivos */}
         <div className="md:col-span-2">
           <label className="block text-sm font-medium text-gray-700 mb-1">
             Incluye
@@ -199,7 +195,6 @@ const PackageForm = ({ formData, onFormChange }) => {
           ></textarea>
         </div>
 
-        {/* Selector de Mayoristas */}
         <div className="md:col-span-2">
           <label className="block text-sm font-medium text-gray-700 mb-3">
             <FiUsers className="inline w-4 h-4 mr-2" />
@@ -238,7 +233,6 @@ const PackageForm = ({ formData, onFormChange }) => {
           )}
         </div>
 
-        {/* Estado del Paquete */}
         <div className="md:col-span-2">
           <label className="flex items-center space-x-3">
             <input

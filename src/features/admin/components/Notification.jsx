@@ -13,7 +13,6 @@ const Notification = ({
   const animationRef = useRef(null);
   const notificationRef = useRef(null);
 
-  // Iconos más grandes con contorno circular
   const notificationIcons = {
     success: (
       <div className="flex items-center justify-center w-10 h-10 rounded-full bg-green-100">
@@ -32,7 +31,6 @@ const Notification = ({
     ),
   };
 
-  // Colores para cada tipo de notificación
   const notificationColors = {
     success: {
       bg: "bg-gradient-to-r from-green-50 to-green-100",
@@ -52,10 +50,8 @@ const Notification = ({
   };
 
   useEffect(() => {
-    // Animación de entrada
     setVisible(true);
 
-    // Barra de progreso
     const startTime = Date.now();
     progressInterval.current = setInterval(() => {
       const elapsed = Date.now() - startTime;
@@ -63,7 +59,6 @@ const Notification = ({
       setProgress((remaining / duration) * 100);
     }, 50);
 
-    // Temporizador para desvanecer
     const timer = setTimeout(() => {
       handleDismiss();
     }, duration);
@@ -75,12 +70,10 @@ const Notification = ({
   }, [duration]);
 
   const handleDismiss = () => {
-    // Cancelar animación si ya está en progreso
     if (animationRef.current) {
       cancelAnimationFrame(animationRef.current);
     }
 
-    // Animación de salida
     setVisible(false);
     setTimeout(onDismiss, 300);
   };
@@ -102,7 +95,6 @@ const Notification = ({
       <div
         className={`${notificationColors[type].bg} ${notificationColors[type].border} rounded-xl shadow-xl overflow-hidden min-w-[300px]`}
       >
-        {/* Barra de progreso */}
         <div className="h-1.5 w-full bg-gray-200">
           <div
             className={`h-full ${

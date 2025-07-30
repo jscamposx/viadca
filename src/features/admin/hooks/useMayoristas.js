@@ -1,5 +1,3 @@
-// src/features/admin/hooks/useMayoristas.js
-
 import { useState, useEffect, useCallback } from "react";
 import api from "../../../api";
 

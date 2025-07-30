@@ -56,7 +56,6 @@ const AdminPaquetes = () => {
     if (paquetes) {
       let result = [...paquetes];
 
-    
       if (searchTerm) {
         const term = searchTerm.toLowerCase();
         result = result.filter(
@@ -65,7 +64,6 @@ const AdminPaquetes = () => {
             p.precio_total.toString().includes(term),
         );
       }
-
 
       if (priceFilter.min || priceFilter.max) {
         const minPrice = priceFilter.min ? parseFloat(priceFilter.min) : 0;

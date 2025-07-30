@@ -63,7 +63,6 @@ const AdminMayoristasPage = () => {
   useEffect(() => {
     let filtered = [...mayoristas];
 
-  
     if (searchTerm) {
       filtered = filtered.filter(
         (mayorista) =>
@@ -75,14 +74,12 @@ const AdminMayoristasPage = () => {
       );
     }
 
-    
     if (tipoFilter) {
       filtered = filtered.filter(
         (mayorista) => mayorista.tipo_producto === tipoFilter,
       );
     }
 
-   
     if (sortConfig.key) {
       filtered.sort((a, b) => {
         let aValue = a[sortConfig.key];
@@ -105,7 +102,6 @@ const AdminMayoristasPage = () => {
 
     setFilteredMayoristas(filtered);
   }, [mayoristas, searchTerm, tipoFilter, sortConfig]);
-
 
   const tiposUnicos = [
     ...new Set(mayoristas.map((m) => m.tipo_producto)),

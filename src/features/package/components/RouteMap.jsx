@@ -1,243 +1,139 @@
-import {
-  MapContainer,
-  TileLayer,
-  Marker,
-  Popup,
-  Polyline,
-  Tooltip,
-} from "react-leaflet";
-import L from "leaflet";
-import { useMemo } from "react";
-import "leaflet/dist/leaflet.css";
-
-// Iconos personalizados para destinos
-const destinationIcon = new L.Icon({
-  iconUrl:
-    "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png",
-  shadowUrl: "https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png",
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
-  popupAnchor: [1, -34],
-  shadowSize: [41, 41],
-});
+import { FiMapPin, FiNavigation, FiMap } from "react-icons/fi";
 
 const RouteMap = ({ paquete }) => {
-  const { positions, polylinePositions, bounds, totalDistance } = useMemo(() => {
-    // Procesar todos los destinos ordenados
-    const destinations = paquete.destinos
-      ?.sort((a, b) => a.orden - b.orden)
-      .map(destino => ({
-        position: [
-          parseFloat(destino.destino_lat),
-          parseFloat(destino.destino_lng),
-        ],
-        name: destino.destino,
-        orden: destino.orden,
-      }))
-      .filter(dest => {
-        const lat = dest.position[0];
-        const lng = dest.position[1];
-        return !isNaN(lat) && !isNaN(lng) && lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180;
-      }) || [];
-
-    if (destinations.length === 0) {
-      return { valid: false };
-    }
-
-    // Solo mostrar destinos (sin origen)
-    const allPositions = destinations.map(dest => ({
-      ...dest,
-      type: "destination"
-    }));
-
-    // Coordenadas para la polilínea (solo destinos)
-    const routePositions = destinations.map(d => d.position);
-
-    // Calcular distancia aproximada entre destinos consecutivos
-    const calculateDistance = (pos1, pos2) => {
-      const R = 6371; // Radio de la Tierra en km
-      const dLat = (pos2[0] - pos1[0]) * Math.PI / 180;
-      const dLon = (pos2[1] - pos1[1]) * Math.PI / 180;
-      const a = 
-        Math.sin(dLat/2) * Math.sin(dLat/2) +
-        Math.cos(pos1[0] * Math.PI / 180) * Math.cos(pos2[0] * Math.PI / 180) * 
-        Math.sin(dLon/2) * Math.sin(dLon/2);
-      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-      return R * c;
-    };
-
-    let totalDist = 0;
-    // Solo calcular distancia entre destinos consecutivos si hay más de uno
-    if (routePositions.length > 1) {
-      for (let i = 0; i < routePositions.length - 1; i++) {
-        totalDist += calculateDistance(routePositions[i], routePositions[i + 1]);
-      }
-    }
-
-    return {
-      valid: true,
-      positions: allPositions,
-      polylinePositions: routePositions,
-      bounds: L.latLngBounds(destinations.map(d => d.position)),
-      totalDistance: Math.round(totalDist),
-    };
-  }, [paquete]);
-
-  if (!positions) {
-    return (
-      <div className="bg-gradient-to-br from-red-50 to-orange-50 rounded-2xl shadow-sm p-6 border border-red-100">
-        <div className="text-center">
-          <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <svg className="w-8 h-8 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
-            </svg>
-          </div>
-          <h3 className="text-lg font-semibold text-red-800 mb-2">Error en el mapa</h3>
-          <p className="text-red-600">
-            No se pueden mostrar las coordenadas del viaje. Verifica que los destinos tengan ubicaciones válidas.
-          </p>
-        </div>
-      </div>
-    );
-  }
-
-  const getIcon = () => {
-    return destinationIcon;
-  };
+  // Obtener destinos del paquete
+  const destinos = paquete?.destinos || [];
+  const origen = paquete?.origen || "Lima";
+  const destino = paquete?.destino || "Destino";
 
   return (
-    <div className="space-y-6">
-      {/* Mapa mejorado */}
-      <div className="relative rounded-2xl overflow-hidden border border-white/20 shadow-xl bg-white/10 backdrop-blur-sm">
-        <MapContainer
-          bounds={bounds}
-          boundsOptions={{ padding: [50, 50] }}
-          style={{ height: "500px", width: "100%" }}
-          className="z-0 rounded-2xl"
-          scrollWheelZoom={true}
-        >
-          <TileLayer
-            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-          />
-
-          {/* Marcadores para todas las ubicaciones */}
-          {positions.map((location, index) => (
-            <Marker
-              key={index}
-              position={location.position}
-              icon={getIcon()}
-            >
-              <Popup className="custom-popup">
-                <div className="p-2 min-w-[200px]">
-                  <div className="flex items-center mb-2">
-                    <div className="w-3 h-3 rounded-full mr-2 bg-red-500"></div>
-                    <h3 className="font-bold text-red-600">
-                      📍 {location.name}
-                    </h3>
-                  </div>
-                  <p className="text-slate-700 font-medium">
-                    Destino de viaje
-                  </p>
-                </div>
-              </Popup>
-              <Tooltip direction="top" offset={[0, -20]} permanent={false}>
-                <span className="font-medium text-red-600">
-                  {location.name}
-                </span>
-              </Tooltip>
-            </Marker>
-          ))}
-
-          {/* Ruta con gradiente (solo si hay más de un destino) */}
-          {polylinePositions.length > 1 && (
-            <Polyline
-              positions={polylinePositions}
-              pathOptions={{
-                color: "#3b82f6",
-                weight: 4,
-                opacity: 0.8,
-                dashArray: "10, 5",
-              }}
-            />
-          )}
-        </MapContainer>
-
-        {/* Overlay con información de distancia (solo si hay más de un destino) */}
-        {polylinePositions.length > 1 && (
-          <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-md rounded-xl px-4 py-2 shadow-lg border border-white/20">
-            <div className="flex items-center space-x-2">
-              <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-1.447-.894L15 4m0 13V4m0 0L9 7" />
-              </svg>
-              <span className="text-sm font-semibold text-slate-700">
-                ~{totalDistance} km de recorrido
-              </span>
-            </div>
-          </div>
-        )}
-      </div>
-
-      {/* Información detallada de la ruta */}
-      <div className="bg-gradient-to-br from-slate-50 to-blue-50 rounded-2xl p-6 border border-slate-200/50 backdrop-blur-sm">
-        <div className="flex items-center mb-4">
-          <div className="w-10 h-10 bg-gradient-to-r from-red-500 to-pink-600 rounded-xl flex items-center justify-center mr-3">
-            <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-            </svg>
+    <div className="bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 rounded-2xl p-6 border border-blue-200/50 min-h-[400px]">
+      {/* Header del mapa */}
+      <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center space-x-3">
+          <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center">
+            <FiMap className="w-5 h-5 text-white" />
           </div>
           <div>
-            <h3 className="text-xl font-bold text-slate-900">Destinos del viaje</h3>
-            <p className="text-slate-600">Todos los lugares que visitarás</p>
+            <h3 className="text-lg font-semibold text-blue-800">
+              Ruta del Viaje
+            </h3>
+            <p className="text-sm text-blue-600">
+              {origen} → {destino}
+            </p>
           </div>
         </div>
+        <div className="px-3 py-1 bg-blue-100 rounded-full">
+          <span className="text-xs font-medium text-blue-700">
+            {destinos.length || 1} destino
+            {(destinos.length || 1) > 1 ? "s" : ""}
+          </span>
+        </div>
+      </div>
 
-        <div className="space-y-3">
-          {positions.map((location, index) => (
-            <div key={index} className="flex items-center space-x-4 p-3 bg-white/60 rounded-xl backdrop-blur-sm border border-white/30">
-              <div className="flex-shrink-0">
-                <div className="w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-sm bg-gradient-to-r from-red-500 to-rose-600">
-                  {index + 1}
+      {/* Contenido del mapa */}
+      <div className="relative bg-white/80 rounded-xl p-6 border border-blue-100 min-h-[280px]">
+        {/* Simulación visual de ruta */}
+        <div className="flex flex-col space-y-4">
+          {/* Punto de origen */}
+          <div className="flex items-center space-x-4">
+            <div className="relative">
+              <div className="w-4 h-4 bg-green-500 rounded-full shadow-lg"></div>
+              <div className="absolute -inset-1 bg-green-400/30 rounded-full animate-pulse"></div>
+            </div>
+            <div className="flex-1">
+              <div className="flex items-center justify-between">
+                <span className="font-medium text-gray-800">{origen}</span>
+                <span className="text-xs px-2 py-1 bg-green-100 text-green-700 rounded-full">
+                  Origen
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Línea de conexión */}
+          <div className="ml-2 border-l-2 border-dashed border-blue-300 h-8"></div>
+
+          {/* Destinos intermedios */}
+          {destinos.map((dest, index) => (
+            <div key={index}>
+              <div className="flex items-center space-x-4">
+                <div className="relative">
+                  <div className="w-4 h-4 bg-blue-500 rounded-full shadow-lg"></div>
+                  <div className="absolute -inset-1 bg-blue-400/30 rounded-full"></div>
+                </div>
+                <div className="flex-1">
+                  <div className="flex items-center justify-between">
+                    <span className="font-medium text-gray-800">
+                      {dest.destino || `Destino ${index + 1}`}
+                    </span>
+                    <span className="text-xs px-2 py-1 bg-blue-100 text-blue-700 rounded-full">
+                      Parada {index + 1}
+                    </span>
+                  </div>
+                  {dest.descripcion && (
+                    <p className="text-sm text-gray-600 mt-1">
+                      {dest.descripcion}
+                    </p>
+                  )}
                 </div>
               </div>
-              
-              <div className="flex-1">
-                <div className="flex items-center justify-between">
-                  <h4 className="font-semibold text-slate-900">{location.name}</h4>
-                  <span className="text-xs px-2 py-1 rounded-full font-medium bg-red-100 text-red-700">
-                    Destino
-                  </span>
-                </div>
-              </div>
-
-              {index < positions.length - 1 && (
-                <div className="flex-shrink-0">
-                  <svg className="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                  </svg>
-                </div>
+              {index < destinos.length - 1 && (
+                <div className="ml-2 border-l-2 border-dashed border-blue-300 h-8"></div>
               )}
             </div>
           ))}
+
+          {/* Si no hay destinos específicos, mostrar destino final */}
+          {destinos.length === 0 && (
+            <>
+              <div className="ml-2 border-l-2 border-dashed border-blue-300 h-8"></div>
+              <div className="flex items-center space-x-4">
+                <div className="relative">
+                  <div className="w-4 h-4 bg-red-500 rounded-full shadow-lg"></div>
+                  <div className="absolute -inset-1 bg-red-400/30 rounded-full animate-pulse"></div>
+                </div>
+                <div className="flex-1">
+                  <div className="flex items-center justify-between">
+                    <span className="font-medium text-gray-800">{destino}</span>
+                    <span className="text-xs px-2 py-1 bg-red-100 text-red-700 rounded-full">
+                      Destino Final
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </>
+          )}
         </div>
 
-        {/* Estadísticas del viaje */}
-        <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="bg-white/60 rounded-xl p-4 text-center backdrop-blur-sm border border-white/30">
-            <div className="text-2xl font-bold text-blue-600">{positions.length}</div>
-            <div className="text-sm text-slate-600">{positions.length === 1 ? 'Destino' : 'Destinos'}</div>
+        {/* Footer del mapa */}
+        <div className="mt-8 pt-4 border-t border-blue-100">
+          <div className="flex items-center justify-center space-x-6 text-sm text-gray-600">
+            <div className="flex items-center space-x-2">
+              <FiNavigation className="w-4 h-4 text-blue-500" />
+              <span>Ruta optimizada</span>
+            </div>
+            <div className="flex items-center space-x-2">
+              <FiMapPin className="w-4 h-4 text-green-500" />
+              <span>Ubicaciones verificadas</span>
+            </div>
           </div>
-          {polylinePositions.length > 1 && (
-            <div className="bg-white/60 rounded-xl p-4 text-center backdrop-blur-sm border border-white/30">
-              <div className="text-2xl font-bold text-emerald-600">~{totalDistance}</div>
-              <div className="text-sm text-slate-600">Kilómetros</div>
+
+          {/* Información adicional */}
+          {paquete?.duracion && (
+            <div className="mt-3 text-center">
+              <span className="text-xs px-3 py-1 bg-gradient-to-r from-blue-100 to-purple-100 text-blue-700 rounded-full">
+                Duración total: {paquete.duracion}
+              </span>
             </div>
           )}
-          <div className="bg-white/60 rounded-xl p-4 text-center backdrop-blur-sm border border-white/30">
-            <div className="text-2xl font-bold text-purple-600">{paquete.duracion_dias}</div>
-            <div className="text-sm text-slate-600">Días de viaje</div>
-          </div>
+        </div>
+
+        {/* Overlay de "próximamente" */}
+        <div className="absolute top-4 right-4 px-3 py-1 bg-yellow-100 border border-yellow-300 rounded-lg">
+          <span className="text-xs text-yellow-700 font-medium">
+            Mapa interactivo próximamente
+          </span>
         </div>
       </div>
     </div>

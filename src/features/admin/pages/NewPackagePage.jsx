@@ -60,10 +60,7 @@ const NuevoPaquete = () => {
       await handleHotelSelected(hotel);
     } catch (error) {
       console.error("Error seleccionando hotel:", error);
-      addNotification(
-        "Error al procesar las imágenes del hotel",
-        "error",
-      );
+      addNotification("Error al procesar las imágenes del hotel", "error");
     }
   };
 

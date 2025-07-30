@@ -3,8 +3,12 @@ import { FiDollarSign, FiTag, FiX, FiPercent } from "react-icons/fi";
 
 const PricingForm = ({ formData, onFormChange }) => {
   const [showDiscount, setShowDiscount] = useState(!!formData.descuento);
-  const [precioOriginal, setPrecioOriginal] = useState(formData.precio_original || "");
-  const [precioConDescuento, setPrecioConDescuento] = useState(formData.precio_total || "");
+  const [precioOriginal, setPrecioOriginal] = useState(
+    formData.precio_original || "",
+  );
+  const [precioConDescuento, setPrecioConDescuento] = useState(
+    formData.precio_total || "",
+  );
 
   const formatNumber = (value) => {
     if (!value) return "";
@@ -22,25 +26,27 @@ const PricingForm = ({ formData, onFormChange }) => {
     });
   };
 
-  // Cálculos automáticos del descuento
   const calculations = useMemo(() => {
     const original = parseFloat(precioOriginal || 0);
     const conDescuento = parseFloat(precioConDescuento || 0);
     const anticipo = parseFloat(formData.anticipo || 0);
 
-    const montoDescuento = showDiscount && original > 0 && conDescuento > 0 
-      ? original - conDescuento 
-      : 0;
+    const montoDescuento =
+      showDiscount && original > 0 && conDescuento > 0
+        ? original - conDescuento
+        : 0;
 
-    const porcentajeDescuento = original > 0 && montoDescuento > 0
-      ? ((montoDescuento / original) * 100).toFixed(1)
-      : 0;
+    const porcentajeDescuento =
+      original > 0 && montoDescuento > 0
+        ? ((montoDescuento / original) * 100).toFixed(1)
+        : 0;
 
     const precioFinal = showDiscount ? conDescuento : original;
-    
-    const porcentajeAnticipo = precioFinal > 0 && anticipo > 0
-      ? ((anticipo / precioFinal) * 100).toFixed(1)
-      : 0;
+
+    const porcentajeAnticipo =
+      precioFinal > 0 && anticipo > 0
+        ? ((anticipo / precioFinal) * 100).toFixed(1)
+        : 0;
 
     return {
       precioOriginal: original,
@@ -65,17 +71,19 @@ const PricingForm = ({ formData, onFormChange }) => {
     const rawValue = e.target.value.replace(/,/g, "");
     if (!isNaN(rawValue) || rawValue === "") {
       setPrecioOriginal(rawValue);
-      // Si no hay descuento, el precio total es igual al precio original
+
       if (!showDiscount) {
         onFormChange({ target: { name: "precio_total", value: rawValue } });
       }
-      // Actualizar descuento automáticamente
+
       if (showDiscount && rawValue && precioConDescuento) {
         const original = parseFloat(rawValue);
         const conDesc = parseFloat(precioConDescuento);
         const desc = original - conDesc;
         if (desc >= 0) {
-          onFormChange({ target: { name: "descuento", value: desc.toString() } });
+          onFormChange({
+            target: { name: "descuento", value: desc.toString() },
+          });
         }
       }
     }
@@ -85,16 +93,17 @@ const PricingForm = ({ formData, onFormChange }) => {
     const rawValue = e.target.value.replace(/,/g, "");
     if (!isNaN(rawValue) || rawValue === "") {
       setPrecioConDescuento(rawValue);
-      // Este es el precio final que paga el cliente
+
       onFormChange({ target: { name: "precio_total", value: rawValue } });
-      
-      // Calcular descuento automáticamente
+
       if (rawValue && precioOriginal) {
         const original = parseFloat(precioOriginal);
         const conDesc = parseFloat(rawValue);
         const desc = original - conDesc;
         if (desc >= 0) {
-          onFormChange({ target: { name: "descuento", value: desc.toString() } });
+          onFormChange({
+            target: { name: "descuento", value: desc.toString() },
+          });
         }
       }
     }
@@ -102,12 +111,10 @@ const PricingForm = ({ formData, onFormChange }) => {
 
   const handleToggleDiscount = () => {
     if (showDiscount) {
-      // Al quitar descuento, el precio total es igual al precio original
       onFormChange({ target: { name: "precio_total", value: precioOriginal } });
       onFormChange({ target: { name: "descuento", value: "" } });
       setPrecioConDescuento("");
     } else {
-      // Al agregar descuento, inicializar con el precio original
       setPrecioConDescuento(precioOriginal);
     }
     setShowDiscount(!showDiscount);
@@ -116,12 +123,13 @@ const PricingForm = ({ formData, onFormChange }) => {
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {/* Precio Original/Total */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
             {showDiscount ? "Precio Original *" : "Precio Total *"}
             <span className="text-xs text-gray-500 block">
-              {showDiscount ? "(Antes del descuento)" : "(Lo que paga el cliente)"}
+              {showDiscount
+                ? "(Antes del descuento)"
+                : "(Lo que paga el cliente)"}
             </span>
           </label>
           <div className="relative">
@@ -139,7 +147,6 @@ const PricingForm = ({ formData, onFormChange }) => {
           </div>
         </div>
 
-        {/* Anticipo */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
             Anticipo
@@ -165,7 +172,6 @@ const PricingForm = ({ formData, onFormChange }) => {
           )}
         </div>
 
-        {/* Descuento */}
         <div>
           {!showDiscount ? (
             <div className="flex flex-col justify-end h-full">
@@ -181,7 +187,9 @@ const PricingForm = ({ formData, onFormChange }) => {
             <div className="relative">
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Precio Final *
-                <span className="text-xs text-gray-500 block">(Con descuento aplicado)</span>
+                <span className="text-xs text-gray-500 block">
+                  (Con descuento aplicado)
+                </span>
               </label>
               <div className="relative">
                 <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500">
@@ -209,7 +217,6 @@ const PricingForm = ({ formData, onFormChange }) => {
         </div>
       </div>
 
-      {/* Información del descuento calculada automáticamente */}
       {showDiscount && calculations.montoDescuento > 0 && (
         <div className="bg-green-50 rounded-lg p-4 border border-green-200">
           <div className="flex items-center justify-between">
@@ -225,13 +232,13 @@ const PricingForm = ({ formData, onFormChange }) => {
               </div>
             </div>
             <div className="text-green-800 font-semibold">
-              {formatCurrency(calculations.precioOriginal)} → {formatCurrency(calculations.precioFinal)}
+              {formatCurrency(calculations.precioOriginal)} →{" "}
+              {formatCurrency(calculations.precioFinal)}
             </div>
           </div>
         </div>
       )}
 
-      {/* Resumen del precio final */}
       {calculations.precioFinal > 0 && (
         <div className="bg-blue-50 rounded-lg p-4 border border-blue-200">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
@@ -239,14 +246,18 @@ const PricingForm = ({ formData, onFormChange }) => {
               <div className="text-2xl font-bold text-blue-600">
                 {formatCurrency(calculations.precioFinal)}
               </div>
-              <div className="text-sm text-blue-500">Precio final por persona</div>
+              <div className="text-sm text-blue-500">
+                Precio final por persona
+              </div>
             </div>
             {calculations.anticipo > 0 && (
               <div>
                 <div className="text-xl font-semibold text-green-600">
                   {formatCurrency(calculations.anticipo)}
                 </div>
-                <div className="text-sm text-green-500">Anticipo ({calculations.porcentajeAnticipo}%)</div>
+                <div className="text-sm text-green-500">
+                  Anticipo ({calculations.porcentajeAnticipo}%)
+                </div>
               </div>
             )}
             {calculations.saldoPendiente > 0 && (

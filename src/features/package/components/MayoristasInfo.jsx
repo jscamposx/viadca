@@ -3,9 +3,9 @@ import { FiUsers, FiPackage, FiTag } from "react-icons/fi";
 const MayoristaCard = ({ mayorista }) => {
   const getTipoIcon = (tipo) => {
     switch (tipo.toLowerCase()) {
-      case 'circuito':
+      case "circuito":
         return <FiPackage className="w-5 h-5" />;
-      case 'crucero':
+      case "crucero":
         return <FiUsers className="w-5 h-5" />;
       default:
         return <FiTag className="w-5 h-5" />;
@@ -14,12 +14,12 @@ const MayoristaCard = ({ mayorista }) => {
 
   const getTipoColor = (tipo) => {
     switch (tipo.toLowerCase()) {
-      case 'circuito':
-        return 'bg-blue-100 text-blue-800 border-blue-200';
-      case 'crucero':
-        return 'bg-indigo-100 text-indigo-800 border-indigo-200';
+      case "circuito":
+        return "bg-blue-100 text-blue-800 border-blue-200";
+      case "crucero":
+        return "bg-indigo-100 text-indigo-800 border-indigo-200";
       default:
-        return 'bg-gray-100 text-gray-800 border-gray-200';
+        return "bg-gray-100 text-gray-800 border-gray-200";
     }
   };
 
@@ -34,15 +34,15 @@ const MayoristaCard = ({ mayorista }) => {
             <h3 className="font-semibold text-slate-900 text-lg">
               {mayorista.nombre}
             </h3>
-            <p className="text-slate-500 text-sm">
-              Clave: {mayorista.clave}
-            </p>
+            <p className="text-slate-500 text-sm">Clave: {mayorista.clave}</p>
           </div>
         </div>
       </div>
 
       <div className="flex items-center justify-between">
-        <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium border ${getTipoColor(mayorista.tipo_producto)}`}>
+        <div
+          className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium border ${getTipoColor(mayorista.tipo_producto)}`}
+        >
           {getTipoIcon(mayorista.tipo_producto)}
           <span>{mayorista.tipo_producto}</span>
         </div>
@@ -95,7 +95,9 @@ const MayoristasInfo = ({ mayoristas = [] }) => {
               ✓ Operadores certificados
             </h4>
             <p className="text-blue-800 text-sm leading-relaxed">
-              Todos nuestros mayoristas están certificados y cuentan con los permisos necesarios para operar viajes turísticos de forma segura y legal.
+              Todos nuestros mayoristas están certificados y cuentan con los
+              permisos necesarios para operar viajes turísticos de forma segura
+              y legal.
             </p>
           </div>
         </div>

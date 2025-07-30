@@ -1,13 +1,13 @@
 import { useState, useEffect, useCallback } from "react";
 import {
-  Loader2,
-  RefreshCw,
-  AlertCircle,
-  Wind,
-  Droplets,
-  Eye,
-  Thermometer,
-} from "lucide-react";
+  FiLoader,
+  FiRefreshCw,
+  FiAlertCircle,
+  FiWind,
+  FiDroplet,
+  FiEye,
+  FiThermometer,
+} from "react-icons/fi";
 import axios from "axios";
 
 const WeatherForecast = ({ lat, lon = "Ubicación Actual" }) => {
@@ -128,17 +128,19 @@ const WeatherForecast = ({ lat, lon = "Ubicación Actual" }) => {
     return (
       <div className="bg-red-50 rounded-xl sm:rounded-2xl p-4 sm:p-6 border border-red-200 mt-4 sm:mt-6">
         <div className="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
-          <AlertCircle className="text-red-500 w-5 h-5 sm:w-6 sm:h-6 flex-shrink-0" />
+          <FiAlertCircle className="text-red-500 w-5 h-5 sm:w-6 sm:h-6 flex-shrink-0" />
           <h3 className="text-lg sm:text-xl font-bold text-gray-800">
             Pronóstico del Clima
           </h3>
         </div>
-        <p className="text-red-600 mb-3 sm:mb-4 text-sm sm:text-base">{error}</p>
+        <p className="text-red-600 mb-3 sm:mb-4 text-sm sm:text-base">
+          {error}
+        </p>
         <button
           onClick={() => fetchWeather()}
           className="flex items-center gap-2 px-3 sm:px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors duration-200 text-sm sm:text-base"
         >
-          <RefreshCw className="w-4 h-4" />
+          <FiRefreshCw className="w-4 h-4" />
           Reintentar
         </button>
       </div>
@@ -163,7 +165,7 @@ const WeatherForecast = ({ lat, lon = "Ubicación Actual" }) => {
             disabled={refreshing}
             className="p-1.5 sm:p-2 rounded-lg hover:bg-gray-100 transition-colors duration-200 disabled:opacity-50"
           >
-            <RefreshCw
+            <FiRefreshCw
               className={`w-4 h-4 sm:w-5 sm:h-5 text-gray-600 ${refreshing ? "animate-spin" : ""}`}
             />
           </button>
@@ -172,8 +174,10 @@ const WeatherForecast = ({ lat, lon = "Ubicación Actual" }) => {
 
       {loading ? (
         <div className="flex flex-col items-center justify-center py-8 sm:py-12">
-          <Loader2 className="animate-spin text-2xl sm:text-4xl text-blue-500 mb-3 sm:mb-4" />
-          <p className="text-gray-600 text-sm sm:text-base text-center px-4">Cargando pronóstico del tiempo...</p>
+          <FiLoader className="animate-spin text-2xl sm:text-4xl text-blue-500 mb-3 sm:mb-4" />
+          <p className="text-gray-600 text-sm sm:text-base text-center px-4">
+            Cargando pronóstico del tiempo...
+          </p>
         </div>
       ) : (
         <>
@@ -203,25 +207,25 @@ const WeatherForecast = ({ lat, lon = "Ubicación Actual" }) => {
 
               <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-4 mt-3 sm:mt-4 pt-3 sm:pt-4 border-t border-gray-200">
                 <div className="flex items-center gap-1.5 sm:gap-2">
-                  <Droplets className="w-3 h-3 sm:w-4 sm:h-4 text-blue-500 flex-shrink-0" />
+                  <FiDroplet className="w-3 h-3 sm:w-4 sm:h-4 text-blue-500 flex-shrink-0" />
                   <span className="text-xs sm:text-sm text-gray-600">
                     {currentWeather.main.humidity}%
                   </span>
                 </div>
                 <div className="flex items-center gap-1.5 sm:gap-2">
-                  <Wind className="w-3 h-3 sm:w-4 sm:h-4 text-gray-500 flex-shrink-0" />
+                  <FiWind className="w-3 h-3 sm:w-4 sm:h-4 text-gray-500 flex-shrink-0" />
                   <span className="text-xs sm:text-sm text-gray-600">
                     {Math.round(currentWeather.wind.speed)} m/s
                   </span>
                 </div>
                 <div className="flex items-center gap-1.5 sm:gap-2">
-                  <Eye className="w-3 h-3 sm:w-4 sm:h-4 text-gray-500 flex-shrink-0" />
+                  <FiEye className="w-3 h-3 sm:w-4 sm:h-4 text-gray-500 flex-shrink-0" />
                   <span className="text-xs sm:text-sm text-gray-600">
                     {Math.round(currentWeather.visibility / 1000)} km
                   </span>
                 </div>
                 <div className="flex items-center gap-1.5 sm:gap-2">
-                  <Thermometer className="w-3 h-3 sm:w-4 sm:h-4 text-gray-500 flex-shrink-0" />
+                  <FiThermometer className="w-3 h-3 sm:w-4 sm:h-4 text-gray-500 flex-shrink-0" />
                   <span className="text-xs sm:text-sm text-gray-600">
                     {currentWeather.main.pressure} hPa
                   </span>
@@ -324,11 +328,11 @@ const DayForecast = ({ day, isToday }) => {
           >
             <div className="grid grid-cols-2 gap-1 sm:gap-2 text-xs">
               <div className="flex items-center gap-1">
-                <Droplets className="w-3 h-3 flex-shrink-0" />
+                <FiDroplet className="w-3 h-3 flex-shrink-0" />
                 <span>{day.humidity}%</span>
               </div>
               <div className="flex items-center gap-1">
-                <Wind className="w-3 h-3 flex-shrink-0" />
+                <FiWind className="w-3 h-3 flex-shrink-0" />
                 <span>{day.windSpeed} m/s</span>
               </div>
             </div>

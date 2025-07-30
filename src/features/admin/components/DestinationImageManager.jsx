@@ -29,7 +29,6 @@ const ImageTile = ({
         : ""
     } ${isDragging && draggedIndex === index ? "opacity-50 rotate-2 scale-95" : ""} hover:shadow-lg`}
   >
-    {/* Indicador de orden con animación */}
     <div
       className={`absolute top-2 left-2 z-20 text-white text-xs font-bold px-2 py-1 rounded-full shadow-md transition-all duration-200 ${
         index === 0
@@ -40,14 +39,12 @@ const ImageTile = ({
       #{index + 1}
     </div>
 
-    {/* Badge de imagen principal con mejor diseño */}
     {index === 0 && (
       <div className="absolute top-2 right-2 z-20 bg-gradient-to-r from-yellow-400 to-orange-500 text-white text-xs font-bold px-2 py-1 rounded-full shadow-md animate-pulse">
         ⭐ Principal
       </div>
     )}
 
-    {/* Indicador visual de posición de drop */}
     {isDragOver && draggedIndex !== index && (
       <div className="absolute inset-0 bg-blue-100 bg-opacity-75 flex items-center justify-center z-10">
         <div className="bg-blue-600 text-white px-3 py-1 rounded-full text-sm font-semibold">
@@ -64,7 +61,6 @@ const ImageTile = ({
       />
     </div>
 
-    {/* Botón de eliminar mejorado */}
     <div className="absolute top-2 left-16 z-10">
       <button
         onClick={() => onRemove(image.id)}
@@ -86,7 +82,6 @@ const ImageTile = ({
       </button>
     </div>
 
-    {/* Indicador de drag handle */}
     <div className="absolute bottom-2 right-2 z-10 opacity-0 group-hover:opacity-100 transition-opacity">
       <div className="bg-gray-800 bg-opacity-75 text-white p-1 rounded">
         <svg
@@ -150,7 +145,6 @@ const DestinationImageManager = ({ destination, onImagesChange }) => {
     }
 
     try {
-      // Crear búsquedas más específicas para el destino
       const searchQueries = [
         `${destinationName} turismo lugares`,
         `${destinationName} monumentos`,
@@ -159,7 +153,6 @@ const DestinationImageManager = ({ destination, onImagesChange }) => {
         `${destinationName} atracciones turisticas`,
       ];
 
-      // Hacer múltiples búsquedas para obtener imágenes más relevantes
       const searchPromises = searchQueries.map((query) =>
         axios.get(`https://api.pexels.com/v1/search`, {
           headers: {
@@ -167,15 +160,14 @@ const DestinationImageManager = ({ destination, onImagesChange }) => {
           },
           params: {
             query: query,
-            per_page: 6, // 6 imágenes por búsqueda para un total de ~30
-            orientation: "landscape", // Preferir imágenes horizontales
+            per_page: 6,
+            orientation: "landscape",
           },
         }),
       );
 
       const responses = await Promise.all(searchPromises);
 
-      // Combinar todas las fotos y eliminar duplicados
       const allPhotos = [];
       responses.forEach((response) => {
         if (response.data.photos) {
@@ -183,7 +175,6 @@ const DestinationImageManager = ({ destination, onImagesChange }) => {
         }
       });
 
-      // Eliminar duplicados basados en el ID
       const uniquePhotos = allPhotos.filter(
         (photo, index, self) =>
           index === self.findIndex((p) => p.id === photo.id),
@@ -197,7 +188,7 @@ const DestinationImageManager = ({ destination, onImagesChange }) => {
         }));
 
         setAllAvailableImages(photoData);
-        // Mostrar solo las primeras 10 imágenes inicialmente
+
         setImages(photoData.slice(0, 10));
         setStatus("success");
       } else {
@@ -241,7 +232,6 @@ const DestinationImageManager = ({ destination, onImagesChange }) => {
       }),
     );
 
-    // Agregar a ambas listas
     setImages((prevImages) => [...prevImages, ...newImages]);
     setAllAvailableImages((prevImages) => [...prevImages, ...newImages]);
     setStatus("success");
@@ -252,14 +242,12 @@ const DestinationImageManager = ({ destination, onImagesChange }) => {
   };
 
   const handleRemoveImage = (id) => {
-    // Remover de ambas listas
     const newImages = images.filter((img) => img.id !== id);
     const newAllImages = allAvailableImages.filter((img) => img.id !== id);
 
     setImages(newImages);
     setAllAvailableImages(newAllImages);
 
-    // Si estamos en modo "mostrar todas" y ahora hay menos de 10, cambiar el estado
     if (showAllImages && newAllImages.length <= 10) {
       setShowAllImages(false);
     }
@@ -292,19 +280,15 @@ const DestinationImageManager = ({ destination, onImagesChange }) => {
       const newImages = [...images];
       const draggedImage = newImages[draggedIndex];
 
-      // Remover el elemento arrastrado
       newImages.splice(draggedIndex, 1);
 
-      // Insertar en la nueva posición
       newImages.splice(dropIndex, 0, draggedImage);
 
       setImages(newImages);
 
-      // También actualizar allAvailableImages si es necesario
       if (showAllImages) {
         setAllAvailableImages(newImages);
       } else {
-        // Mantener el orden en allAvailableImages pero solo para los primeros elementos
         const newAllImages = [...allAvailableImages];
         const draggedImageInAll = newAllImages.find(
           (img) => img.id === draggedImage.id,
@@ -410,7 +394,6 @@ const DestinationImageManager = ({ destination, onImagesChange }) => {
 
       {images.length > 0 && (
         <div className="space-y-4">
-          {/* Instrucciones de uso */}
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
             <div className="flex items-center space-x-2">
               <div className="bg-blue-600 text-white text-xs font-bold px-2 py-1 rounded-full">
@@ -444,7 +427,6 @@ const DestinationImageManager = ({ destination, onImagesChange }) => {
             ))}
           </div>
 
-          {/* Resumen del orden */}
           {images.length > 1 && (
             <div className="bg-gray-50 border border-gray-200 rounded-lg p-3">
               <h4 className="text-sm font-medium text-gray-700 mb-2">
@@ -467,7 +449,6 @@ const DestinationImageManager = ({ destination, onImagesChange }) => {
             </div>
           )}
 
-          {/* Botón para mostrar más imágenes */}
           {!showAllImages && allAvailableImages.length > 10 && (
             <div className="flex justify-center">
               <button
@@ -479,7 +460,6 @@ const DestinationImageManager = ({ destination, onImagesChange }) => {
             </div>
           )}
 
-          {/* Botón para mostrar menos imágenes */}
           {showAllImages && (
             <div className="flex justify-center">
               <button

@@ -4,7 +4,6 @@ const BasicInfoForm = ({ formData, onFormChange }) => {
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Título del Paquete */}
         <div className="md:col-span-2">
           <label className="block text-sm font-medium text-gray-700 mb-1">
             Título del Paquete *
@@ -20,7 +19,6 @@ const BasicInfoForm = ({ formData, onFormChange }) => {
           />
         </div>
 
-        {/* Fechas */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
             Fecha de Inicio *
@@ -48,7 +46,6 @@ const BasicInfoForm = ({ formData, onFormChange }) => {
           />
         </div>
 
-        {/* Descripciones */}
         <div className="md:col-span-2">
           <label className="block text-sm font-medium text-gray-700 mb-1">
             ¿Qué Incluye?

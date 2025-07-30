@@ -14,7 +14,6 @@ const ConfigurationForm = ({ formData, onFormChange }) => {
         </p>
       </div>
 
-      {/* Estado del Paquete */}
       <div className="bg-gray-50 rounded-lg p-6">
         <h4 className="text-md font-medium text-gray-900 mb-4">
           Estado del Paquete
@@ -51,7 +50,6 @@ const ConfigurationForm = ({ formData, onFormChange }) => {
         </label>
       </div>
 
-      {/* Notas Adicionales */}
       <div className="bg-gray-50 rounded-lg p-6">
         <h4 className="text-md font-medium text-gray-900 mb-4">
           Notas Adicionales
@@ -66,7 +64,6 @@ const ConfigurationForm = ({ formData, onFormChange }) => {
         ></textarea>
       </div>
 
-      {/* Resumen */}
       <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
         <h4 className="text-md font-medium text-blue-900 mb-3">
           Resumen del Paquete

@@ -1,8 +1,7 @@
 import { useRef, useEffect } from "react";
 import { useMapsLibrary } from "@vis.gl/react-google-maps";
-import { MagnifyingGlassIcon, XMarkIcon } from "@heroicons/react/24/solid";
+import { FiSearch, FiX } from "react-icons/fi";
 
-// Lista de ciudades internacionales conocidas para mejorar la búsqueda
 const INTERNATIONAL_CITIES = [
   "madrid",
   "barcelona",
@@ -50,7 +49,6 @@ const GooglePlacesSearch = ({
   useEffect(() => {
     if (!places || !inputRef.current) return;
 
-    // Suprimir temporalmente los warnings de depreciación de Google Places
     const originalWarn = console.warn;
     console.warn = (...args) => {
       const message = args[0];
@@ -63,17 +61,16 @@ const GooglePlacesSearch = ({
             "google.maps.places.PlacesService is not available to new customers",
           ))
       ) {
-        return; // Suprimir estos warnings específicos de Google Places
+        return;
       }
       originalWarn.apply(console, args);
     };
 
     if (!autocompleteRef.current) {
       autocompleteRef.current = new places.Autocomplete(inputRef.current, {
-        types: ["(cities)"], // Solo ciudades
-        language: "es", // Idioma español
-        // Sin restricciones de país para permitir búsquedas globales
-        // Sin región específica para obtener mejores resultados internacionales
+        types: ["(cities)"],
+        language: "es",
+
         fields: [
           "place_id",
           "formatted_address",
@@ -94,7 +91,6 @@ const GooglePlacesSearch = ({
       },
     );
 
-    // Restaurar console.warn
     console.warn = originalWarn;
 
     return () => {
@@ -115,7 +111,7 @@ const GooglePlacesSearch = ({
 
   return (
     <div className="relative flex items-center">
-      <MagnifyingGlassIcon className="absolute left-3 h-5 w-5 text-gray-400" />
+      <FiSearch className="absolute left-3 h-5 w-5 text-gray-400" />
       <input
         ref={inputRef}
         type="text"
@@ -130,7 +126,7 @@ const GooglePlacesSearch = ({
           onClick={handleClearInput}
           className="absolute right-3"
         >
-          <XMarkIcon className="h-5 w-5 text-gray-500 hover:text-gray-700" />
+          <FiX className="h-5 w-5 text-gray-500 hover:text-gray-700" />
         </button>
       )}
     </div>

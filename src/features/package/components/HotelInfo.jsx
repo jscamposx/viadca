@@ -39,8 +39,8 @@ const HotelInfo = ({ hotel }) => {
         )}
       </div>
       <div className="mt-4 rounded-lg overflow-hidden shadow-inner flex-grow min-h-48">
-        <ImageCarousel 
-          imagenes={hotel.imagenes} 
+        <ImageCarousel
+          imagenes={hotel.imagenes}
           emptyStateTitle="Sin fotos del hotel"
           emptyStateDescription="Las imágenes del hotel no están disponibles"
         />

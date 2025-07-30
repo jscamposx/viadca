@@ -7,7 +7,6 @@ const isUUID = (str) =>
     str,
   );
 
-// Helper para convertir archivos a Base64
 const fileToBase64 = (file) =>
   new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -22,47 +21,46 @@ export const usePackageForm = (initialPackageData = null) => {
     titulo: "",
     fecha_inicio: "",
     fecha_fin: "",
-    incluye: null, // Puede ser null
-    no_incluye: null, // Puede ser null
-    requisitos: null, // Puede ser null
+    incluye: null,
+    no_incluye: null,
+    requisitos: null,
     descuento: "",
-    anticipo: null, // Puede ser null
+    anticipo: null,
     precio_total: "",
-    notas: null, // Puede ser null
+    notas: null,
     itinerario_texto: "",
-    activo: true, // Campo requerido por el backend
-    origen: "Durango, México", // Valor por defecto
+    activo: true,
+    origen: "Durango, México",
     origen_lat: 24.0277,
     origen_lng: -104.6532,
     destino: "",
     destino_lat: null,
     destino_lng: null,
-    additionalDestinations: [], // Para destinos adicionales
+    additionalDestinations: [],
     destinos: [],
     imagenes: [],
-    hotel: null, // Puede ser null
-    mayoristasIds: [], // Añadido para los IDs de mayoristas
+    hotel: null,
+    mayoristasIds: [],
   });
 
   useEffect(() => {
     if (initialPackageData) {
-      // Mapear datos existentes al nuevo formato del formulario
       const initialDestino = initialPackageData.destinos?.[0] || {};
       setFormData({
         ...initialPackageData,
-        // Asegurar que los campos de origen estén poblados
+
         origen: initialPackageData.origen || "Durango, México",
         origen_lat: initialPackageData.origen_lat || 24.0277,
         origen_lng: initialPackageData.origen_lng || -104.6532,
-        // Asegurar que los campos de destino estén poblados desde el destino principal
+
         destino: initialDestino.destino || initialPackageData.destino,
         destino_lat:
           initialDestino.destino_lat || initialPackageData.destino_lat,
         destino_lng:
           initialDestino.destino_lng || initialPackageData.destino_lng,
-        // Mapear destinos adicionales
+
         additionalDestinations: (initialPackageData.destinos || [])
-          .slice(1) // Omitir el primer destino (principal)
+          .slice(1)
           .map((dest) => ({
             name: dest.destino,
             lat: dest.destino_lat,
@@ -120,7 +118,7 @@ export const usePackageForm = (initialPackageData = null) => {
         {
           location: latLng,
           language: "es",
-          region: "MX", // Preferencia por México, pero no restricción
+          region: "MX",
         },
         (results, status) => {
           if (status === "OK" && results[0]) {
@@ -166,7 +164,6 @@ export const usePackageForm = (initialPackageData = null) => {
 
   const handleAddDestination = useCallback(
     (destination) => {
-      // Verificar que no sea duplicado
       const isDuplicate =
         formData.destino === destination.name ||
         (formData.additionalDestinations || []).some(
@@ -212,63 +209,56 @@ export const usePackageForm = (initialPackageData = null) => {
       return;
     }
 
-    // Procesar imágenes del paquete
     const packageImages = await Promise.all(
       (formData.imagenes || []).map(async (img, index) => {
         if (img.url.startsWith("data:")) {
-          // Es una nueva imagen en base64
           return {
             orden: index + 1,
             tipo: "base64",
-            contenido: img.url.split(",")[1], // Solo la parte base64
+            contenido: img.url.split(",")[1],
             mime_type: img.file.type,
             nombre: img.file.name,
           };
         }
-        // Es una imagen existente (URL)
+
         return {
           orden: index + 1,
           tipo: "url",
           contenido: img.url,
-          mime_type: "image/jpeg", // Asumir o derivar si es posible
+          mime_type: "image/jpeg",
           nombre: img.url.split("/").pop(),
         };
       }),
     );
 
-    // Procesar imágenes del hotel si existe
     let hotelPayload = null;
     if (formData.hotel) {
       let hotelImages = [];
-      
-      // Usar imagenes (nueva estructura) o images (estructura antigua) como fallback
+
       const imageList = formData.hotel.imagenes || formData.hotel.images || [];
-      
+
       hotelImages = await Promise.all(
         imageList.map(async (img, index) => {
-          // Si la imagen es una URL de Google Places
           if (img.tipo === "google_places_url" && img.contenido) {
             return {
               orden: index + 1,
               tipo: "google_places_url",
-              contenido: img.contenido, // URL de Google Places para que el backend la procese
+              contenido: img.contenido,
               mime_type: img.mime_type || "image/jpeg",
               nombre: img.nombre || `hotel-imagen-${index + 1}.jpg`,
             };
           }
-          
-          // Si la imagen ya está en base64 (de conversiones anteriores)
+
           if (img.tipo === "base64" && img.contenido) {
             return {
               orden: index + 1,
               tipo: "base64",
-              contenido: img.contenido, // Ya está sin el prefijo data:image
+              contenido: img.contenido,
               mime_type: img.mime_type || "image/jpeg",
               nombre: img.nombre || `hotel-imagen-${index + 1}.jpg`,
             };
           }
-          
-          // Si la imagen tiene el campo 'file', es una imagen personalizada
+
           if (img.file && img.contenido && img.contenido.startsWith("data:")) {
             return {
               orden: index + 1,
@@ -278,8 +268,7 @@ export const usePackageForm = (initialPackageData = null) => {
               nombre: img.file.name,
             };
           }
-          
-          // Si es una URL genérica (ya sea personalizada)
+
           const imageUrl = img.contenido || img.url;
           return {
             orden: index + 1,
@@ -299,13 +288,20 @@ export const usePackageForm = (initialPackageData = null) => {
         total_calificaciones: formData.hotel.total_calificaciones,
         imagenes: hotelImages,
       };
-      
-      console.log(`Hotel payload preparado con ${hotelImages.length} imágenes:`, {
-        nombre: formData.hotel.nombre,
-        isCustom: formData.hotel.isCustom,
-        totalImagenes: hotelImages.length,
-        tiposImagenes: hotelImages.map(img => ({ orden: img.orden, tipo: img.tipo, nombre: img.nombre }))
-      });
+
+      console.log(
+        `Hotel payload preparado con ${hotelImages.length} imágenes:`,
+        {
+          nombre: formData.hotel.nombre,
+          isCustom: formData.hotel.isCustom,
+          totalImagenes: hotelImages.length,
+          tiposImagenes: hotelImages.map((img) => ({
+            orden: img.orden,
+            tipo: img.tipo,
+            nombre: img.nombre,
+          })),
+        },
+      );
     }
 
     const payload = {
@@ -318,15 +314,15 @@ export const usePackageForm = (initialPackageData = null) => {
       incluye:
         formData.incluye && formData.incluye.trim() !== ""
           ? formData.incluye
-          : null, // Puede ser null
+          : null,
       no_incluye:
         formData.no_incluye && formData.no_incluye.trim() !== ""
           ? formData.no_incluye
-          : null, // Puede ser null
+          : null,
       requisitos:
         formData.requisitos && formData.requisitos.trim() !== ""
           ? formData.requisitos
-          : null, // Puede ser null
+          : null,
       precio_total: parseFloat(formData.precio_total),
       descuento:
         formData.descuento && formData.descuento !== ""
@@ -335,9 +331,9 @@ export const usePackageForm = (initialPackageData = null) => {
       anticipo:
         formData.anticipo && formData.anticipo !== ""
           ? parseFloat(formData.anticipo)
-          : null, // Maneja null y string vacío
+          : null,
       notas:
-        formData.notas && formData.notas.trim() !== "" ? formData.notas : null, // Puede ser null
+        formData.notas && formData.notas.trim() !== "" ? formData.notas : null,
       activo: formData.activo,
       mayoristasIds: formData.mayoristasIds,
       itinerario_texto: formData.itinerario_texto,
@@ -348,7 +344,7 @@ export const usePackageForm = (initialPackageData = null) => {
           destino_lat: formData.destino_lat,
           orden: 1,
         },
-        // Agregar destinos adicionales
+
         ...(formData.additionalDestinations || []).map((dest, index) => ({
           destino: dest.name,
           destino_lng: dest.lng,
@@ -360,9 +356,6 @@ export const usePackageForm = (initialPackageData = null) => {
       hotel: hotelPayload,
     };
 
-    // Eliminar campos que no van en el payload final - mantener origen, origen_lat, origen_lng
-    // porque el backend los espera
-    // No eliminar nada de origen
     console.log("Payload a enviar:", payload);
 
     try {

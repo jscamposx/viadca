@@ -4,7 +4,7 @@
 .scrollbar-hide {
   /* Firefox */
   scrollbar-width: none;
-  
+
   /* Safari e Internet Explorer */
   -ms-overflow-style: none;
 }

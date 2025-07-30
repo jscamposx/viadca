@@ -58,7 +58,6 @@ const AdminLayout = () => {
       const mobile = window.innerWidth < 768;
       setIsMobile(mobile);
 
-
       if (mobile) {
         setSidebarOpen(false);
       }

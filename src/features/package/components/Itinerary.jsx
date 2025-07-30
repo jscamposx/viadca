@@ -1,5 +1,11 @@
 import { useState } from "react";
-import { Calendar, Clock, MapPin, ChevronDown, ChevronUp } from "lucide-react";
+import {
+  FiCalendar,
+  FiClock,
+  FiMapPin,
+  FiChevronDown,
+  FiChevronUp,
+} from "react-icons/fi";
 
 const Itinerary = ({ itinerario = [] }) => {
   const [expandedItems, setExpandedItems] = useState(new Set());
@@ -19,7 +25,7 @@ const Itinerary = ({ itinerario = [] }) => {
   };
 
   const showMoreItems = () => {
-    setVisibleItems(prev => Math.min(prev + itemsPerPage, itinerario.length));
+    setVisibleItems((prev) => Math.min(prev + itemsPerPage, itinerario.length));
   };
 
   const showLessItems = () => {
@@ -36,7 +42,7 @@ const Itinerary = ({ itinerario = [] }) => {
           Itinerario del Viaje
         </h2>
         <div className="text-center py-8">
-          <Calendar className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+          <FiCalendar className="w-16 h-16 text-gray-300 mx-auto mb-4" />
           <p className="text-gray-500 text-lg">
             No hay actividades programadas
           </p>
@@ -49,7 +55,7 @@ const Itinerary = ({ itinerario = [] }) => {
     <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
       <div className="flex items-center justify-between mb-6 pb-2 border-b border-gray-100">
         <div className="flex items-center gap-2 text-sm text-gray-500">
-          <Calendar className="w-4 h-4" />
+          <FiCalendar className="w-4 h-4" />
           <span>
             {itinerario.length} {itinerario.length === 1 ? "día" : "días"}
           </span>
@@ -81,7 +87,7 @@ const Itinerary = ({ itinerario = [] }) => {
                     <div className="flex items-start justify-between">
                       <div className="flex items-start gap-3 flex-1">
                         <div className="bg-blue-50 p-2 rounded-lg transition-colors duration-200 group-hover:bg-blue-100">
-                          <Calendar className="text-blue-500 w-5 h-5" />
+                          <FiCalendar className="text-blue-500 w-5 h-5" />
                         </div>
                         <div className="flex-1">
                           <h4 className="font-bold text-lg text-gray-800 mb-1 group-hover:text-blue-600 transition-colors duration-200">
@@ -98,9 +104,9 @@ const Itinerary = ({ itinerario = [] }) => {
 
                       <div className="ml-2 p-1 rounded-full hover:bg-gray-100 transition-colors duration-200">
                         {isExpanded ? (
-                          <ChevronUp className="w-5 h-5 text-gray-400" />
+                          <FiChevronUp className="w-5 h-5 text-gray-400" />
                         ) : (
-                          <ChevronDown className="w-5 h-5 text-gray-400" />
+                          <FiChevronDown className="w-5 h-5 text-gray-400" />
                         )}
                       </div>
                     </div>
@@ -131,18 +137,18 @@ const Itinerary = ({ itinerario = [] }) => {
               {visibleItems} de {itinerario.length}
             </span>
           </div>
-          
+
           {/* Barra de progreso */}
           <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
-            <div 
+            <div
               className="bg-gradient-to-r from-blue-500 to-indigo-600 h-2 rounded-full transition-all duration-500 ease-out"
-              style={{ 
-                width: `${Math.min(Math.max((visibleItems / itinerario.length) * 100, 0), 100)}%`
+              style={{
+                width: `${Math.min(Math.max((visibleItems / itinerario.length) * 100, 0), 100)}%`,
               }}
             ></div>
           </div>
         </div>
-        
+
         {/* Botones de navegación */}
         <div className="flex gap-3 justify-center">
           {hasMoreItems && (
@@ -150,20 +156,43 @@ const Itinerary = ({ itinerario = [] }) => {
               onClick={showMoreItems}
               className="inline-flex items-center px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-all duration-200 shadow-sm hover:shadow-md transform hover:-translate-y-0.5"
             >
-              <span>Ver {Math.min(itemsPerPage, itinerario.length - visibleItems)} días más</span>
-              <svg className="ml-2 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              <span>
+                Ver {Math.min(itemsPerPage, itinerario.length - visibleItems)}{" "}
+                días más
+              </span>
+              <svg
+                className="ml-2 w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M19 9l-7 7-7-7"
+                />
               </svg>
             </button>
           )}
-          
+
           {visibleItems > itemsPerPage && (
             <button
               onClick={showLessItems}
               className="inline-flex items-center px-6 py-3 bg-gray-600 text-white font-medium rounded-lg hover:bg-gray-700 transition-all duration-200 shadow-sm hover:shadow-md transform hover:-translate-y-0.5"
             >
-              <svg className="mr-2 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+              <svg
+                className="mr-2 w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M5 15l7-7 7 7"
+                />
               </svg>
               <span>Mostrar menos</span>
             </button>
@@ -174,8 +203,18 @@ const Itinerary = ({ itinerario = [] }) => {
         {!hasMoreItems && itinerario.length > itemsPerPage && (
           <div className="text-center">
             <div className="inline-flex items-center px-4 py-2 bg-green-50 text-green-700 rounded-full text-sm font-medium border border-green-200">
-              <svg className="mr-2 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              <svg
+                className="mr-2 w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M5 13l4 4L19 7"
+                />
               </svg>
               ¡Has visto todo el itinerario!
             </div>

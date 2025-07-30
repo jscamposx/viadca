@@ -190,7 +190,6 @@ const AdminNav = ({ isOpen, setIsOpen }) => {
                  shadow-[0_0_25px_-5px_rgba(0,0,0,0.1)] border-r border-slate-200
                  ${isOpen ? "w-64" : "w-20"} group`}
     >
-      {/* Botón toggle que aparece con hover */}
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="absolute top-1/2 -translate-y-1/2 -right-4 p-3 bg-gradient-to-r from-blue-600 to-indigo-700 
@@ -214,11 +213,8 @@ const AdminNav = ({ isOpen, setIsOpen }) => {
             />
           )}
         </div>
-
-      
       </button>
 
-      {/* Indicador sutil en el borde cuando está comprimida */}
       {!isOpen && (
         <div
           className="absolute top-1/2 -translate-y-1/2 -right-1 w-1 h-12 bg-gradient-to-b from-blue-400 to-blue-600 
@@ -250,7 +246,6 @@ const AdminNav = ({ isOpen, setIsOpen }) => {
           <p className="text-sm text-slate-500 mt-1">Panel de administración</p>
         </div>
 
-        {/* Indicador visual cuando está comprimida - mejorado */}
         {!isOpen && (
           <div
             className="absolute left-full top-1/2 transform -translate-y-1/2 ml-4 

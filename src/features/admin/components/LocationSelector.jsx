@@ -33,7 +33,6 @@ const LocationSelector = ({
   const [newDestinationSearch, setNewDestinationSearch] = useState("");
   const [showAdvancedOptions, setShowAdvancedOptions] = useState(false);
 
-  // Mostrar opciones avanzadas automáticamente si ya hay datos
   useEffect(() => {
     if (
       origin ||
@@ -41,7 +40,6 @@ const LocationSelector = ({
     ) {
       setShowAdvancedOptions(true);
     } else if (!destination) {
-      // Si no hay destino, asegurar que esté en modo simple y selección de destino
       setShowAdvancedOptions(false);
       setSelectionMode("destino");
     }
@@ -72,7 +70,7 @@ const LocationSelector = ({
           text: `El destino "${tempDestination.name}" ya existe`,
         });
       }
-      // Limpiar mensaje después de 3 segundos
+
       setTimeout(() => setMessage(null), 3000);
     }
   };
@@ -124,7 +122,7 @@ const LocationSelector = ({
         {
           location: latLng,
           language: "es",
-          region: "MX", // Preferencia por México, pero no restricción
+          region: "MX",
         },
         (results, status) => {
           if (status === "OK" && results[0]) {
@@ -150,7 +148,6 @@ const LocationSelector = ({
 
   return (
     <div className="space-y-4">
-      {/* Vista simplificada inicial */}
       {!showAdvancedOptions && !destination && (
         <div className="space-y-3">
           <div className="text-center">
@@ -216,10 +213,8 @@ const LocationSelector = ({
         </div>
       )}
 
-      {/* Vista avanzada */}
       {showAdvancedOptions && (
         <div className="space-y-4">
-          {/* Botón para volver a vista simple */}
           {showAdvancedOptions && (
             <div className="flex justify-between items-center">
               <h3 className="text-lg font-medium text-gray-900">
@@ -235,7 +230,6 @@ const LocationSelector = ({
             </div>
           )}
 
-          {/* Selector de modo */}
           <div className="flex gap-3 p-1 bg-gray-100 rounded-lg">
             <button
               type="button"
@@ -274,7 +268,6 @@ const LocationSelector = ({
             )}
           </div>
 
-          {/* Mensaje de estado */}
           {message && (
             <div
               className={`p-3 rounded-lg ${
@@ -287,7 +280,6 @@ const LocationSelector = ({
             </div>
           )}
 
-          {/* Información actual */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
             <div className="p-3 bg-blue-50 rounded-lg">
               <span className="font-medium text-blue-800">Origen actual:</span>
@@ -305,7 +297,6 @@ const LocationSelector = ({
             </div>
           </div>
 
-          {/* Destino temporal (mientras se agrega uno nuevo) */}
           {isAddingDestination && tempDestination && (
             <div className="p-3 bg-orange-50 border border-orange-200 rounded-lg">
               <div className="flex items-center justify-between">
@@ -335,7 +326,6 @@ const LocationSelector = ({
             </div>
           )}
 
-          {/* Destinos adicionales */}
           {additionalDestinations && additionalDestinations.length > 0 && (
             <div className="space-y-2">
               <h4 className="text-sm font-medium text-gray-700">
@@ -363,7 +353,6 @@ const LocationSelector = ({
             </div>
           )}
 
-          {/* Botón para agregar destino */}
           {!isAddingDestination && onAddDestination && (
             <button
               type="button"
@@ -374,7 +363,6 @@ const LocationSelector = ({
             </button>
           )}
 
-          {/* Instrucciones mientras se agrega destino */}
           {isAddingDestination && !tempDestination && (
             <div className="p-3 bg-orange-50 border border-orange-200 rounded-lg">
               <p className="text-orange-800 text-sm font-medium">
@@ -391,7 +379,6 @@ const LocationSelector = ({
             </div>
           )}
 
-          {/* Mapa para vista avanzada */}
           <div className="w-full h-[400px] rounded-lg relative">
             <div className="absolute top-2.5 left-1/2 -translate-x-1/2 z-10 w-11/12 sm:w-3/4 md:w-1/2">
               <GooglePlacesSearch
@@ -443,7 +430,6 @@ const LocationSelector = ({
                 </AdvancedMarker>
               )}
 
-              {/* Destino temporal */}
               {isValidLatLng(tempDestination) && (
                 <AdvancedMarker
                   position={tempDestination}
@@ -457,7 +443,6 @@ const LocationSelector = ({
                 </AdvancedMarker>
               )}
 
-              {/* Destinos adicionales */}
               {additionalDestinations &&
                 additionalDestinations.map((dest, index) =>
                   isValidLatLng(dest) ? (
