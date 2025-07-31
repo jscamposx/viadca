@@ -46,19 +46,60 @@ export const usePackageForm = (initialPackageData = null) => {
   useEffect(() => {
     if (initialPackageData) {
       const initialDestino = initialPackageData.destinos?.[0] || {};
-      setFormData({
-        ...initialPackageData,
+      
+      // Procesar imágenes del paquete si existen
+      const processedImages = (initialPackageData.imagenes || []).map((img, index) => ({
+        id: img.id || index,
+        url: img.contenido?.startsWith('http') ? img.contenido : 
+             img.contenido?.startsWith('data:') ? img.contenido :
+             `${import.meta.env.VITE_API_URL}/uploads/${img.contenido}`,
+        orden: img.orden || index + 1,
+        tipo: img.tipo || 'url',
+        file: null // Para imágenes existentes no hay archivo
+      }));
 
+      // Procesar el itinerario desde el array de itinerarios
+      let itinerarioTexto = "";
+      if (initialPackageData.itinerarios && Array.isArray(initialPackageData.itinerarios)) {
+        // Ordenar por día número y convertir a texto
+        const itinerarioOrdenado = initialPackageData.itinerarios
+          .sort((a, b) => a.dia_numero - b.dia_numero);
+        
+        itinerarioTexto = itinerarioOrdenado
+          .map(item => `DÍA ${item.dia_numero}: ${item.descripcion}`)
+          .join('\n\n');
+      }
+      
+      // Procesar mayoristas asociados
+      const mayoristasIds = initialPackageData.mayoristas ? 
+        initialPackageData.mayoristas.map(m => m.id) : 
+        initialPackageData.mayoristasIds || [];
+
+      setFormData({
+        // Datos básicos del paquete
+        titulo: initialPackageData.titulo || "",
+        fecha_inicio: initialPackageData.fecha_inicio || "",
+        fecha_fin: initialPackageData.fecha_fin || "",
+        incluye: initialPackageData.incluye || "",
+        no_incluye: initialPackageData.no_incluye || "",
+        requisitos: initialPackageData.requisitos || "",
+        descuento: initialPackageData.descuento || "",
+        anticipo: initialPackageData.anticipo || "",
+        precio_total: initialPackageData.precio_total || "",
+        notas: initialPackageData.notas || "",
+        itinerario_texto: itinerarioTexto,
+        activo: initialPackageData.activo !== undefined ? initialPackageData.activo : true,
+
+        // Ubicaciones
         origen: initialPackageData.origen || "Durango, México",
         origen_lat: initialPackageData.origen_lat || 24.0277,
         origen_lng: initialPackageData.origen_lng || -104.6532,
 
-        destino: initialDestino.destino || initialPackageData.destino,
-        destino_lat:
-          initialDestino.destino_lat || initialPackageData.destino_lat,
-        destino_lng:
-          initialDestino.destino_lng || initialPackageData.destino_lng,
+        destino: initialDestino.destino || initialPackageData.destino || "",
+        destino_lat: initialDestino.destino_lat || initialPackageData.destino_lat || null,
+        destino_lng: initialDestino.destino_lng || initialPackageData.destino_lng || null,
 
+        // Destinos adicionales
         additionalDestinations: (initialPackageData.destinos || [])
           .slice(1)
           .map((dest) => ({
@@ -66,6 +107,12 @@ export const usePackageForm = (initialPackageData = null) => {
             lat: dest.destino_lat,
             lng: dest.destino_lng,
           })),
+
+        // Otros datos importantes
+        destinos: initialPackageData.destinos || [],
+        imagenes: processedImages,
+        hotel: initialPackageData.hotel || null,
+        mayoristasIds: mayoristasIds,
       });
     }
   }, [initialPackageData]);
@@ -171,7 +218,6 @@ export const usePackageForm = (initialPackageData = null) => {
         );
 
       if (isDuplicate) {
-        console.warn("Destino duplicado, no se agregará:", destination.name);
         return false;
       }
 
@@ -288,27 +334,13 @@ export const usePackageForm = (initialPackageData = null) => {
         total_calificaciones: formData.hotel.total_calificaciones,
         imagenes: hotelImages,
       };
-
-      console.log(
-        `Hotel payload preparado con ${hotelImages.length} imágenes:`,
-        {
-          nombre: formData.hotel.nombre,
-          isCustom: formData.hotel.isCustom,
-          totalImagenes: hotelImages.length,
-          tiposImagenes: hotelImages.map((img) => ({
-            orden: img.orden,
-            tipo: img.tipo,
-            nombre: img.nombre,
-          })),
-        },
-      );
     }
 
     const payload = {
       titulo: formData.titulo,
       origen: formData.origen,
-      origen_lat: formData.origen_lat,
-      origen_lng: formData.origen_lng,
+      origen_lat: parseFloat(formData.origen_lat),
+      origen_lng: parseFloat(formData.origen_lng),
       fecha_inicio: formData.fecha_inicio,
       fecha_fin: formData.fecha_fin,
       incluye:
@@ -336,27 +368,25 @@ export const usePackageForm = (initialPackageData = null) => {
         formData.notas && formData.notas.trim() !== "" ? formData.notas : null,
       activo: formData.activo,
       mayoristasIds: formData.mayoristasIds,
-      itinerario_texto: formData.itinerario_texto,
+      itinerario_texto: formData.itinerario_texto || "",
       destinos: [
         {
           destino: formData.destino,
-          destino_lng: formData.destino_lng,
-          destino_lat: formData.destino_lat,
+          destino_lng: parseFloat(formData.destino_lng),
+          destino_lat: parseFloat(formData.destino_lat),
           orden: 1,
         },
 
         ...(formData.additionalDestinations || []).map((dest, index) => ({
           destino: dest.name,
-          destino_lng: dest.lng,
-          destino_lat: dest.lat,
+          destino_lng: parseFloat(dest.lng),
+          destino_lat: parseFloat(dest.lat),
           orden: index + 2,
         })),
       ],
       imagenes: packageImages,
       hotel: hotelPayload,
     };
-
-    console.log("Payload a enviar:", payload);
 
     try {
       if (initialPackageData) {
@@ -370,7 +400,6 @@ export const usePackageForm = (initialPackageData = null) => {
       }
       navigate("/admin/paquetes");
     } catch (error) {
-      console.error("Error al procesar el paquete:", error.response || error);
       const errorMessage =
         error.response?.data?.message || "Ocurrió un error inesperado.";
       if (addNotification) addNotification(`Error: ${errorMessage}`, "error");

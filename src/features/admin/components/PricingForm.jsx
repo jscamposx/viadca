@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { FiDollarSign, FiTag, FiX, FiPercent } from "react-icons/fi";
 
 const PricingForm = ({ formData, onFormChange }) => {
@@ -9,6 +9,22 @@ const PricingForm = ({ formData, onFormChange }) => {
   const [precioConDescuento, setPrecioConDescuento] = useState(
     formData.precio_total || "",
   );
+
+  // Efecto para sincronizar estados locales con formData cuando cambia
+  useEffect(() => {
+    if (formData.precio_total && !precioConDescuento) {
+      setPrecioConDescuento(formData.precio_total);
+    }
+    if (formData.descuento && parseFloat(formData.descuento) > 0 && formData.precio_total) {
+      const original = parseFloat(formData.precio_total) + parseFloat(formData.descuento);
+      setPrecioOriginal(original.toString());
+      setPrecioConDescuento(formData.precio_total);
+      setShowDiscount(true);
+    } else if (formData.precio_total && !formData.descuento) {
+      setPrecioOriginal(formData.precio_total);
+      setShowDiscount(false);
+    }
+  }, [formData.precio_total, formData.descuento]);
 
   const formatNumber = (value) => {
     if (!value) return "";

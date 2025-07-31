@@ -115,7 +115,7 @@ const fileToBase64 = (file) =>
     reader.onerror = (error) => reject(error);
   });
 
-const DestinationImageManager = ({ destination, onImagesChange }) => {
+const DestinationImageManager = ({ destination, onImagesChange, initialImages = [] }) => {
   const [images, setImages] = useState([]);
   const [status, setStatus] = useState("idle");
   const [error, setError] = useState(null);
@@ -124,6 +124,17 @@ const DestinationImageManager = ({ destination, onImagesChange }) => {
   const [dragOverIndex, setDragOverIndex] = useState(null);
   const [showAllImages, setShowAllImages] = useState(false);
   const [allAvailableImages, setAllAvailableImages] = useState([]);
+  const [isInitialized, setIsInitialized] = useState(false);
+
+  // Efecto para manejar imágenes iniciales al editar un paquete
+  useEffect(() => {
+    if (initialImages && initialImages.length > 0 && !isInitialized) {
+      setImages(initialImages);
+      setAllAvailableImages(initialImages);
+      setStatus("success");
+      setIsInitialized(true);
+    }
+  }, [initialImages, isInitialized]);
 
   const fetchImagesFromPexels = useCallback(async (destinationName) => {
     if (!destinationName) {
@@ -187,13 +198,27 @@ const DestinationImageManager = ({ destination, onImagesChange }) => {
           isUploaded: false,
         }));
 
-        setAllAvailableImages(photoData);
-
-        setImages(photoData.slice(0, 10));
+        // Si ya hay imágenes (modo edición), agregar las nuevas al final
+        if (isInitialized && images.length > 0) {
+          // Filtrar imágenes que ya existen para evitar duplicados
+          const newUniquePhotos = photoData.filter(newPhoto => 
+            !images.some(existingImg => existingImg.url === newPhoto.url)
+          );
+          
+          setAllAvailableImages(prev => [...prev, ...newUniquePhotos]);
+          setImages(prev => [...prev, ...newUniquePhotos.slice(0, 5)]); // Agregar solo las primeras 5
+        } else {
+          // Modo creación normal
+          setAllAvailableImages(photoData);
+          setImages(photoData.slice(0, 10));
+        }
+        
         setStatus("success");
       } else {
-        setImages([]);
-        setAllAvailableImages([]);
+        if (!isInitialized) {
+          setImages([]);
+          setAllAvailableImages([]);
+        }
         setStatus("no_photos");
       }
     } catch (error) {
@@ -204,15 +229,16 @@ const DestinationImageManager = ({ destination, onImagesChange }) => {
   }, []);
 
   useEffect(() => {
-    if (destination?.name) {
+    // Solo buscar imágenes de Pexels si NO hay imágenes iniciales Y hay un destino
+    if (destination?.name && (!initialImages || initialImages.length === 0) && !isInitialized) {
       fetchImagesFromPexels(destination.name);
-    } else {
+    } else if (!destination?.name && (!initialImages || initialImages.length === 0)) {
       setImages([]);
       setAllAvailableImages([]);
       setStatus("idle");
       setShowAllImages(false);
     }
-  }, [destination, fetchImagesFromPexels]);
+  }, [destination, fetchImagesFromPexels, initialImages, isInitialized]);
 
   useEffect(() => {
     onImagesChange(images);
@@ -349,17 +375,30 @@ const DestinationImageManager = ({ destination, onImagesChange }) => {
       onDragOver={handleContainerDragOver}
       onDrop={handleContainerDrop}
     >
-      <div className="flex justify-end mb-4">
-        <label className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg shadow-md cursor-pointer ">
-          <span>+ Subir Imágenes</span>
-          <input
-            type="file"
-            multiple
-            accept="image/*"
-            className="hidden"
-            onChange={handleFileUpload}
-          />
-        </label>
+      <div className="flex justify-between items-center mb-4">
+        <div className="flex gap-2">
+          <label className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg shadow-md cursor-pointer">
+            <span>+ Subir Imágenes</span>
+            <input
+              type="file"
+              multiple
+              accept="image/*"
+              className="hidden"
+              onChange={handleFileUpload}
+            />
+          </label>
+          
+          {/* Botón para buscar imágenes de Pexels cuando hay imágenes iniciales */}
+          {isInitialized && destination?.name && (
+            <button
+              onClick={() => fetchImagesFromPexels(destination.name)}
+              className="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg shadow-md"
+              disabled={status === "loading"}
+            >
+              {status === "loading" ? "Buscando..." : "🔍 Buscar en Pexels"}
+            </button>
+          )}
+        </div>
       </div>
 
       {status === "loading" && (

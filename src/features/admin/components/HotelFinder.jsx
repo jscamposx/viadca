@@ -9,7 +9,6 @@ const HotelFinder = ({ destination, onHotelSelect, selectedHotel }) => {
   const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(0);
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedHotelInfo, setSelectedHotelInfo] = useState(null);
   const [isManualFormVisible, setIsManualFormVisible] = useState(false);
   const [isLoadingHotelImages, setIsLoadingHotelImages] = useState(false);
   const [customHotel, setCustomHotel] = useState({
@@ -18,15 +17,14 @@ const HotelFinder = ({ destination, onHotelSelect, selectedHotel }) => {
     images: [],
   });
 
-  useEffect(() => {
-    setSelectedHotelInfo(selectedHotel);
+  useEffect(() => {    
     if (
       selectedHotel &&
       !allHotels.some((hotel) => hotel.id === selectedHotel.id)
     ) {
       setAllHotels((prev) => [selectedHotel, ...prev]);
     }
-  }, [selectedHotel]);
+  }, [selectedHotel, allHotels]);
 
   const itemsPerPage = 3;
 
@@ -146,10 +144,6 @@ const HotelFinder = ({ destination, onHotelSelect, selectedHotel }) => {
 
         const photosToUse = placeDetails.photos || hotel.googlePhotos || [];
 
-        console.log(
-          `Hotel ${hotel.nombre}: Fotos disponibles desde detalles: ${placeDetails.photos?.length || 0}, desde búsqueda: ${hotel.googlePhotos?.length || 0}`,
-        );
-
         if (photosToUse.length > 0) {
           const imageUrls = [];
 
@@ -177,8 +171,6 @@ const HotelFinder = ({ destination, onHotelSelect, selectedHotel }) => {
               }
 
               if (photoUrl) {
-                console.log(`Foto ${i + 1} URL generada:`, photoUrl);
-
                 imageUrls.push({
                   orden: i + 1,
                   tipo: "google_places_url",
@@ -186,27 +178,16 @@ const HotelFinder = ({ destination, onHotelSelect, selectedHotel }) => {
                   mime_type: "image/jpeg",
                   nombre: `hotel-${hotel.nombre.toLowerCase().replace(/\s+/g, "-")}-${i + 1}.jpg`,
                 });
-                console.log(
-                  `Foto ${i + 1} URL añadida para procesamiento en backend`,
-                );
-              } else {
-                console.warn(`No se pudo generar URL para la foto ${i + 1}`);
               }
             } catch (photoError) {
               console.error(`Error processing photo ${i}:`, photoError);
             }
           }
 
-          console.log(
-            `Procesadas ${imageUrls.length} URLs de imágenes para el hotel ${hotel.nombre}`,
-          );
-
           hotelWithImages = {
             ...hotel,
             imagenes: imageUrls,
-
             googlePhotos: undefined,
-
             previewImageUrl: null,
           };
         } else {
@@ -217,7 +198,6 @@ const HotelFinder = ({ destination, onHotelSelect, selectedHotel }) => {
           };
         }
       } catch (error) {
-        console.error("Error procesando imágenes del hotel:", error);
 
         if (hotel.googlePhotos && hotel.googlePhotos.length > 0) {
           try {
@@ -232,10 +212,6 @@ const HotelFinder = ({ destination, onHotelSelect, selectedHotel }) => {
                 });
 
                 if (photoUrl) {
-                  console.log(
-                    `Fallback: Usando URL de Google Places para foto ${i + 1}...`,
-                  );
-
                   fallbackImages.push({
                     orden: i + 1,
                     tipo: "google_places_url",
@@ -245,10 +221,7 @@ const HotelFinder = ({ destination, onHotelSelect, selectedHotel }) => {
                   });
                 }
               } catch (individualPhotoError) {
-                console.warn(
-                  `Error con foto individual ${i}:`,
-                  individualPhotoError,
-                );
+                // Error silencioso para fotos individuales
               }
             }
 
@@ -293,13 +266,11 @@ const HotelFinder = ({ destination, onHotelSelect, selectedHotel }) => {
 
     setIsLoadingHotelImages(false);
     onHotelSelect(hotelWithImages);
-    setSelectedHotelInfo(hotelWithImages);
     setIsManualFormVisible(false);
   };
 
   const handleShowManualForm = () => {
     onHotelSelect(null);
-    setSelectedHotelInfo(null);
     setIsManualFormVisible(true);
   };
 
@@ -326,7 +297,6 @@ const HotelFinder = ({ destination, onHotelSelect, selectedHotel }) => {
     };
     setAllHotels((prev) => [newHotel, ...prev]);
     onHotelSelect(newHotel);
-    setSelectedHotelInfo(newHotel);
     setCustomHotel({ nombre: "", estrellas: 3, images: [] });
     setIsManualFormVisible(false);
   };
@@ -481,7 +451,7 @@ const HotelFinder = ({ destination, onHotelSelect, selectedHotel }) => {
               <div className="relative">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {getCurrentHotels().map((hotel) => {
-                    const isSelected = hotel.id === selectedHotelInfo?.id;
+                    const isSelected = hotel.id === selectedHotel?.id;
 
                     const imageUrl = hotel.isCustom
                       ? hotel.imagenes?.[0]?.contenido || hotel.images?.[0]?.url
@@ -532,21 +502,22 @@ const HotelFinder = ({ destination, onHotelSelect, selectedHotel }) => {
                               )}
                           </div>
                         ) : (
-                          <div className="h-48 bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
-                            <span className="text-gray-400">
-                              <svg
-                                className="w-12 h-12"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                              >
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth={1.5}
-                                  d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
-                                />
-                              </svg>
+                          <div className="h-48 bg-gradient-to-br from-gray-100 to-gray-200 flex flex-col items-center justify-center">
+                            <svg
+                              className="w-12 h-12 text-gray-400 mb-2"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={1.5}
+                                d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                              />
+                            </svg>
+                            <span className="text-gray-500 text-sm text-center px-4">
+                              Imagen no disponible
                             </span>
                           </div>
                         )}
