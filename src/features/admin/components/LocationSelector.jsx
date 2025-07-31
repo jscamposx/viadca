@@ -213,20 +213,20 @@ const LocationSelector = ({
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="p-4 bg-blue-50 rounded-xl border border-blue-200">
           <div className="flex items-center gap-2 mb-2">
-            <FiMapPin className="w-4 h-4 text-blue-600" />
-            <span className="font-medium text-blue-800">Origen</span>
+            <FiMapPin className="w-4 h-4 text-blue-700" />
+            <span className="font-semibold text-blue-900">Origen</span>
           </div>
-          <p className="text-blue-700">
+          <p className="text-blue-800 font-medium">
             {origin?.name || "No seleccionado"}
           </p>
         </div>
         
         <div className="p-4 bg-green-50 rounded-xl border border-green-200">
           <div className="flex items-center gap-2 mb-2">
-            <FiTarget className="w-4 h-4 text-green-600" />
-            <span className="font-medium text-green-800">Destino principal</span>
+            <FiTarget className="w-4 h-4 text-green-700" />
+            <span className="font-semibold text-green-900">Destino principal</span>
           </div>
-          <p className="text-green-700">
+          <p className="text-green-800 font-medium">
             {destination?.name || "No seleccionado"}
           </p>
         </div>
@@ -238,10 +238,10 @@ const LocationSelector = ({
           <div className="flex items-center justify-between">
             <div>
               <div className="flex items-center gap-2 mb-2">
-                <FiPlus className="w-4 h-4 text-orange-600" />
-                <span className="font-medium text-orange-800">Nuevo destino</span>
+                <FiPlus className="w-4 h-4 text-orange-700" />
+                <span className="font-semibold text-orange-900">Nuevo destino</span>
               </div>
-              <p className="text-orange-700">{tempDestination.name}</p>
+              <p className="text-orange-800 font-medium">{tempDestination.name}</p>
             </div>
             <div className="flex gap-2">
               <button
@@ -268,7 +268,7 @@ const LocationSelector = ({
       {/* Lista de destinos adicionales */}
       {additionalDestinations && additionalDestinations.length > 0 && (
         <div className="space-y-3">
-          <h4 className="text-sm font-semibold text-slate-700 flex items-center gap-2">
+          <h4 className="text-sm font-semibold text-slate-800 flex items-center gap-2">
             <FiPlus className="w-4 h-4" />
             Destinos adicionales
           </h4>
@@ -278,13 +278,13 @@ const LocationSelector = ({
                 key={index}
                 className="flex items-center justify-between p-3 bg-orange-50 rounded-xl border border-orange-200"
               >
-                <span className="text-orange-700 font-medium">{dest.name}</span>
+                <span className="text-orange-800 font-semibold">{dest.name}</span>
                 <button
                   type="button"
                   onClick={() =>
                     onRemoveDestination && onRemoveDestination(index)
                   }
-                  className="flex items-center gap-1 text-red-500 hover:text-red-700 hover:bg-red-50 p-1 rounded-lg transition-colors"
+                  className="flex items-center gap-1 text-red-600 hover:text-red-700 hover:bg-red-50 p-1 rounded-lg transition-colors"
                 >
                   <FiTrash2 className="w-4 h-4" />
                 </button>
@@ -299,7 +299,7 @@ const LocationSelector = ({
         <button
           type="button"
           onClick={handleAddNewDestination}
-          className="w-full flex items-center justify-center gap-2 py-4 px-4 border-2 border-dashed border-orange-300 rounded-xl text-orange-600 hover:border-orange-400 hover:bg-orange-50 font-medium transition-all"
+          className="w-full flex items-center justify-center gap-2 py-4 px-4 border-2 border-dashed border-orange-400 rounded-xl text-orange-700 hover:border-orange-500 hover:bg-orange-50 font-semibold transition-all"
         >
           <FiPlus className="w-5 h-5" />
           Agregar destino adicional
@@ -310,18 +310,18 @@ const LocationSelector = ({
       {isAddingDestination && !tempDestination && (
         <div className="p-4 bg-orange-50 border border-orange-200 rounded-xl">
           <div className="flex items-center gap-2 mb-2">
-            <FiTarget className="w-5 h-5 text-orange-600" />
-            <span className="font-medium text-orange-800">
+            <FiTarget className="w-5 h-5 text-orange-700" />
+            <span className="font-semibold text-orange-900">
               Selecciona un nuevo destino
             </span>
           </div>
-          <p className="text-orange-700 text-sm mb-3">
+          <p className="text-orange-800 text-sm mb-3 font-medium">
             Haz clic en el mapa o busca en la barra de búsqueda para agregar un destino adicional.
           </p>
           <button
             type="button"
             onClick={handleCancelNewDestination}
-            className="text-orange-600 hover:text-orange-800 text-sm font-medium underline"
+            className="text-orange-700 hover:text-orange-900 text-sm font-semibold underline"
           >
             Cancelar
           </button>
