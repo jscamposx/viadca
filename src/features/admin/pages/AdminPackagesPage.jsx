@@ -725,7 +725,7 @@ const AdminPaquetes = () => {
                                 key={mayorista.id}
                                 className="text-sm lg:text-base bg-gray-100 text-gray-700 px-3 py-1.5 rounded-md"
                               >
-                                {mayorista.nombre}
+                                {mayorista.clave}
                               </span>
                             ))}
                             {paquete.mayoristas.length > 2 && (
