@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Map, AdvancedMarker, Pin } from "@vis.gl/react-google-maps";
+import { FiMapPin, FiTarget, FiPlus, FiCheck, FiX, FiTrash2 } from "react-icons/fi";
 import GooglePlacesSearch from "./GooglePlacesSearch";
 
 const center = {
@@ -31,19 +32,12 @@ const LocationSelector = ({
   const [tempDestination, setTempDestination] = useState(null);
   const [message, setMessage] = useState(null);
   const [newDestinationSearch, setNewDestinationSearch] = useState("");
-  const [showAdvancedOptions, setShowAdvancedOptions] = useState(false);
 
   useEffect(() => {
-    if (
-      origin ||
-      (additionalDestinations && additionalDestinations.length > 0)
-    ) {
-      setShowAdvancedOptions(true);
-    } else if (!destination) {
-      setShowAdvancedOptions(false);
+    if (!destination) {
       setSelectionMode("destino");
     }
-  }, [origin, additionalDestinations, destination, setSelectionMode]);
+  }, [destination, setSelectionMode]);
 
   const handleAddNewDestination = () => {
     setIsAddingDestination(true);
@@ -147,322 +141,277 @@ const LocationSelector = ({
   };
 
   return (
-    <div className="space-y-4">
-      {!showAdvancedOptions && !destination && (
-        <div className="space-y-3">
-          <div className="text-center">
-            <h3 className="text-lg font-medium text-gray-900 mb-2">
-              ¿A dónde vas?
-            </h3>
-            <p className="text-sm text-gray-600">
-              Busca el destino principal de tu paquete turístico
-            </p>
-          </div>
+    <div className="space-y-6">
+      {/* Header de configuración */}
+      <div>
+        <h3 className="text-xl font-semibold text-slate-900 mb-2">
+          Configuración de ubicaciones
+        </h3>
+        <p className="text-slate-600">
+          Selecciona el origen, destino principal y destinos adicionales del paquete
+        </p>
+      </div>
 
-          <div className="w-full h-[400px] rounded-lg relative">
-            <div className="absolute top-2.5 left-1/2 -translate-x-1/2 z-10 w-11/12 sm:w-3/4 md:w-1/2">
-              <GooglePlacesSearch
-                onPlaceSelected={onPlaceSelected}
-                value={searchValue}
-                onChange={onSearchValueChange}
-                placeholder="Busca tu destino (ej: París, Cancún, Barcelona...)"
-              />
-            </div>
-            <Map
-              defaultCenter={center}
-              defaultZoom={3}
-              onClick={onMapClick}
-              mapId="b21b4a042011d515"
-              fullscreenControl={false}
-              mapTypeControl={false}
-              streetViewControl={false}
-            >
-              {isValidLatLng(destination) && (
-                <AdvancedMarker
-                  position={destination}
-                  title="Destino Principal"
-                >
-                  <Pin
-                    background={"#22c55e"}
-                    borderColor={"#166534"}
-                    glyphColor={"#ffffff"}
-                  />
-                </AdvancedMarker>
-              )}
-            </Map>
-          </div>
+      {/* Modo de selección */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <button
+          type="button"
+          onClick={() => setSelectionMode("origen")}
+          className={`flex items-center justify-center gap-3 py-4 px-4 rounded-xl font-medium transition-all ${
+            selectionMode === "origen"
+              ? "bg-blue-50 text-blue-700 border-2 border-blue-200 shadow-sm"
+              : "bg-white text-slate-600 border-2 border-slate-200 hover:border-slate-300 hover:bg-slate-50"
+          }`}
+        >
+          <FiMapPin className="w-5 h-5" />
+          <span>Seleccionar Origen</span>
+        </button>
+        
+        <button
+          type="button"
+          onClick={() => setSelectionMode("destino")}
+          className={`flex items-center justify-center gap-3 py-4 px-4 rounded-xl font-medium transition-all ${
+            selectionMode === "destino"
+              ? "bg-green-50 text-green-700 border-2 border-green-200 shadow-sm"
+              : "bg-white text-slate-600 border-2 border-slate-200 hover:border-slate-300 hover:bg-slate-50"
+          }`}
+        >
+          <FiTarget className="w-5 h-5" />
+          <span>Seleccionar Destino</span>
+        </button>
+        
+        {isAddingDestination && (
+          <button
+            type="button"
+            onClick={() => setSelectionMode("nuevo_destino")}
+            className={`flex items-center justify-center gap-3 py-4 px-4 rounded-xl font-medium transition-all ${
+              selectionMode === "nuevo_destino"
+                ? "bg-orange-50 text-orange-700 border-2 border-orange-200 shadow-sm"
+                : "bg-white text-slate-600 border-2 border-slate-200 hover:border-slate-300 hover:bg-slate-50"
+            }`}
+          >
+            <FiPlus className="w-5 h-5" />
+            <span>Nuevo Destino</span>
+          </button>
+        )}
+      </div>
 
-          {destination && (
-            <div className="text-center space-y-3">
-              <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
-                <h4 className="font-medium text-green-800">
-                  ✅ Destino seleccionado
-                </h4>
-                <p className="text-green-700 mt-1">{destination.name}</p>
-              </div>
-
-              <button
-                type="button"
-                onClick={() => setShowAdvancedOptions(true)}
-                className="text-blue-600 hover:text-blue-800 text-sm underline"
-              >
-                + Configurar origen o agregar más destinos
-              </button>
-            </div>
-          )}
+      {/* Mensajes de estado */}
+      {message && (
+        <div
+          className={`p-4 rounded-xl border ${
+            message.type === "success"
+              ? "bg-green-50 border-green-200 text-green-800"
+              : "bg-red-50 border-red-200 text-red-800"
+          }`}
+        >
+          <p className="text-sm font-medium">{message.text}</p>
         </div>
       )}
 
-      {showAdvancedOptions && (
-        <div className="space-y-4">
-          {showAdvancedOptions && (
-            <div className="flex justify-between items-center">
-              <h3 className="text-lg font-medium text-gray-900">
-                Configuración de ubicaciones
-              </h3>
+      {/* Estado actual de ubicaciones */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="p-4 bg-blue-50 rounded-xl border border-blue-200">
+          <div className="flex items-center gap-2 mb-2">
+            <FiMapPin className="w-4 h-4 text-blue-600" />
+            <span className="font-medium text-blue-800">Origen</span>
+          </div>
+          <p className="text-blue-700">
+            {origin?.name || "No seleccionado"}
+          </p>
+        </div>
+        
+        <div className="p-4 bg-green-50 rounded-xl border border-green-200">
+          <div className="flex items-center gap-2 mb-2">
+            <FiTarget className="w-4 h-4 text-green-600" />
+            <span className="font-medium text-green-800">Destino principal</span>
+          </div>
+          <p className="text-green-700">
+            {destination?.name || "No seleccionado"}
+          </p>
+        </div>
+      </div>
+
+      {/* Confirmación de nuevo destino */}
+      {isAddingDestination && tempDestination && (
+        <div className="p-4 bg-orange-50 border border-orange-200 rounded-xl">
+          <div className="flex items-center justify-between">
+            <div>
+              <div className="flex items-center gap-2 mb-2">
+                <FiPlus className="w-4 h-4 text-orange-600" />
+                <span className="font-medium text-orange-800">Nuevo destino</span>
+              </div>
+              <p className="text-orange-700">{tempDestination.name}</p>
+            </div>
+            <div className="flex gap-2">
               <button
                 type="button"
-                onClick={() => setShowAdvancedOptions(false)}
-                className="text-gray-500 hover:text-gray-700 text-sm"
+                onClick={handleConfirmNewDestination}
+                className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg text-sm font-medium hover:bg-green-700 transition-colors"
               >
-                Simplificar vista
+                <FiCheck className="w-4 h-4" />
+                Confirmar
               </button>
-            </div>
-          )}
-
-          <div className="flex gap-3 p-1 bg-gray-100 rounded-lg">
-            <button
-              type="button"
-              onClick={() => setSelectionMode("origen")}
-              className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors ${
-                selectionMode === "origen"
-                  ? "bg-blue-600 text-white shadow-md"
-                  : "text-gray-600 hover:text-gray-800 hover:bg-gray-200"
-              }`}
-            >
-              📍 Seleccionar Origen
-            </button>
-            <button
-              type="button"
-              onClick={() => setSelectionMode("destino")}
-              className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors ${
-                selectionMode === "destino"
-                  ? "bg-green-600 text-white shadow-md"
-                  : "text-gray-600 hover:text-gray-800 hover:bg-gray-200"
-              }`}
-            >
-              🎯 Seleccionar Destino
-            </button>
-            {isAddingDestination && (
-              <button
-                type="button"
-                onClick={() => setSelectionMode("nuevo_destino")}
-                className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors ${
-                  selectionMode === "nuevo_destino"
-                    ? "bg-orange-600 text-white shadow-md"
-                    : "text-gray-600 hover:text-gray-800 hover:bg-gray-200"
-                }`}
-              >
-                ➕ Nuevo Destino
-              </button>
-            )}
-          </div>
-
-          {message && (
-            <div
-              className={`p-3 rounded-lg ${
-                message.type === "success"
-                  ? "bg-green-50 border border-green-200 text-green-800"
-                  : "bg-red-50 border border-red-200 text-red-800"
-              }`}
-            >
-              <p className="text-sm">{message.text}</p>
-            </div>
-          )}
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-            <div className="p-3 bg-blue-50 rounded-lg">
-              <span className="font-medium text-blue-800">Origen actual:</span>
-              <p className="text-blue-600 mt-1">
-                {origin?.name || "No seleccionado"}
-              </p>
-            </div>
-            <div className="p-3 bg-green-50 rounded-lg">
-              <span className="font-medium text-green-800">
-                Destino principal:
-              </span>
-              <p className="text-green-600 mt-1">
-                {destination?.name || "No seleccionado"}
-              </p>
-            </div>
-          </div>
-
-          {isAddingDestination && tempDestination && (
-            <div className="p-3 bg-orange-50 border border-orange-200 rounded-lg">
-              <div className="flex items-center justify-between">
-                <div>
-                  <span className="font-medium text-orange-800">
-                    Nuevo destino:
-                  </span>
-                  <p className="text-orange-600 mt-1">{tempDestination.name}</p>
-                </div>
-                <div className="flex gap-2">
-                  <button
-                    type="button"
-                    onClick={handleConfirmNewDestination}
-                    className="px-3 py-1 bg-green-600 text-white rounded text-sm hover:bg-green-700"
-                  >
-                    ✓ Confirmar
-                  </button>
-                  <button
-                    type="button"
-                    onClick={handleCancelNewDestination}
-                    className="px-3 py-1 bg-red-600 text-white rounded text-sm hover:bg-red-700"
-                  >
-                    ✕ Cancelar
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {additionalDestinations && additionalDestinations.length > 0 && (
-            <div className="space-y-2">
-              <h4 className="text-sm font-medium text-gray-700">
-                Destinos adicionales:
-              </h4>
-              <div className="space-y-2">
-                {additionalDestinations.map((dest, index) => (
-                  <div
-                    key={index}
-                    className="flex items-center justify-between p-2 bg-orange-50 rounded border border-orange-200"
-                  >
-                    <span className="text-orange-700 text-sm">{dest.name}</span>
-                    <button
-                      type="button"
-                      onClick={() =>
-                        onRemoveDestination && onRemoveDestination(index)
-                      }
-                      className="text-red-500 hover:text-red-700 text-sm px-2 py-1"
-                    >
-                      ✕
-                    </button>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {!isAddingDestination && onAddDestination && (
-            <button
-              type="button"
-              onClick={handleAddNewDestination}
-              className="w-full py-2 px-4 border border-dashed border-orange-300 rounded-lg text-orange-600 hover:border-orange-400 hover:bg-orange-50 text-sm"
-            >
-              + Agregar destino adicional
-            </button>
-          )}
-
-          {isAddingDestination && !tempDestination && (
-            <div className="p-3 bg-orange-50 border border-orange-200 rounded-lg">
-              <p className="text-orange-800 text-sm font-medium">
-                🎯 Selecciona un nuevo destino en el mapa o busca en la barra de
-                búsqueda
-              </p>
               <button
                 type="button"
                 onClick={handleCancelNewDestination}
-                className="mt-2 text-orange-600 hover:text-orange-800 text-sm underline"
+                className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg text-sm font-medium hover:bg-red-700 transition-colors"
               >
+                <FiX className="w-4 h-4" />
                 Cancelar
               </button>
             </div>
-          )}
-
-          <div className="w-full h-[400px] rounded-lg relative">
-            <div className="absolute top-2.5 left-1/2 -translate-x-1/2 z-10 w-11/12 sm:w-3/4 md:w-1/2">
-              <GooglePlacesSearch
-                onPlaceSelected={handlePlaceSelected}
-                value={
-                  selectionMode === "nuevo_destino"
-                    ? newDestinationSearch
-                    : searchValue
-                }
-                onChange={handleSearchChange}
-                placeholder={
-                  selectionMode === "origen"
-                    ? "Buscar origen..."
-                    : selectionMode === "nuevo_destino"
-                      ? "Buscar nuevo destino..."
-                      : "Buscar destino principal..."
-                }
-              />
-            </div>
-            <Map
-              defaultCenter={center}
-              defaultZoom={5}
-              onClick={handleMapClick}
-              mapId="b21b4a042011d515"
-              fullscreenControl={false}
-              mapTypeControl={false}
-              streetViewControl={false}
-            >
-              {isValidLatLng(origin) && (
-                <AdvancedMarker position={origin} title="Origen">
-                  <Pin
-                    background={"#2563eb"}
-                    borderColor={"#1e40af"}
-                    glyphColor={"#ffffff"}
-                  />
-                </AdvancedMarker>
-              )}
-
-              {isValidLatLng(destination) && (
-                <AdvancedMarker
-                  position={destination}
-                  title="Destino Principal"
-                >
-                  <Pin
-                    background={"#22c55e"}
-                    borderColor={"#166534"}
-                    glyphColor={"#ffffff"}
-                  />
-                </AdvancedMarker>
-              )}
-
-              {isValidLatLng(tempDestination) && (
-                <AdvancedMarker
-                  position={tempDestination}
-                  title={`Nuevo destino: ${tempDestination.name}`}
-                >
-                  <Pin
-                    background={"#f59e0b"}
-                    borderColor={"#d97706"}
-                    glyphColor={"#ffffff"}
-                  />
-                </AdvancedMarker>
-              )}
-
-              {additionalDestinations &&
-                additionalDestinations.map((dest, index) =>
-                  isValidLatLng(dest) ? (
-                    <AdvancedMarker
-                      key={index}
-                      position={dest}
-                      title={`Destino ${index + 2}: ${dest.name}`}
-                    >
-                      <Pin
-                        background={"#f97316"}
-                        borderColor={"#ea580c"}
-                        glyphColor={"#ffffff"}
-                      />
-                    </AdvancedMarker>
-                  ) : null,
-                )}
-            </Map>
           </div>
         </div>
       )}
+
+      {/* Lista de destinos adicionales */}
+      {additionalDestinations && additionalDestinations.length > 0 && (
+        <div className="space-y-3">
+          <h4 className="text-sm font-semibold text-slate-700 flex items-center gap-2">
+            <FiPlus className="w-4 h-4" />
+            Destinos adicionales
+          </h4>
+          <div className="space-y-2">
+            {additionalDestinations.map((dest, index) => (
+              <div
+                key={index}
+                className="flex items-center justify-between p-3 bg-orange-50 rounded-xl border border-orange-200"
+              >
+                <span className="text-orange-700 font-medium">{dest.name}</span>
+                <button
+                  type="button"
+                  onClick={() =>
+                    onRemoveDestination && onRemoveDestination(index)
+                  }
+                  className="flex items-center gap-1 text-red-500 hover:text-red-700 hover:bg-red-50 p-1 rounded-lg transition-colors"
+                >
+                  <FiTrash2 className="w-4 h-4" />
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Botón para agregar destino adicional */}
+      {!isAddingDestination && onAddDestination && (
+        <button
+          type="button"
+          onClick={handleAddNewDestination}
+          className="w-full flex items-center justify-center gap-2 py-4 px-4 border-2 border-dashed border-orange-300 rounded-xl text-orange-600 hover:border-orange-400 hover:bg-orange-50 font-medium transition-all"
+        >
+          <FiPlus className="w-5 h-5" />
+          Agregar destino adicional
+        </button>
+      )}
+
+      {/* Instrucciones para nuevo destino */}
+      {isAddingDestination && !tempDestination && (
+        <div className="p-4 bg-orange-50 border border-orange-200 rounded-xl">
+          <div className="flex items-center gap-2 mb-2">
+            <FiTarget className="w-5 h-5 text-orange-600" />
+            <span className="font-medium text-orange-800">
+              Selecciona un nuevo destino
+            </span>
+          </div>
+          <p className="text-orange-700 text-sm mb-3">
+            Haz clic en el mapa o busca en la barra de búsqueda para agregar un destino adicional.
+          </p>
+          <button
+            type="button"
+            onClick={handleCancelNewDestination}
+            className="text-orange-600 hover:text-orange-800 text-sm font-medium underline"
+          >
+            Cancelar
+          </button>
+        </div>
+      )}
+
+      {/* Mapa */}
+      <div className="w-full h-[500px] rounded-xl overflow-hidden shadow-lg relative">
+        <div className="absolute top-4 left-1/2 -translate-x-1/2 z-10 w-11/12 sm:w-3/4 md:w-1/2">
+          <GooglePlacesSearch
+            onPlaceSelected={handlePlaceSelected}
+            value={
+              selectionMode === "nuevo_destino"
+                ? newDestinationSearch
+                : searchValue
+            }
+            onChange={handleSearchChange}
+            placeholder={
+              selectionMode === "origen"
+                ? "Buscar origen..."
+                : selectionMode === "nuevo_destino"
+                  ? "Buscar nuevo destino..."
+                  : "Buscar destino principal..."
+            }
+          />
+        </div>
+        <Map
+          defaultCenter={center}
+          defaultZoom={5}
+          onClick={handleMapClick}
+          mapId="b21b4a042011d515"
+          fullscreenControl={false}
+          mapTypeControl={false}
+          streetViewControl={false}
+          className="w-full h-full"
+        >
+          {isValidLatLng(origin) && (
+            <AdvancedMarker position={origin} title="Origen">
+              <Pin
+                background={"#2563eb"}
+                borderColor={"#1e40af"}
+                glyphColor={"#ffffff"}
+              />
+            </AdvancedMarker>
+          )}
+
+          {isValidLatLng(destination) && (
+            <AdvancedMarker
+              position={destination}
+              title="Destino Principal"
+            >
+              <Pin
+                background={"#22c55e"}
+                borderColor={"#166534"}
+                glyphColor={"#ffffff"}
+              />
+            </AdvancedMarker>
+          )}
+
+          {isValidLatLng(tempDestination) && (
+            <AdvancedMarker
+              position={tempDestination}
+              title={`Nuevo destino: ${tempDestination.name}`}
+            >
+              <Pin
+                background={"#f59e0b"}
+                borderColor={"#d97706"}
+                glyphColor={"#ffffff"}
+              />
+            </AdvancedMarker>
+          )}
+
+          {additionalDestinations &&
+            additionalDestinations.map((dest, index) =>
+              isValidLatLng(dest) ? (
+                <AdvancedMarker
+                  key={index}
+                  position={dest}
+                  title={`Destino ${index + 2}: ${dest.name}`}
+                >
+                  <Pin
+                    background={"#f97316"}
+                    borderColor={"#ea580c"}
+                    glyphColor={"#ffffff"}
+                  />
+                </AdvancedMarker>
+              ) : null,
+            )}
+        </Map>
+      </div>
     </div>
   );
 };
