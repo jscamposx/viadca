@@ -172,6 +172,16 @@ const NuevoPaquete = () => {
                 </div>
               </div>
               
+              {/* Componente de cambios en el header - solo en modo edición */}
+              {id && paquete && currentPatchPayload && Object.keys(currentPatchPayload).length > 0 && (
+                <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 bg-orange-50 border border-orange-200 rounded-lg">
+                  <div className="w-2 h-2 bg-orange-500 rounded-full animate-pulse"></div>
+                  <span className="text-sm font-medium text-orange-700">
+                    {Object.keys(currentPatchPayload).length} cambio{Object.keys(currentPatchPayload).length !== 1 ? 's' : ''} pendiente{Object.keys(currentPatchPayload).length !== 1 ? 's' : ''}
+                  </span>
+                </div>
+              )}
+              
               {/* Progress indicator */}
               <div className="flex items-center gap-3">
                 <div className="hidden sm:flex text-sm text-slate-500">

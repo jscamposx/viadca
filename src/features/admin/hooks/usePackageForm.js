@@ -37,6 +37,7 @@ export const usePackageForm = (initialPackageData = null) => {
     descuento: "",
     anticipo: null,
     precio_total: "",
+    precio_original: "",
     notas: null,
     itinerario_texto: "",
     activo: true,
@@ -99,6 +100,10 @@ export const usePackageForm = (initialPackageData = null) => {
         descuento: initialPackageData.descuento || "",
         anticipo: initialPackageData.anticipo || "",
         precio_total: initialPackageData.precio_total || "",
+        // Calcular precio original basado en precio_total + descuento
+        precio_original: initialPackageData.descuento && parseFloat(initialPackageData.descuento) > 0 
+          ? (parseFloat(initialPackageData.precio_total || 0) + parseFloat(initialPackageData.descuento || 0)).toString()
+          : initialPackageData.precio_total || "",
         notas: initialPackageData.notas || "",
         itinerario_texto: itinerarioTexto,
         activo: initialPackageData.activo !== undefined ? initialPackageData.activo : true,
