@@ -1,6 +1,12 @@
-import { useState, useCallback, useEffect, useMemo } from "react";
+import { useState, useCallback, useEffect, useMemo, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../../../api";
+import { 
+  preparePatchPayload, 
+  hasChanges, 
+  formatPayloadForLogging 
+} from "../../../utils/patchHelper";
+import { logPatchOperation, createPatchSummary } from "../../../utils/patchLogger";
 
 const isUUID = (str) =>
   /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$/i.test(
@@ -17,6 +23,10 @@ const fileToBase64 = (file) =>
 
 export const usePackageForm = (initialPackageData = null) => {
   const navigate = useNavigate();
+  
+  // Referencia a los datos originales para comparación PATCH
+  const originalDataRef = useRef(null);
+  
   const [formData, setFormData] = useState({
     titulo: "",
     fecha_inicio: "",
@@ -45,6 +55,9 @@ export const usePackageForm = (initialPackageData = null) => {
 
   useEffect(() => {
     if (initialPackageData) {
+      // Guardar referencia de los datos originales para PATCH
+      originalDataRef.current = JSON.parse(JSON.stringify(initialPackageData));
+      
       const initialDestino = initialPackageData.destinos?.[0] || {};
       
       // Procesar imágenes del paquete si existen
@@ -255,86 +268,108 @@ export const usePackageForm = (initialPackageData = null) => {
       return;
     }
 
-    const packageImages = await Promise.all(
-      (formData.imagenes || []).map(async (img, index) => {
-        if (img.url.startsWith("data:")) {
-          return {
-            orden: index + 1,
-            tipo: "base64",
-            contenido: img.url.split(",")[1],
-            mime_type: img.file.type,
-            nombre: img.file.name,
-          };
-        }
-
-        return {
-          orden: index + 1,
-          tipo: "url",
-          contenido: img.url,
-          mime_type: "image/jpeg",
-          nombre: img.url.split("/").pop(),
-        };
-      }),
-    );
-
-    let hotelPayload = null;
-    if (formData.hotel) {
-      let hotelImages = [];
-
-      const imageList = formData.hotel.imagenes || formData.hotel.images || [];
-
-      hotelImages = await Promise.all(
-        imageList.map(async (img, index) => {
-          if (img.tipo === "google_places_url" && img.contenido) {
-            return {
-              orden: index + 1,
-              tipo: "google_places_url",
-              contenido: img.contenido,
-              mime_type: img.mime_type || "image/jpeg",
-              nombre: img.nombre || `hotel-imagen-${index + 1}.jpg`,
-            };
-          }
-
-          if (img.tipo === "base64" && img.contenido) {
-            return {
-              orden: index + 1,
-              tipo: "base64",
-              contenido: img.contenido,
-              mime_type: img.mime_type || "image/jpeg",
-              nombre: img.nombre || `hotel-imagen-${index + 1}.jpg`,
-            };
-          }
-
-          if (img.file && img.contenido && img.contenido.startsWith("data:")) {
-            return {
-              orden: index + 1,
-              tipo: "base64",
-              contenido: img.contenido.split(",")[1],
-              mime_type: img.file.type,
-              nombre: img.file.name,
-            };
-          }
-
-          const imageUrl = img.contenido || img.url;
-          return {
-            orden: index + 1,
-            tipo: "url",
-            contenido: imageUrl,
-            mime_type: img.mime_type || "image/jpeg",
-            nombre: img.nombre || imageUrl.split("/").pop(),
-          };
-        }),
-      );
-
-      hotelPayload = {
-        placeId: formData.hotel.place_id || formData.hotel.id,
-        nombre: formData.hotel.nombre,
-        estrellas: formData.hotel.estrellas,
-        isCustom: formData.hotel.isCustom || false,
-        total_calificaciones: formData.hotel.total_calificaciones,
-        imagenes: hotelImages,
-      };
+    try {
+      if (initialPackageData) {
+        // MODO EDICIÓN - Usar PATCH optimizado
+        await handlePatchUpdate(addNotification);
+      } else {
+        // MODO CREACIÓN - Usar método completo
+        await handleFullCreate(addNotification);
+      }
+      
+      navigate("/admin/paquetes");
+    } catch (error) {
+      if (initialPackageData) {
+        logPatchOperation('error', { error });
+      }
+      
+      const errorMessage =
+        error.response?.data?.message || "Ocurrió un error inesperado.";
+      if (addNotification) addNotification(`Error: ${errorMessage}`, "error");
     }
+  };
+
+  /**
+   * Maneja la actualización usando PATCH optimizado
+   */
+  const handlePatchUpdate = async (addNotification) => {
+    const startTime = performance.now();
+    
+    logPatchOperation('start', { 
+      originalId: initialPackageData.id,
+      originalTitle: initialPackageData.titulo 
+    });
+    
+    // Obtener solo los campos modificados
+    const patchPayload = preparePatchPayload(originalDataRef.current, formData);
+    
+    // Verificar si hay cambios
+    if (!hasChanges(patchPayload)) {
+      logPatchOperation('no-changes');
+      if (addNotification) {
+        addNotification("No se detectaron cambios para actualizar.", "info");
+      }
+      return;
+    }
+    
+    logPatchOperation('changes-detected', {
+      count: Object.keys(patchPayload).length,
+      changes: patchPayload
+    });
+    
+    // Procesar campos especiales que requieren procesamiento completo
+    const finalPayload = { ...patchPayload };
+    
+    const processingFlags = {
+      images: patchPayload.imagenes === 'PROCESS_IMAGES',
+      hotel: patchPayload.hotel === 'PROCESS_HOTEL'
+    };
+    
+    if (processingFlags.images || processingFlags.hotel) {
+      logPatchOperation('processing', processingFlags);
+    }
+    
+    // Procesar imágenes si han cambiado
+    if (processingFlags.images) {
+      finalPayload.imagenes = await processImages(formData.imagenes || []);
+    }
+    
+    // Procesar hotel si ha cambiado
+    if (processingFlags.hotel) {
+      finalPayload.hotel = await processHotel(formData.hotel);
+    }
+    
+    logPatchOperation('sending', { 
+      fieldCount: Object.keys(finalPayload).length 
+    });
+    
+    // Enviar actualización
+    await api.packages.updatePaquete(initialPackageData.id, finalPayload);
+    
+    const endTime = performance.now();
+    const responseTime = Math.round(endTime - startTime);
+    
+    logPatchOperation('success', { 
+      fieldCount: Object.keys(finalPayload).length,
+      responseTime 
+    });
+    
+    if (addNotification) {
+      addNotification(
+        `Paquete actualizado exitosamente (${Object.keys(finalPayload).length} campos modificados)`, 
+        "success"
+      );
+    }
+  };
+
+  /**
+   * Maneja la creación completa del paquete
+   */
+  const handleFullCreate = async (addNotification) => {
+    logPatchOperation('create-mode');
+    
+    const packageImages = await processImages(formData.imagenes || []);
+    const hotelPayload = await processHotel(formData.hotel);
 
     const payload = {
       titulo: formData.titulo,
@@ -376,7 +411,6 @@ export const usePackageForm = (initialPackageData = null) => {
           destino_lat: parseFloat(formData.destino_lat),
           orden: 1,
         },
-
         ...(formData.additionalDestinations || []).map((dest, index) => ({
           destino: dest.name,
           destino_lng: parseFloat(dest.lng),
@@ -388,22 +422,102 @@ export const usePackageForm = (initialPackageData = null) => {
       hotel: hotelPayload,
     };
 
-    try {
-      if (initialPackageData) {
-        await api.packages.updatePaquete(initialPackageData.id, payload);
-        if (addNotification)
-          addNotification("Paquete actualizado con éxito", "success");
-      } else {
-        await api.packages.createPaquete(payload);
-        if (addNotification)
-          addNotification("Paquete creado con éxito", "success");
-      }
-      navigate("/admin/paquetes");
-    } catch (error) {
-      const errorMessage =
-        error.response?.data?.message || "Ocurrió un error inesperado.";
-      if (addNotification) addNotification(`Error: ${errorMessage}`, "error");
+    await api.packages.createPaquete(payload);
+    
+    logPatchOperation('create-success');
+    
+    if (addNotification) {
+      addNotification("Paquete creado con éxito", "success");
     }
+  };
+
+  /**
+   * Procesa las imágenes para el payload
+   */
+  const processImages = async (images) => {
+    return await Promise.all(
+      images.map(async (img, index) => {
+        if (img.url.startsWith("data:")) {
+          return {
+            orden: index + 1,
+            tipo: "base64",
+            contenido: img.url.split(",")[1],
+            mime_type: img.file.type,
+            nombre: img.file.name,
+          };
+        }
+
+        return {
+          orden: index + 1,
+          tipo: "url",
+          contenido: img.url,
+          mime_type: "image/jpeg",
+          nombre: img.url.split("/").pop(),
+        };
+      }),
+    );
+  };
+
+  /**
+   * Procesa el hotel para el payload
+   */
+  const processHotel = async (hotel) => {
+    if (!hotel) return null;
+
+    let hotelImages = [];
+    const imageList = hotel.imagenes || hotel.images || [];
+
+    hotelImages = await Promise.all(
+      imageList.map(async (img, index) => {
+        if (img.tipo === "google_places_url" && img.contenido) {
+          return {
+            orden: index + 1,
+            tipo: "google_places_url",
+            contenido: img.contenido,
+            mime_type: img.mime_type || "image/jpeg",
+            nombre: img.nombre || `hotel-imagen-${index + 1}.jpg`,
+          };
+        }
+
+        if (img.tipo === "base64" && img.contenido) {
+          return {
+            orden: index + 1,
+            tipo: "base64",
+            contenido: img.contenido,
+            mime_type: img.mime_type || "image/jpeg",
+            nombre: img.nombre || `hotel-imagen-${index + 1}.jpg`,
+          };
+        }
+
+        if (img.file && img.contenido && img.contenido.startsWith("data:")) {
+          return {
+            orden: index + 1,
+            tipo: "base64",
+            contenido: img.contenido.split(",")[1],
+            mime_type: img.file.type,
+            nombre: img.file.name,
+          };
+        }
+
+        const imageUrl = img.contenido || img.url;
+        return {
+          orden: index + 1,
+          tipo: "url",
+          contenido: imageUrl,
+          mime_type: img.mime_type || "image/jpeg",
+          nombre: img.nombre || imageUrl.split("/").pop(),
+        };
+      }),
+    );
+
+    return {
+      placeId: hotel.place_id || hotel.id,
+      nombre: hotel.nombre,
+      estrellas: hotel.estrellas,
+      isCustom: hotel.isCustom || false,
+      total_calificaciones: hotel.total_calificaciones,
+      imagenes: hotelImages,
+    };
   };
 
   const origin = useMemo(
@@ -424,6 +538,18 @@ export const usePackageForm = (initialPackageData = null) => {
     [formData.destino_lat, formData.destino_lng, formData.destino],
   );
 
+  // Hook para depuración: calcular cambios detectados por PATCH en tiempo real
+  const currentPatchPayload = useMemo(() => {
+    if (!originalDataRef.current) return null;
+    
+    try {
+      return preparePatchPayload(originalDataRef.current, formData);
+    } catch (error) {
+      console.warn('Error calculando PATCH payload:', error);
+      return null;
+    }
+  }, [formData]);
+
   return {
     formData,
     setFormData,
@@ -441,5 +567,7 @@ export const usePackageForm = (initialPackageData = null) => {
     handleAddDestination,
     handleRemoveDestination,
     handleSubmit,
+    // Exposer el payload PATCH actual para depuración
+    currentPatchPayload,
   };
 };

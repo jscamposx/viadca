@@ -29,6 +29,7 @@ import Loading from "../../package/components/Loading";
 import Error from "../../package/components/Error";
 import { useNotification } from "./AdminLayout";
 import { useNotifications } from "../hooks/useNotifications";
+import PatchPreview from "../components/PatchPreview";
 
 const NuevoPaquete = () => {
   const { id } = useParams();
@@ -56,6 +57,7 @@ const NuevoPaquete = () => {
     handleAddDestination,
     handleRemoveDestination,
     handleSubmit: formSubmitHandler,
+    currentPatchPayload,
   } = usePackageForm(paquete);
 
   const handleHotelSelectedWrapper = async (hotel) => {
@@ -415,6 +417,13 @@ const NuevoPaquete = () => {
           </div>
         </div>
       </div>
+      
+      {/* Componente para mostrar cambios en modo edición */}
+      {id && paquete && (
+        <PatchPreview 
+          patchPayload={currentPatchPayload}
+        />
+      )}
     </APIProvider>
   );
 };
