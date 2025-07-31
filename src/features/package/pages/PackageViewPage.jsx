@@ -271,8 +271,9 @@ function PackageViewPage() {
                   ? 'bg-gray-100/80 hover:bg-gray-200/80 text-gray-700' 
                   : 'bg-white/90 hover:bg-white text-gray-700 shadow-lg'
               }`}
+              aria-label="Volver a la página anterior"
             >
-              <FiArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform duration-300" />
+              <FiArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform duration-300" aria-hidden="true" />
               <span className="font-medium hidden sm:block">Volver</span>
             </button>
 
@@ -299,11 +300,14 @@ function PackageViewPage() {
                         ? 'bg-gray-100/80 hover:bg-red-100/80 hover:text-red-500 text-gray-500'
                         : 'bg-white/90 hover:bg-red-100/80 hover:text-red-500 text-gray-500 shadow-lg'
                   }`}
+                  aria-label={isLiked ? "Quitar de favoritos" : "Agregar a favoritos"}
+                  aria-pressed={isLiked}
                 >
                   <FiHeart
                     className={`w-5 h-5 transition-all duration-300 ${
                       isLiked ? "fill-current scale-110" : "group-hover:scale-110"
                     }`}
+                    aria-hidden="true"
                   />
                 </button>
 
@@ -314,8 +318,9 @@ function PackageViewPage() {
                       ? 'bg-gray-100/80 hover:bg-blue-100/80 hover:text-blue-500 text-gray-500'
                       : 'bg-white/90 hover:bg-blue-100/80 hover:text-blue-500 text-gray-500 shadow-lg'
                   }`}
+                  aria-label="Compartir paquete"
                 >
-                  <FiShare2 className="w-5 h-5 group-hover:scale-110 transition-transform duration-300" />
+                  <FiShare2 className="w-5 h-5 group-hover:scale-110 transition-transform duration-300" aria-hidden="true" />
                 </button>
               </div>
             </div>
@@ -380,10 +385,13 @@ function PackageViewPage() {
 
               {/* CTA Button */}
               <div className="pt-8">
-                <button className="group bg-gradient-to-r from-blue-500 via-purple-500 to-blue-600 text-white font-bold py-4 px-8 rounded-2xl shadow-2xl hover:shadow-3xl hover:scale-105 transition-all duration-300 text-lg">
+                <button 
+                  className="group bg-gradient-to-r from-blue-500 via-purple-500 to-blue-600 text-white font-bold py-4 px-8 rounded-2xl shadow-2xl hover:shadow-3xl hover:scale-105 transition-all duration-300 text-lg"
+                  aria-label="Reservar aventura para este paquete turístico"
+                >
                   <span className="flex items-center gap-3">
                     Reservar Aventura
-                    <FiCalendar className="w-5 h-5 group-hover:scale-110 transition-transform duration-300" />
+                    <FiCalendar className="w-5 h-5 group-hover:scale-110 transition-transform duration-300" aria-hidden="true" />
                   </span>
                 </button>
               </div>
@@ -790,22 +798,31 @@ function PackageViewPage() {
                   </div>
 
                   {/* CTA Button */}
-                  <button className="group w-full bg-gradient-to-r from-blue-500 via-purple-500 to-blue-600 text-white font-bold py-4 px-6 rounded-2xl shadow-2xl hover:shadow-3xl hover:scale-[1.02] transition-all duration-300 mb-6 relative overflow-hidden">
+                  <button 
+                    className="group w-full bg-gradient-to-r from-blue-500 via-purple-500 to-blue-600 text-white font-bold py-4 px-6 rounded-2xl shadow-2xl hover:shadow-3xl hover:scale-[1.02] transition-all duration-300 mb-6 relative overflow-hidden"
+                    aria-label="Reservar aventura para este paquete turístico"
+                  >
                     <div className="absolute inset-0 bg-gradient-to-r from-blue-600 via-purple-600 to-blue-700 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                     <span className="relative flex items-center justify-center gap-3 text-lg">
-                      <FiCalendar className="w-5 h-5 group-hover:scale-110 transition-transform duration-300" />
+                      <FiCalendar className="w-5 h-5 group-hover:scale-110 transition-transform duration-300" aria-hidden="true" />
                       Reservar Aventura
                     </span>
                   </button>
 
                   {/* Contact Options */}
                   <div className="grid grid-cols-2 gap-3 mb-6">
-                    <button className="flex items-center justify-center gap-2 p-3 bg-green-50 hover:bg-green-100 text-green-700 rounded-xl border border-green-200 transition-all duration-300 hover:scale-105">
-                      <FiPhone className="w-4 h-4" />
+                    <button 
+                      className="flex items-center justify-center gap-2 p-3 bg-green-50 hover:bg-green-100 text-green-700 rounded-xl border border-green-200 transition-all duration-300 hover:scale-105"
+                      aria-label="Llamar para más información"
+                    >
+                      <FiPhone className="w-4 h-4" aria-hidden="true" />
                       <span className="font-medium text-sm">Llamar</span>
                     </button>
-                    <button className="flex items-center justify-center gap-2 p-3 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-xl border border-blue-200 transition-all duration-300 hover:scale-105">
-                      <FiMail className="w-4 h-4" />
+                    <button 
+                      className="flex items-center justify-center gap-2 p-3 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-xl border border-blue-200 transition-all duration-300 hover:scale-105"
+                      aria-label="Enviar email para consultas"
+                    >
+                      <FiMail className="w-4 h-4" aria-hidden="true" />
                       <span className="font-medium text-sm">Email</span>
                     </button>
                   </div>

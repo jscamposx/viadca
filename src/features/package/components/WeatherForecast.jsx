@@ -163,10 +163,12 @@ const WeatherForecast = ({ lat, lon = "Ubicación Actual" }) => {
           <button
             onClick={handleRefresh}
             disabled={refreshing}
-            className="p-1.5 sm:p-2 rounded-lg hover:bg-gray-100 transition-colors duration-200 disabled:opacity-50"
+            className="p-3 sm:p-3 rounded-lg hover:bg-gray-100 transition-colors duration-200 disabled:opacity-50 min-w-[44px] min-h-[44px] flex items-center justify-center"
+            aria-label="Actualizar pronóstico del tiempo"
           >
             <FiRefreshCw
               className={`w-4 h-4 sm:w-5 sm:h-5 text-gray-600 ${refreshing ? "animate-spin" : ""}`}
+              aria-hidden="true"
             />
           </button>
         </div>
@@ -297,12 +299,12 @@ const DayForecast = ({ day, isToday }) => {
         <div className="flex justify-center space-x-2 sm:space-x-3 mb-2">
           <div className="text-center">
             <span
-              className={`block text-xs ${isToday ? "text-blue-100" : "text-gray-500"}`}
+              className={`block text-xs ${isToday ? "text-blue-100" : "text-gray-600"}`}
             >
               Máx
             </span>
             <span
-              className={`font-bold text-sm ${isToday ? "text-white" : "text-red-500"}`}
+              className={`font-bold text-sm ${isToday ? "text-white" : "text-red-700"}`}
             >
               {Math.round(day.maxTemp)}°
             </span>
@@ -310,12 +312,12 @@ const DayForecast = ({ day, isToday }) => {
 
           <div className="text-center">
             <span
-              className={`block text-xs ${isToday ? "text-blue-100" : "text-gray-500"}`}
+              className={`block text-xs ${isToday ? "text-blue-100" : "text-gray-600"}`}
             >
               Mín
             </span>
             <span
-              className={`font-bold text-sm ${isToday ? "text-blue-100" : "text-blue-500"}`}
+              className={`font-bold text-sm ${isToday ? "text-blue-100" : "text-blue-700"}`}
             >
               {Math.round(day.minTemp)}°
             </span>

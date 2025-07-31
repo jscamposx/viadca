@@ -25,7 +25,7 @@ const HotelInfo = ({ hotel }) => {
   return (
     <div className="flex flex-col h-full">
       <div>
-        <h4 className="text-lg font-semibold text-gray-700">{hotel.nombre}</h4>
+        <h3 className="text-lg font-semibold text-gray-700">{hotel.nombre}</h3>
         <div className="flex items-center my-2">
           <StarRatingDisplay rating={hotel.estrellas} />
           <span className="text-sm text-gray-600 ml-2">

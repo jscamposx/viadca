@@ -90,9 +90,9 @@ const Itinerary = ({ itinerario = [] }) => {
                           <FiCalendar className="text-blue-500 w-5 h-5" />
                         </div>
                         <div className="flex-1">
-                          <h4 className="font-bold text-lg text-gray-800 mb-1 group-hover:text-blue-600 transition-colors duration-200">
+                          <h3 className="font-bold text-lg text-gray-800 mb-1 group-hover:text-blue-600 transition-colors duration-200">
                             Día {item.dia_numero}
-                          </h4>
+                          </h3>
 
                           <div className="text-sm text-gray-600">
                             <p className="line-clamp-2 leading-relaxed">

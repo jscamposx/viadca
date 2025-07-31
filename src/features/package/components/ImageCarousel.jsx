@@ -17,12 +17,13 @@ const CustomArrow = ({ direction, onClick, isVisible }) => {
       className={`absolute top-1/2 z-20 -translate-y-1/2 group ${
         isPrev ? "left-2 sm:left-4 lg:left-6" : "right-2 sm:right-4 lg:right-6"
       }`}
+      aria-label={isPrev ? "Imagen anterior" : "Imagen siguiente"}
     >
       <div className="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 bg-white/20 hover:bg-white/30 backdrop-blur-md rounded-full shadow-lg transition-all duration-300 hover:scale-110 flex items-center justify-center border border-white/30">
         {isPrev ? (
-          <FiChevronLeft className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 text-white group-hover:text-white" />
+          <FiChevronLeft className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 text-white group-hover:text-white" aria-hidden="true" />
         ) : (
-          <FiChevronRight className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 text-white group-hover:text-white" />
+          <FiChevronRight className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 text-white group-hover:text-white" aria-hidden="true" />
         )}
       </div>
     </button>
