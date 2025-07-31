@@ -1,8 +1,16 @@
 import { useState, useEffect, useCallback, useRef } from "react";
+import { FiImage, FiUpload, FiSearch, FiTrash2, FiMove, FiStar, FiEye, FiEyeOff } from "react-icons/fi";
 import axios from "axios";
 
 const Spinner = () => (
-  <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
+  <div className="flex flex-col items-center justify-center py-12 px-4">
+    <div className="relative">
+      <div className="w-12 h-12 border-4 border-slate-200 border-t-blue-600 rounded-full animate-spin"></div>
+      <div className="absolute inset-0 w-12 h-12 border-4 border-transparent border-r-blue-400 rounded-full animate-ping"></div>
+    </div>
+    <p className="mt-4 text-slate-600 font-medium">Generando imágenes...</p>
+    <p className="text-sm text-slate-400">Esto puede tomar unos segundos</p>
+  </div>
 );
 
 const ImageTile = ({
@@ -23,86 +31,82 @@ const ImageTile = ({
     onDragEnd={onDragEnd}
     onDragOver={(e) => onDragOver(e, index)}
     onDrop={(e) => onDrop(e, index)}
-    className={`relative group bg-gray-100 rounded-lg overflow-hidden shadow-sm cursor-move transition-all duration-200 ${
+    className={`relative group bg-white rounded-xl overflow-hidden shadow-md cursor-move transition-all duration-300 aspect-square border-2 border-gray-100 ${
       isDragOver && draggedIndex !== index
-        ? "ring-2 ring-blue-400 border-l-4 border-blue-500"
+        ? "ring-4 ring-blue-400 border-blue-500 scale-105"
         : ""
-    } ${isDragging && draggedIndex === index ? "opacity-50 rotate-2 scale-95" : ""} hover:shadow-lg`}
+    } ${isDragging && draggedIndex === index ? "opacity-60 rotate-3 scale-95 z-50" : ""} hover:shadow-xl hover:border-gray-200`}
   >
+    {/* Badge de posición */}
     <div
-      className={`absolute top-2 left-2 z-20 text-white text-xs font-bold px-2 py-1 rounded-full shadow-md transition-all duration-200 ${
+      className={`absolute top-3 left-3 z-20 text-white text-xs font-bold px-2.5 py-1 rounded-full shadow-lg transition-all duration-200 flex items-center gap-1 ${
         index === 0
-          ? "bg-gradient-to-r from-yellow-500 to-orange-600"
-          : "bg-blue-600"
+          ? "bg-gradient-to-r from-amber-500 to-orange-600"
+          : "bg-slate-600"
       }`}
     >
+      {index === 0 && <FiStar className="w-3 h-3" />}
       #{index + 1}
     </div>
 
+    {/* Badge Principal */}
     {index === 0 && (
-      <div className="absolute top-2 right-2 z-20 bg-gradient-to-r from-yellow-400 to-orange-500 text-white text-xs font-bold px-2 py-1 rounded-full shadow-md animate-pulse">
-        ⭐ Principal
+      <div className="absolute top-3 right-3 z-20 bg-gradient-to-r from-amber-400 to-orange-500 text-white text-xs font-bold px-2.5 py-1 rounded-full shadow-lg flex items-center gap-1">
+        <FiStar className="w-3 h-3" />
+        Principal
       </div>
     )}
 
+    {/* Overlay de drop */}
     {isDragOver && draggedIndex !== index && (
-      <div className="absolute inset-0 bg-blue-100 bg-opacity-75 flex items-center justify-center z-10">
-        <div className="bg-blue-600 text-white px-3 py-1 rounded-full text-sm font-semibold">
-          Soltar aquí para posición #{index + 1}
+      <div className="absolute inset-0 bg-blue-50 border-4 border-dashed border-blue-400 flex items-center justify-center z-30 backdrop-blur-sm">
+        <div className="bg-blue-600 text-white px-4 py-2 rounded-xl text-sm font-semibold shadow-lg flex items-center gap-2">
+          <FiMove className="w-4 h-4" />
+          Soltar en posición #{index + 1}
         </div>
       </div>
     )}
 
-    <div className="h-48">
+    {/* Imagen */}
+    <div className="h-full w-full">
       <img
         src={image.url}
         alt={`Imagen del destino - Posición ${index + 1}`}
-        className="w-full h-full object-cover transition-transform duration-200 group-hover:scale-105"
+        className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
       />
     </div>
 
-    <div className="absolute top-2 left-16 z-10">
+    {/* Overlay de acciones */}
+    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300" />
+
+    {/* Botón eliminar */}
+    <div className="absolute top-3 right-3 z-20 opacity-0 group-hover:opacity-100 transition-all duration-200">
       <button
         onClick={() => onRemove(image.id)}
-        className="p-1.5 bg-red-600 text-white rounded-full opacity-0 group-hover:opacity-100 transition-all duration-200 hover:bg-red-700 hover:scale-110"
+        className="p-2 bg-red-600 text-white rounded-full hover:bg-red-700 hover:scale-110 transition-all duration-200 shadow-lg"
         aria-label="Eliminar imagen"
       >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          className="h-4 w-4"
-          viewBox="0 0 20 20"
-          fill="currentColor"
-        >
-          <path
-            fillRule="evenodd"
-            d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-            clipRule="evenodd"
-          />
-        </svg>
+        <FiTrash2 className="w-4 h-4" />
       </button>
     </div>
 
-    <div className="absolute bottom-2 right-2 z-10 opacity-0 group-hover:opacity-100 transition-opacity">
-      <div className="bg-gray-800 bg-opacity-75 text-white p-1 rounded">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          className="h-4 w-4"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"
-          />
-        </svg>
+    {/* Indicador de drag y mensaje de arrastrar */}
+    <div className="absolute bottom-3 left-3 right-3 z-20 opacity-0 group-hover:opacity-100 transition-all duration-200">
+      <div className="bg-white/90 backdrop-blur-sm text-slate-700 px-3 py-1.5 rounded-lg text-xs font-medium flex items-center justify-center gap-2 shadow-md">
+        <FiMove className="w-3 h-3" />
+        Arrastra para reordenar
       </div>
     </div>
 
-    <div className="absolute bottom-0 left-0 right-0 p-2 bg-gradient-to-t from-black via-black to-transparent text-white text-xs text-center opacity-0 group-hover:opacity-100 transition-opacity">
-      <p className="font-medium">🔄 Arrastra para reordenar</p>
+    {/* Indicador de tipo de imagen */}
+    <div className="absolute bottom-3 right-3 z-20 opacity-0 group-hover:opacity-100 transition-all duration-200">
+      <div className="bg-slate-800/80 text-white p-1.5 rounded-full">
+        {image.isUploaded ? (
+          <FiUpload className="w-3 h-3" />
+        ) : (
+          <FiSearch className="w-3 h-3" />
+        )}
+      </div>
     </div>
   </div>
 );
@@ -238,11 +242,16 @@ const DestinationImageManager = ({ destination, onImagesChange, initialImages = 
       setStatus("idle");
       setShowAllImages(false);
     }
-  }, [destination, fetchImagesFromPexels, initialImages, isInitialized]);
+  }, [destination?.name, initialImages?.length, isInitialized]); // Dependencias más específicas
 
+  // Separar el efecto para notificar cambios de imágenes
+  const prevImagesRef = useRef();
   useEffect(() => {
-    onImagesChange(images);
-  }, [images, onImagesChange]);
+    if (prevImagesRef.current !== images) {
+      onImagesChange(images);
+      prevImagesRef.current = images;
+    }
+  }, [images]); // Removido onImagesChange de las dependencias
 
   const handleFiles = async (files) => {
     const fileArray = Array.from(files);
@@ -367,18 +376,32 @@ const DestinationImageManager = ({ destination, onImagesChange, initialImages = 
 
   return (
     <div
-      className={`${
-        isDragging ? "border-blue-500 border-dashed border-2" : ""
+      className={`transition-all duration-300 rounded-xl ${
+        isDragging 
+          ? "border-4 border-dashed border-blue-500 bg-blue-50/50 backdrop-blur-sm" 
+          : "border-2 border-transparent"
       }`}
       onDragEnter={handleContainerDragOver}
       onDragLeave={handleContainerDragLeave}
       onDragOver={handleContainerDragOver}
       onDrop={handleContainerDrop}
     >
-      <div className="flex justify-between items-center mb-4">
-        <div className="flex gap-2">
-          <label className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg shadow-md cursor-pointer">
-            <span>+ Subir Imágenes</span>
+      {isDragging && (
+        <div className="absolute inset-0 z-50 flex items-center justify-center bg-blue-50/80 backdrop-blur-sm rounded-xl">
+          <div className="bg-blue-600 text-white px-6 py-4 rounded-xl shadow-xl flex items-center gap-3">
+            <FiUpload className="w-6 h-6" />
+            <div>
+              <p className="font-semibold">Suelta las imágenes aquí</p>
+              <p className="text-sm opacity-90">Se agregarán al final de la galería</p>
+            </div>
+          </div>
+        </div>
+      )}
+      <div className="flex justify-between items-center mb-6">
+        <div className="flex gap-3">
+          <label className="group relative bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-xl shadow-lg cursor-pointer transition-all duration-200 hover:shadow-xl hover:scale-105 flex items-center gap-2">
+            <FiUpload className="w-4 h-4" />
+            <span>Subir Imágenes</span>
             <input
               type="file"
               multiple
@@ -392,63 +415,77 @@ const DestinationImageManager = ({ destination, onImagesChange, initialImages = 
           {isInitialized && destination?.name && (
             <button
               onClick={() => fetchImagesFromPexels(destination.name)}
-              className="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg shadow-md"
+              className="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-3 px-6 rounded-xl shadow-lg transition-all duration-200 hover:shadow-xl hover:scale-105 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
               disabled={status === "loading"}
             >
-              {status === "loading" ? "Buscando..." : "🔍 Buscar en Pexels"}
+              <FiSearch className="w-4 h-4" />
+              {status === "loading" ? "Generando..." : "Generar imágenes"}
             </button>
           )}
         </div>
+
+        {images.length > 0 && (
+          <div className="flex items-center gap-2 text-sm text-slate-600">
+            <FiImage className="w-4 h-4" />
+            <span className="font-medium">{images.length} imagen{images.length !== 1 ? 'es' : ''}</span>
+          </div>
+        )}
       </div>
 
-      {status === "loading" && (
-        <div className="flex justify-center p-4">
-          <Spinner />
-        </div>
-      )}
+      {status === "loading" && <Spinner />}
+
       {status === "error" && (
-        <div className="text-red-500 text-center p-4">{error}</div>
+        <div className="bg-red-50 border border-red-200 rounded-xl p-6 text-center">
+          <div className="flex justify-center mb-3">
+            <div className="bg-red-100 p-3 rounded-full">
+              <FiImage className="w-6 h-6 text-red-600" />
+            </div>
+          </div>
+          <h3 className="text-red-800 font-semibold mb-2">Error al cargar imágenes</h3>
+          <p className="text-red-600 text-sm">{error}</p>
+        </div>
       )}
 
       {status === "idle" && (
-        <div className="text-center text-gray-500 p-8 border-2 border-dashed rounded-lg">
-          <p className="font-semibold">Selecciona un destino en el mapa.</p>
-          <p className="text-sm mt-1">
-            Arrastra y suelta imágenes aquí o haz clic en el botón para
-            subirlas.
+        <div 
+          className={`text-center p-8 border-2 border-dashed rounded-xl transition-all duration-300 ${
+            isDragging 
+              ? "border-blue-500 bg-blue-50" 
+              : "border-slate-300 bg-slate-50 hover:border-slate-400"
+          }`}
+        >
+          <div className="flex justify-center mb-4">
+            <div className="bg-slate-100 p-4 rounded-full">
+              <FiImage className="w-8 h-8 text-slate-400" />
+            </div>
+          </div>
+          <h3 className="text-slate-700 font-semibold mb-2">Selecciona un destino en el mapa</h3>
+          <p className="text-slate-500 text-sm">
+            Arrastra y suelta imágenes aquí o haz clic en el botón para subirlas
           </p>
         </div>
       )}
 
       {status === "no_photos" && (
-        <div className="text-center text-gray-500 p-8 border-2 border-dashed rounded-lg">
-          <p className="font-semibold">
-            No se encontraron imágenes para este destino en Pexels.
+        <div className="bg-amber-50 border border-amber-200 rounded-xl p-6 text-center">
+          <div className="flex justify-center mb-3">
+            <div className="bg-amber-100 p-3 rounded-full">
+              <FiSearch className="w-6 h-6 text-amber-600" />
+            </div>
+          </div>
+          <h3 className="text-amber-800 font-semibold mb-2">No se encontraron imágenes</h3>
+          <p className="text-amber-600 text-sm mb-3">
+            No se encontraron imágenes para este destino en Pexels
           </p>
-          <p className="text-sm mt-1">
-            ¡No te preocupes! Puedes subir las tuyas.
+          <p className="text-amber-500 text-xs">
+            ¡No te preocupes! Puedes subir las tuyas usando el botón de arriba
           </p>
         </div>
       )}
 
       {images.length > 0 && (
-        <div className="space-y-4">
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
-            <div className="flex items-center space-x-2">
-              <div className="bg-blue-600 text-white text-xs font-bold px-2 py-1 rounded-full">
-                #1
-              </div>
-              <span className="text-sm text-blue-800 font-medium">
-                La primera imagen será la <strong>imagen principal</strong> del
-                paquete
-              </span>
-            </div>
-            <p className="text-xs text-blue-600 mt-1 ml-8">
-              Arrastra las imágenes para cambiar su orden
-            </p>
-          </div>
-
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="space-y-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {images.map((image, index) => (
               <ImageTile
                 key={image.id}
@@ -467,18 +504,21 @@ const DestinationImageManager = ({ destination, onImagesChange, initialImages = 
           </div>
 
           {images.length > 1 && (
-            <div className="bg-gray-50 border border-gray-200 rounded-lg p-3">
-              <h4 className="text-sm font-medium text-gray-700 mb-2">
-                Orden actual de las imágenes:
-              </h4>
+            <div className="bg-slate-50 border border-slate-200 rounded-xl p-4">
+              <div className="flex items-center gap-2 mb-3">
+                <FiEye className="w-4 h-4 text-slate-600" />
+                <h4 className="text-sm font-semibold text-slate-700">
+                  Orden actual de las imágenes
+                </h4>
+              </div>
               <div className="flex flex-wrap gap-2">
                 {images.map((image, index) => (
                   <div
                     key={image.id}
-                    className={`text-xs px-2 py-1 rounded-full ${
+                    className={`text-xs px-3 py-1.5 rounded-full font-medium transition-all duration-200 ${
                       index === 0
-                        ? "bg-yellow-100 text-yellow-800 font-bold"
-                        : "bg-gray-100 text-gray-600"
+                        ? "bg-gradient-to-r from-amber-100 to-orange-100 text-amber-800 border border-amber-200"
+                        : "bg-slate-100 text-slate-600 border border-slate-200"
                     }`}
                   >
                     #{index + 1} {index === 0 ? "(Principal)" : ""}
@@ -492,8 +532,9 @@ const DestinationImageManager = ({ destination, onImagesChange, initialImages = 
             <div className="flex justify-center">
               <button
                 onClick={handleShowMoreImages}
-                className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg shadow-md hover:bg-blue-700 transition-all duration-200"
+                className="px-6 py-3 bg-slate-600 hover:bg-slate-700 text-white rounded-xl shadow-lg font-medium transition-all duration-200 hover:shadow-xl hover:scale-105 flex items-center gap-2"
               >
+                <FiEye className="w-4 h-4" />
                 Ver más imágenes ({allAvailableImages.length - 10} restantes)
               </button>
             </div>
@@ -503,8 +544,9 @@ const DestinationImageManager = ({ destination, onImagesChange, initialImages = 
             <div className="flex justify-center">
               <button
                 onClick={handleShowLessImages}
-                className="mt-4 px-4 py-2 bg-gray-300 text-gray-800 rounded-lg shadow-md hover:bg-gray-400 transition-all duration-200"
+                className="px-6 py-3 bg-slate-300 hover:bg-slate-400 text-slate-800 rounded-xl shadow-lg font-medium transition-all duration-200 hover:shadow-xl hover:scale-105 flex items-center gap-2"
               >
+                <FiEyeOff className="w-4 h-4" />
                 Mostrar menos imágenes
               </button>
             </div>

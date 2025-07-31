@@ -37,7 +37,7 @@ const LocationSelector = ({
     if (!destination) {
       setSelectionMode("destino");
     }
-  }, [destination, setSelectionMode]);
+  }, [destination]); // Removido setSelectionMode de las dependencias
 
   const handleAddNewDestination = () => {
     setIsAddingDestination(true);
