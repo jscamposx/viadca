@@ -56,8 +56,26 @@ export const usePackageForm = (initialPackageData = null) => {
 
   useEffect(() => {
     if (initialPackageData) {
+      // Procesar el itinerario desde el array de itinerarios
+      let itinerarioTexto = "";
+      if (initialPackageData.itinerarios && Array.isArray(initialPackageData.itinerarios)) {
+        // Ordenar por día número y convertir a texto
+        const itinerarioOrdenado = initialPackageData.itinerarios
+          .sort((a, b) => a.dia_numero - b.dia_numero);
+        
+        itinerarioTexto = itinerarioOrdenado
+          .map(item => `DÍA ${item.dia_numero}: ${item.descripcion}`)
+          .join('\n\n');
+      }
+      
+      // Crear una copia de los datos originales con el itinerario procesado
+      const processedOriginalData = {
+        ...initialPackageData,
+        itinerario_texto: itinerarioTexto || initialPackageData.itinerario_texto || ""
+      };
+      
       // Guardar referencia de los datos originales para PATCH
-      originalDataRef.current = JSON.parse(JSON.stringify(initialPackageData));
+      originalDataRef.current = JSON.parse(JSON.stringify(processedOriginalData));
       
       const initialDestino = initialPackageData.destinos?.[0] || {};
       
@@ -72,18 +90,6 @@ export const usePackageForm = (initialPackageData = null) => {
         file: null // Para imágenes existentes no hay archivo
       }));
 
-      // Procesar el itinerario desde el array de itinerarios
-      let itinerarioTexto = "";
-      if (initialPackageData.itinerarios && Array.isArray(initialPackageData.itinerarios)) {
-        // Ordenar por día número y convertir a texto
-        const itinerarioOrdenado = initialPackageData.itinerarios
-          .sort((a, b) => a.dia_numero - b.dia_numero);
-        
-        itinerarioTexto = itinerarioOrdenado
-          .map(item => `DÍA ${item.dia_numero}: ${item.descripcion}`)
-          .join('\n\n');
-      }
-      
       // Procesar mayoristas asociados
       const mayoristasIds = initialPackageData.mayoristas ? 
         initialPackageData.mayoristas.map(m => m.id) : 

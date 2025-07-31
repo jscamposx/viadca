@@ -122,6 +122,17 @@ export const preparePatchPayload = (originalPackage, currentFormData) => {
 const normalizePackageData = (data) => {
   if (!data) return {};
   
+  // Procesar itinerario - convertir de array a texto si es necesario
+  let itinerarioTexto = data.itinerario_texto || '';
+  if (!itinerarioTexto && data.itinerarios && Array.isArray(data.itinerarios)) {
+    const itinerarioOrdenado = data.itinerarios
+      .sort((a, b) => a.dia_numero - b.dia_numero);
+    
+    itinerarioTexto = itinerarioOrdenado
+      .map(item => `DÍA ${item.dia_numero}: ${item.descripcion}`)
+      .join('\n\n');
+  }
+  
   return {
     titulo: data.titulo || '',
     fecha_inicio: data.fecha_inicio || '',
@@ -134,7 +145,7 @@ const normalizePackageData = (data) => {
     anticipo: data.anticipo ? parseFloat(data.anticipo) : null,
     notas: data.notas || null,
     activo: Boolean(data.activo),
-    itinerario_texto: data.itinerario_texto || '',
+    itinerario_texto: itinerarioTexto,
     // Coordenadas de origen
     origen: data.origen || '',
     origen_lat: parseFloat(data.origen_lat) || null,

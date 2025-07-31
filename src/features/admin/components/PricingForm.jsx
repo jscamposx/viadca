@@ -12,14 +12,6 @@ const PricingForm = ({ formData, onFormChange }) => {
 
   // Efecto para sincronizar estados locales con formData cuando cambia
   useEffect(() => {
-    console.log('PricingForm useEffect:', {
-      precio_total: formData.precio_total,
-      descuento: formData.descuento,
-      precio_original: formData.precio_original,
-      precioOriginal,
-      precioConDescuento
-    });
-    
     // Si hay descuento, calcular el precio original
     if (formData.descuento && parseFloat(formData.descuento) > 0 && formData.precio_total) {
       const original = parseFloat(formData.precio_total) + parseFloat(formData.descuento);
