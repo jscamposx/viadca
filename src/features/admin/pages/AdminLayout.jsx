@@ -131,7 +131,7 @@ const AdminLayout = () => {
             isMobile ? "pt-16" : isSidebarOpen ? "ml-64" : "ml-20"
           }`}
         >
-          <div className="p-4 sm:p-6 md:p-8 bg-white">
+          <div className=" bg-white">
             <Outlet />
           </div>
         </main>
