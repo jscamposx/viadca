@@ -1,13 +1,13 @@
 import { useState, useEffect, useRef } from "react";
-import { 
-  FiCheckCircle, 
-  FiXCircle, 
-  FiInfo, 
-  FiX, 
+import {
+  FiCheckCircle,
+  FiXCircle,
+  FiInfo,
+  FiX,
   FiAlertTriangle,
   FiAlertCircle,
   FiClock,
-  FiZap
+  FiZap,
 } from "react-icons/fi";
 
 const Notification = ({
@@ -26,7 +26,7 @@ const Notification = ({
   const animationRef = useRef(null);
   const notificationRef = useRef(null);
 
-    const notificationIcons = {
+  const notificationIcons = {
     success: (
       <div className="flex items-center justify-center w-10 h-10 rounded-full bg-green-100 ring-2 ring-green-200">
         <FiCheckCircle className="w-5 h-5 text-green-600" />
@@ -110,7 +110,6 @@ const Notification = ({
   useEffect(() => {
     setVisible(true);
 
-    // No iniciar temporizador si es persistente
     if (persistent) return;
 
     const startTime = Date.now();
@@ -151,7 +150,7 @@ const Notification = ({
         right-6 w-full max-w-sm`}
       style={{
         bottom: `${24 + index * 110}px`,
-        transform: visible ? 'translateX(0)' : 'translateX(100%)',
+        transform: visible ? "translateX(0)" : "translateX(100%)",
       }}
     >
       <div
@@ -159,7 +158,6 @@ const Notification = ({
           rounded-xl shadow-2xl backdrop-blur-sm border border-white/20 overflow-hidden
           transform transition-all duration-300 hover:scale-[1.02] hover:shadow-2xl`}
       >
-        {/* Barra de progreso - solo si no es persistente */}
         {!persistent && (
           <div className="h-1 w-full bg-white/30">
             <div
@@ -183,19 +181,18 @@ const Notification = ({
 
         <div className="p-4">
           <div className="flex items-start gap-3">
-            {/* Icono */}
             <div className="flex-shrink-0 mt-0.5">
               {notificationIcons[type]}
             </div>
-            
-            {/* Contenido */}
+
             <div className="flex-1 min-w-0">
               <div className="flex items-center justify-between">
-                <h4 className={`font-semibold text-sm ${notificationColors[type].text}`}>
+                <h4
+                  className={`font-semibold text-sm ${notificationColors[type].text}`}
+                >
                   {title || typeLabels[type]}
                 </h4>
-                
-                {/* Botón cerrar */}
+
                 <button
                   onClick={handleDismiss}
                   className={`ml-2 p-1 rounded-full transition-all duration-200 
@@ -205,12 +202,13 @@ const Notification = ({
                   <FiX className="w-4 h-4" />
                 </button>
               </div>
-              
-              <p className={`mt-1 text-sm leading-relaxed ${notificationColors[type].text} opacity-90`}>
+
+              <p
+                className={`mt-1 text-sm leading-relaxed ${notificationColors[type].text} opacity-90`}
+              >
                 {message}
               </p>
-              
-              {/* Acción opcional */}
+
               {action && (
                 <div className="mt-3">
                   <button
@@ -226,23 +224,24 @@ const Notification = ({
             </div>
           </div>
         </div>
-        
-        {/* Indicador de persistencia */}
+
         {persistent && (
           <div className="absolute top-2 right-2">
-            <div className={`w-2 h-2 rounded-full ${
-              type === "success"
-                ? "bg-green-400"
-                : type === "error"
-                  ? "bg-red-400"
-                  : type === "warning"
-                    ? "bg-yellow-400"
-                    : type === "loading"
-                      ? "bg-purple-400 animate-pulse"
-                      : type === "urgent"
-                        ? "bg-orange-400 animate-ping"
-                        : "bg-blue-400"
-            }`} />
+            <div
+              className={`w-2 h-2 rounded-full ${
+                type === "success"
+                  ? "bg-green-400"
+                  : type === "error"
+                    ? "bg-red-400"
+                    : type === "warning"
+                      ? "bg-yellow-400"
+                      : type === "loading"
+                        ? "bg-purple-400 animate-pulse"
+                        : type === "urgent"
+                          ? "bg-orange-400 animate-ping"
+                          : "bg-blue-400"
+              }`}
+            />
           </div>
         )}
       </div>

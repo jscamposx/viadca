@@ -1,12 +1,15 @@
 import { useState, useCallback, useEffect, useMemo, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../../../api";
-import { 
-  preparePatchPayload, 
-  hasChanges, 
-  formatPayloadForLogging 
+import {
+  preparePatchPayload,
+  hasChanges,
+  formatPayloadForLogging,
 } from "../../../utils/patchHelper";
-import { logPatchOperation, createPatchSummary } from "../../../utils/patchLogger";
+import {
+  logPatchOperation,
+  createPatchSummary,
+} from "../../../utils/patchLogger";
 
 const isUUID = (str) =>
   /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$/i.test(
@@ -23,10 +26,9 @@ const fileToBase64 = (file) =>
 
 export const usePackageForm = (initialPackageData = null) => {
   const navigate = useNavigate();
-  
-  // Referencia a los datos originales para comparación PATCH
+
   const originalDataRef = useRef(null);
-  
+
   const [formData, setFormData] = useState({
     titulo: "",
     fecha_inicio: "",
@@ -56,47 +58,51 @@ export const usePackageForm = (initialPackageData = null) => {
 
   useEffect(() => {
     if (initialPackageData) {
-      // Procesar el itinerario desde el array de itinerarios
       let itinerarioTexto = "";
-      if (initialPackageData.itinerarios && Array.isArray(initialPackageData.itinerarios)) {
-        // Ordenar por día número y convertir a texto
-        const itinerarioOrdenado = initialPackageData.itinerarios
-          .sort((a, b) => a.dia_numero - b.dia_numero);
-        
+      if (
+        initialPackageData.itinerarios &&
+        Array.isArray(initialPackageData.itinerarios)
+      ) {
+        const itinerarioOrdenado = initialPackageData.itinerarios.sort(
+          (a, b) => a.dia_numero - b.dia_numero,
+        );
+
         itinerarioTexto = itinerarioOrdenado
-          .map(item => `DÍA ${item.dia_numero}: ${item.descripcion}`)
-          .join('\n\n');
+          .map((item) => `DÍA ${item.dia_numero}: ${item.descripcion}`)
+          .join("\n\n");
       }
-      
-      // Crear una copia de los datos originales con el itinerario procesado
+
       const processedOriginalData = {
         ...initialPackageData,
-        itinerario_texto: itinerarioTexto || initialPackageData.itinerario_texto || ""
+        itinerario_texto:
+          itinerarioTexto || initialPackageData.itinerario_texto || "",
       };
-      
-      // Guardar referencia de los datos originales para PATCH
-      originalDataRef.current = JSON.parse(JSON.stringify(processedOriginalData));
-      
-      const initialDestino = initialPackageData.destinos?.[0] || {};
-      
-      // Procesar imágenes del paquete si existen
-      const processedImages = (initialPackageData.imagenes || []).map((img, index) => ({
-        id: img.id || index,
-        url: img.contenido?.startsWith('http') ? img.contenido : 
-             img.contenido?.startsWith('data:') ? img.contenido :
-             `${import.meta.env.VITE_API_URL}/uploads/${img.contenido}`,
-        orden: img.orden || index + 1,
-        tipo: img.tipo || 'url',
-        file: null // Para imágenes existentes no hay archivo
-      }));
 
-      // Procesar mayoristas asociados
-      const mayoristasIds = initialPackageData.mayoristas ? 
-        initialPackageData.mayoristas.map(m => m.id) : 
-        initialPackageData.mayoristasIds || [];
+      originalDataRef.current = JSON.parse(
+        JSON.stringify(processedOriginalData),
+      );
+
+      const initialDestino = initialPackageData.destinos?.[0] || {};
+
+      const processedImages = (initialPackageData.imagenes || []).map(
+        (img, index) => ({
+          id: img.id || index,
+          url: img.contenido?.startsWith("http")
+            ? img.contenido
+            : img.contenido?.startsWith("data:")
+              ? img.contenido
+              : `${import.meta.env.VITE_API_URL}/uploads/${img.contenido}`,
+          orden: img.orden || index + 1,
+          tipo: img.tipo || "url",
+          file: null,
+        }),
+      );
+
+      const mayoristasIds = initialPackageData.mayoristas
+        ? initialPackageData.mayoristas.map((m) => m.id)
+        : initialPackageData.mayoristasIds || [];
 
       setFormData({
-        // Datos básicos del paquete
         titulo: initialPackageData.titulo || "",
         fecha_inicio: initialPackageData.fecha_inicio || "",
         fecha_fin: initialPackageData.fecha_fin || "",
@@ -106,24 +112,32 @@ export const usePackageForm = (initialPackageData = null) => {
         descuento: initialPackageData.descuento || "",
         anticipo: initialPackageData.anticipo || "",
         precio_total: initialPackageData.precio_total || "",
-        // Calcular precio original basado en precio_total + descuento
-        precio_original: initialPackageData.descuento && parseFloat(initialPackageData.descuento) > 0 
-          ? (parseFloat(initialPackageData.precio_total || 0) + parseFloat(initialPackageData.descuento || 0)).toString()
-          : initialPackageData.precio_total || "",
+
+        precio_original:
+          initialPackageData.descuento &&
+          parseFloat(initialPackageData.descuento) > 0
+            ? (
+                parseFloat(initialPackageData.precio_total || 0) +
+                parseFloat(initialPackageData.descuento || 0)
+              ).toString()
+            : initialPackageData.precio_total || "",
         notas: initialPackageData.notas || "",
         itinerario_texto: itinerarioTexto,
-        activo: initialPackageData.activo !== undefined ? initialPackageData.activo : true,
+        activo:
+          initialPackageData.activo !== undefined
+            ? initialPackageData.activo
+            : true,
 
-        // Ubicaciones
         origen: initialPackageData.origen || "Durango, México",
         origen_lat: initialPackageData.origen_lat || 24.0277,
         origen_lng: initialPackageData.origen_lng || -104.6532,
 
         destino: initialDestino.destino || initialPackageData.destino || "",
-        destino_lat: initialDestino.destino_lat || initialPackageData.destino_lat || null,
-        destino_lng: initialDestino.destino_lng || initialPackageData.destino_lng || null,
+        destino_lat:
+          initialDestino.destino_lat || initialPackageData.destino_lat || null,
+        destino_lng:
+          initialDestino.destino_lng || initialPackageData.destino_lng || null,
 
-        // Destinos adicionales
         additionalDestinations: (initialPackageData.destinos || [])
           .slice(1)
           .map((dest) => ({
@@ -132,7 +146,6 @@ export const usePackageForm = (initialPackageData = null) => {
             lng: dest.destino_lng,
           })),
 
-        // Otros datos importantes
         destinos: initialPackageData.destinos || [],
         imagenes: processedImages,
         hotel: initialPackageData.hotel || null,
@@ -281,104 +294,90 @@ export const usePackageForm = (initialPackageData = null) => {
 
     try {
       if (initialPackageData) {
-        // MODO EDICIÓN - Usar PATCH optimizado
         await handlePatchUpdate(addNotification);
       } else {
-        // MODO CREACIÓN - Usar método completo
         await handleFullCreate(addNotification);
       }
-      
+
       navigate("/admin/paquetes");
     } catch (error) {
       if (initialPackageData) {
-        logPatchOperation('error', { error });
+        logPatchOperation("error", { error });
       }
-      
+
       const errorMessage =
         error.response?.data?.message || "Ocurrió un error inesperado.";
       if (addNotification) addNotification(`Error: ${errorMessage}`, "error");
     }
   };
 
-  /**
-   * Maneja la actualización usando PATCH optimizado
-   */
   const handlePatchUpdate = async (addNotification) => {
     const startTime = performance.now();
-    
-    logPatchOperation('start', { 
+
+    logPatchOperation("start", {
       originalId: initialPackageData.id,
-      originalTitle: initialPackageData.titulo 
+      originalTitle: initialPackageData.titulo,
     });
-    
-    // Obtener solo los campos modificados
+
     const patchPayload = preparePatchPayload(originalDataRef.current, formData);
-    
-    // Verificar si hay cambios
+
     if (!hasChanges(patchPayload)) {
-      logPatchOperation('no-changes');
+      logPatchOperation("no-changes");
       if (addNotification) {
         addNotification("No se detectaron cambios para actualizar.", "info");
       }
       return;
     }
-    
-    logPatchOperation('changes-detected', {
+
+    logPatchOperation("changes-detected", {
       count: Object.keys(patchPayload).length,
-      changes: patchPayload
+      changes: patchPayload,
     });
-    
-    // Procesar campos especiales que requieren procesamiento completo
+
     const finalPayload = { ...patchPayload };
-    
+
     const processingFlags = {
-      images: patchPayload.imagenes === 'PROCESS_IMAGES',
-      hotel: patchPayload.hotel === 'PROCESS_HOTEL'
+      images: patchPayload.imagenes === "PROCESS_IMAGES",
+      hotel: patchPayload.hotel === "PROCESS_HOTEL",
     };
-    
+
     if (processingFlags.images || processingFlags.hotel) {
-      logPatchOperation('processing', processingFlags);
+      logPatchOperation("processing", processingFlags);
     }
-    
-    // Procesar imágenes si han cambiado
+
     if (processingFlags.images) {
       finalPayload.imagenes = await processImages(formData.imagenes || []);
     }
-    
-    // Procesar hotel si ha cambiado
+
     if (processingFlags.hotel) {
       finalPayload.hotel = await processHotel(formData.hotel);
     }
-    
-    logPatchOperation('sending', { 
-      fieldCount: Object.keys(finalPayload).length 
+
+    logPatchOperation("sending", {
+      fieldCount: Object.keys(finalPayload).length,
     });
-    
-    // Enviar actualización
+
     await api.packages.updatePaquete(initialPackageData.id, finalPayload);
-    
+
     const endTime = performance.now();
     const responseTime = Math.round(endTime - startTime);
-    
-    logPatchOperation('success', { 
+
+    logPatchOperation("success", {
       fieldCount: Object.keys(finalPayload).length,
-      responseTime 
+      responseTime,
     });
-    
+
     if (addNotification) {
       addNotification(
-        `Paquete actualizado exitosamente (${Object.keys(finalPayload).length} campos modificados)`, 
-        "success"
+        `Paquete actualizado exitosamente (${Object.keys(finalPayload).length} campos modificados)`,
+        "success",
       );
     }
   };
 
-  /**
-   * Maneja la creación completa del paquete
-   */
   const handleFullCreate = async (addNotification) => {
-    logPatchOperation('create-mode');
-    
+    logPatchOperation("create-mode");
+
     const packageImages = await processImages(formData.imagenes || []);
     const hotelPayload = await processHotel(formData.hotel);
 
@@ -434,17 +433,14 @@ export const usePackageForm = (initialPackageData = null) => {
     };
 
     await api.packages.createPaquete(payload);
-    
-    logPatchOperation('create-success');
-    
+
+    logPatchOperation("create-success");
+
     if (addNotification) {
       addNotification("Paquete creado con éxito", "success");
     }
   };
 
-  /**
-   * Procesa las imágenes para el payload
-   */
   const processImages = async (images) => {
     return await Promise.all(
       images.map(async (img, index) => {
@@ -469,9 +465,6 @@ export const usePackageForm = (initialPackageData = null) => {
     );
   };
 
-  /**
-   * Procesa el hotel para el payload
-   */
   const processHotel = async (hotel) => {
     if (!hotel) return null;
 
@@ -549,14 +542,13 @@ export const usePackageForm = (initialPackageData = null) => {
     [formData.destino_lat, formData.destino_lng, formData.destino],
   );
 
-  // Hook para depuración: calcular cambios detectados por PATCH en tiempo real
   const currentPatchPayload = useMemo(() => {
     if (!originalDataRef.current) return null;
-    
+
     try {
       return preparePatchPayload(originalDataRef.current, formData);
     } catch (error) {
-      console.warn('Error calculando PATCH payload:', error);
+      console.warn("Error calculando PATCH payload:", error);
       return null;
     }
   }, [formData]);
@@ -578,7 +570,7 @@ export const usePackageForm = (initialPackageData = null) => {
     handleAddDestination,
     handleRemoveDestination,
     handleSubmit,
-    // Exposer el payload PATCH actual para depuración
+
     currentPatchPayload,
   };
 };

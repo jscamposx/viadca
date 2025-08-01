@@ -1,6 +1,5 @@
 @import "tailwindcss";
 
-/* Animaciones personalizadas para el package view moderno */
 @keyframes fade-in {
   from {
     opacity: 0;
@@ -13,7 +12,8 @@
 }
 
 @keyframes float {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0px);
   }
   50% {
@@ -22,7 +22,8 @@
 }
 
 @keyframes glow {
-  0%, 100% {
+  0%,
+  100% {
     box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
   }
   50% {
@@ -66,7 +67,6 @@
   animation-direction: reverse;
 }
 
-/* Efectos de glassmorphism mejorados */
 .glassmorphism {
   background: rgba(255, 255, 255, 0.25);
   backdrop-filter: blur(10px);
@@ -79,22 +79,21 @@
   border: 1px solid rgba(255, 255, 255, 0.18);
 }
 
-/* Efectos de hover mejorados */
 .hover-lift {
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .hover-lift:hover {
   transform: translateY(-4px);
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  box-shadow:
+    0 20px 25px -5px rgba(0, 0, 0, 0.1),
+    0 10px 10px -5px rgba(0, 0, 0, 0.04);
 }
 
-/* Efectos de scroll suave */
 .smooth-scroll {
   scroll-behavior: smooth;
 }
 
-/* Custom scrollbar */
 .custom-scrollbar::-webkit-scrollbar {
   width: 6px;
 }
@@ -113,7 +112,6 @@
   background: linear-gradient(45deg, #2563eb, #7c3aed);
 }
 
-/* Efectos de texto gradiente mejorados */
 .text-gradient {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   -webkit-background-clip: text;
@@ -122,7 +120,14 @@
 }
 
 .text-gradient-rainbow {
-  background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #f9ca24, #6c5ce7);
+  background: linear-gradient(
+    45deg,
+    #ff6b6b,
+    #4ecdc4,
+    #45b7d1,
+    #f9ca24,
+    #6c5ce7
+  );
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -142,17 +147,28 @@
   }
 }
 
-/* Efectos de partículas flotantes */
 .floating-particles::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background-image: 
-    radial-gradient(circle at 20% 50%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
-    radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.3) 0%, transparent 50%),
-    radial-gradient(circle at 40% 80%, rgba(120, 219, 255, 0.3) 0%, transparent 50%);
+  background-image:
+    radial-gradient(
+      circle at 20% 50%,
+      rgba(120, 119, 198, 0.3) 0%,
+      transparent 50%
+    ),
+    radial-gradient(
+      circle at 80% 20%,
+      rgba(255, 119, 198, 0.3) 0%,
+      transparent 50%
+    ),
+    radial-gradient(
+      circle at 40% 80%,
+      rgba(120, 219, 255, 0.3) 0%,
+      transparent 50%
+    );
   animation: float 6s ease-in-out infinite;
 }

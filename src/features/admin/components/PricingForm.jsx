@@ -10,23 +10,25 @@ const PricingForm = ({ formData, onFormChange }) => {
     formData.precio_total || "",
   );
 
-  // Efecto para sincronizar estados locales con formData cuando cambia
   useEffect(() => {
-    // Si hay descuento, calcular el precio original
-    if (formData.descuento && parseFloat(formData.descuento) > 0 && formData.precio_total) {
-      const original = parseFloat(formData.precio_total) + parseFloat(formData.descuento);
+    if (
+      formData.descuento &&
+      parseFloat(formData.descuento) > 0 &&
+      formData.precio_total
+    ) {
+      const original =
+        parseFloat(formData.precio_total) + parseFloat(formData.descuento);
       setPrecioOriginal(original.toString());
       setPrecioConDescuento(formData.precio_total);
       setShowDiscount(true);
-    } 
-    // Si no hay descuento pero sí precio total, usar precio total como original
-    else if (formData.precio_total && (!formData.descuento || parseFloat(formData.descuento) === 0)) {
+    } else if (
+      formData.precio_total &&
+      (!formData.descuento || parseFloat(formData.descuento) === 0)
+    ) {
       setPrecioOriginal(formData.precio_total);
       setPrecioConDescuento("");
       setShowDiscount(false);
-    }
-    // Si no hay precio con descuento pero sí precio total
-    else if (formData.precio_total && !precioConDescuento) {
+    } else if (formData.precio_total && !precioConDescuento) {
       setPrecioConDescuento(formData.precio_total);
     }
   }, [formData.precio_total, formData.descuento, formData.precio_original]);

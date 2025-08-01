@@ -125,7 +125,6 @@ const AdminMayoristasPage = () => {
 
   return (
     <div className="p-6 max-w-7xl mx-auto">
-      {/* Header */}
       <div className="mb-8">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div className="flex items-center gap-3">
@@ -149,7 +148,6 @@ const AdminMayoristasPage = () => {
         </div>
       </div>
 
-      {/* Controles de búsqueda y filtros */}
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-6">
         <div className="flex flex-col lg:flex-row gap-4">
           {/* Búsqueda */}
@@ -166,7 +164,6 @@ const AdminMayoristasPage = () => {
             </div>
           </div>
 
-          {/* Filtros */}
           <div className="flex gap-2">
             <button
               onClick={() => setIsFiltersOpen(!isFiltersOpen)}
@@ -227,7 +224,6 @@ const AdminMayoristasPage = () => {
           </div>
         </div>
 
-        {/* Panel de filtros expandible */}
         {isFiltersOpen && (
           <div className="mt-4 pt-4 border-t border-gray-200">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -253,7 +249,6 @@ const AdminMayoristasPage = () => {
         )}
       </div>
 
-      {/* Tabla de mayoristas */}
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
@@ -351,7 +346,6 @@ const AdminMayoristasPage = () => {
         </div>
       </div>
 
-      {/* Estadísticas */}
       {filteredMayoristas.length > 0 && (
         <div className="mt-6 text-sm text-gray-500 text-center">
           Mostrando {filteredMayoristas.length} de {mayoristas.length}{" "}

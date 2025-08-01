@@ -1,23 +1,17 @@
 @import "tailwindcss";
 
-/* Importar estilos de Leaflet */
-@import 'leaflet/dist/leaflet.css';
+@import "leaflet/dist/leaflet.css";
 
-/* Ocultar scrollbar pero mantener funcionalidad */
 .scrollbar-hide {
-  /* Firefox */
   scrollbar-width: none;
 
-  /* Safari e Internet Explorer */
   -ms-overflow-style: none;
 }
 
 .scrollbar-hide::-webkit-scrollbar {
-  /* Chrome, Safari y Edge */
   display: none;
 }
 
-/* Scrollbar personalizado visible si se necesita */
 .scrollbar-thin {
   scrollbar-width: thin;
   scrollbar-color: rgb(203 213 225) transparent;
@@ -40,7 +34,6 @@
   background-color: rgb(148 163 184);
 }
 
-/* Estilos personalizados para el mapa */
 .leaflet-container {
   font-family: inherit;
 }
@@ -59,7 +52,6 @@
   border: none;
 }
 
-/* Estilos para el loading del mapa */
 .leaflet-container.leaflet-loading {
   background: #f8fafc;
 }
@@ -79,17 +71,11 @@
   background-color: #eff6ff;
 }
 
-/* ===================================== */
-/* Estilos para marcadores de ubicación */
-/* ===================================== */
-
-/* Contenedor del marcador de ubicación */
 .location-marker {
   background: transparent !important;
   border: none !important;
 }
 
-/* Pin de ubicación personalizado */
 .location-pin {
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
   cursor: default !important;
@@ -98,12 +84,11 @@
 .location-pin:hover {
   transform: scale(1.2) !important;
   z-index: 1000 !important;
-  box-shadow: 0 6px 20px rgba(0,0,0,0.25) !important;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25) !important;
 }
 
-/* Efecto de pulso sutil para los marcadores */
 .location-pin::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 50%;
   left: 50%;

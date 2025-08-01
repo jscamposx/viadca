@@ -1,20 +1,27 @@
 import { useState, useEffect } from "react";
-import { MapContainer, TileLayer, Marker, Popup, Polyline } from "react-leaflet";
+import {
+  MapContainer,
+  TileLayer,
+  Marker,
+  Popup,
+  Polyline,
+} from "react-leaflet";
 import L from "leaflet";
 import { FiMapPin, FiRefreshCw } from "react-icons/fi";
 
-// Fix para los iconos de Leaflet
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
-  iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon-2x.png',
-  iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon.png',
-  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png',
+  iconRetinaUrl:
+    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon-2x.png",
+  iconUrl:
+    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon.png",
+  shadowUrl:
+    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png",
 });
 
-// Iconos personalizados elegantes para ubicaciones
 const createCustomIcon = (color, destino, index) => {
   return L.divIcon({
-    className: 'location-marker',
+    className: "location-marker",
     html: `<div 
       class="location-pin"
       title="${destino}"
@@ -49,30 +56,26 @@ const RouteMap = ({ paquete }) => {
   const [mapKey, setMapKey] = useState(0);
   const destinos = paquete?.destinos || [];
 
-  // Efecto para añadir tooltips y efectos hover a los marcadores
   useEffect(() => {
     const timer = setTimeout(() => {
-      // Buscar todos los marcadores de ubicación y añadir interactividad
-      const locationPins = document.querySelectorAll('.location-pin');
-      
+      const locationPins = document.querySelectorAll(".location-pin");
+
       locationPins.forEach((pin) => {
-        const location = pin.getAttribute('data-location');
-        const index = pin.getAttribute('data-index');
-        
-        // Añadir efecto hover
-        pin.addEventListener('mouseenter', () => {
-          pin.style.transform = 'scale(1.2)';
-          pin.style.zIndex = '1000';
-          pin.style.boxShadow = '0 6px 20px rgba(0,0,0,0.25)';
+        const location = pin.getAttribute("data-location");
+        const index = pin.getAttribute("data-index");
+
+        pin.addEventListener("mouseenter", () => {
+          pin.style.transform = "scale(1.2)";
+          pin.style.zIndex = "1000";
+          pin.style.boxShadow = "0 6px 20px rgba(0,0,0,0.25)";
         });
-        
-        pin.addEventListener('mouseleave', () => {
-          pin.style.transform = 'scale(1)';
-          pin.style.zIndex = 'auto';
-          pin.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
+
+        pin.addEventListener("mouseleave", () => {
+          pin.style.transform = "scale(1)";
+          pin.style.zIndex = "auto";
+          pin.style.boxShadow = "0 4px 12px rgba(0,0,0,0.15)";
         });
-        
-        // Actualizar el título para mejor tooltip
+
         pin.title = `📍 Destino ${index}: ${location}`;
       });
     }, 1000);
@@ -80,13 +83,14 @@ const RouteMap = ({ paquete }) => {
     return () => clearTimeout(timer);
   }, [mapKey, destinos]);
 
-  // Filtrar destinos que tienen coordenadas válidas
   const destinosConCoordenadas = destinos.filter(
-    (dest) => dest.destino_lat && dest.destino_lng && 
-    !isNaN(parseFloat(dest.destino_lat)) && !isNaN(parseFloat(dest.destino_lng))
+    (dest) =>
+      dest.destino_lat &&
+      dest.destino_lng &&
+      !isNaN(parseFloat(dest.destino_lat)) &&
+      !isNaN(parseFloat(dest.destino_lng)),
   );
 
-  // Si no hay destinos con coordenadas, mostrar mensaje
   if (destinosConCoordenadas.length === 0) {
     return (
       <div className="bg-white rounded-xl p-6 border border-gray-100 min-h-[280px] flex items-center justify-center">
@@ -103,39 +107,45 @@ const RouteMap = ({ paquete }) => {
     );
   }
 
-  // Calcular el centro del mapa y zoom apropiado
   const calculateMapCenter = () => {
     if (destinosConCoordenadas.length === 1) {
       return [
         parseFloat(destinosConCoordenadas[0].destino_lat),
-        parseFloat(destinosConCoordenadas[0].destino_lng)
+        parseFloat(destinosConCoordenadas[0].destino_lng),
       ];
     }
-    
-    const latSum = destinosConCoordenadas.reduce((sum, dest) => sum + parseFloat(dest.destino_lat), 0);
-    const lngSum = destinosConCoordenadas.reduce((sum, dest) => sum + parseFloat(dest.destino_lng), 0);
-    
+
+    const latSum = destinosConCoordenadas.reduce(
+      (sum, dest) => sum + parseFloat(dest.destino_lat),
+      0,
+    );
+    const lngSum = destinosConCoordenadas.reduce(
+      (sum, dest) => sum + parseFloat(dest.destino_lng),
+      0,
+    );
+
     return [
       latSum / destinosConCoordenadas.length,
-      lngSum / destinosConCoordenadas.length
+      lngSum / destinosConCoordenadas.length,
     ];
   };
 
-  // Calcular zoom apropiado para ver toda la ruta
   const calculateZoom = () => {
     if (destinosConCoordenadas.length === 1) {
-      return 10; // Zoom más alejado para un solo destino
+      return 10;
     }
-    
-    // Calcular la diferencia máxima entre coordenadas
-    const lats = destinosConCoordenadas.map(dest => parseFloat(dest.destino_lat));
-    const lngs = destinosConCoordenadas.map(dest => parseFloat(dest.destino_lng));
-    
+
+    const lats = destinosConCoordenadas.map((dest) =>
+      parseFloat(dest.destino_lat),
+    );
+    const lngs = destinosConCoordenadas.map((dest) =>
+      parseFloat(dest.destino_lng),
+    );
+
     const latRange = Math.max(...lats) - Math.min(...lats);
     const lngRange = Math.max(...lngs) - Math.min(...lngs);
     const maxRange = Math.max(latRange, lngRange);
-    
-    // Calcular zoom basado en el rango
+
     if (maxRange > 10) return 4;
     if (maxRange > 5) return 5;
     if (maxRange > 2) return 6;
@@ -147,11 +157,10 @@ const RouteMap = ({ paquete }) => {
 
   const mapCenter = calculateMapCenter();
   const mapZoom = calculateZoom();
-  
-  // Crear coordenadas para la polilínea
-  const routeCoordinates = destinosConCoordenadas.map(dest => [
+
+  const routeCoordinates = destinosConCoordenadas.map((dest) => [
     parseFloat(dest.destino_lat),
-    parseFloat(dest.destino_lng)
+    parseFloat(dest.destino_lng),
   ]);
 
   return (
@@ -160,7 +169,7 @@ const RouteMap = ({ paquete }) => {
         key={mapKey}
         center={mapCenter}
         zoom={mapZoom}
-        style={{ height: '100%', width: '100%' }}
+        style={{ height: "100%", width: "100%" }}
         className="z-10"
         scrollWheelZoom={true}
       >
@@ -169,34 +178,31 @@ const RouteMap = ({ paquete }) => {
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           maxZoom={18}
         />
-        
-        {/* Marcadores de destinos */}
+
         {destinosConCoordenadas.map((dest, index) => {
           const lat = parseFloat(dest.destino_lat);
           const lng = parseFloat(dest.destino_lng);
-          const customIcon = createCustomIcon('#3b82f6', dest.destino, index);
-          
+          const customIcon = createCustomIcon("#3b82f6", dest.destino, index);
+
           return (
-            <Marker
-              key={index}
-              position={[lat, lng]}
-              icon={customIcon}
-            >
+            <Marker key={index} position={[lat, lng]} icon={customIcon}>
               <Popup>
                 <div className="text-center p-2">
                   <div className="flex items-center gap-2 mb-3">
                     <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center">
-                      <span className="text-white font-bold text-sm">{index + 1}</span>
+                      <span className="text-white font-bold text-sm">
+                        {index + 1}
+                      </span>
                     </div>
                     <h3 className="font-bold text-gray-800">
                       Destino {index + 1}
                     </h3>
                   </div>
-                  
+
                   <p className="text-base text-blue-600 font-medium mb-2">
                     📍 {dest.destino}
                   </p>
-                  
+
                   {dest.descripcion && (
                     <p className="text-sm text-gray-600 leading-relaxed">
                       {dest.descripcion}
@@ -208,7 +214,6 @@ const RouteMap = ({ paquete }) => {
           );
         })}
 
-        {/* Línea de ruta (solo si hay múltiples destinos) */}
         {destinosConCoordenadas.length > 1 && (
           <Polyline
             positions={routeCoordinates}
@@ -220,10 +225,9 @@ const RouteMap = ({ paquete }) => {
         )}
       </MapContainer>
 
-      {/* Control de recarga */}
       <div className="absolute top-4 right-4 z-20">
         <button
-          onClick={() => setMapKey(prev => prev + 1)}
+          onClick={() => setMapKey((prev) => prev + 1)}
           className="bg-white/90 backdrop-blur p-3 rounded-lg shadow-lg hover:bg-white transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center"
           aria-label="Actualizar mapa"
         >

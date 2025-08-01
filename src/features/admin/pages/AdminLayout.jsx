@@ -16,26 +16,30 @@ export const useNotification = () => useContext(NotificationContext);
 const NotificationProvider = ({ children }) => {
   const [notifications, setNotifications] = useState([]);
 
-  const addNotification = useCallback((message, type = "info", options = {}) => {
-    const id = Date.now() + Math.random();
-    const newNotification = {
-      id,
-      message,
-      type,
-      title: options.title,
-      persistent: options.persistent || false,
-      duration: options.duration || (type === "error" ? 7000 : type === "success" ? 4000 : 5000),
-      action: options.action,
-    };
-    
-    setNotifications((prev) => {
-      // Limitar a máximo 5 notificaciones
-      const updated = [...prev, newNotification];
-      return updated.slice(-5);
-    });
-    
-    return id;
-  }, []);
+  const addNotification = useCallback(
+    (message, type = "info", options = {}) => {
+      const id = Date.now() + Math.random();
+      const newNotification = {
+        id,
+        message,
+        type,
+        title: options.title,
+        persistent: options.persistent || false,
+        duration:
+          options.duration ||
+          (type === "error" ? 7000 : type === "success" ? 4000 : 5000),
+        action: options.action,
+      };
+
+      setNotifications((prev) => {
+        const updated = [...prev, newNotification];
+        return updated.slice(-5);
+      });
+
+      return id;
+    },
+    [],
+  );
 
   const removeNotification = useCallback((id) => {
     setNotifications((prev) => prev.filter((n) => n.id !== id));
@@ -46,22 +50,23 @@ const NotificationProvider = ({ children }) => {
   }, []);
 
   const updateNotification = useCallback((id, updates) => {
-    setNotifications((prev) => 
-      prev.map((n) => n.id === id ? { ...n, ...updates } : n)
+    setNotifications((prev) =>
+      prev.map((n) => (n.id === id ? { ...n, ...updates } : n)),
     );
   }, []);
 
   return (
-    <NotificationContext.Provider value={{ 
-      addNotification, 
-      removeNotification, 
-      clearAll,
-      updateNotification,
-      notifications 
-    }}>
+    <NotificationContext.Provider
+      value={{
+        addNotification,
+        removeNotification,
+        clearAll,
+        updateNotification,
+        notifications,
+      }}
+    >
       {children}
 
-      {/* Container de notificaciones mejorado */}
       <div className="fixed top-0 right-0 w-full max-w-sm p-4 pointer-events-none z-[1000]">
         <div className="space-y-2">
           {notifications.map((notif, index) => (
@@ -79,8 +84,7 @@ const NotificationProvider = ({ children }) => {
             </div>
           ))}
         </div>
-        
-        {/* Botón para limpiar todas las notificaciones */}
+
         {notifications.length > 1 && (
           <div className="mt-4 flex justify-end pointer-events-auto">
             <button

@@ -1,13 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import { FiInfo, FiCheck, FiX, FiEye } from 'react-icons/fi';
+import React, { useState, useEffect } from "react";
+import { FiInfo, FiCheck, FiX, FiEye } from "react-icons/fi";
 
-/**
- * Componente para mostrar información sobre los campos que se van a actualizar
- * en modo edición de paquetes
- */
 const PatchPreview = ({ patchPayload, onToggle }) => {
   const [isVisible, setIsVisible] = useState(false);
-  
+
   const changeCount = patchPayload ? Object.keys(patchPayload).length : 0;
 
   if (changeCount === 0) {
@@ -16,99 +12,104 @@ const PatchPreview = ({ patchPayload, onToggle }) => {
 
   const getFieldLabel = (fieldName) => {
     const labels = {
-      titulo: 'Título',
-      fecha_inicio: 'Fecha de inicio',
-      fecha_fin: 'Fecha de fin',
-      precio_total: 'Precio total',
-      precio_original: 'Precio original',
-      descuento: 'Descuento',
-      anticipo: 'Anticipo',
-      incluye: 'Incluye',
-      no_incluye: 'No incluye',
-      requisitos: 'Requisitos',
-      notas: 'Notas',
-      activo: 'Estado del paquete',
-      itinerario_texto: 'Itinerario',
-      origen: 'Origen',
-      destino: 'Destino',
-      destinos: 'Destinos',
-      mayoristasIds: 'Mayoristas',
-      imagenes: 'Imágenes',
-      hotel: 'Hotel'
+      titulo: "Título",
+      fecha_inicio: "Fecha de inicio",
+      fecha_fin: "Fecha de fin",
+      precio_total: "Precio total",
+      precio_original: "Precio original",
+      descuento: "Descuento",
+      anticipo: "Anticipo",
+      incluye: "Incluye",
+      no_incluye: "No incluye",
+      requisitos: "Requisitos",
+      notas: "Notas",
+      activo: "Estado del paquete",
+      itinerario_texto: "Itinerario",
+      origen: "Origen",
+      destino: "Destino",
+      destinos: "Destinos",
+      mayoristasIds: "Mayoristas",
+      imagenes: "Imágenes",
+      hotel: "Hotel",
     };
-    
+
     return labels[fieldName] || fieldName;
   };
 
   const getFieldValue = (fieldName, value) => {
-    if (fieldName === 'activo') {
-      return value ? 'Activo' : 'Inactivo';
+    if (fieldName === "activo") {
+      return value ? "Activo" : "Inactivo";
     }
-    
-    if (fieldName === 'imagenes' && value === 'PROCESS_IMAGES') {
-      return 'Modificadas';
+
+    if (fieldName === "imagenes" && value === "PROCESS_IMAGES") {
+      return "Modificadas";
     }
-    
-    if (fieldName === 'hotel' && value === 'PROCESS_HOTEL') {
-      return 'Modificado';
+
+    if (fieldName === "hotel" && value === "PROCESS_HOTEL") {
+      return "Modificado";
     }
-    
-    if (fieldName === 'destinos' && Array.isArray(value)) {
-      return `${value.length} destino${value.length !== 1 ? 's' : ''}`;
+
+    if (fieldName === "destinos" && Array.isArray(value)) {
+      return `${value.length} destino${value.length !== 1 ? "s" : ""}`;
     }
-    
-    if (fieldName === 'mayoristasIds' && Array.isArray(value)) {
-      return `${value.length} mayorista${value.length !== 1 ? 's' : ''}`;
+
+    if (fieldName === "mayoristasIds" && Array.isArray(value)) {
+      return `${value.length} mayorista${value.length !== 1 ? "s" : ""}`;
     }
-    
-    if (fieldName.includes('precio') || fieldName === 'anticipo' || fieldName === 'descuento') {
-      if (value === null || value === undefined) return 'Sin especificar';
-      return new Intl.NumberFormat('es-MX', {
-        style: 'currency',
-        currency: 'MXN'
+
+    if (
+      fieldName.includes("precio") ||
+      fieldName === "anticipo" ||
+      fieldName === "descuento"
+    ) {
+      if (value === null || value === undefined) return "Sin especificar";
+      return new Intl.NumberFormat("es-MX", {
+        style: "currency",
+        currency: "MXN",
       }).format(value);
     }
-    
-    if (typeof value === 'string' && value.length > 50) {
-      return value.substring(0, 50) + '...';
+
+    if (typeof value === "string" && value.length > 50) {
+      return value.substring(0, 50) + "...";
     }
-    
+
     if (value === null || value === undefined) {
-      return 'Sin especificar';
+      return "Sin especificar";
     }
-    
+
     return String(value);
   };
 
   return (
     <div className="fixed top-20 right-6 sm:right-8 lg:right-12 z-40">
-      {/* Botón flotante para mostrar/ocultar */}
       <div className="relative">
         <button
           type="button"
           onClick={() => setIsVisible(!isVisible)}
           className={`flex items-center gap-2 px-4 py-3 sm:px-5 sm:py-3 rounded-xl shadow-lg font-medium transition-all duration-300 text-sm sm:text-base border-2 ${
             changeCount > 0
-              ? 'bg-orange-500 hover:bg-orange-600 text-white border-orange-500 animate-pulse'
-              : 'bg-white hover:bg-gray-50 text-gray-600 border-gray-200'
+              ? "bg-orange-500 hover:bg-orange-600 text-white border-orange-500 animate-pulse"
+              : "bg-white hover:bg-gray-50 text-gray-600 border-gray-200"
           }`}
         >
           <FiEye className="w-3 h-3 sm:w-4 sm:h-4" />
-          <span className="hidden sm:inline">{changeCount} cambio{changeCount !== 1 ? 's' : ''}</span>
+          <span className="hidden sm:inline">
+            {changeCount} cambio{changeCount !== 1 ? "s" : ""}
+          </span>
           <span className="sm:hidden">{changeCount}</span>
           {changeCount > 0 && (
             <div className="absolute -top-2 -right-2 w-3 h-3 sm:w-4 sm:h-4 bg-red-500 rounded-full animate-ping"></div>
           )}
         </button>
 
-        {/* Panel de cambios */}
         {isVisible && (
           <div className="absolute top-full right-0 mt-3 w-80 sm:w-96 max-h-80 sm:max-h-[32rem] overflow-y-auto bg-white rounded-xl shadow-2xl border border-gray-200 max-w-[calc(100vw-3rem)]">
-            {/* Header */}
             <div className="flex items-center justify-between p-3 sm:p-4 border-b border-gray-100">
               <div className="flex items-center gap-2">
                 <FiInfo className="w-4 h-4 sm:w-5 sm:h-5 text-orange-500" />
-                <h3 className="font-semibold text-gray-900 text-sm sm:text-base">Campos a actualizar</h3>
+                <h3 className="font-semibold text-gray-900 text-sm sm:text-base">
+                  Campos a actualizar
+                </h3>
               </div>
               <button
                 type="button"
@@ -119,7 +120,6 @@ const PatchPreview = ({ patchPayload, onToggle }) => {
               </button>
             </div>
 
-            {/* Lista de cambios */}
             <div className="p-3 sm:p-4 space-y-3">
               {changeCount === 0 ? (
                 <div className="flex items-center gap-2 text-gray-500 text-sm">
@@ -143,12 +143,13 @@ const PatchPreview = ({ patchPayload, onToggle }) => {
               )}
             </div>
 
-            {/* Footer informativo */}
             {changeCount > 0 && (
               <div className="p-3 sm:p-3 bg-orange-50 border-t border-orange-100">
                 <p className="text-xs text-orange-700">
                   <FiInfo className="w-3 h-3 inline mr-1" />
-                  Se está actualizando {changeCount} campo{changeCount !== 1 ? 's' : ''} modificado{changeCount !== 1 ? 's' : ''}
+                  Se está actualizando {changeCount} campo
+                  {changeCount !== 1 ? "s" : ""} modificado
+                  {changeCount !== 1 ? "s" : ""}
                 </p>
               </div>
             )}

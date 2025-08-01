@@ -21,9 +21,15 @@ const CustomArrow = ({ direction, onClick, isVisible }) => {
     >
       <div className="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 bg-white/20 hover:bg-white/30 backdrop-blur-md rounded-full shadow-lg transition-all duration-300 hover:scale-110 flex items-center justify-center border border-white/30">
         {isPrev ? (
-          <FiChevronLeft className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 text-white group-hover:text-white" aria-hidden="true" />
+          <FiChevronLeft
+            className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 text-white group-hover:text-white"
+            aria-hidden="true"
+          />
         ) : (
-          <FiChevronRight className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 text-white group-hover:text-white" aria-hidden="true" />
+          <FiChevronRight
+            className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 text-white group-hover:text-white"
+            aria-hidden="true"
+          />
         )}
       </div>
     </button>
@@ -46,7 +52,10 @@ const CustomIndicator = ({ isSelected, index, onClick }) => (
   />
 );
 
-const EmptyState = ({ title = "Sin imágenes", description = "Las imágenes de este destino se cargarán próximamente" }) => (
+const EmptyState = ({
+  title = "Sin imágenes",
+  description = "Las imágenes de este destino se cargarán próximamente",
+}) => (
   <div className="w-full h-full bg-gradient-to-br from-slate-100 via-slate-200 to-slate-300 flex items-center justify-center relative overflow-hidden">
     <div className="absolute inset-0 opacity-10">
       <div className="absolute top-4 sm:top-10 left-4 sm:left-10 w-16 h-16 sm:w-32 sm:h-32 bg-white rounded-full"></div>
@@ -58,7 +67,9 @@ const EmptyState = ({ title = "Sin imágenes", description = "Las imágenes de e
       <div className="w-16 h-16 sm:w-20 sm:h-20 bg-slate-300 rounded-2xl flex items-center justify-center mx-auto mb-3 sm:mb-4">
         <FiCamera className="w-8 h-8 sm:w-10 sm:h-10 text-slate-500" />
       </div>
-      <h3 className="text-lg sm:text-xl lg:text-2xl font-bold text-slate-600 mb-2">{title}</h3>
+      <h3 className="text-lg sm:text-xl lg:text-2xl font-bold text-slate-600 mb-2">
+        {title}
+      </h3>
       <p className="text-sm sm:text-base text-slate-500 max-w-xs mx-auto">
         {description}
       </p>
@@ -66,70 +77,79 @@ const EmptyState = ({ title = "Sin imágenes", description = "Las imágenes de e
   </div>
 );
 
-const ImageCarousel = ({ imagenes, emptyStateTitle, emptyStateDescription }) => {
+const ImageCarousel = ({
+  imagenes,
+  emptyStateTitle,
+  emptyStateDescription,
+}) => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [invalidImages, setInvalidImages] = useState(new Set());
-  
-  // Función para manejar errores de imagen
+
   const handleImageError = (imageId) => {
-    setInvalidImages(prev => new Set([...prev, imageId]));
+    setInvalidImages((prev) => new Set([...prev, imageId]));
   };
 
-  // Función para obtener URL optimizada de imagen
   const getOptimizedImageUrl = (imagen) => {
-    if (!imagen) return '';
-    
-    // Primero verificar si es una imagen base64 completa
-    if (imagen.contenido && imagen.contenido.startsWith('data:')) {
+    if (!imagen) return "";
+
+    if (imagen.contenido && imagen.contenido.startsWith("data:")) {
       return imagen.contenido;
     }
-    
-    // Si tiene URL completa, usarla directamente
-    if (imagen.url && (imagen.url.startsWith('http') || imagen.url.startsWith('data:'))) {
+
+    if (
+      imagen.url &&
+      (imagen.url.startsWith("http") || imagen.url.startsWith("data:"))
+    ) {
       return imagen.url;
     }
-    
-    // Si el contenido es una URL (no base64)
-    if (imagen.contenido && (imagen.contenido.startsWith('http') || imagen.contenido.includes('://'))) {
+
+    if (
+      imagen.contenido &&
+      (imagen.contenido.startsWith("http") || imagen.contenido.includes("://"))
+    ) {
       return imagen.contenido;
     }
-    
-    // Si es una imagen con contenido base64 (sin prefijo data:)
-    if (imagen.contenido && !imagen.contenido.startsWith('http') && !imagen.contenido.includes('://')) {
+
+    if (
+      imagen.contenido &&
+      !imagen.contenido.startsWith("http") &&
+      !imagen.contenido.includes("://")
+    ) {
       return `data:image/jpeg;base64,${imagen.contenido}`;
     }
-    
-    // Si tiene ruta relativa, construir URL completa
+
     if (imagen.ruta) {
       return `${API_URL}${imagen.ruta}`;
     }
-    
-    // Si tiene nombre de archivo, construir URL
+
     if (imagen.nombre) {
-      const fileName = imagen.nombre.startsWith('/') ? imagen.nombre : `/${imagen.nombre}`;
+      const fileName = imagen.nombre.startsWith("/")
+        ? imagen.nombre
+        : `/${imagen.nombre}`;
       return `${API_URL}/uploads/images${fileName}`;
     }
-    
-    // Fallback - intentar usar la URL directamente
+
     if (imagen.url) {
       return `${API_URL}${imagen.url}`;
     }
-    
-    return '';
+
+    return "";
   };
 
-  // Filtrar imágenes válidas
-  const validImages = Array.isArray(imagenes) ? imagenes.filter(imagen => {
-    if (!imagen) return false;
-    
-    const imageId = imagen.id || imagen.nombre || imagen.url || imagen.contenido;
-    if (invalidImages.has(imageId)) return false;
-    
-    // Verificar que tenga una URL válida o contenido base64
-    const hasValidUrl = imagen.url || imagen.ruta || imagen.nombre || imagen.contenido;
-    return hasValidUrl;
-  }) : [];
+  const validImages = Array.isArray(imagenes)
+    ? imagenes.filter((imagen) => {
+        if (!imagen) return false;
+
+        const imageId =
+          imagen.id || imagen.nombre || imagen.url || imagen.contenido;
+        if (invalidImages.has(imageId)) return false;
+
+        const hasValidUrl =
+          imagen.url || imagen.ruta || imagen.nombre || imagen.contenido;
+        return hasValidUrl;
+      })
+    : [];
 
   const handleImageLoad = () => {
     setIsLoading(false);
@@ -137,10 +157,7 @@ const ImageCarousel = ({ imagenes, emptyStateTitle, emptyStateDescription }) => 
 
   if (!validImages || validImages.length === 0) {
     return (
-      <EmptyState 
-        title={emptyStateTitle}
-        description={emptyStateDescription}
-      />
+      <EmptyState title={emptyStateTitle} description={emptyStateDescription} />
     );
   }
 
@@ -189,14 +206,19 @@ const ImageCarousel = ({ imagenes, emptyStateTitle, emptyStateDescription }) => 
       >
         {validImages.map((imagen, index) => {
           const imageUrl = getOptimizedImageUrl(imagen);
-          const imageId = imagen.id || imagen.nombre || imagen.contenido || index;
-          
+          const imageId =
+            imagen.id || imagen.nombre || imagen.contenido || index;
+
           return (
             <div key={imageId} className="w-full h-full relative">
               <img
                 className="w-full h-full object-cover transition-transform duration-700 hover:scale-105"
                 src={imageUrl}
-                alt={imagen.alt || imagen.nombre || `Imagen ${index + 1} del paquete turístico`}
+                alt={
+                  imagen.alt ||
+                  imagen.nombre ||
+                  `Imagen ${index + 1} del paquete turístico`
+                }
                 onLoad={handleImageLoad}
                 onError={() => handleImageError(imageId)}
                 loading={index === 0 ? "eager" : "lazy"}
@@ -208,7 +230,6 @@ const ImageCarousel = ({ imagenes, emptyStateTitle, emptyStateDescription }) => 
         })}
       </Carousel>
 
-      {/* Contador de imágenes */}
       <div className="absolute bottom-2 sm:bottom-4 left-2 sm:left-4 bg-black/50 backdrop-blur-sm rounded-full px-2 sm:px-3 py-1 z-20">
         <div className="flex items-center space-x-1 sm:space-x-2 text-white text-xs sm:text-sm">
           <FiEye className="w-3 h-3 sm:w-4 sm:h-4" />
@@ -218,7 +239,6 @@ const ImageCarousel = ({ imagenes, emptyStateTitle, emptyStateDescription }) => 
         </div>
       </div>
 
-      {/* Indicador de autoplay */}
       <div className="absolute top-2 sm:top-4 right-2 sm:right-4 bg-black/50 backdrop-blur-sm rounded-full px-2 sm:px-3 py-1 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
         <div className="flex items-center space-x-1 sm:space-x-2 text-white text-xs sm:text-sm">
           <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-green-400 rounded-full animate-pulse"></div>

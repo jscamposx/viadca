@@ -28,7 +28,6 @@ const NewMayoristaPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isLoadingData, setIsLoadingData] = useState(isEditing);
 
-  // Tipos de producto predefinidos
   const tiposProducto = [
     "Circuito",
     "Paquete",
@@ -40,7 +39,6 @@ const NewMayoristaPage = () => {
     "Crucero",
   ];
 
-  // Cargar datos del mayorista si estamos editando
   useEffect(() => {
     if (isEditing && id) {
       const loadMayorista = async () => {
@@ -61,7 +59,7 @@ const NewMayoristaPage = () => {
       };
       loadMayorista();
     }
-  }, [isEditing, id]); // Removido getMayoristaById, addNotification, navigate de las dependencias
+  }, [isEditing, id]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -70,7 +68,6 @@ const NewMayoristaPage = () => {
       [name]: value,
     }));
 
-    // Limpiar error específico cuando el usuario empiece a escribir
     if (errors[name]) {
       setErrors((prev) => ({
         ...prev,
@@ -123,7 +120,6 @@ const NewMayoristaPage = () => {
     } catch (error) {
       console.error("Error al guardar mayorista:", error);
 
-      // Manejar errores específicos del servidor
       if (error.response?.data?.message) {
         addNotification(error.response.data.message, "error");
       } else {
@@ -180,10 +176,8 @@ const NewMayoristaPage = () => {
         </div>
       </div>
 
-      {/* Formulario */}
       <div className="bg-white rounded-lg shadow-sm border border-gray-200">
         <form onSubmit={handleSubmit} className="p-6 space-y-6">
-          {/* Información básica */}
           <div className="space-y-6">
             <div className="border-b border-gray-200 pb-4">
               <h3 className="text-lg font-medium text-gray-900 flex items-center gap-2">
@@ -195,7 +189,6 @@ const NewMayoristaPage = () => {
               </p>
             </div>
 
-            {/* Nombre */}
             <div>
               <label
                 htmlFor="nombre"
@@ -222,7 +215,6 @@ const NewMayoristaPage = () => {
               )}
             </div>
 
-            {/* Tipo de Producto */}
             <div>
               <label
                 htmlFor="tipo_producto"
@@ -255,7 +247,6 @@ const NewMayoristaPage = () => {
             </div>
           </div>
 
-          {/* Información adicional */}
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
             <div className="flex items-start gap-3">
               <FiAlertCircle className="text-blue-600 mt-0.5" />
@@ -272,7 +263,6 @@ const NewMayoristaPage = () => {
             </div>
           </div>
 
-          {/* Botones de acción */}
           <div className="flex justify-end gap-3 pt-6 border-t border-gray-200">
             <button
               type="button"

@@ -110,8 +110,8 @@ const GooglePlacesSearch = ({
   };
 
   const handleKeyDown = (e) => {
-    if (e.key === 'Enter') {
-      e.preventDefault(); // Prevenir el submit del formulario
+    if (e.key === "Enter") {
+      e.preventDefault();
     }
   };
 

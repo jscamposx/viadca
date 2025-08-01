@@ -4,7 +4,7 @@ import { useNotifications } from "../hooks/useNotifications";
 
 const AdminDashboard = () => {
   const { notify } = useNotifications();
-  const [timeFilter, setTimeFilter] = useState('monthly');
+  const [timeFilter, setTimeFilter] = useState("monthly");
 
   return (
     <main className="min-h-screen bg-white p-4 sm:p-6 lg:p-8" role="main">
@@ -19,12 +19,24 @@ const AdminDashboard = () => {
           </p>
         </header>
 
-
-        <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10" role="region" aria-label="Métricas principales del dashboard">
-          <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-white/50 p-6 transition-all duration-300 hover:shadow-xl" role="article" aria-labelledby="paquetes-totales-title">
+        <section
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10"
+          role="region"
+          aria-label="Métricas principales del dashboard"
+        >
+          <div
+            className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-white/50 p-6 transition-all duration-300 hover:shadow-xl"
+            role="article"
+            aria-labelledby="paquetes-totales-title"
+          >
             <div className="flex justify-between items-start">
               <div>
-                <p className="text-gray-700 font-medium" id="paquetes-totales-title">Paquetes Totales</p>
+                <p
+                  className="text-gray-700 font-medium"
+                  id="paquetes-totales-title"
+                >
+                  Paquetes Totales
+                </p>
                 <h2 className="text-3xl font-bold text-gray-900 mt-2">142</h2>
               </div>
               <div className="bg-blue-500/10 p-3 rounded-xl" aria-hidden="true">
@@ -69,15 +81,24 @@ const AdminDashboard = () => {
             </div>
           </div>
 
-          <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-white/50 p-6 transition-all duration-300 hover:shadow-xl" role="article" aria-labelledby="ventas-mes-title">
+          <div
+            className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-white/50 p-6 transition-all duration-300 hover:shadow-xl"
+            role="article"
+            aria-labelledby="ventas-mes-title"
+          >
             <div className="flex justify-between items-start">
               <div>
-                <p className="text-gray-700 font-medium" id="ventas-mes-title">Ventas del Mes</p>
+                <p className="text-gray-700 font-medium" id="ventas-mes-title">
+                  Ventas del Mes
+                </p>
                 <h2 className="text-3xl font-bold text-gray-900 mt-2">
                   $8,250
                 </h2>
               </div>
-              <div className="bg-green-500/10 p-3 rounded-xl" aria-hidden="true">
+              <div
+                className="bg-green-500/10 p-3 rounded-xl"
+                aria-hidden="true"
+              >
                 <svg
                   className="w-6 h-6 text-green-600"
                   fill="none"
@@ -119,13 +140,25 @@ const AdminDashboard = () => {
             </div>
           </div>
 
-          <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-white/50 p-6 transition-all duration-300 hover:shadow-xl" role="article" aria-labelledby="usuarios-activos-title">
+          <div
+            className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-white/50 p-6 transition-all duration-300 hover:shadow-xl"
+            role="article"
+            aria-labelledby="usuarios-activos-title"
+          >
             <div className="flex justify-between items-start">
               <div>
-                <p className="text-gray-700 font-medium" id="usuarios-activos-title">Usuarios Activos</p>
+                <p
+                  className="text-gray-700 font-medium"
+                  id="usuarios-activos-title"
+                >
+                  Usuarios Activos
+                </p>
                 <h2 className="text-3xl font-bold text-gray-900 mt-2">2,842</h2>
               </div>
-              <div className="bg-purple-500/10 p-3 rounded-xl" aria-hidden="true">
+              <div
+                className="bg-purple-500/10 p-3 rounded-xl"
+                aria-hidden="true"
+              >
                 <svg
                   className="w-6 h-6 text-purple-600"
                   fill="none"
@@ -167,13 +200,25 @@ const AdminDashboard = () => {
             </div>
           </div>
 
-          <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-white/50 p-6 transition-all duration-300 hover:shadow-xl" role="article" aria-labelledby="tasa-conversion-title">
+          <div
+            className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-white/50 p-6 transition-all duration-300 hover:shadow-xl"
+            role="article"
+            aria-labelledby="tasa-conversion-title"
+          >
             <div className="flex justify-between items-start">
               <div>
-                <p className="text-gray-700 font-medium" id="tasa-conversion-title">Tasa de Conversión</p>
+                <p
+                  className="text-gray-700 font-medium"
+                  id="tasa-conversion-title"
+                >
+                  Tasa de Conversión
+                </p>
                 <h2 className="text-3xl font-bold text-gray-900 mt-2">24.8%</h2>
               </div>
-              <div className="bg-amber-500/10 p-3 rounded-xl" aria-hidden="true">
+              <div
+                className="bg-amber-500/10 p-3 rounded-xl"
+                aria-hidden="true"
+              >
                 <svg
                   className="w-6 h-6 text-amber-600"
                   fill="none"
@@ -216,42 +261,64 @@ const AdminDashboard = () => {
           </div>
         </section>
 
-        <section className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-10" role="region" aria-label="Gráficos y actividad reciente">
-          <div className="lg:col-span-2 bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-white/50 p-6" role="article" aria-labelledby="ventas-chart-title">
+        <section
+          className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-10"
+          role="region"
+          aria-label="Gráficos y actividad reciente"
+        >
+          <div
+            className="lg:col-span-2 bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-white/50 p-6"
+            role="article"
+            aria-labelledby="ventas-chart-title"
+          >
             <div className="flex justify-between items-center mb-6">
-              <h2 className="text-xl font-bold text-gray-900" id="ventas-chart-title">
+              <h2
+                className="text-xl font-bold text-gray-900"
+                id="ventas-chart-title"
+              >
                 Rendimiento de Ventas
               </h2>
-              <div className="flex space-x-2" role="group" aria-label="Filtros de tiempo">
-                <button 
+              <div
+                className="flex space-x-2"
+                role="group"
+                aria-label="Filtros de tiempo"
+              >
+                <button
                   className={`text-sm px-3 py-1 rounded-lg font-medium border transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
-                    timeFilter === 'monthly'
-                      ? 'bg-blue-50 text-blue-700 border-blue-200'
-                      : 'text-gray-700 border-gray-200 hover:bg-gray-100'
+                    timeFilter === "monthly"
+                      ? "bg-blue-50 text-blue-700 border-blue-200"
+                      : "text-gray-700 border-gray-200 hover:bg-gray-100"
                   }`}
-                  aria-pressed={timeFilter === 'monthly'}
+                  aria-pressed={timeFilter === "monthly"}
                   aria-label="Ver datos mensuales"
-                  onClick={() => setTimeFilter('monthly')}
+                  onClick={() => setTimeFilter("monthly")}
                 >
                   Mensual
                 </button>
-                <button 
+                <button
                   className={`text-sm px-3 py-1 rounded-lg font-medium border transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
-                    timeFilter === 'yearly'
-                      ? 'bg-blue-50 text-blue-700 border-blue-200'
-                      : 'text-gray-700 border-gray-200 hover:bg-gray-100'
+                    timeFilter === "yearly"
+                      ? "bg-blue-50 text-blue-700 border-blue-200"
+                      : "text-gray-700 border-gray-200 hover:bg-gray-100"
                   }`}
-                  aria-pressed={timeFilter === 'yearly'}
+                  aria-pressed={timeFilter === "yearly"}
                   aria-label="Ver datos anuales"
-                  onClick={() => setTimeFilter('yearly')}
+                  onClick={() => setTimeFilter("yearly")}
                 >
                   Anual
                 </button>
               </div>
             </div>
 
-            <div className="relative h-64" role="img" aria-label="Gráfico de barras mostrando el rendimiento de ventas por día de la semana">
-              <div className="absolute inset-0 flex flex-col justify-between" aria-hidden="true">
+            <div
+              className="relative h-64"
+              role="img"
+              aria-label="Gráfico de barras mostrando el rendimiento de ventas por día de la semana"
+            >
+              <div
+                className="absolute inset-0 flex flex-col justify-between"
+                aria-hidden="true"
+              >
                 <div className="border-t border-gray-200"></div>
                 <div className="border-t border-gray-200"></div>
                 <div className="border-t border-gray-200"></div>
@@ -261,56 +328,119 @@ const AdminDashboard = () => {
 
               <div className="absolute bottom-0 left-0 right-0 h-5/6 flex items-end justify-between px-4">
                 <div className="flex flex-col items-center w-1/12">
-                  <div className="w-3 bg-gradient-to-t from-blue-400 to-blue-600 rounded-t-md h-3/5" aria-label="Lunes: 60% de ventas"></div>
-                  <span className="text-xs text-gray-700 mt-1 font-medium">L</span>
+                  <div
+                    className="w-3 bg-gradient-to-t from-blue-400 to-blue-600 rounded-t-md h-3/5"
+                    aria-label="Lunes: 60% de ventas"
+                  ></div>
+                  <span className="text-xs text-gray-700 mt-1 font-medium">
+                    L
+                  </span>
                 </div>
                 <div className="flex flex-col items-center w-1/12">
-                  <div className="w-3 bg-gradient-to-t from-blue-400 to-blue-600 rounded-t-md h-4/5" aria-label="Martes: 80% de ventas"></div>
-                  <span className="text-xs text-gray-700 mt-1 font-medium">M</span>
+                  <div
+                    className="w-3 bg-gradient-to-t from-blue-400 to-blue-600 rounded-t-md h-4/5"
+                    aria-label="Martes: 80% de ventas"
+                  ></div>
+                  <span className="text-xs text-gray-700 mt-1 font-medium">
+                    M
+                  </span>
                 </div>
                 <div className="flex flex-col items-center w-1/12">
-                  <div className="w-3 bg-gradient-to-t from-blue-400 to-blue-600 rounded-t-md h-full" aria-label="Miércoles: 100% de ventas"></div>
-                  <span className="text-xs text-gray-700 mt-1 font-medium">M</span>
+                  <div
+                    className="w-3 bg-gradient-to-t from-blue-400 to-blue-600 rounded-t-md h-full"
+                    aria-label="Miércoles: 100% de ventas"
+                  ></div>
+                  <span className="text-xs text-gray-700 mt-1 font-medium">
+                    M
+                  </span>
                 </div>
                 <div className="flex flex-col items-center w-1/12">
-                  <div className="w-3 bg-gradient-to-t from-blue-400 to-blue-600 rounded-t-md h-2/3" aria-label="Jueves: 67% de ventas"></div>
-                  <span className="text-xs text-gray-700 mt-1 font-medium">J</span>
+                  <div
+                    className="w-3 bg-gradient-to-t from-blue-400 to-blue-600 rounded-t-md h-2/3"
+                    aria-label="Jueves: 67% de ventas"
+                  ></div>
+                  <span className="text-xs text-gray-700 mt-1 font-medium">
+                    J
+                  </span>
                 </div>
                 <div className="flex flex-col items-center w-1/12">
-                  <div className="w-3 bg-gradient-to-t from-blue-400 to-blue-600 rounded-t-md h-1/2" aria-label="Viernes: 50% de ventas"></div>
-                  <span className="text-xs text-gray-700 mt-1 font-medium">V</span>
+                  <div
+                    className="w-3 bg-gradient-to-t from-blue-400 to-blue-600 rounded-t-md h-1/2"
+                    aria-label="Viernes: 50% de ventas"
+                  ></div>
+                  <span className="text-xs text-gray-700 mt-1 font-medium">
+                    V
+                  </span>
                 </div>
                 <div className="flex flex-col items-center w-1/12">
-                  <div className="w-3 bg-gradient-to-t from-green-400 to-green-600 rounded-t-md h-3/4" aria-label="Sábado: 75% de ventas (semana pasada)"></div>
-                  <span className="text-xs text-gray-700 mt-1 font-medium">S</span>
+                  <div
+                    className="w-3 bg-gradient-to-t from-green-400 to-green-600 rounded-t-md h-3/4"
+                    aria-label="Sábado: 75% de ventas (semana pasada)"
+                  ></div>
+                  <span className="text-xs text-gray-700 mt-1 font-medium">
+                    S
+                  </span>
                 </div>
                 <div className="flex flex-col items-center w-1/12">
-                  <div className="w-3 bg-gradient-to-t from-green-400 to-green-600 rounded-t-md h-5/6" aria-label="Domingo: 83% de ventas (semana pasada)"></div>
-                  <span className="text-xs text-gray-700 mt-1 font-medium">D</span>
+                  <div
+                    className="w-3 bg-gradient-to-t from-green-400 to-green-600 rounded-t-md h-5/6"
+                    aria-label="Domingo: 83% de ventas (semana pasada)"
+                  ></div>
+                  <span className="text-xs text-gray-700 mt-1 font-medium">
+                    D
+                  </span>
                 </div>
               </div>
             </div>
 
-            <div className="mt-8 flex justify-center" role="group" aria-label="Leyenda del gráfico">
+            <div
+              className="mt-8 flex justify-center"
+              role="group"
+              aria-label="Leyenda del gráfico"
+            >
               <div className="flex items-center mr-6">
-                <div className="w-3 h-3 bg-blue-500 rounded-full mr-2" aria-hidden="true"></div>
-                <span className="text-sm text-gray-700 font-medium">Semana actual</span>
+                <div
+                  className="w-3 h-3 bg-blue-500 rounded-full mr-2"
+                  aria-hidden="true"
+                ></div>
+                <span className="text-sm text-gray-700 font-medium">
+                  Semana actual
+                </span>
               </div>
               <div className="flex items-center">
-                <div className="w-3 h-3 bg-green-500 rounded-full mr-2" aria-hidden="true"></div>
-                <span className="text-sm text-gray-700 font-medium">Semana pasada</span>
+                <div
+                  className="w-3 h-3 bg-green-500 rounded-full mr-2"
+                  aria-hidden="true"
+                ></div>
+                <span className="text-sm text-gray-700 font-medium">
+                  Semana pasada
+                </span>
               </div>
             </div>
           </div>
 
-          <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-white/50 p-6" role="article" aria-labelledby="actividad-reciente-title">
-            <h2 className="text-xl font-bold text-gray-900 mb-6" id="actividad-reciente-title">
+          <div
+            className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-white/50 p-6"
+            role="article"
+            aria-labelledby="actividad-reciente-title"
+          >
+            <h2
+              className="text-xl font-bold text-gray-900 mb-6"
+              id="actividad-reciente-title"
+            >
               Actividad Reciente
             </h2>
 
-            <div className="space-y-4" role="list" aria-label="Lista de actividades recientes">
+            <div
+              className="space-y-4"
+              role="list"
+              aria-label="Lista de actividades recientes"
+            >
               <div className="flex items-start" role="listitem">
-                <div className="bg-blue-100 p-2 rounded-full mr-3" aria-hidden="true">
+                <div
+                  className="bg-blue-100 p-2 rounded-full mr-3"
+                  aria-hidden="true"
+                >
                   <svg
                     className="w-5 h-5 text-blue-600"
                     fill="none"
@@ -339,7 +469,10 @@ const AdminDashboard = () => {
               </div>
 
               <div className="flex items-start" role="listitem">
-                <div className="bg-green-100 p-2 rounded-full mr-3" aria-hidden="true">
+                <div
+                  className="bg-green-100 p-2 rounded-full mr-3"
+                  aria-hidden="true"
+                >
                   <svg
                     className="w-5 h-5 text-green-600"
                     fill="none"
@@ -366,7 +499,10 @@ const AdminDashboard = () => {
               </div>
 
               <div className="flex items-start" role="listitem">
-                <div className="bg-amber-100 p-2 rounded-full mr-3" aria-hidden="true">
+                <div
+                  className="bg-amber-100 p-2 rounded-full mr-3"
+                  aria-hidden="true"
+                >
                   <svg
                     className="w-5 h-5 text-amber-600"
                     fill="none"
@@ -393,7 +529,10 @@ const AdminDashboard = () => {
               </div>
 
               <div className="flex items-start" role="listitem">
-                <div className="bg-purple-100 p-2 rounded-full mr-3" aria-hidden="true">
+                <div
+                  className="bg-purple-100 p-2 rounded-full mr-3"
+                  aria-hidden="true"
+                >
                   <svg
                     className="w-5 h-5 text-purple-600"
                     fill="none"
@@ -422,7 +561,7 @@ const AdminDashboard = () => {
               </div>
             </div>
 
-            <button 
+            <button
               className="w-full mt-6 py-2 text-center text-blue-700 font-medium rounded-lg border border-blue-200 hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
               aria-label="Ver toda la actividad reciente"
             >
@@ -431,20 +570,42 @@ const AdminDashboard = () => {
           </div>
         </section>
 
-        <section className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-white/50 p-6 mb-10" role="region" aria-labelledby="paquetes-vendidos-title">
-          <h2 className="text-xl font-bold text-gray-900 mb-6" id="paquetes-vendidos-title">
+        <section
+          className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-white/50 p-6 mb-10"
+          role="region"
+          aria-labelledby="paquetes-vendidos-title"
+        >
+          <h2
+            className="text-xl font-bold text-gray-900 mb-6"
+            id="paquetes-vendidos-title"
+          >
             Paquetes Más Vendidos
           </h2>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6" role="list" aria-label="Lista de paquetes más vendidos">
-            <article className="border border-gray-200 rounded-xl overflow-hidden transition-transform duration-300 hover:shadow-lg hover:-translate-y-1 focus-within:ring-2 focus-within:ring-blue-500" role="listitem" tabindex="0" aria-labelledby="paquete-premium-title">
+          <div
+            className="grid grid-cols-1 md:grid-cols-3 gap-6"
+            role="list"
+            aria-label="Lista de paquetes más vendidos"
+          >
+            <article
+              className="border border-gray-200 rounded-xl overflow-hidden transition-transform duration-300 hover:shadow-lg hover:-translate-y-1 focus-within:ring-2 focus-within:ring-blue-500"
+              role="listitem"
+              tabindex="0"
+              aria-labelledby="paquete-premium-title"
+            >
               <div className="bg-gradient-to-r from-blue-500 to-indigo-600 h-32 relative">
-                <div className="absolute top-4 right-4 bg-white/20 backdrop-blur-sm rounded-lg px-2 py-1 text-white text-sm font-medium" aria-label="Posición número 1">
+                <div
+                  className="absolute top-4 right-4 bg-white/20 backdrop-blur-sm rounded-lg px-2 py-1 text-white text-sm font-medium"
+                  aria-label="Posición número 1"
+                >
                   #1
                 </div>
               </div>
               <div className="p-4">
-                <h3 className="font-bold text-lg text-gray-900" id="paquete-premium-title">
+                <h3
+                  className="font-bold text-lg text-gray-900"
+                  id="paquete-premium-title"
+                >
                   Paquete Premium
                 </h3>
                 <p className="text-gray-700 text-sm mt-1">
@@ -459,14 +620,25 @@ const AdminDashboard = () => {
               </div>
             </article>
 
-            <article className="border border-gray-200 rounded-xl overflow-hidden transition-transform duration-300 hover:shadow-lg hover:-translate-y-1 focus-within:ring-2 focus-within:ring-blue-500" role="listitem" tabindex="0" aria-labelledby="paquete-empresarial-title">
+            <article
+              className="border border-gray-200 rounded-xl overflow-hidden transition-transform duration-300 hover:shadow-lg hover:-translate-y-1 focus-within:ring-2 focus-within:ring-blue-500"
+              role="listitem"
+              tabindex="0"
+              aria-labelledby="paquete-empresarial-title"
+            >
               <div className="bg-gradient-to-r from-amber-500 to-orange-500 h-32 relative">
-                <div className="absolute top-4 right-4 bg-white/20 backdrop-blur-sm rounded-lg px-2 py-1 text-white text-sm font-medium" aria-label="Posición número 2">
+                <div
+                  className="absolute top-4 right-4 bg-white/20 backdrop-blur-sm rounded-lg px-2 py-1 text-white text-sm font-medium"
+                  aria-label="Posición número 2"
+                >
                   #2
                 </div>
               </div>
               <div className="p-4">
-                <h3 className="font-bold text-lg text-gray-900" id="paquete-empresarial-title">
+                <h3
+                  className="font-bold text-lg text-gray-900"
+                  id="paquete-empresarial-title"
+                >
                   Paquete Empresarial
                 </h3>
                 <p className="text-gray-700 text-sm mt-1">
@@ -481,14 +653,25 @@ const AdminDashboard = () => {
               </div>
             </article>
 
-            <article className="border border-gray-200 rounded-xl overflow-hidden transition-transform duration-300 hover:shadow-lg hover:-translate-y-1 focus-within:ring-2 focus-within:ring-blue-500" role="listitem" tabindex="0" aria-labelledby="paquete-basico-title">
+            <article
+              className="border border-gray-200 rounded-xl overflow-hidden transition-transform duration-300 hover:shadow-lg hover:-translate-y-1 focus-within:ring-2 focus-within:ring-blue-500"
+              role="listitem"
+              tabindex="0"
+              aria-labelledby="paquete-basico-title"
+            >
               <div className="bg-gradient-to-r from-green-500 to-teal-500 h-32 relative">
-                <div className="absolute top-4 right-4 bg-white/20 backdrop-blur-sm rounded-lg px-2 py-1 text-white text-sm font-medium" aria-label="Posición número 3">
+                <div
+                  className="absolute top-4 right-4 bg-white/20 backdrop-blur-sm rounded-lg px-2 py-1 text-white text-sm font-medium"
+                  aria-label="Posición número 3"
+                >
                   #3
                 </div>
               </div>
               <div className="p-4">
-                <h3 className="font-bold text-lg text-gray-900" id="paquete-basico-title">
+                <h3
+                  className="font-bold text-lg text-gray-900"
+                  id="paquete-basico-title"
+                >
                   Paquete Básico
                 </h3>
                 <p className="text-gray-700 text-sm mt-1">

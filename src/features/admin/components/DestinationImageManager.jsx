@@ -1,5 +1,14 @@
 import { useState, useEffect, useCallback, useRef } from "react";
-import { FiImage, FiUpload, FiSearch, FiTrash2, FiMove, FiStar, FiEye, FiEyeOff } from "react-icons/fi";
+import {
+  FiImage,
+  FiUpload,
+  FiSearch,
+  FiTrash2,
+  FiMove,
+  FiStar,
+  FiEye,
+  FiEyeOff,
+} from "react-icons/fi";
 import axios from "axios";
 
 const Spinner = () => (
@@ -37,7 +46,6 @@ const ImageTile = ({
         : ""
     } ${isDragging && draggedIndex === index ? "opacity-60 rotate-3 scale-95 z-50" : ""} hover:shadow-xl hover:border-gray-200`}
   >
-    {/* Badge de posición */}
     <div
       className={`absolute top-3 left-3 z-20 text-white text-xs font-bold px-2.5 py-1 rounded-full shadow-lg transition-all duration-200 flex items-center gap-1 ${
         index === 0
@@ -45,11 +53,9 @@ const ImageTile = ({
           : "bg-slate-600"
       }`}
     >
-      {index === 0 && <FiStar className="w-3 h-3" />}
-      #{index + 1}
+      {index === 0 && <FiStar className="w-3 h-3" />}#{index + 1}
     </div>
 
-    {/* Badge Principal */}
     {index === 0 && (
       <div className="absolute top-3 right-3 z-20 bg-gradient-to-r from-amber-400 to-orange-500 text-white text-xs font-bold px-2.5 py-1 rounded-full shadow-lg flex items-center gap-1">
         <FiStar className="w-3 h-3" />
@@ -57,7 +63,6 @@ const ImageTile = ({
       </div>
     )}
 
-    {/* Overlay de drop */}
     {isDragOver && draggedIndex !== index && (
       <div className="absolute inset-0 bg-blue-50 border-4 border-dashed border-blue-400 flex items-center justify-center z-30 backdrop-blur-sm">
         <div className="bg-blue-600 text-white px-4 py-2 rounded-xl text-sm font-semibold shadow-lg flex items-center gap-2">
@@ -67,7 +72,6 @@ const ImageTile = ({
       </div>
     )}
 
-    {/* Imagen */}
     <div className="h-full w-full">
       <img
         src={image.url}
@@ -76,10 +80,8 @@ const ImageTile = ({
       />
     </div>
 
-    {/* Overlay de acciones */}
     <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300" />
 
-    {/* Botón eliminar */}
     <div className="absolute top-3 right-3 z-20 opacity-0 group-hover:opacity-100 transition-all duration-200">
       <button
         onClick={() => onRemove(image.id)}
@@ -90,7 +92,6 @@ const ImageTile = ({
       </button>
     </div>
 
-    {/* Indicador de drag y mensaje de arrastrar */}
     <div className="absolute bottom-3 left-3 right-3 z-20 opacity-0 group-hover:opacity-100 transition-all duration-200">
       <div className="bg-white/90 backdrop-blur-sm text-slate-700 px-3 py-1.5 rounded-lg text-xs font-medium flex items-center justify-center gap-2 shadow-md">
         <FiMove className="w-3 h-3" />
@@ -98,7 +99,6 @@ const ImageTile = ({
       </div>
     </div>
 
-    {/* Indicador de tipo de imagen */}
     <div className="absolute bottom-3 right-3 z-20 opacity-0 group-hover:opacity-100 transition-all duration-200">
       <div className="bg-slate-800/80 text-white p-1.5 rounded-full">
         {image.isUploaded ? (
@@ -119,7 +119,11 @@ const fileToBase64 = (file) =>
     reader.onerror = (error) => reject(error);
   });
 
-const DestinationImageManager = ({ destination, onImagesChange, initialImages = [] }) => {
+const DestinationImageManager = ({
+  destination,
+  onImagesChange,
+  initialImages = [],
+}) => {
   const [images, setImages] = useState([]);
   const [status, setStatus] = useState("idle");
   const [error, setError] = useState(null);
@@ -130,7 +134,6 @@ const DestinationImageManager = ({ destination, onImagesChange, initialImages = 
   const [allAvailableImages, setAllAvailableImages] = useState([]);
   const [isInitialized, setIsInitialized] = useState(false);
 
-  // Efecto para manejar imágenes iniciales al editar un paquete
   useEffect(() => {
     if (initialImages && initialImages.length > 0 && !isInitialized) {
       setImages(initialImages);
@@ -202,21 +205,19 @@ const DestinationImageManager = ({ destination, onImagesChange, initialImages = 
           isUploaded: false,
         }));
 
-        // Si ya hay imágenes (modo edición), agregar las nuevas al final
         if (isInitialized && images.length > 0) {
-          // Filtrar imágenes que ya existen para evitar duplicados
-          const newUniquePhotos = photoData.filter(newPhoto => 
-            !images.some(existingImg => existingImg.url === newPhoto.url)
+          const newUniquePhotos = photoData.filter(
+            (newPhoto) =>
+              !images.some((existingImg) => existingImg.url === newPhoto.url),
           );
-          
-          setAllAvailableImages(prev => [...prev, ...newUniquePhotos]);
-          setImages(prev => [...prev, ...newUniquePhotos.slice(0, 5)]); // Agregar solo las primeras 5
+
+          setAllAvailableImages((prev) => [...prev, ...newUniquePhotos]);
+          setImages((prev) => [...prev, ...newUniquePhotos.slice(0, 5)]);
         } else {
-          // Modo creación normal
           setAllAvailableImages(photoData);
           setImages(photoData.slice(0, 10));
         }
-        
+
         setStatus("success");
       } else {
         if (!isInitialized) {
@@ -233,25 +234,30 @@ const DestinationImageManager = ({ destination, onImagesChange, initialImages = 
   }, []);
 
   useEffect(() => {
-    // Solo buscar imágenes de Pexels si NO hay imágenes iniciales Y hay un destino
-    if (destination?.name && (!initialImages || initialImages.length === 0) && !isInitialized) {
+    if (
+      destination?.name &&
+      (!initialImages || initialImages.length === 0) &&
+      !isInitialized
+    ) {
       fetchImagesFromPexels(destination.name);
-    } else if (!destination?.name && (!initialImages || initialImages.length === 0)) {
+    } else if (
+      !destination?.name &&
+      (!initialImages || initialImages.length === 0)
+    ) {
       setImages([]);
       setAllAvailableImages([]);
       setStatus("idle");
       setShowAllImages(false);
     }
-  }, [destination?.name, initialImages?.length, isInitialized]); // Dependencias más específicas
+  }, [destination?.name, initialImages?.length, isInitialized]);
 
-  // Separar el efecto para notificar cambios de imágenes
   const prevImagesRef = useRef();
   useEffect(() => {
     if (prevImagesRef.current !== images) {
       onImagesChange(images);
       prevImagesRef.current = images;
     }
-  }, [images]); // Removido onImagesChange de las dependencias
+  }, [images]);
 
   const handleFiles = async (files) => {
     const fileArray = Array.from(files);
@@ -377,8 +383,8 @@ const DestinationImageManager = ({ destination, onImagesChange, initialImages = 
   return (
     <div
       className={`transition-all duration-300 rounded-xl ${
-        isDragging 
-          ? "border-4 border-dashed border-blue-500 bg-blue-50/50 backdrop-blur-sm" 
+        isDragging
+          ? "border-4 border-dashed border-blue-500 bg-blue-50/50 backdrop-blur-sm"
           : "border-2 border-transparent"
       }`}
       onDragEnter={handleContainerDragOver}
@@ -392,7 +398,9 @@ const DestinationImageManager = ({ destination, onImagesChange, initialImages = 
             <FiUpload className="w-6 h-6" />
             <div>
               <p className="font-semibold">Suelta las imágenes aquí</p>
-              <p className="text-sm opacity-90">Se agregarán al final de la galería</p>
+              <p className="text-sm opacity-90">
+                Se agregarán al final de la galería
+              </p>
             </div>
           </div>
         </div>
@@ -410,7 +418,7 @@ const DestinationImageManager = ({ destination, onImagesChange, initialImages = 
               onChange={handleFileUpload}
             />
           </label>
-          
+
           {/* Botón para buscar imágenes de Pexels cuando hay imágenes iniciales */}
           {isInitialized && destination?.name && (
             <button
@@ -427,7 +435,9 @@ const DestinationImageManager = ({ destination, onImagesChange, initialImages = 
         {images.length > 0 && (
           <div className="flex items-center gap-2 text-sm text-slate-600">
             <FiImage className="w-4 h-4" />
-            <span className="font-medium">{images.length} imagen{images.length !== 1 ? 'es' : ''}</span>
+            <span className="font-medium">
+              {images.length} imagen{images.length !== 1 ? "es" : ""}
+            </span>
           </div>
         )}
       </div>
@@ -441,16 +451,18 @@ const DestinationImageManager = ({ destination, onImagesChange, initialImages = 
               <FiImage className="w-6 h-6 text-red-600" />
             </div>
           </div>
-          <h3 className="text-red-800 font-semibold mb-2">Error al cargar imágenes</h3>
+          <h3 className="text-red-800 font-semibold mb-2">
+            Error al cargar imágenes
+          </h3>
           <p className="text-red-600 text-sm">{error}</p>
         </div>
       )}
 
       {status === "idle" && (
-        <div 
+        <div
           className={`text-center p-8 border-2 border-dashed rounded-xl transition-all duration-300 ${
-            isDragging 
-              ? "border-blue-500 bg-blue-50" 
+            isDragging
+              ? "border-blue-500 bg-blue-50"
               : "border-slate-300 bg-slate-50 hover:border-slate-400"
           }`}
         >
@@ -459,7 +471,9 @@ const DestinationImageManager = ({ destination, onImagesChange, initialImages = 
               <FiImage className="w-8 h-8 text-slate-400" />
             </div>
           </div>
-          <h3 className="text-slate-700 font-semibold mb-2">Selecciona un destino en el mapa</h3>
+          <h3 className="text-slate-700 font-semibold mb-2">
+            Selecciona un destino en el mapa
+          </h3>
           <p className="text-slate-500 text-sm">
             Arrastra y suelta imágenes aquí o haz clic en el botón para subirlas
           </p>
@@ -473,7 +487,9 @@ const DestinationImageManager = ({ destination, onImagesChange, initialImages = 
               <FiSearch className="w-6 h-6 text-amber-600" />
             </div>
           </div>
-          <h3 className="text-amber-800 font-semibold mb-2">No se encontraron imágenes</h3>
+          <h3 className="text-amber-800 font-semibold mb-2">
+            No se encontraron imágenes
+          </h3>
           <p className="text-amber-600 text-sm mb-3">
             No se encontraron imágenes para este destino en Pexels
           </p>

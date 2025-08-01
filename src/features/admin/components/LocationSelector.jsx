@@ -1,6 +1,13 @@
 import { useState, useEffect } from "react";
 import { Map, AdvancedMarker, Pin } from "@vis.gl/react-google-maps";
-import { FiMapPin, FiTarget, FiPlus, FiCheck, FiX, FiTrash2 } from "react-icons/fi";
+import {
+  FiMapPin,
+  FiTarget,
+  FiPlus,
+  FiCheck,
+  FiX,
+  FiTrash2,
+} from "react-icons/fi";
 import GooglePlacesSearch from "./GooglePlacesSearch";
 
 const center = {
@@ -37,7 +44,7 @@ const LocationSelector = ({
     if (!destination) {
       setSelectionMode("destino");
     }
-  }, [destination]); // Removido setSelectionMode de las dependencias
+  }, [destination]);
 
   const handleAddNewDestination = () => {
     setIsAddingDestination(true);
@@ -142,17 +149,16 @@ const LocationSelector = ({
 
   return (
     <div className="space-y-6">
-      {/* Header de configuración */}
       <div>
         <h3 className="text-xl font-semibold text-slate-900 mb-2">
           Configuración de ubicaciones
         </h3>
         <p className="text-slate-600">
-          Selecciona el origen, destino principal y destinos adicionales del paquete
+          Selecciona el origen, destino principal y destinos adicionales del
+          paquete
         </p>
       </div>
 
-      {/* Modo de selección */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
         <button
           type="button"
@@ -166,7 +172,7 @@ const LocationSelector = ({
           <FiMapPin className="w-5 h-5" />
           <span>Seleccionar Origen</span>
         </button>
-        
+
         <button
           type="button"
           onClick={() => setSelectionMode("destino")}
@@ -179,7 +185,7 @@ const LocationSelector = ({
           <FiTarget className="w-5 h-5" />
           <span>Seleccionar Destino</span>
         </button>
-        
+
         {isAddingDestination && (
           <button
             type="button"
@@ -196,7 +202,6 @@ const LocationSelector = ({
         )}
       </div>
 
-      {/* Mensajes de estado */}
       {message && (
         <div
           className={`p-4 rounded-xl border ${
@@ -209,7 +214,6 @@ const LocationSelector = ({
         </div>
       )}
 
-      {/* Estado actual de ubicaciones */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="p-4 bg-blue-50 rounded-xl border border-blue-200">
           <div className="flex items-center gap-2 mb-2">
@@ -220,11 +224,13 @@ const LocationSelector = ({
             {origin?.name || "No seleccionado"}
           </p>
         </div>
-        
+
         <div className="p-4 bg-green-50 rounded-xl border border-green-200">
           <div className="flex items-center gap-2 mb-2">
             <FiTarget className="w-4 h-4 text-green-700" />
-            <span className="font-semibold text-green-900">Destino principal</span>
+            <span className="font-semibold text-green-900">
+              Destino principal
+            </span>
           </div>
           <p className="text-green-800 font-medium">
             {destination?.name || "No seleccionado"}
@@ -232,16 +238,19 @@ const LocationSelector = ({
         </div>
       </div>
 
-      {/* Confirmación de nuevo destino */}
       {isAddingDestination && tempDestination && (
         <div className="p-4 bg-orange-50 border border-orange-200 rounded-xl">
           <div className="flex items-center justify-between">
             <div>
               <div className="flex items-center gap-2 mb-2">
                 <FiPlus className="w-4 h-4 text-orange-700" />
-                <span className="font-semibold text-orange-900">Nuevo destino</span>
+                <span className="font-semibold text-orange-900">
+                  Nuevo destino
+                </span>
               </div>
-              <p className="text-orange-800 font-medium">{tempDestination.name}</p>
+              <p className="text-orange-800 font-medium">
+                {tempDestination.name}
+              </p>
             </div>
             <div className="flex gap-2">
               <button
@@ -265,7 +274,6 @@ const LocationSelector = ({
         </div>
       )}
 
-      {/* Lista de destinos adicionales */}
       {additionalDestinations && additionalDestinations.length > 0 && (
         <div className="space-y-3">
           <h4 className="text-sm font-semibold text-slate-800 flex items-center gap-2">
@@ -278,7 +286,9 @@ const LocationSelector = ({
                 key={index}
                 className="flex items-center justify-between p-3 bg-orange-50 rounded-xl border border-orange-200"
               >
-                <span className="text-orange-800 font-semibold">{dest.name}</span>
+                <span className="text-orange-800 font-semibold">
+                  {dest.name}
+                </span>
                 <button
                   type="button"
                   onClick={() =>
@@ -294,7 +304,6 @@ const LocationSelector = ({
         </div>
       )}
 
-      {/* Botón para agregar destino adicional */}
       {!isAddingDestination && onAddDestination && (
         <button
           type="button"
@@ -316,7 +325,8 @@ const LocationSelector = ({
             </span>
           </div>
           <p className="text-orange-800 text-sm mb-3 font-medium">
-            Haz clic en el mapa o busca en la barra de búsqueda para agregar un destino adicional.
+            Haz clic en el mapa o busca en la barra de búsqueda para agregar un
+            destino adicional.
           </p>
           <button
             type="button"
@@ -328,7 +338,6 @@ const LocationSelector = ({
         </div>
       )}
 
-      {/* Mapa */}
       <div className="w-full h-[500px] rounded-xl overflow-hidden shadow-lg relative">
         <div className="absolute top-4 left-1/2 -translate-x-1/2 z-10 w-11/12 sm:w-3/4 md:w-1/2">
           <GooglePlacesSearch
@@ -369,10 +378,7 @@ const LocationSelector = ({
           )}
 
           {isValidLatLng(destination) && (
-            <AdvancedMarker
-              position={destination}
-              title="Destino Principal"
-            >
+            <AdvancedMarker position={destination} title="Destino Principal">
               <Pin
                 background={"#22c55e"}
                 borderColor={"#166534"}
