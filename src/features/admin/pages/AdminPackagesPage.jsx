@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { useAllPackages } from "../../package/hooks/useAllPackages";
+import { usePaginatedPackages } from "../../package/hooks/usePaginatedPackages";
 import { useMayoristas } from "../hooks/useMayoristas";
 import {
   FiDownload,
@@ -20,11 +20,25 @@ import {
 } from "react-icons/fi";
 import api from "../../../api";
 import { useNotification } from "./AdminLayout";
+import Pagination from "../../../components/ui/Pagination";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
 const AdminPaquetes = () => {
-  const { paquetes, setPaquetes, loading, error } = useAllPackages();
+  const { 
+    paquetes, 
+    setPaquetes, 
+    loading, 
+    error, 
+    page, 
+    limit, 
+    totalPages, 
+    totalItems,
+    goToPage,
+    nextPage,
+    prevPage,
+    setItemsPerPage
+  } = usePaginatedPackages();
   const { mayoristas, loading: mayoristasLoading } = useMayoristas();
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredPaquetes, setFilteredPaquetes] = useState([]);
@@ -892,6 +906,16 @@ const AdminPaquetes = () => {
             </div>
           </div>
         )}
+
+        {/* Componente de Paginación */}
+        <Pagination
+          currentPage={page}
+          totalPages={totalPages}
+          totalItems={totalItems}
+          itemsPerPage={limit}
+          onPageChange={goToPage}
+          onItemsPerPageChange={setItemsPerPage}
+        />
       </div>
     </div>
   );

@@ -1,10 +1,30 @@
-import { useState } from "react";
-
+import { useState, useEffect } from "react";
+import { useAllPackages } from "../../package/hooks/useAllPackages";
 import { useNotifications } from "../hooks/useNotifications";
 
 const AdminDashboard = () => {
   const { notify } = useNotifications();
   const [timeFilter, setTimeFilter] = useState("monthly");
+  const { paquetes, loading, error } = useAllPackages();
+  
+  // Calcular estadísticas basadas en los paquetes reales
+  const totalPaquetes = paquetes?.length || 0;
+  const paquetesActivos = paquetes?.filter(p => p.activo).length || 0;
+  const totalVentas = paquetes?.reduce((sum, p) => sum + (p.precio_total || 0), 0) || 0;
+  
+  // Obtener los 3 paquetes más caros (simulando "más vendidos")
+  const topPaquetes = paquetes
+    ?.filter(p => p.activo)
+    ?.sort((a, b) => (b.precio_total || 0) - (a.precio_total || 0))
+    ?.slice(0, 3) || [];
+
+  const getImageUrl = (url) => {
+    if (!url) return "https://via.placeholder.com/600x400?text=Sin+Imagen";
+    if (url.startsWith("http") || url.startsWith("data:")) {
+      return url;
+    }
+    return url; // Ya viene completa la URL desde Pexels
+  };
 
   return (
     <main className="min-h-screen bg-white p-4 sm:p-6 lg:p-8" role="main">
@@ -37,7 +57,9 @@ const AdminDashboard = () => {
                 >
                   Paquetes Totales
                 </p>
-                <h2 className="text-3xl font-bold text-gray-900 mt-2">142</h2>
+                <h2 className="text-3xl font-bold text-gray-900 mt-2">
+                  {loading ? "..." : totalPaquetes}
+                </h2>
               </div>
               <div className="bg-blue-500/10 p-3 rounded-xl" aria-hidden="true">
                 <svg
@@ -89,10 +111,10 @@ const AdminDashboard = () => {
             <div className="flex justify-between items-start">
               <div>
                 <p className="text-gray-700 font-medium" id="ventas-mes-title">
-                  Ventas del Mes
+                  Valor Total Inventario
                 </p>
                 <h2 className="text-3xl font-bold text-gray-900 mt-2">
-                  $8,250
+                  {loading ? "..." : `$${totalVentas.toLocaleString()}`}
                 </h2>
               </div>
               <div
@@ -151,9 +173,11 @@ const AdminDashboard = () => {
                   className="text-gray-700 font-medium"
                   id="usuarios-activos-title"
                 >
-                  Usuarios Activos
+                  Paquetes Activos
                 </p>
-                <h2 className="text-3xl font-bold text-gray-900 mt-2">2,842</h2>
+                <h2 className="text-3xl font-bold text-gray-900 mt-2">
+                  {loading ? "..." : paquetesActivos}
+                </h2>
               </div>
               <div
                 className="bg-purple-500/10 p-3 rounded-xl"
@@ -579,113 +603,83 @@ const AdminDashboard = () => {
             className="text-xl font-bold text-gray-900 mb-6"
             id="paquetes-vendidos-title"
           >
-            Paquetes Más Vendidos
+            Paquetes Destacados
           </h2>
 
-          <div
-            className="grid grid-cols-1 md:grid-cols-3 gap-6"
-            role="list"
-            aria-label="Lista de paquetes más vendidos"
-          >
-            <article
-              className="border border-gray-200 rounded-xl overflow-hidden transition-transform duration-300 hover:shadow-lg hover:-translate-y-1 focus-within:ring-2 focus-within:ring-blue-500"
-              role="listitem"
-              tabIndex="0"
-              aria-labelledby="paquete-premium-title"
+          {loading ? (
+            <div className="flex justify-center items-center h-32">
+              <div className="text-gray-500">Cargando paquetes...</div>
+            </div>
+          ) : error ? (
+            <div className="flex justify-center items-center h-32">
+              <div className="text-red-500">Error al cargar paquetes: {error}</div>
+            </div>
+          ) : topPaquetes.length === 0 ? (
+            <div className="flex justify-center items-center h-32">
+              <div className="text-gray-500">No hay paquetes disponibles</div>
+            </div>
+          ) : (
+            <div
+              className="grid grid-cols-1 md:grid-cols-3 gap-6"
+              role="list"
+              aria-label="Lista de paquetes destacados"
             >
-              <div className="bg-gradient-to-r from-blue-500 to-indigo-600 h-32 relative">
-                <div
-                  className="absolute top-4 right-4 bg-white/20 backdrop-blur-sm rounded-lg px-2 py-1 text-white text-sm font-medium"
-                  aria-label="Posición número 1"
-                >
-                  #1
-                </div>
-              </div>
-              <div className="p-4">
-                <h3
-                  className="font-bold text-lg text-gray-900"
-                  id="paquete-premium-title"
-                >
-                  Paquete Premium
-                </h3>
-                <p className="text-gray-700 text-sm mt-1">
-                  Todo incluido con beneficios exclusivos
-                </p>
-                <div className="flex justify-between items-center mt-4">
-                  <span className="font-bold text-gray-900 text-lg">$499</span>
-                  <span className="text-sm bg-blue-100 text-blue-800 px-2 py-1 rounded font-medium">
-                    142 ventas
-                  </span>
-                </div>
-              </div>
-            </article>
-
-            <article
-              className="border border-gray-200 rounded-xl overflow-hidden transition-transform duration-300 hover:shadow-lg hover:-translate-y-1 focus-within:ring-2 focus-within:ring-blue-500"
-              role="listitem"
-              tabIndex="0"
-              aria-labelledby="paquete-empresarial-title"
-            >
-              <div className="bg-gradient-to-r from-amber-500 to-orange-500 h-32 relative">
-                <div
-                  className="absolute top-4 right-4 bg-white/20 backdrop-blur-sm rounded-lg px-2 py-1 text-white text-sm font-medium"
-                  aria-label="Posición número 2"
-                >
-                  #2
-                </div>
-              </div>
-              <div className="p-4">
-                <h3
-                  className="font-bold text-lg text-gray-900"
-                  id="paquete-empresarial-title"
-                >
-                  Paquete Empresarial
-                </h3>
-                <p className="text-gray-700 text-sm mt-1">
-                  Solución completa para negocios
-                </p>
-                <div className="flex justify-between items-center mt-4">
-                  <span className="font-bold text-gray-900 text-lg">$899</span>
-                  <span className="text-sm bg-amber-100 text-amber-800 px-2 py-1 rounded font-medium">
-                    98 ventas
-                  </span>
-                </div>
-              </div>
-            </article>
-
-            <article
-              className="border border-gray-200 rounded-xl overflow-hidden transition-transform duration-300 hover:shadow-lg hover:-translate-y-1 focus-within:ring-2 focus-within:ring-blue-500"
-              role="listitem"
-              tabIndex="0"
-              aria-labelledby="paquete-basico-title"
-            >
-              <div className="bg-gradient-to-r from-green-500 to-teal-500 h-32 relative">
-                <div
-                  className="absolute top-4 right-4 bg-white/20 backdrop-blur-sm rounded-lg px-2 py-1 text-white text-sm font-medium"
-                  aria-label="Posición número 3"
-                >
-                  #3
-                </div>
-              </div>
-              <div className="p-4">
-                <h3
-                  className="font-bold text-lg text-gray-900"
-                  id="paquete-basico-title"
-                >
-                  Paquete Básico
-                </h3>
-                <p className="text-gray-700 text-sm mt-1">
-                  Solución esencial para principiantes
-                </p>
-                <div className="flex justify-between items-center mt-4">
-                  <span className="font-bold text-gray-900 text-lg">$199</span>
-                  <span className="text-sm bg-green-100 text-green-800 px-2 py-1 rounded font-medium">
-                    87 ventas
-                  </span>
-                </div>
-              </div>
-            </article>
-          </div>
+              {topPaquetes.map((paquete, index) => {
+                const colors = [
+                  { bg: "from-blue-500 to-indigo-600", badge: "bg-blue-100 text-blue-800" },
+                  { bg: "from-amber-500 to-orange-500", badge: "bg-amber-100 text-amber-800" },
+                  { bg: "from-green-500 to-teal-500", badge: "bg-green-100 text-green-800" }
+                ];
+                const color = colors[index] || colors[0];
+                
+                return (
+                  <article
+                    key={paquete.id}
+                    className="border border-gray-200 rounded-xl overflow-hidden transition-transform duration-300 hover:shadow-lg hover:-translate-y-1 focus-within:ring-2 focus-within:ring-blue-500"
+                    role="listitem"
+                    tabIndex="0"
+                    aria-labelledby={`paquete-${paquete.id}-title`}
+                  >
+                    <div className={`bg-gradient-to-r ${color.bg} h-32 relative`}>
+                      {paquete.primera_imagen && (
+                        <img 
+                          src={getImageUrl(paquete.primera_imagen)} 
+                          alt={paquete.titulo}
+                          className="w-full h-full object-cover"
+                        />
+                      )}
+                      <div className="absolute inset-0 bg-gradient-to-r from-black/30 to-transparent"></div>
+                      <div
+                        className="absolute top-4 right-4 bg-white/20 backdrop-blur-sm rounded-lg px-2 py-1 text-white text-sm font-medium"
+                        aria-label={`Posición número ${index + 1}`}
+                      >
+                        #{index + 1}
+                      </div>
+                    </div>
+                    <div className="p-4">
+                      <h3
+                        className="font-bold text-lg text-gray-900 line-clamp-1"
+                        id={`paquete-${paquete.id}-title`}
+                      >
+                        {paquete.titulo}
+                      </h3>
+                      <p className="text-gray-700 text-sm mt-1">
+                        {paquete.mayoristas?.[0]?.tipo_producto || "Paquete turístico"}
+                      </p>
+                      <div className="flex justify-between items-center mt-4">
+                        <span className="font-bold text-gray-900 text-lg">
+                          ${paquete.precio_total?.toLocaleString() || 0}
+                        </span>
+                        <span className={`text-sm ${color.badge} px-2 py-1 rounded font-medium`}>
+                          {paquete.activo ? "Activo" : "Inactivo"}
+                        </span>
+                      </div>
+                    </div>
+                  </article>
+                );
+              })}
+            </div>
+          )}
         </section>
       </div>
     </main>
