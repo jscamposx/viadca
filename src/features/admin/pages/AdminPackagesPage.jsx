@@ -60,7 +60,7 @@ const AdminPaquetes = () => {
   };
 
   useEffect(() => {
-    if (paquetes) {
+    if (paquetes && Array.isArray(paquetes)) {
       let result = [...paquetes];
 
       if (searchTerm) {
@@ -137,6 +137,8 @@ const AdminPaquetes = () => {
       }
 
       setFilteredPaquetes(result);
+    } else {
+      setFilteredPaquetes([]);
     }
   }, [
     paquetes,
@@ -168,7 +170,9 @@ const AdminPaquetes = () => {
   const handleDelete = async (id) => {
     try {
       await api.packages.deletePaquete(id);
-      setPaquetes((prevPaquetes) => prevPaquetes.filter((p) => p.id !== id));
+      setPaquetes((prevPaquetes) => 
+        Array.isArray(prevPaquetes) ? prevPaquetes.filter((p) => p.id !== id) : []
+      );
       addNotification("Paquete eliminado exitosamente.", "success");
     } catch (err) {
       console.error("Error al eliminar el paquete:", err);
@@ -299,7 +303,7 @@ const AdminPaquetes = () => {
                 <span className="sm:hidden">pqts</span>
               </div>
 
-              {paquetes && (
+              {paquetes && Array.isArray(paquetes) && (
                 <div className="hidden lg:flex gap-2 flex-1">
                   <div className="bg-green-50 text-green-700 py-2 px-3 rounded-xl font-medium text-xs flex items-center gap-1 justify-center flex-1">
                     <span className="font-bold">

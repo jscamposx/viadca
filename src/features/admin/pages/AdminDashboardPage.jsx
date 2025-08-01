@@ -590,7 +590,7 @@ const AdminDashboard = () => {
             <article
               className="border border-gray-200 rounded-xl overflow-hidden transition-transform duration-300 hover:shadow-lg hover:-translate-y-1 focus-within:ring-2 focus-within:ring-blue-500"
               role="listitem"
-              tabindex="0"
+              tabIndex="0"
               aria-labelledby="paquete-premium-title"
             >
               <div className="bg-gradient-to-r from-blue-500 to-indigo-600 h-32 relative">
@@ -623,7 +623,7 @@ const AdminDashboard = () => {
             <article
               className="border border-gray-200 rounded-xl overflow-hidden transition-transform duration-300 hover:shadow-lg hover:-translate-y-1 focus-within:ring-2 focus-within:ring-blue-500"
               role="listitem"
-              tabindex="0"
+              tabIndex="0"
               aria-labelledby="paquete-empresarial-title"
             >
               <div className="bg-gradient-to-r from-amber-500 to-orange-500 h-32 relative">
@@ -656,7 +656,7 @@ const AdminDashboard = () => {
             <article
               className="border border-gray-200 rounded-xl overflow-hidden transition-transform duration-300 hover:shadow-lg hover:-translate-y-1 focus-within:ring-2 focus-within:ring-blue-500"
               role="listitem"
-              tabindex="0"
+              tabIndex="0"
               aria-labelledby="paquete-basico-title"
             >
               <div className="bg-gradient-to-r from-green-500 to-teal-500 h-32 relative">
