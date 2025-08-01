@@ -398,6 +398,7 @@ const HotelFinder = ({ destination, onHotelSelect, selectedHotel }) => {
                 placeholder="Escribe el nombre del hotel..."
                 value={searchTerm}
                 onChange={handleSearchChange}
+                onKeyDown={(e) => e.key === 'Enter' && e.preventDefault()}
                 className="w-full p-3 pl-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm transition duration-200"
               />
               {searchTerm && (

@@ -109,6 +109,12 @@ const GooglePlacesSearch = ({
     }
   };
 
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault(); // Prevenir el submit del formulario
+    }
+  };
+
   return (
     <div className="relative flex items-center">
       <FiSearch className="absolute left-3 h-5 w-5 text-gray-400" />
@@ -119,6 +125,7 @@ const GooglePlacesSearch = ({
         className="w-full rounded bg-white p-2 pl-10 pr-10 border border-gray-300"
         value={value || ""}
         onChange={(e) => onChange(e.target.value)}
+        onKeyDown={handleKeyDown}
       />
       {value && (
         <button
