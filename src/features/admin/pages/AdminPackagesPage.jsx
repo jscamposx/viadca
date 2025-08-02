@@ -18,6 +18,8 @@ import {
   FiUsers,
   FiTag,
   FiCalendar,
+  FiDollarSign,
+  FiActivity,
 } from "react-icons/fi";
 import api from "../../../api";
 import { useNotification } from "./AdminLayout";
@@ -479,9 +481,9 @@ const AdminPaquetes = () => {
           )}
 
           {isFiltersOpen && (
-            <div className="mt-3 sm:mt-4 p-3 sm:p-4 lg:p-5 bg-gray-50 rounded-lg sm:rounded-xl">
-              <div className="flex justify-between items-center mb-3 sm:mb-4">
-                <h3 className="text-sm sm:text-base lg:text-lg font-semibold text-gray-800">
+            <div className="mt-3 sm:mt-4 p-3 sm:p-4 lg:p-6 bg-gray-50 rounded-lg sm:rounded-xl lg:rounded-2xl">
+              <div className="flex justify-between items-center mb-3 sm:mb-4 lg:mb-6">
+                <h3 className="text-sm sm:text-base lg:text-xl font-semibold text-gray-800">
                   Filtros avanzados
                 </h3>
                 <button
@@ -492,17 +494,18 @@ const AdminPaquetes = () => {
                 </button>
               </div>
 
-              <div className="grid grid-cols-1 gap-4 sm:gap-5">
+              <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-4 sm:gap-5 lg:gap-6">
                 {/* Rango de precios */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-2 lg:mb-3">
+                    <FiDollarSign className="inline w-4 h-4 mr-1" />
                     Rango de precios
                   </label>
                   <div className="grid grid-cols-2 gap-2">
                     <input
                       type="number"
                       placeholder="Mínimo"
-                      className="w-full px-3 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                      className="w-full px-3 py-2.5 lg:py-3 rounded-lg lg:rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm lg:text-base"
                       value={priceFilter.min}
                       onChange={(e) =>
                         setPriceFilter({
@@ -514,7 +517,7 @@ const AdminPaquetes = () => {
                     <input
                       type="number"
                       placeholder="Máximo"
-                      className="w-full px-3 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                      className="w-full px-3 py-2.5 lg:py-3 rounded-lg lg:rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm lg:text-base"
                       value={priceFilter.max}
                       onChange={(e) =>
                         setPriceFilter({
@@ -528,19 +531,19 @@ const AdminPaquetes = () => {
 
                 {/* Mayorista */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-2 lg:mb-3">
                     <FiUsers className="inline w-4 h-4 mr-1" />
                     Mayorista
                   </label>
                   <select
                     value={mayoristaFilter}
                     onChange={(e) => setMayoristaFilter(e.target.value)}
-                    className="w-full px-3 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                    className="w-full px-3 py-2.5 lg:py-3 rounded-lg lg:rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm lg:text-base"
                   >
-                    <option value="">Todos</option>
+                    <option value="">Todos los mayoristas</option>
                     {mayoristas?.map((mayorista) => (
                       <option key={mayorista.id} value={mayorista.id}>
-                        {mayorista.nombre}
+                        {mayorista.nombre} ({mayorista.clave})
                       </option>
                     ))}
                   </select>
@@ -548,16 +551,16 @@ const AdminPaquetes = () => {
 
                 {/* Tipo */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-2 lg:mb-3">
                     <FiTag className="inline w-4 h-4 mr-1" />
-                    Tipo
+                    Tipo de producto
                   </label>
                   <select
                     value={tipoProductoFilter}
                     onChange={(e) => setTipoProductoFilter(e.target.value)}
-                    className="w-full px-3 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                    className="w-full px-3 py-2.5 lg:py-3 rounded-lg lg:rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm lg:text-base"
                   >
-                    <option value="">Todos</option>
+                    <option value="">Todos los tipos</option>
                     {mayoristas &&
                       Array.from(
                         new Set(mayoristas.map((m) => m.tipo_producto)),
@@ -573,42 +576,45 @@ const AdminPaquetes = () => {
 
                 {/* Estado */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Estado
+                  <label className="block text-sm font-medium text-gray-700 mb-2 lg:mb-3">
+                    <FiActivity className="inline w-4 h-4 mr-1" />
+                    Estado del paquete
                   </label>
                   <select
                     value={statusFilter}
                     onChange={(e) => setStatusFilter(e.target.value)}
-                    className="w-full px-3 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                    className="w-full px-3 py-2.5 lg:py-3 rounded-lg lg:rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm lg:text-base"
                   >
-                    <option value="">Todos</option>
-                    <option value="activo">Activos</option>
-                    <option value="inactivo">Inactivos</option>
+                    <option value="">Todos los estados</option>
+                    <option value="activo">Paquetes activos</option>
+                    <option value="inactivo">Paquetes inactivos</option>
                   </select>
                 </div>
+              </div>
 
-                {/* Botones de acción */}
-                <div className="flex flex-col sm:flex-row justify-between items-center pt-3 sm:pt-4 gap-3">
-                  <span className="text-sm text-gray-600 order-2 sm:order-1">
-                    {filteredPaquetes.length} paquete
-                    {filteredPaquetes.length !== 1 ? "s" : ""} encontrado
-                    {filteredPaquetes.length !== 1 ? "s" : ""}
-                  </span>
-                  <div className="flex gap-2 order-1 sm:order-2 w-full sm:w-auto">
-                    <button
-                      onClick={clearFilters}
-                      className="flex-1 sm:flex-none px-4 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-lg transition text-sm"
-                    >
-                      Limpiar
-                    </button>
-                    <button
-                      onClick={() => setIsFiltersOpen(false)}
-                      className="flex-1 sm:flex-none px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition text-sm flex items-center justify-center gap-2"
-                    >
-                      <FiFilter className="w-4 h-4" />
-                      Aplicar
-                    </button>
-                  </div>
+              {/* Botones de acción - Mejorados para desktop */}
+              <div className="flex flex-col lg:flex-row justify-between items-center pt-4 lg:pt-6 gap-3 lg:gap-4 border-t border-gray-200 mt-4 lg:mt-6">
+                <div className="text-sm lg:text-base text-gray-600 order-2 lg:order-1 text-center lg:text-left">
+                  <span className="font-semibold text-blue-600">{filteredPaquetes.length}</span>
+                  <span> paquete{filteredPaquetes.length !== 1 ? "s" : ""} encontrado{filteredPaquetes.length !== 1 ? "s" : ""}</span>
+                  {totalItems > 0 && (
+                    <span className="text-gray-500 ml-2">de {totalItems} total</span>
+                  )}
+                </div>
+                <div className="flex gap-3 lg:gap-4 order-1 lg:order-2 w-full lg:w-auto">
+                  <button
+                    onClick={clearFilters}
+                    className="flex-1 lg:flex-none px-4 lg:px-6 py-2.5 lg:py-3 bg-gradient-to-r from-gray-100 to-gray-200 hover:from-gray-200 hover:to-gray-300 text-gray-700 font-medium rounded-lg lg:rounded-xl transition-all duration-200 text-sm lg:text-base shadow-sm hover:shadow-md"
+                  >
+                    Limpiar todo
+                  </button>
+                  <button
+                    onClick={() => setIsFiltersOpen(false)}
+                    className="flex-1 lg:flex-none px-4 lg:px-6 py-2.5 lg:py-3 bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white font-medium rounded-lg lg:rounded-xl transition-all duration-200 text-sm lg:text-base flex items-center justify-center gap-2 shadow-lg hover:shadow-xl"
+                  >
+                    <FiFilter className="w-4 h-4" />
+                    Aplicar filtros
+                  </button>
                 </div>
               </div>
             </div>
@@ -683,14 +689,16 @@ const AdminPaquetes = () => {
               </button>
             </div>
 
-            {/* Filtros por mayorista - Simplificado para móvil */}
+            {/* Filtros por mayorista - Completo para desktop, simplificado para móvil */}
             {mayoristas && mayoristas.length > 0 && (
               <div className="space-y-2 sm:space-y-3">
                 <div className="flex items-center gap-2">
                   <FiUsers className="w-3 h-3 sm:w-4 sm:h-4 text-purple-500" />
                   <span className="text-xs sm:text-sm font-medium text-gray-700">Filtrar por Mayorista:</span>
                 </div>
-                <div className="grid grid-cols-2 sm:flex sm:flex-wrap gap-2">
+                
+                {/* Versión móvil - limitada */}
+                <div className="grid grid-cols-2 gap-2 lg:hidden">
                   {mayoristas.slice(0, 3).map((mayorista) => (
                     <button
                       key={mayorista.id}
@@ -698,7 +706,7 @@ const AdminPaquetes = () => {
                         setMayoristaFilter(mayorista.id);
                         setIsFiltersOpen(false);
                       }}
-                      className={`px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg text-xs font-medium transition-all duration-200 truncate ${
+                      className={`px-2 py-1.5 rounded-lg text-xs font-medium transition-all duration-200 truncate ${
                         mayoristaFilter === mayorista.id
                           ? "bg-purple-500 text-white shadow-md"
                           : "bg-white text-gray-600 hover:bg-purple-50 hover:text-purple-700 border border-gray-200 hover:border-purple-200"
@@ -711,12 +719,35 @@ const AdminPaquetes = () => {
                   {mayoristas.length > 3 && (
                     <button
                       onClick={() => setIsFiltersOpen(true)}
-                      className="px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg text-xs font-medium bg-gradient-to-r from-gray-100 to-gray-200 text-gray-700 hover:from-gray-200 hover:to-gray-300 transition-all duration-200 border border-gray-300 col-span-2 sm:col-span-1"
+                      className="px-2 py-1.5 rounded-lg text-xs font-medium bg-gradient-to-r from-gray-100 to-gray-200 text-gray-700 hover:from-gray-200 hover:to-gray-300 transition-all duration-200 border border-gray-300 col-span-2"
                     >
-                      <span className="hidden sm:inline">+{mayoristas.length - 3} más mayoristas</span>
-                      <span className="sm:hidden">+{mayoristas.length - 3} más</span>
+                      +{mayoristas.length - 3} más
                     </button>
                   )}
+                </div>
+
+                {/* Versión desktop - completa */}
+                <div className="hidden lg:grid lg:grid-cols-4 lg:gap-3">
+                  {mayoristas.map((mayorista) => (
+                    <button
+                      key={mayorista.id}
+                      onClick={() => {
+                        setMayoristaFilter(mayorista.id);
+                        setIsFiltersOpen(false);
+                      }}
+                      className={`px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 flex items-center gap-2 ${
+                        mayoristaFilter === mayorista.id
+                          ? "bg-purple-500 text-white shadow-lg transform scale-105"
+                          : "bg-white text-gray-600 hover:bg-purple-50 hover:text-purple-700 border border-gray-200 hover:border-purple-200 hover:shadow-md"
+                      }`}
+                      title={`${mayorista.nombre} - ${mayorista.clave}`}
+                    >
+                      <div className={`w-2 h-2 rounded-full ${
+                        mayoristaFilter === mayorista.id ? "bg-white" : "bg-purple-500"
+                      }`}></div>
+                      <span className="truncate">{mayorista.nombre}</span>
+                    </button>
+                  ))}
                 </div>
               </div>
             )}
@@ -858,25 +889,41 @@ const AdminPaquetes = () => {
                       )}
                     </div>
 
-                    {/* Mayoristas - Simplificado para móvil */}
+                    {/* Mayoristas - Completo para desktop, simplificado para móvil */}
                     {paquete.mayoristas && paquete.mayoristas.length > 0 && (
                       <div className="mb-3 sm:mb-4">
                         <p className="text-xs text-gray-500 mb-1 sm:mb-2 font-medium">MAYORISTAS</p>
-                        <div className="flex flex-wrap gap-1">
-                          {paquete.mayoristas.slice(0, 2).map((mayorista) => (
-                            <span
-                              key={mayorista.id}
-                              className="inline-block bg-gradient-to-r from-gray-100 to-gray-200 text-gray-700 text-xs font-medium px-2 py-1 rounded-lg"
-                              title={mayorista.clave}
-                            >
-                              {mayorista.clave.length > 8 ? `${mayorista.clave.substring(0, 8)}...` : mayorista.clave}
-                            </span>
-                          ))}
-                          {paquete.mayoristas.length > 2 && (
-                            <span className="inline-block bg-gradient-to-r from-blue-100 to-indigo-100 text-blue-700 text-xs font-medium px-2 py-1 rounded-lg">
-                              +{paquete.mayoristas.length - 2}
-                            </span>
-                          )}
+                        <div className="flex flex-wrap gap-1 lg:gap-2">
+                          {/* Versión móvil - limitada a 2 */}
+                          <div className="flex flex-wrap gap-1 lg:hidden">
+                            {paquete.mayoristas.slice(0, 2).map((mayorista) => (
+                              <span
+                                key={mayorista.id}
+                                className="inline-block bg-gradient-to-r from-gray-100 to-gray-200 text-gray-700 text-xs font-medium px-2 py-1 rounded-lg"
+                                title={mayorista.clave}
+                              >
+                                {mayorista.clave.length > 8 ? `${mayorista.clave.substring(0, 8)}...` : mayorista.clave}
+                              </span>
+                            ))}
+                            {paquete.mayoristas.length > 2 && (
+                              <span className="inline-block bg-gradient-to-r from-blue-100 to-indigo-100 text-blue-700 text-xs font-medium px-2 py-1 rounded-lg">
+                                +{paquete.mayoristas.length - 2}
+                              </span>
+                            )}
+                          </div>
+                          
+                          {/* Versión desktop - completa */}
+                          <div className="hidden lg:flex lg:flex-wrap lg:gap-2">
+                            {paquete.mayoristas.map((mayorista) => (
+                              <span
+                                key={mayorista.id}
+                                className="inline-block bg-gradient-to-r from-gray-100 to-gray-200 hover:from-purple-100 hover:to-indigo-100 text-gray-700 hover:text-purple-700 text-sm font-medium px-3 py-1.5 rounded-xl transition-all duration-200 shadow-sm hover:shadow-md"
+                                title={`${mayorista.nombre} - ${mayorista.clave}`}
+                              >
+                                {mayorista.clave}
+                              </span>
+                            ))}
+                          </div>
                         </div>
                       </div>
                     )}
