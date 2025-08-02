@@ -293,13 +293,32 @@ export const usePackageForm = (initialPackageData = null) => {
     }
 
     try {
+      // Crear una función de notificación que solo maneje errores
+      const errorOnlyNotification = (message, type) => {
+        if (type === 'error' && addNotification) {
+          addNotification(message, type);
+        }
+      };
+
       if (initialPackageData) {
-        await handlePatchUpdate(addNotification);
+        await handlePatchUpdate(errorOnlyNotification);
       } else {
-        await handleFullCreate(addNotification);
+        await handleFullCreate(errorOnlyNotification);
       }
 
-      navigate("/admin/paquetes");
+      // Navegar de vuelta con información de éxito SOLO si no hubo errores
+      const successMessage = initialPackageData ? 
+        "Paquete actualizado exitosamente" : 
+        "Paquete creado exitosamente";
+      
+      navigate("/admin/paquetes", { 
+        state: { 
+          showNotification: true,
+          notificationType: "success",
+          notificationMessage: successMessage,
+          shouldRefresh: true
+        }
+      });
     } catch (error) {
       if (initialPackageData) {
         logPatchOperation("error", { error });
@@ -308,6 +327,9 @@ export const usePackageForm = (initialPackageData = null) => {
       const errorMessage =
         error.response?.data?.message || "Ocurrió un error inesperado.";
       if (addNotification) addNotification(`Error: ${errorMessage}`, "error");
+      
+      // NO navegar en caso de error, permitir que el usuario vea el error y corrija
+      throw error; // Re-lanzar el error para que NewPackagePage lo maneje
     }
   };
 

@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { useState, useEffect, useRef } from "react";
+import { Link, useLocation } from "react-router-dom";
 import { usePaginatedPackages } from "../../package/hooks/usePaginatedPackages";
 import { useMayoristas } from "../hooks/useMayoristas";
 import {
@@ -28,6 +28,8 @@ import Pagination from "../../../components/ui/Pagination";
 const API_URL = import.meta.env.VITE_API_URL;
 
 const AdminPaquetes = () => {
+  const location = useLocation();
+  const processedLocationKey = useRef(null);
   const { 
     paquetes, 
     setPaquetes, 
@@ -40,7 +42,8 @@ const AdminPaquetes = () => {
     goToPage,
     nextPage,
     prevPage,
-    setItemsPerPage
+    setItemsPerPage,
+    refetch
   } = usePaginatedPackages();
   const { mayoristas, loading: mayoristasLoading } = useMayoristas();
   const [searchTerm, setSearchTerm] = useState("");
@@ -58,6 +61,30 @@ const AdminPaquetes = () => {
 
   const [isSortMenuOpen, setIsSortMenuOpen] = useState(false);
   const { addNotification } = useNotification();
+
+  // Manejar notificaciones al regresar de crear/editar paquetes
+  useEffect(() => {
+    // Solo procesar si hay un estado de notificación y no se ha procesado esta navegación
+    if (location.state?.showNotification && location.key !== processedLocationKey.current) {
+      const { notificationMessage, notificationType, shouldRefresh } = location.state;
+      
+      // Marcar esta navegación como procesada
+      processedLocationKey.current = location.key;
+      
+      // Mostrar notificación
+      addNotification(notificationMessage, notificationType);
+      
+      // Refrescar la lista si es necesario
+      if (shouldRefresh && refetch) {
+        refetch();
+      }
+      
+      // Limpiar el estado después de un breve delay para evitar conflictos
+      setTimeout(() => {
+        window.history.replaceState({}, document.title);
+      }, 100);
+    }
+  }, [location.state?.showNotification, location.key, addNotification, refetch]);
 
   const handleExport = async (paqueteId) => {
     try {

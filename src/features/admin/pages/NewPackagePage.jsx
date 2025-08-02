@@ -36,7 +36,7 @@ const NuevoPaquete = () => {
   const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [activeSection, setActiveSection] = useState("basicos");
-  const { notify } = useNotifications();
+  const { notify, removeNotification, clearAll } = useNotifications();
 
   const { paquete, loading, error } = usePackage(id, true);
 
@@ -76,15 +76,25 @@ const NuevoPaquete = () => {
     setIsSubmitting(true);
 
     try {
-      await notify.promise(formSubmitHandler(e, notify.addNotification), {
-        loading: id ? "Actualizando paquete..." : "Creando paquete...",
-        success: id
-          ? "Paquete actualizado exitosamente"
-          : "Paquete creado exitosamente",
-        error: "Error al procesar el paquete",
+      // Mostrar notificación de carga
+      const loadingId = notify.loading(id ? "Actualizando paquete..." : "Creando paquete...", {
+        title: "Procesando",
       });
+
+      // Ejecutar el envío del formulario sin notificación de éxito aquí
+      await formSubmitHandler(e, (message, type) => {
+        // Solo manejar errores aquí, el éxito se maneja en AdminPackagesPage
+        if (type === 'error') {
+          removeNotification(loadingId);
+          notify.error(message, { title: "Error", persistent: true });
+        }
+      });
+      
+      // Limpiar notificación de carga (se hace automáticamente en la navegación)
+      removeNotification(loadingId);
     } catch (err) {
       console.error("Error inesperado en el componente de envío:", err);
+      clearAll();
       notify.error("Ocurrió un error inesperado al enviar el formulario.", {
         title: "Error inesperado",
         persistent: true,
