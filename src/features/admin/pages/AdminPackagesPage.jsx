@@ -854,12 +854,12 @@ const AdminPaquetes = () => {
                       <div
                         className={`px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg sm:rounded-xl text-xs font-semibold shadow-md backdrop-blur-sm border ${
                           paquete.activo
-                            ? "bg-emerald-500 text-white border-emerald-400"
+                            ? "bg-gradient-to-r from-emerald-500 to-green-600 text-white border-emerald-400"
                             : "bg-red-500 text-white border-red-400"
                         }`}
                       >
                         <div className="flex items-center gap-1 sm:gap-2">
-                          <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-white"></div>
+                          <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-white animate-pulse"></div>
                           <span className="hidden sm:inline">{paquete.activo ? "ACTIVO" : "INACTIVO"}</span>
                           <span className="sm:hidden">{paquete.activo ? "ACTIVO" : "INACTIVO"}</span>
                         </div>

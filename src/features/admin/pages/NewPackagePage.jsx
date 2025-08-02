@@ -464,44 +464,26 @@ const NuevoPaquete = () => {
                         <button
                           type="submit"
                           disabled={isSubmitting}
-                          className="group relative bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-700 
-                                   hover:from-blue-700 hover:via-indigo-700 hover:to-purple-800 
-                                   text-white font-bold py-3 px-8 rounded-xl 
-                                   shadow-lg hover:shadow-xl transition-all duration-300 
-                                   transform hover:scale-105 active:scale-95
-                                   disabled:opacity-70 disabled:cursor-wait disabled:hover:scale-100
-                                   flex items-center gap-3 overflow-hidden border-2 border-white/20
-                                   btn-pulse-ring nav-hover-lift"
+                          className={`relative bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-8 rounded-lg 
+                                   shadow-md hover:shadow-lg transition-all duration-200 
+                                   disabled:opacity-50 disabled:cursor-not-allowed
+                                   flex items-center gap-3 ${
+                                     isSubmitting ? 'animate-pulse' : ''
+                                   }`}
                         >
-                          {/* Efecto de brillo */}
-                          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent 
-                                        translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 shimmer" />
-                          
                           {isSubmitting ? (
                             <>
-                              <div className="relative">
-                                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                                <div className="absolute inset-0 w-5 h-5 border-2 border-transparent border-r-white/50 rounded-full animate-ping" />
-                              </div>
-                              <span className="relative z-10">
+                              <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                              <span>
                                 {id ? "Actualizando..." : "Creando..."}
                               </span>
                             </>
                           ) : (
                             <>
-                              <div className="relative">
-                                <FiCheckCircle className="w-5 h-5 transition-transform duration-300 group-hover:scale-110 group-hover:rotate-12" />
-                                <div className="absolute inset-0 w-5 h-5 bg-white/20 rounded-full scale-0 group-hover:scale-150 transition-transform duration-300" />
-                              </div>
-                              <span className="relative z-10 transition-all duration-300 group-hover:letter-spacing-wide">
+                              <FiCheckCircle className="w-5 h-5" />
+                              <span>
                                 {id ? "Actualizar Paquete" : "Crear Paquete"}
                               </span>
-                              
-                              {/* Partículas decorativas */}
-                              <div className="absolute top-1 right-1 w-1 h-1 bg-white/60 rounded-full 
-                                            scale-0 group-hover:scale-100 transition-transform duration-500 delay-100" />
-                              <div className="absolute bottom-1 left-1 w-1 h-1 bg-white/60 rounded-full 
-                                            scale-0 group-hover:scale-100 transition-transform duration-500 delay-200" />
                             </>
                           )}
                         </button>
