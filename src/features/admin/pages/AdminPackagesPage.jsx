@@ -774,12 +774,12 @@ const AdminPaquetes = () => {
         </div>
 
         {filteredPaquetes.length > 0 ? (
-          <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6 items-stretch">
             {filteredPaquetes.map((paquete) => {
               return (
                 <div
                   key={paquete.id}
-                  className="group bg-white rounded-2xl sm:rounded-3xl shadow-lg overflow-hidden border border-gray-100 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
+                  className="group bg-white rounded-2xl sm:rounded-3xl shadow-lg overflow-hidden border border-gray-100 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 flex flex-col h-full"
                 >
                   {/* Imagen del paquete */}
                   <div className="relative h-48 sm:h-56 lg:h-64 overflow-hidden">
@@ -850,14 +850,16 @@ const AdminPaquetes = () => {
                   </div>
 
                   {/* Contenido de la tarjeta */}
-                  <div className="p-4 sm:p-5 lg:p-6">
+                  <div className="p-4 sm:p-5 lg:p-6 flex-1 flex flex-col">
                     {/* Título */}
                     <h2 className="text-lg sm:text-xl font-bold text-gray-900 line-clamp-2 mb-3 sm:mb-4 group-hover:text-blue-600 transition-colors duration-200">
                       {paquete.titulo}
                     </h2>
 
-                    {/* Información en cards pequeñas */}
-                    <div className="grid grid-cols-3 gap-1.5 sm:gap-2 mb-3 sm:mb-4">
+                    {/* Contenido variable que puede crecer */}
+                    <div className="flex-1">
+                      {/* Información en cards pequeñas */}
+                      <div className="grid grid-cols-3 gap-1.5 sm:gap-2 mb-3 sm:mb-4">
                       {paquete.fecha_inicio && (
                         <div className="bg-blue-50 hover:bg-blue-100 rounded-lg sm:rounded-xl p-2 sm:p-3 text-center transition-all duration-200 hover:shadow-md hover:scale-105 cursor-pointer">
                           <FiCalendar className="w-3 h-3 sm:w-4 sm:h-4 text-blue-500 mx-auto mb-1 transition-transform duration-200" />
@@ -927,8 +929,9 @@ const AdminPaquetes = () => {
                         </div>
                       </div>
                     )}
+                    </div>
 
-                    {/* Botones de acción - Rediseñados para móvil */}
+                    {/* Botones de acción - Rediseñados para móvil y siempre en la parte inferior */}
                     <div className="space-y-2 sm:space-y-3">
                       {/* Fila principal */}
                       <div className="grid grid-cols-2 gap-2 sm:gap-3">
