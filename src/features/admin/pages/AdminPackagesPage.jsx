@@ -84,7 +84,27 @@ const AdminPaquetes = () => {
         window.history.replaceState({}, document.title);
       }, 100);
     }
-  }, [location.state?.showNotification, location.key, addNotification, refetch]);
+    
+    // Manejar operaciones en segundo plano
+    if (location.state?.backgroundOperation && location.key !== processedLocationKey.current) {
+      const { operationType, packageTitle } = location.state;
+      
+      // Marcar esta navegación como procesada
+      processedLocationKey.current = location.key;
+      
+      // Mostrar notificación informativa sobre la operación en segundo plano
+      const message = operationType === 'update' ? 
+        `La actualización de "${packageTitle}" continúa en segundo plano` :
+        `La creación de "${packageTitle}" continúa en segundo plano`;
+      
+      addNotification(message, "info");
+      
+      // Limpiar el estado después de un breve delay para evitar conflictos
+      setTimeout(() => {
+        window.history.replaceState({}, document.title);
+      }, 100);
+    }
+  }, [location.state?.showNotification, location.state?.backgroundOperation, location.key, addNotification, refetch]);
 
   const handleExport = async (paqueteId) => {
     try {

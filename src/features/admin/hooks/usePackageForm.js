@@ -279,7 +279,7 @@ export const usePackageForm = (initialPackageData = null) => {
     }));
   }, []);
 
-  const handleSubmit = async (event, addNotification) => {
+  const handleSubmit = async (event, addNotification, backgroundMode = false) => {
     event.preventDefault();
 
     if (!formData.origen_lat || !formData.destino_lat) {
@@ -300,25 +300,40 @@ export const usePackageForm = (initialPackageData = null) => {
         }
       };
 
-      if (initialPackageData) {
-        await handlePatchUpdate(errorOnlyNotification);
+      if (backgroundMode) {
+        // En modo background, retornamos inmediatamente la promesa sin esperar
+        const operation = initialPackageData ? 
+          handlePatchUpdate(errorOnlyNotification) : 
+          handleFullCreate(errorOnlyNotification);
+        
+        // Retornar la promesa para que se pueda manejar en background
+        return {
+          operation,
+          isEdit: !!initialPackageData,
+          packageTitle: formData.titulo
+        };
       } else {
-        await handleFullCreate(errorOnlyNotification);
-      }
-
-      // Navegar de vuelta con información de éxito SOLO si no hubo errores
-      const successMessage = initialPackageData ? 
-        "Paquete actualizado exitosamente" : 
-        "Paquete creado exitosamente";
-      
-      navigate("/admin/paquetes", { 
-        state: { 
-          showNotification: true,
-          notificationType: "success",
-          notificationMessage: successMessage,
-          shouldRefresh: true
+        // Modo normal (síncrono)
+        if (initialPackageData) {
+          await handlePatchUpdate(errorOnlyNotification);
+        } else {
+          await handleFullCreate(errorOnlyNotification);
         }
-      });
+
+        // Navegar de vuelta con información de éxito SOLO si no hubo errores
+        const successMessage = initialPackageData ? 
+          "Paquete actualizado exitosamente" : 
+          "Paquete creado exitosamente";
+        
+        navigate("/admin/paquetes", { 
+          state: { 
+            showNotification: true,
+            notificationType: "success",
+            notificationMessage: successMessage,
+            shouldRefresh: true
+          }
+        });
+      }
     } catch (error) {
       if (initialPackageData) {
         logPatchOperation("error", { error });
@@ -348,7 +363,7 @@ export const usePackageForm = (initialPackageData = null) => {
       if (addNotification) {
         addNotification("No se detectaron cambios para actualizar.", "info");
       }
-      return;
+      return { hasChanges: false };
     }
 
     logPatchOperation("changes-detected", {
@@ -389,12 +404,13 @@ export const usePackageForm = (initialPackageData = null) => {
       responseTime,
     });
 
-    if (addNotification) {
-      addNotification(
-        `Paquete actualizado exitosamente (${Object.keys(finalPayload).length} campos modificados)`,
-        "success",
-      );
-    }
+    return { 
+      hasChanges: true,
+      fieldsModified: Object.keys(finalPayload).length,
+      responseTime,
+      packageId: initialPackageData.id,
+      packageTitle: formData.titulo
+    };
   };
 
   const handleFullCreate = async (addNotification) => {
@@ -454,13 +470,15 @@ export const usePackageForm = (initialPackageData = null) => {
       hotel: hotelPayload,
     };
 
-    await api.packages.createPaquete(payload);
+    const response = await api.packages.createPaquete(payload);
 
     logPatchOperation("create-success");
 
-    if (addNotification) {
-      addNotification("Paquete creado con éxito", "success");
-    }
+    return {
+      packageId: response.data?.id || null,
+      packageTitle: formData.titulo,
+      created: true
+    };
   };
 
   const processImages = async (images) => {

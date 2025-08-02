@@ -76,25 +76,63 @@ const NuevoPaquete = () => {
     setIsSubmitting(true);
 
     try {
-      // Mostrar notificación de carga
-      const loadingId = notify.loading(id ? "Actualizando paquete..." : "Creando paquete...", {
-        title: "Procesando",
-      });
-
-      // Ejecutar el envío del formulario sin notificación de éxito aquí
-      await formSubmitHandler(e, (message, type) => {
-        // Solo manejar errores aquí, el éxito se maneja en AdminPackagesPage
+      // Ejecutar en modo background para obtener la promesa
+      const result = await formSubmitHandler(e, (message, type) => {
         if (type === 'error') {
-          removeNotification(loadingId);
           notify.error(message, { title: "Error", persistent: true });
         }
-      });
-      
-      // Limpiar notificación de carga (se hace automáticamente en la navegación)
-      removeNotification(loadingId);
+      }, true); // backgroundMode = true
+
+      if (result && result.operation) {
+        // Mostrar notificación de progreso
+        const progressId = notify.loading(
+          id ? `Actualizando "${result.packageTitle}"...` : `Creando "${result.packageTitle}"...`,
+          {
+            title: "Procesando en segundo plano",
+            persistent: true
+          }
+        );
+
+        // Navegar inmediatamente
+        navigate("/admin/paquetes", { 
+          state: { 
+            backgroundOperation: true,
+            operationType: result.isEdit ? 'update' : 'create',
+            packageTitle: result.packageTitle
+          }
+        });
+
+        // Continuar la operación en segundo plano
+        result.operation
+          .then((operationResult) => {
+            // Remover notificación de progreso
+            removeNotification(progressId);
+            
+            // Mostrar notificación de éxito
+            const successMessage = result.isEdit ? 
+              `"${result.packageTitle}" actualizado exitosamente` : 
+              `"${result.packageTitle}" creado exitosamente`;
+            
+            notify.success(successMessage, {
+              title: "Operación completada",
+              persistent: true,
+              duration: 5000
+            });
+          })
+          .catch((error) => {
+            // Remover notificación de progreso
+            removeNotification(progressId);
+            
+            // Mostrar notificación de error
+            const errorMessage = error.response?.data?.message || "Ocurrió un error inesperado.";
+            notify.error(`Error: ${errorMessage}`, {
+              title: "Error en operación en segundo plano",
+              persistent: true
+            });
+          });
+      }
     } catch (err) {
       console.error("Error inesperado en el componente de envío:", err);
-      clearAll();
       notify.error("Ocurrió un error inesperado al enviar el formulario.", {
         title: "Error inesperado",
         persistent: true,
