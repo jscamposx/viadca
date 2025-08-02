@@ -20,7 +20,16 @@ const AdminDashboard = () => {
 
   const getImageUrl = (url) => {
     if (!url) return "https://via.placeholder.com/600x400?text=Sin+Imagen";
+    
     if (url.startsWith("http") || url.startsWith("data:")) {
+      // Optimizar imágenes de Pexels con parámetros recomendados
+      if (url.includes('images.pexels.com')) {
+        // Remover parámetros existentes si los hay
+        const baseUrl = url.split('?')[0];
+        // Aplicar optimización: auto=compress, formato WebP, calidad 75, ajuste crop
+        // Dimensiones optimizadas para tarjetas del dashboard: 600x400 para buena calidad visual
+        return `${baseUrl}?auto=compress&w=600&h=400&fit=crop&fm=webp&q=75`;
+      }
       return url;
     }
     return url; // Ya viene completa la URL desde Pexels

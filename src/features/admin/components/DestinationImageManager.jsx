@@ -143,6 +143,18 @@ const DestinationImageManager = ({
     }
   }, [initialImages, isInitialized]);
 
+  // Función para optimizar URLs de imágenes de Pexels
+  const optimizePexelsUrl = (url) => {
+    if (url.includes('images.pexels.com')) {
+      // Remover parámetros existentes si los hay
+      const baseUrl = url.split('?')[0];
+      // Aplicar optimización: auto=compress, formato WebP, calidad 75, ajuste crop
+      // Dimensiones optimizadas para el gestor de imágenes: 600x400 para buena calidad visual
+      return `${baseUrl}?auto=compress&w=600&h=400&fit=crop&fm=webp&q=75`;
+    }
+    return url;
+  };
+
   const fetchImagesFromPexels = useCallback(async (destinationName) => {
     if (!destinationName) {
       setImages([]);
@@ -201,7 +213,7 @@ const DestinationImageManager = ({
       if (uniquePhotos.length > 0) {
         const photoData = uniquePhotos.map((photo) => ({
           id: `pexels-${photo.id}`,
-          url: photo.src.large,
+          url: optimizePexelsUrl(photo.src.large),
           isUploaded: false,
         }));
 
