@@ -13,6 +13,9 @@ import {
   FiX,
   FiUsers,
   FiCalendar,
+  FiTag,
+  FiActivity,
+  FiSettings,
 } from "react-icons/fi";
 import api from "../../../api";
 import { useNotification } from "./AdminLayout";
