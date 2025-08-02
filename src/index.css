@@ -262,3 +262,112 @@
     0 10px 25px -3px rgba(0, 0, 0, 0.1),
     0 4px 6px -2px rgba(0, 0, 0, 0.05);
 }
+
+/* Mejoras para drag and drop de imágenes */
+.image-tile-dragging {
+  transform: rotate(5deg) scale(1.05);
+  z-index: 1000;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+
+.image-tile-drop-zone {
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(147, 197, 253, 0.1));
+  border: 2px dashed rgb(59, 130, 246);
+  transform: scale(1.05);
+}
+
+/* Animaciones de botones mejoradas */
+.btn-gradient-animated {
+  background-size: 200% 200%;
+  animation: gradient-shift 3s ease infinite;
+}
+
+@keyframes gradient-shift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.btn-pulse-ring {
+  position: relative;
+}
+
+.btn-pulse-ring::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  padding: 2px;
+  background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  border-radius: inherit;
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.btn-pulse-ring:hover::before {
+  opacity: 1;
+}
+
+/* Animación de letter spacing para textos de botones */
+.letter-spacing-wide {
+  letter-spacing: 0.1em;
+}
+
+/* Efecto de shimmer para elementos loading */
+.shimmer {
+  background: linear-gradient(90deg, 
+    rgba(255, 255, 255, 0) 0%, 
+    rgba(255, 255, 255, 0.4) 50%, 
+    rgba(255, 255, 255, 0) 100%);
+  background-size: 200% 100%;
+  animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+/* Transiciones suaves para toggles */
+.toggle-smooth {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Efecto de glow para elementos activos */
+.glow-effect {
+  box-shadow: 
+    0 0 20px rgba(59, 130, 246, 0.3),
+    0 0 40px rgba(59, 130, 246, 0.1);
+}
+
+/* Animación fadeIn mejorada */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.4s ease-out;
+}
+
+/* Mejoras para drag feedback */
+.drag-preview {
+  transform: rotate(3deg);
+  opacity: 0.8;
+  filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.3));
+}
+
+.drop-target-active {
+  background: linear-gradient(45deg, 
+    rgba(59, 130, 246, 0.1), 
+    rgba(99, 102, 241, 0.1));
+  border-color: rgb(59, 130, 246);
+  transform: scale(1.02);
+}

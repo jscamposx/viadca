@@ -653,7 +653,7 @@ const HotelFinder = ({ destination, onHotelSelect, selectedHotel }) => {
                       className={`flex items-center gap-2 px-4 py-2.5 rounded-lg transition-all ${
                         currentPage === 0
                           ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-                          : "bg-gray-800 text-white hover:bg-gray-700 shadow-md"
+                          : "bg-blue-500 text-white hover:bg-blue-600 shadow-md"
                       }`}
                     >
                       <svg
@@ -695,7 +695,7 @@ const HotelFinder = ({ destination, onHotelSelect, selectedHotel }) => {
                       className={`flex items-center gap-2 px-4 py-2.5 rounded-lg transition-all ${
                         currentPage === totalPages - 1
                           ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-                          : "bg-gray-800 text-white hover:bg-gray-700 shadow-md"
+                          : "bg-blue-500 text-white hover:bg-blue-600 shadow-md"
                       }`}
                     >
                       Siguiente

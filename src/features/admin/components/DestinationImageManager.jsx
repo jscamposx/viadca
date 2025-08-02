@@ -40,16 +40,20 @@ const ImageTile = ({
     onDragEnd={onDragEnd}
     onDragOver={(e) => onDragOver(e, index)}
     onDrop={(e) => onDrop(e, index)}
-    className={`relative group bg-white rounded-xl overflow-hidden shadow-md cursor-move transition-all duration-300 aspect-square border-2 border-gray-100 ${
+    className={`relative group bg-white rounded-xl overflow-hidden shadow-md transition-all duration-300 aspect-square border-2 border-gray-100 ${
       isDragOver && draggedIndex !== index
-        ? "ring-4 ring-blue-400 border-blue-500 scale-105"
+        ? "drop-target-active ring-4 ring-blue-400"
         : ""
-    } ${isDragging && draggedIndex === index ? "opacity-60 rotate-3 scale-95 z-50" : ""} hover:shadow-xl hover:border-gray-200`}
+    } ${isDragging && draggedIndex === index ? "image-tile-dragging opacity-70" : "cursor-grab hover:cursor-grab"} hover:shadow-xl hover:border-gray-200 active:cursor-grabbing hover:scale-105`}
+    style={{
+      transformStyle: 'preserve-3d',
+      zIndex: isDragging && draggedIndex === index ? 1000 : 'auto',
+    }}
   >
     <div
       className={`absolute top-3 left-3 z-20 text-white text-xs font-bold px-2.5 py-1 rounded-full shadow-lg transition-all duration-200 flex items-center gap-1 ${
         index === 0
-          ? "bg-gradient-to-r from-amber-500 to-orange-600"
+          ? "bg-gradient-to-r from-amber-500 to-orange-600 glow-effect"
           : "bg-slate-600"
       }`}
     >
@@ -57,42 +61,46 @@ const ImageTile = ({
     </div>
 
     {index === 0 && (
-      <div className="absolute top-3 right-3 z-20 bg-gradient-to-r from-amber-400 to-orange-500 text-white text-xs font-bold px-2.5 py-1 rounded-full shadow-lg flex items-center gap-1">
+      <div className="absolute top-3 right-3 z-20 bg-gradient-to-r from-amber-400 to-orange-500 text-white text-xs font-bold px-2.5 py-1 rounded-full shadow-lg flex items-center gap-1 glow-effect">
         <FiStar className="w-3 h-3" />
         Principal
       </div>
     )}
 
     {isDragOver && draggedIndex !== index && (
-      <div className="absolute inset-0 bg-blue-50 border-4 border-dashed border-blue-400 flex items-center justify-center z-30 backdrop-blur-sm">
-        <div className="bg-blue-600 text-white px-4 py-2 rounded-xl text-sm font-semibold shadow-lg flex items-center gap-2">
+      <div className="absolute inset-0 bg-blue-50 border-4 border-dashed border-blue-400 flex items-center justify-center z-30 backdrop-blur-sm rounded-xl">
+        <div className="bg-blue-600 text-white px-4 py-2 rounded-xl text-sm font-semibold shadow-lg flex items-center gap-2 animate-bounce">
           <FiMove className="w-4 h-4" />
           Soltar en posición #{index + 1}
         </div>
       </div>
     )}
 
-    <div className="h-full w-full">
+    <div className="h-full w-full overflow-hidden">
       <img
         src={image.url}
         alt={`Imagen del destino - Posición ${index + 1}`}
-        className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+        draggable={false}
       />
     </div>
 
     <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300" />
 
-    <div className="absolute top-3 right-3 z-20 opacity-0 group-hover:opacity-100 transition-all duration-200">
+    <div className="absolute top-3 right-3 z-20 opacity-0 group-hover:opacity-100 transition-all duration-200 transform scale-75 group-hover:scale-100">
       <button
-        onClick={() => onRemove(image.id)}
-        className="p-2 bg-red-600 text-white rounded-full hover:bg-red-700 hover:scale-110 transition-all duration-200 shadow-lg"
+        onClick={(e) => {
+          e.stopPropagation();
+          onRemove(image.id);
+        }}
+        className="p-2 bg-red-600 text-white rounded-full hover:bg-red-700 hover:scale-110 transition-all duration-200 shadow-lg nav-hover-lift"
         aria-label="Eliminar imagen"
       >
         <FiTrash2 className="w-4 h-4" />
       </button>
     </div>
 
-    <div className="absolute bottom-3 left-3 right-3 z-20 opacity-0 group-hover:opacity-100 transition-all duration-200">
+    <div className="absolute bottom-3 left-3 right-3 z-20 opacity-0 group-hover:opacity-100 transition-all duration-200 transform translate-y-2 group-hover:translate-y-0">
       <div className="bg-white/90 backdrop-blur-sm text-slate-700 px-3 py-1.5 rounded-lg text-xs font-medium flex items-center justify-center gap-2 shadow-md">
         <FiMove className="w-3 h-3" />
         Arrastra para reordenar
@@ -308,17 +316,20 @@ const DestinationImageManager = ({
 
   const handleDragStart = (e, index) => {
     setDraggedIndex(index);
+    setIsDragging(false); // Desactivar el estado de drag del contenedor
     e.dataTransfer.effectAllowed = "move";
-    e.dataTransfer.setData("text/html", e.target);
+    e.dataTransfer.setData("text/plain", index.toString()); // Datos específicos para reordenamiento
   };
 
   const handleDragEnd = () => {
     setDraggedIndex(null);
     setDragOverIndex(null);
+    setIsDragging(false);
   };
 
   const handleDragOver = (e, index) => {
     e.preventDefault();
+    e.stopPropagation();
     e.dataTransfer.dropEffect = "move";
 
     if (draggedIndex !== null && draggedIndex !== index) {
@@ -328,13 +339,13 @@ const DestinationImageManager = ({
 
   const handleDrop = (e, dropIndex) => {
     e.preventDefault();
+    e.stopPropagation();
 
     if (draggedIndex !== null && draggedIndex !== dropIndex) {
       const newImages = [...images];
       const draggedImage = newImages[draggedIndex];
 
       newImages.splice(draggedIndex, 1);
-
       newImages.splice(dropIndex, 0, draggedImage);
 
       setImages(newImages);
@@ -362,21 +373,31 @@ const DestinationImageManager = ({
   };
 
   const handleContainerDragOver = (e) => {
-    e.preventDefault();
-    setIsDragging(true);
+    // Solo manejar el drag para archivos externos, no para reordenamiento interno
+    if (draggedIndex === null && e.dataTransfer.types.includes('Files')) {
+      e.preventDefault();
+      setIsDragging(true);
+    }
   };
 
-  const handleContainerDragLeave = () => {
-    setIsDragging(false);
+  const handleContainerDragLeave = (e) => {
+    // Solo salir del estado de dragging si realmente salimos del contenedor
+    if (!e.currentTarget.contains(e.relatedTarget)) {
+      setIsDragging(false);
+    }
   };
 
   const handleContainerDrop = (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setIsDragging(false);
+    // Solo manejar archivos externos, no elementos reordenados internamente
     if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      e.preventDefault();
+      e.stopPropagation();
+      setIsDragging(false);
       handleFiles(e.dataTransfer.files);
       e.dataTransfer.clearData();
+    } else if (draggedIndex === null) {
+      e.preventDefault();
+      setIsDragging(false);
     }
   };
 
@@ -531,32 +552,7 @@ const DestinationImageManager = ({
             ))}
           </div>
 
-          {images.length > 1 && (
-            <div className="bg-slate-50 border border-slate-200 rounded-xl p-4">
-              <div className="flex items-center gap-2 mb-3">
-                <FiEye className="w-4 h-4 text-slate-600" />
-                <h4 className="text-sm font-semibold text-slate-700">
-                  Orden actual de las imágenes
-                </h4>
-              </div>
-              <div className="flex flex-wrap gap-2">
-                {images.map((image, index) => (
-                  <div
-                    key={image.id}
-                    className={`text-xs px-3 py-1.5 rounded-full font-medium transition-all duration-200 ${
-                      index === 0
-                        ? "bg-gradient-to-r from-amber-100 to-orange-100 text-amber-800 border border-amber-200"
-                        : "bg-slate-100 text-slate-600 border border-slate-200"
-                    }`}
-                  >
-                    #{index + 1} {index === 0 ? "(Principal)" : ""}
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {!showAllImages && allAvailableImages.length > 10 && (
+          {!showAllImages && allAvailableImages.length > images.length && images.length >= 10 && (
             <div className="flex justify-center">
               <button
                 onClick={handleShowMoreImages}
