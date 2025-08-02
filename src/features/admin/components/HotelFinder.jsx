@@ -358,22 +358,7 @@ const HotelFinder = ({ destination, onHotelSelect, selectedHotel }) => {
   };
 
   return (
-    <div className="bg-gradient-to-br from-slate-50 to-white rounded-2xl shadow-xl border border-slate-200/60 overflow-hidden transition-all duration-300">
-      {/* Header mejorado */}
-      <div className="bg-gradient-to-r from-blue-600 to-indigo-700 px-6 py-5">
-        <div className="flex items-center gap-4">
-          <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center backdrop-blur-sm">
-            <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-4m-5 0H9m0 0H7m2 0v-5a2 2 0 012-2h2a2 2 0 012 2v5m-6 0V9a2 2 0 012-2h2a2 2 0 012 2v12" />
-            </svg>
-          </div>
-          <div>
-            <h3 className="text-xl font-bold text-white">🏨 Seleccionar Hotel</h3>
-            <p className="text-blue-100 text-sm">Encuentra el alojamiento perfecto para tu paquete de viaje</p>
-          </div>
-        </div>
-      </div>
-
+    <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
       <div className="p-6">
         {!destination?.lat ? (
           <div className="text-center py-12">
@@ -383,17 +368,17 @@ const HotelFinder = ({ destination, onHotelSelect, selectedHotel }) => {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
               </svg>
             </div>
-            <h4 className="text-lg font-semibold text-slate-700 mb-2">📍 Destino requerido</h4>
-            <p className="text-slate-500 max-w-sm mx-auto">
+            <h4 className="text-lg font-semibold text-gray-700 mb-2">Destino requerido</h4>
+            <p className="text-gray-500 max-w-sm mx-auto">
               Selecciona un destino en el mapa para buscar hoteles cercanos y completar tu paquete de viaje.
             </p>
           </div>
         ) : (
           <>
             {/* Barra de búsqueda mejorada */}
-            <div className="mb-8">
-              <label htmlFor="hotelSearch" className="block text-sm font-semibold text-slate-700 mb-3">
-                🔍 Buscar hotel por nombre
+            <div className="mb-6">
+              <label htmlFor="hotelSearch" className="block text-sm font-medium text-gray-700 mb-2">
+                Buscar hotel por nombre
               </label>
               <div className="relative group">
                 <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
@@ -408,15 +393,15 @@ const HotelFinder = ({ destination, onHotelSelect, selectedHotel }) => {
                   value={searchTerm}
                   onChange={handleSearchChange}
                   onKeyDown={(e) => e.key === 'Enter' && e.preventDefault()}
-                  className="w-full pl-12 pr-12 py-4 bg-white border-2 border-slate-200 rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 text-slate-700 placeholder-slate-400 shadow-sm transition-all duration-200 text-base"
+                  className="w-full pl-12 pr-12 py-3 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-700 placeholder-gray-400 shadow-sm transition-all duration-200"
                 />
                 {searchTerm && (
                   <button
                     type="button"
                     onClick={clearSearch}
-                    className="absolute inset-y-0 right-0 pr-4 flex items-center text-slate-400 hover:text-slate-600 transition-colors group"
+                    className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-gray-600 transition-colors group"
                   >
-                    <div className="w-8 h-8 bg-slate-100 rounded-lg flex items-center justify-center group-hover:bg-slate-200 transition-colors">
+                    <div className="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center group-hover:bg-gray-200 transition-colors">
                       <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                       </svg>
@@ -427,33 +412,33 @@ const HotelFinder = ({ destination, onHotelSelect, selectedHotel }) => {
             </div>
 
             {/* Estados de carga y error mejorados */}
-            <div className="mb-8">
+            <div className="mb-6">
               {loading ? (
-                <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl p-12 text-center border border-blue-100">
-                  <div className="relative mb-6">
-                    <div className="w-16 h-16 mx-auto">
+                <div className="bg-blue-50 rounded-lg p-8 text-center border border-blue-100">
+                  <div className="relative mb-4">
+                    <div className="w-12 h-12 mx-auto">
                       <div className="absolute inset-0 border-4 border-blue-200 rounded-full animate-ping"></div>
-                      <div className="relative w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+                      <div className="relative w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
                     </div>
                   </div>
-                  <h4 className="text-lg font-semibold text-blue-900 mb-2">🏨 Buscando hoteles</h4>
-                  <p className="text-blue-700">Encontrando las mejores opciones de alojamiento cerca de {destination?.name}...</p>
+                  <h4 className="text-md font-medium text-blue-900 mb-1">Buscando hoteles</h4>
+                  <p className="text-blue-700 text-sm">Encontrando opciones cerca de {destination?.name}...</p>
                 </div>
               ) : error && !isManualFormVisible ? (
-                <div className="bg-gradient-to-br from-red-50 to-pink-50 border-2 border-red-200 rounded-2xl p-6">
-                  <div className="flex items-start gap-4">
-                    <div className="flex-shrink-0 w-12 h-12 bg-red-100 rounded-xl flex items-center justify-center">
-                      <svg className="w-6 h-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <div className="bg-red-50 border border-red-200 rounded-lg p-6">
+                  <div className="flex items-start gap-3">
+                    <div className="flex-shrink-0 w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center">
+                      <svg className="w-5 h-5 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                       </svg>
                     </div>
                     <div className="flex-1">
-                      <h4 className="text-lg font-semibold text-red-900 mb-2">❌ Error al cargar hoteles</h4>
-                      <p className="text-red-700 mb-4">{error}</p>
+                      <h4 className="text-md font-medium text-red-900 mb-2">Error al cargar hoteles</h4>
+                      <p className="text-red-700 text-sm mb-3">{error}</p>
                       <button
                         type="button"
                         onClick={() => destination?.lat && fetchHotels(destination.lat, destination.lng)}
-                        className="inline-flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium"
+                        className="inline-flex items-center gap-2 px-3 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors text-sm font-medium"
                       >
                         <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
@@ -466,7 +451,7 @@ const HotelFinder = ({ destination, onHotelSelect, selectedHotel }) => {
               ) : filteredHotels.length > 0 ? (
               <div className="relative">
                 {/* Grid de hoteles mejorado */}
-                <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
                   {getCurrentHotels().map((hotel) => {
                     const isSelected = hotel.id === selectedHotel?.id;
 
@@ -478,35 +463,32 @@ const HotelFinder = ({ destination, onHotelSelect, selectedHotel }) => {
                       <div
                         key={hotel.id}
                         onClick={() => handleSelectHotel(hotel)}
-                        className={`group relative bg-white rounded-2xl overflow-hidden cursor-pointer transition-all duration-300 hover:shadow-2xl transform hover:-translate-y-2 ${
+                        className={`group relative bg-white rounded-lg overflow-hidden cursor-pointer transition-all duration-200 hover:shadow-lg transform hover:-translate-y-1 ${
                           isSelected
-                            ? "ring-4 ring-blue-500/30 shadow-2xl border-2 border-blue-500 scale-105"
-                            : "border border-slate-200 hover:border-blue-300 shadow-lg hover:shadow-xl"
+                            ? "ring-2 ring-blue-500 shadow-lg border-2 border-blue-500"
+                            : "border border-gray-200 hover:border-blue-300 shadow-sm"
                         }`}
                       >
-                        {/* Imagen del hotel mejorada */}
+                        {/* Imagen del hotel */}
                         {imageUrl ? (
-                          <div className="relative h-52 overflow-hidden">
+                          <div className="relative h-48 overflow-hidden">
                             <img
                               src={imageUrl}
                               alt={hotel.nombre}
-                              className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                              className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                             />
-                            
-                            {/* Overlay con gradiente mejorado */}
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                             
                             {/* Badge de tipo de hotel */}
                             <div className="absolute top-3 left-3">
                               {hotel.isCustom ? (
-                                <span className="bg-gradient-to-r from-purple-500 to-purple-600 text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-lg flex items-center gap-1">
+                                <span className="bg-purple-500 text-white text-xs font-medium px-2 py-1 rounded-full shadow-sm flex items-center gap-1">
                                   <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                                   </svg>
                                   Personalizado
                                 </span>
                               ) : (
-                                <span className="bg-gradient-to-r from-emerald-500 to-emerald-600 text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-lg flex items-center gap-1">
+                                <span className="bg-green-500 text-white text-xs font-medium px-2 py-1 rounded-full shadow-sm flex items-center gap-1">
                                   <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -516,30 +498,29 @@ const HotelFinder = ({ destination, onHotelSelect, selectedHotel }) => {
                               )}
                             </div>
                             
-                            {/* Badge de selección mejorado */}
+                            {/* Badge de selección */}
                             {isSelected && (
-                              <div className="absolute top-3 right-3 bg-gradient-to-r from-green-500 to-green-600 text-white text-xs font-bold px-3 py-1.5 rounded-full flex items-center gap-1 shadow-lg animate-pulse">
+                              <div className="absolute top-3 right-3 bg-green-500 text-white text-xs font-medium px-2 py-1 rounded-full flex items-center gap-1 shadow-sm">
                                 <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                                 </svg>
                                 Seleccionado
                               </div>
                             )}
                             
-                            {/* Badge de fotos mejorado */}
+                            {/* Badge de fotos */}
                             {!hotel.isCustom && hotel.totalPhotos > 1 && (
-                              <div className="absolute bottom-3 left-3 bg-black/70 backdrop-blur-sm text-white text-xs px-3 py-1.5 rounded-xl flex items-center gap-2 shadow-lg">
-                                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <div className="absolute bottom-3 left-3 bg-black/70 text-white text-xs px-2 py-1 rounded flex items-center gap-1 shadow-sm">
+                                <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 002 2z" />
                                 </svg>
-                                <span className="font-semibold">{Math.min(hotel.totalPhotos, 3)}</span>
-                                <span className="opacity-90">fotos</span>
+                                <span>{Math.min(hotel.totalPhotos, 3)}</span>
                               </div>
                             )}
 
-                            {/* Indicador de calidad si tiene buena puntuación */}
+                            {/* Indicador de calidad */}
                             {hotel.estrellas >= 4.5 && (
-                              <div className="absolute bottom-3 right-3 bg-gradient-to-r from-amber-500 to-yellow-500 text-white text-xs px-2 py-1 rounded-lg flex items-center gap-1 shadow-lg">
+                              <div className="absolute bottom-3 right-3 bg-yellow-500 text-white text-xs px-2 py-1 rounded flex items-center gap-1 shadow-sm">
                                 <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
                                   <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
                                 </svg>
@@ -548,96 +529,76 @@ const HotelFinder = ({ destination, onHotelSelect, selectedHotel }) => {
                             )}
                           </div>
                         ) : (
-                          <div className="h-52 bg-gradient-to-br from-slate-100 via-slate-200 to-slate-300 flex flex-col items-center justify-center relative overflow-hidden">
-                            {/* Patrón de fondo sutil */}
-                            <div className="absolute inset-0 opacity-20">
-                              <svg width="40" height="40" viewBox="0 0 40 40" className="fill-slate-400">
-                                <rect width="2" height="2" x="0" y="0" />
-                                <rect width="2" height="2" x="20" y="20" />
+                          <div className="h-48 bg-gray-100 flex flex-col items-center justify-center">
+                            <div className="w-12 h-12 bg-gray-200 rounded-lg flex items-center justify-center mb-2">
+                              <svg
+                                className="w-6 h-6 text-gray-400"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={1.5}
+                                  d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-4m-5 0H9m0 0H7m2 0v-5a2 2 0 012-2h2a2 2 0 012 2v5m-6 0V9a2 2 0 012-2h2a2 2 0 012 2v12"
+                                />
                               </svg>
                             </div>
-                            <div className="relative z-10 text-center">
-                              <div className="w-16 h-16 bg-slate-300 rounded-2xl flex items-center justify-center mx-auto mb-3 shadow-inner">
-                                <svg
-                                  className="w-8 h-8 text-slate-500"
-                                  fill="none"
-                                  stroke="currentColor"
-                                  viewBox="0 0 24 24"
-                                >
-                                  <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth={1.5}
-                                    d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-4m-5 0H9m0 0H7m2 0v-5a2 2 0 012-2h2a2 2 0 012 2v5m-6 0V9a2 2 0 012-2h2a2 2 0 012 2v12"
-                                  />
-                                </svg>
-                              </div>
-                              <p className="text-slate-600 text-sm font-medium mb-1">Sin imagen</p>
-                              <p className="text-slate-500 text-xs">No hay foto disponible</p>
-                            </div>
+                            <p className="text-gray-500 text-sm">Sin imagen</p>
                           </div>
                         )}
 
-                        {/* Contenido de la tarjeta mejorado */}
-                        <div className="p-5">
-                          {/* Header con nombre y categoría */}
-                          <div className="mb-3">
-                            <h4 className="font-bold text-xl text-slate-800 mb-1 truncate leading-tight">
+                        {/* Contenido de la tarjeta */}
+                        <div className="p-4">
+                          <div className="mb-2">
+                            <h4 className="font-semibold text-lg text-gray-800 truncate">
                               {hotel.nombre}
                             </h4>
                             {hotel.isCustom && (
-                              <p className="text-purple-600 text-xs font-medium">Hotel personalizado</p>
+                              <p className="text-purple-600 text-xs">Hotel personalizado</p>
                             )}
                           </div>
 
-                          {/* Rating y reseñas mejorado */}
-                          <div className="flex items-center justify-between mb-4">
+                          {/* Rating y reseñas */}
+                          <div className="flex items-center justify-between mb-3">
                             <div className="flex items-center gap-2">
                               <StarRating rating={hotel.estrellas} size="sm" />
                               <div className="flex flex-col">
-                                <span className="text-sm font-semibold text-slate-700">
+                                <span className="text-sm font-medium text-gray-700">
                                   {hotel.estrellas.toFixed(1)}
                                 </span>
                                 {typeof hotel.total_calificaciones === "number" && hotel.total_calificaciones > 0 && (
-                                  <span className="text-xs text-slate-500">
+                                  <span className="text-xs text-gray-500">
                                     {hotel.total_calificaciones} reseñas
                                   </span>
                                 )}
                               </div>
                             </div>
 
-                            {/* Indicador de calidad visual */}
+                            {/* Indicador de calidad */}
                             {hotel.estrellas >= 4.5 ? (
-                              <div className="flex items-center gap-1 bg-amber-50 text-amber-700 px-2 py-1 rounded-lg text-xs font-medium">
-                                <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
-                                  <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-                                </svg>
+                              <div className="bg-yellow-50 text-yellow-700 px-2 py-1 rounded text-xs font-medium">
                                 Excelente
                               </div>
                             ) : hotel.estrellas >= 4.0 ? (
-                              <div className="flex items-center gap-1 bg-green-50 text-green-700 px-2 py-1 rounded-lg text-xs font-medium">
-                                <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                </svg>
+                              <div className="bg-green-50 text-green-700 px-2 py-1 rounded text-xs font-medium">
                                 Muy bueno
                               </div>
                             ) : hotel.estrellas >= 3.0 ? (
-                              <div className="flex items-center gap-1 bg-blue-50 text-blue-700 px-2 py-1 rounded-lg text-xs font-medium">
-                                <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                </svg>
+                              <div className="bg-blue-50 text-blue-700 px-2 py-1 rounded text-xs font-medium">
                                 Bueno
                               </div>
                             ) : null}
                           </div>
 
-                          {/* Botón de selección mejorado */}
+                          {/* Botón de selección */}
                           <button
                             type="button"
-                            className={`w-full text-white py-3 px-4 rounded-xl font-semibold transition-all duration-300 flex items-center justify-center gap-2 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 ${
+                            className={`w-full text-white py-2 px-3 rounded-md font-medium transition-all duration-200 flex items-center justify-center gap-2 ${
                               isSelected
-                                ? "bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700"
-                                : "bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700"
+                                ? "bg-green-500 hover:bg-green-600"
+                                : "bg-blue-500 hover:bg-blue-600"
                             } ${isLoadingHotelImages ? "opacity-75 cursor-wait" : ""}`}
                             disabled={isLoadingHotelImages}
                           >
@@ -663,22 +624,17 @@ const HotelFinder = ({ destination, onHotelSelect, selectedHotel }) => {
                                     d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                                   ></path>
                                 </svg>
-                                <span>Cargando imágenes...</span>
+                                <span>Cargando...</span>
                               </>
                             ) : isSelected ? (
                               <>
                                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                                 </svg>
-                                <span>Hotel Seleccionado</span>
+                                <span>Seleccionado</span>
                               </>
                             ) : (
-                              <>
-                                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                                </svg>
-                                <span>Seleccionar Hotel</span>
-                              </>
+                              <span>Seleccionar</span>
                             )}
                           </button>
                         </div>
@@ -760,12 +716,12 @@ const HotelFinder = ({ destination, onHotelSelect, selectedHotel }) => {
                 )}
               </div>
             ) : (
-              <div className="text-center py-12 bg-gradient-to-br from-gray-50 to-blue-50 rounded-xl border border-gray-200">
+              <div className="text-center py-8 bg-gray-50 rounded-lg border border-gray-200">
                 {searchTerm ? (
                   <>
-                    <div className="mx-auto w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4">
+                    <div className="mx-auto w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-3">
                       <svg
-                        className="w-8 h-8 text-blue-500"
+                        className="w-6 h-6 text-blue-500"
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
@@ -778,25 +734,25 @@ const HotelFinder = ({ destination, onHotelSelect, selectedHotel }) => {
                         />
                       </svg>
                     </div>
-                    <h4 className="text-lg font-medium text-gray-700 mb-2">
+                    <h4 className="text-md font-medium text-gray-700 mb-2">
                       No encontramos hoteles con ese nombre
                     </h4>
-                    <p className="text-gray-500 mb-4">
+                    <p className="text-gray-500 mb-3 text-sm">
                       No hay resultados para "{searchTerm}"
                     </p>
                     <button
                       type="button"
                       onClick={clearSearch}
-                      className="inline-flex items-center px-4 py-2 bg-white border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                      className="inline-flex items-center px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50"
                     >
                       Limpiar búsqueda
                     </button>
                   </>
                 ) : (
                   <>
-                    <div className="mx-auto w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4">
+                    <div className="mx-auto w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-3">
                       <svg
-                        className="w-8 h-8 text-blue-500"
+                        className="w-6 h-6 text-blue-500"
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
@@ -809,10 +765,10 @@ const HotelFinder = ({ destination, onHotelSelect, selectedHotel }) => {
                         />
                       </svg>
                     </div>
-                    <h4 className="text-lg font-medium text-gray-700 mb-2">
+                    <h4 className="text-md font-medium text-gray-700 mb-2">
                       No hay hoteles disponibles
                     </h4>
-                    <p className="text-gray-500 mb-4">
+                    <p className="text-gray-500 text-sm">
                       No encontramos hoteles cercanos en esta ubicación
                     </p>
                   </>
@@ -822,16 +778,16 @@ const HotelFinder = ({ destination, onHotelSelect, selectedHotel }) => {
           </div>
 
           {/* Sección manual mejorada */}
-          <div className="border-t border-gray-100 pt-6">
+          <div className="border-t border-gray-200 pt-4">
             {!isManualFormVisible ? (
               <div className="text-center">
                 <button
                   type="button"
                   onClick={handleShowManualForm}
-                  className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-xl shadow-sm text-white bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200 transform hover:-translate-y-0.5"
+                  className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 transition-all duration-200"
                 >
                   <svg
-                    className="-ml-1 mr-3 h-5 w-5"
+                    className="-ml-1 mr-2 h-4 w-4"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 20 20"
                     fill="currentColor"
@@ -842,17 +798,17 @@ const HotelFinder = ({ destination, onHotelSelect, selectedHotel }) => {
                       clipRule="evenodd"
                     />
                   </svg>
-                  ➕ Agregar hotel manualmente
+                  Agregar hotel manualmente
                 </button>
-                <p className="mt-3 text-sm text-gray-500">
+                <p className="mt-2 text-sm text-gray-500">
                   ¿No encuentras tu hotel? Agrégalo manualmente con toda la información
                 </p>
               </div>
             ) : (
-              <div className="bg-gradient-to-br from-blue-50 to-indigo-50 p-6 rounded-xl border border-blue-100">
-                <div className="flex justify-between items-center mb-5">
-                  <h4 className="font-bold text-xl text-gray-800">
-                    ➕ Agregar hotel manualmente
+              <div className="bg-blue-50 p-4 rounded-lg border border-blue-100">
+                <div className="flex justify-between items-center mb-4">
+                  <h4 className="font-semibold text-lg text-gray-800">
+                    Agregar hotel manualmente
                   </h4>
                   <button
                     type="button"
@@ -861,7 +817,7 @@ const HotelFinder = ({ destination, onHotelSelect, selectedHotel }) => {
                   >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
-                      className="h-6 w-6"
+                      className="h-5 w-5"
                       fill="none"
                       viewBox="0 0 24 24"
                       stroke="currentColor"
@@ -1008,7 +964,7 @@ const HotelFinder = ({ destination, onHotelSelect, selectedHotel }) => {
                         clipRule="evenodd"
                       />
                     </svg>
-                    ✅ Agregar y Seleccionar Hotel
+                    Agregar y Seleccionar Hotel
                   </button>
                 </div>
               </div>
