@@ -426,21 +426,23 @@ const AdminMayoristasPage = () => {
         </div>
 
         {/* Filtros Rápidos - Mejorado para móvil */}
-        <div className="bg-gradient-to-r from-white via-gray-50 to-white rounded-xl sm:rounded-2xl shadow-lg border border-gray-100 p-3 sm:p-4 lg:p-5 mb-4 sm:mb-6">
+        <section className="bg-gradient-to-r from-white via-gray-50 to-white rounded-xl sm:rounded-2xl shadow-lg border border-gray-100 p-3 sm:p-4 lg:p-5 mb-4 sm:mb-6" aria-labelledby="filtros-rapidos-mayoristas">
           <div className="space-y-3 sm:space-y-4">
             {/* Header de filtros */}
             <div className="flex items-center gap-2 sm:gap-3">
               <div className="w-1 h-4 sm:h-6 bg-gradient-to-b from-purple-500 to-indigo-600 rounded-full"></div>
-              <h3 className="text-xs sm:text-sm font-semibold text-gray-800">Filtros Rápidos</h3>
+              <h2 id="filtros-rapidos-mayoristas" className="text-xs sm:text-sm font-semibold text-gray-800">Filtros Rápidos</h2>
             </div>
             
             {/* Filtros principales */}
-            <div className="flex flex-col sm:flex-row flex-wrap gap-2 sm:gap-3">
+            <div className="flex flex-col sm:flex-row flex-wrap gap-2 sm:gap-3" role="group" aria-labelledby="filtros-rapidos-mayoristas">
               <button
                 onClick={() => {
                   setTipoFilter("");
                   setIsFiltersOpen(false);
                 }}
+                aria-pressed={!tipoFilter}
+                aria-label="Mostrar todos los mayoristas sin filtros"
                 className={`group relative px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg sm:rounded-xl text-xs sm:text-sm font-medium transition-all duration-200 ${
                   !tipoFilter
                     ? "bg-gradient-to-r from-purple-500 to-indigo-600 text-white shadow-lg"
@@ -464,7 +466,7 @@ const AdminMayoristasPage = () => {
                 </div>
                 
                 {/* Versión móvil - limitada */}
-                <div className="grid grid-cols-2 gap-2 lg:hidden">
+                <div className="grid grid-cols-2 gap-2 lg:hidden" role="group" aria-label="Filtros por tipo de producto - versión móvil">
                   {tiposUnicos.slice(0, 3).map((tipo) => (
                     <button
                       key={tipo}
@@ -472,6 +474,8 @@ const AdminMayoristasPage = () => {
                         setTipoFilter(tipo);
                         setIsFiltersOpen(false);
                       }}
+                      aria-pressed={tipoFilter === tipo}
+                      aria-label={`Filtrar por tipo: ${tipo}`}
                       className={`px-2 py-1.5 rounded-lg text-xs font-medium transition-all duration-200 truncate ${
                         tipoFilter === tipo
                           ? "bg-orange-500 text-white shadow-md"
@@ -485,6 +489,7 @@ const AdminMayoristasPage = () => {
                   {tiposUnicos.length > 3 && (
                     <button
                       onClick={() => setIsFiltersOpen(true)}
+                      aria-label={`Ver ${tiposUnicos.length - 3} tipos de producto adicionales`}
                       className="px-2 py-1.5 rounded-lg text-xs font-medium bg-gradient-to-r from-gray-100 to-gray-200 text-gray-700 hover:from-gray-200 hover:to-gray-300 transition-all duration-200 border border-gray-300 col-span-2"
                     >
                       +{tiposUnicos.length - 3} más
@@ -493,7 +498,7 @@ const AdminMayoristasPage = () => {
                 </div>
 
                 {/* Versión desktop - completa */}
-                <div className="hidden lg:grid lg:grid-cols-4 lg:gap-3">
+                <div className="hidden lg:grid lg:grid-cols-4 lg:gap-3" role="group" aria-label="Filtros por tipo de producto - versión desktop">
                   {tiposUnicos.map((tipo) => (
                     <button
                       key={tipo}
@@ -501,6 +506,8 @@ const AdminMayoristasPage = () => {
                         setTipoFilter(tipo);
                         setIsFiltersOpen(false);
                       }}
+                      aria-pressed={tipoFilter === tipo}
+                      aria-label={`Filtrar por tipo: ${tipo}`}
                       className={`px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 flex items-center gap-2 ${
                         tipoFilter === tipo
                           ? "bg-orange-500 text-white shadow-lg transform scale-105"
@@ -523,6 +530,7 @@ const AdminMayoristasPage = () => {
               <div className="pt-2 sm:pt-2 border-t border-gray-200">
                 <button
                   onClick={clearFilters}
+                  aria-label="Limpiar todos los filtros aplicados"
                   className="w-full px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg sm:rounded-xl text-xs sm:text-sm font-medium bg-gradient-to-r from-red-50 to-pink-50 text-red-600 hover:from-red-100 hover:to-pink-100 border border-red-200 hover:border-red-300 transition-all duration-200 flex items-center justify-center gap-2"
                 >
                   <FiX className="w-3 h-3 sm:w-4 sm:h-4" />
@@ -532,7 +540,7 @@ const AdminMayoristasPage = () => {
               </div>
             )}
           </div>
-        </div>
+        </section>
 
         {filteredMayoristas.length > 0 ? (
           <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6 items-stretch">

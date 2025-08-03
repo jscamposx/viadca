@@ -673,21 +673,23 @@ const AdminPaquetes = () => {
         </div>
 
         {/* Filtros Rápidos - Mejorado para móvil */}
-        <div className="bg-gradient-to-r from-white via-gray-50 to-white rounded-xl sm:rounded-2xl shadow-lg border border-gray-100 p-3 sm:p-4 lg:p-5 mb-4 sm:mb-6">
+        <section className="bg-gradient-to-r from-white via-gray-50 to-white rounded-xl sm:rounded-2xl shadow-lg border border-gray-100 p-3 sm:p-4 lg:p-5 mb-4 sm:mb-6" aria-labelledby="filtros-rapidos">
           <div className="space-y-3 sm:space-y-4">
             {/* Header de filtros */}
             <div className="flex items-center gap-2 sm:gap-3">
               <div className="w-1 h-4 sm:h-6 bg-gradient-to-b from-blue-500 to-indigo-600 rounded-full"></div>
-              <h3 className="text-xs sm:text-sm font-semibold text-gray-800">Filtros Rápidos</h3>
+              <h2 id="filtros-rapidos" className="text-xs sm:text-sm font-semibold text-gray-800">Filtros Rápidos</h2>
             </div>
             
             {/* Filtros principales */}
-            <div className="flex flex-col sm:flex-row flex-wrap gap-2 sm:gap-3">
+            <div className="flex flex-col sm:flex-row flex-wrap gap-2 sm:gap-3" role="group" aria-labelledby="filtros-rapidos">
               <button
                 onClick={() => {
                   setStatusFilter("activo");
                   setIsFiltersOpen(false);
                 }}
+                aria-pressed={statusFilter === "activo"}
+                aria-label="Filtrar por paquetes activos"
                 className={`group relative px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg sm:rounded-xl text-xs sm:text-sm font-medium transition-all duration-200 ${
                   statusFilter === "activo"
                     ? "bg-emerald-500 text-white shadow-lg"
@@ -706,6 +708,8 @@ const AdminPaquetes = () => {
                   setStatusFilter("inactivo");
                   setIsFiltersOpen(false);
                 }}
+                aria-pressed={statusFilter === "inactivo"}
+                aria-label="Filtrar por paquetes inactivos"
                 className={`group relative px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg sm:rounded-xl text-xs sm:text-sm font-medium transition-all duration-200 ${
                   statusFilter === "inactivo"
                     ? "bg-red-500 text-white shadow-lg"
@@ -726,6 +730,8 @@ const AdminPaquetes = () => {
                   setStatusFilter("");
                   setIsFiltersOpen(false);
                 }}
+                aria-pressed={!mayoristaFilter && !tipoProductoFilter && !statusFilter}
+                aria-label="Mostrar todos los paquetes sin filtros"
                 className={`group relative px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg sm:rounded-xl text-xs sm:text-sm font-medium transition-all duration-200 ${
                   !mayoristaFilter && !tipoProductoFilter && !statusFilter
                     ? "bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-lg"
@@ -813,6 +819,7 @@ const AdminPaquetes = () => {
               <div className="pt-2 sm:pt-2 border-t border-gray-200">
                 <button
                   onClick={clearFilters}
+                  aria-label="Limpiar todos los filtros aplicados"
                   className="w-full px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg sm:rounded-xl text-xs sm:text-sm font-medium bg-gradient-to-r from-red-50 to-pink-50 text-red-600 hover:from-red-100 hover:to-pink-100 border border-red-200 hover:border-red-300 transition-all duration-200 flex items-center justify-center gap-2"
                 >
                   <FiX className="w-3 h-3 sm:w-4 sm:h-4" />
@@ -822,7 +829,7 @@ const AdminPaquetes = () => {
               </div>
             )}
           </div>
-        </div>
+        </section>
 
         {filteredPaquetes.length > 0 ? (
           <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6 items-stretch">
