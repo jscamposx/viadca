@@ -243,7 +243,7 @@ const NuevoPaquete = () => {
                 <button
                   type="button"
                   onClick={() => navigate("/admin/paquetes")}
-                  className="p-2 hover:bg-slate-100 rounded-lg transition-colors"
+                  className="p-2 hover:bg-slate-100 rounded-lg"
                 >
                   <FiArrowLeft className="w-5 h-5 text-slate-600" />
                 </button>
@@ -280,7 +280,7 @@ const NuevoPaquete = () => {
                 </div>
                 <div className="w-24 h-2 bg-slate-200 rounded-full overflow-hidden">
                   <div
-                    className="h-full bg-gradient-to-r from-blue-500 to-purple-500 transition-all duration-500 ease-out"
+                    className="h-full bg-gradient-to-r from-blue-500 to-purple-500"
                     style={{ width: `${progress}%` }}
                   />
                 </div>
@@ -307,7 +307,7 @@ const NuevoPaquete = () => {
                           key={section.id}
                           type="button"
                           onClick={() => setActiveSection(section.id)}
-                          className={`w-full flex items-center gap-3 p-3 rounded-xl text-left transition-all ${
+                          className={`w-full flex items-center gap-3 p-3 rounded-xl text-left ${
                             isActive
                               ? `bg-${section.color}-50 text-${section.color}-700 border border-${section.color}-200`
                               : isCompleted
@@ -461,7 +461,7 @@ const NuevoPaquete = () => {
                       type="button"
                       onClick={() => navigateToSection("prev")}
                       disabled={getCurrentSectionIndex() === 0}
-                      className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-medium transition-all ${
+                      className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-medium ${
                         getCurrentSectionIndex() === 0
                           ? "text-slate-400 cursor-not-allowed"
                           : "text-slate-600 hover:bg-slate-100"
@@ -475,7 +475,7 @@ const NuevoPaquete = () => {
                       {sections.map((_, index) => (
                         <div
                           key={index}
-                          className={`w-2 h-2 rounded-full transition-all ${
+                          className={`w-2 h-2 rounded-full ${
                             index === getCurrentSectionIndex()
                               ? "bg-blue-500 w-6"
                               : index < getCurrentSectionIndex()
@@ -491,7 +491,7 @@ const NuevoPaquete = () => {
                         <button
                           type="button"
                           onClick={() => navigateToSection("next")}
-                          className="flex items-center gap-2 px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-xl transition-colors"
+                          className="flex items-center gap-2 px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-xl"
                         >
                           <span className="hidden sm:inline">Siguiente</span>
                           <FiChevronRight className="w-4 h-4" />
@@ -503,7 +503,7 @@ const NuevoPaquete = () => {
                           type="submit"
                           disabled={isSubmitting}
                           className={`relative bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-8 rounded-lg 
-                                   shadow-md hover:shadow-lg transition-all duration-200 
+                                   shadow-md hover:shadow-lg 
                                    disabled:opacity-50 disabled:cursor-not-allowed
                                    flex items-center gap-3 ${
                                      isSubmitting ? 'animate-pulse' : ''

@@ -1,6 +1,7 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useMapsLibrary } from "@vis.gl/react-google-maps";
 import StarRating from "./StarRating";
+import { getImageUrl } from "../../../utils/imageUtils";
 
 const HotelFinder = ({ destination, onHotelSelect, selectedHotel }) => {
   const places = useMapsLibrary("places");
@@ -17,16 +18,98 @@ const HotelFinder = ({ destination, onHotelSelect, selectedHotel }) => {
     images: [],
   });
 
+  // Ref para evitar condiciones de carrera
+  const isAddingSelectedHotel = useRef(false);
+
   useEffect(() => {    
-    if (
-      selectedHotel &&
-      !allHotels.some((hotel) => hotel.id === selectedHotel.id)
-    ) {
-      setAllHotels((prev) => [selectedHotel, ...prev]);
+    if (!selectedHotel) {
+      isAddingSelectedHotel.current = false;
+      return;
     }
-  }, [selectedHotel, allHotels]);
+
+    // Evitar condiciones de carrera
+    if (isAddingSelectedHotel.current) {
+      console.log('⚠️ Ya se está agregando un hotel, evitando duplicación');
+      return;
+    }
+
+    // Caso 1: No hay hoteles cargados y no estamos cargando - agregar el hotel seleccionado inmediatamente
+    if (allHotels.length === 0 && !loading) {
+      console.log('🎯 Inicializando con hotel seleccionado para edición:', selectedHotel.nombre);
+      isAddingSelectedHotel.current = true;
+      setAllHotels([selectedHotel]);
+      setTimeout(() => { isAddingSelectedHotel.current = false; }, 100);
+      return;
+    }
+
+    // Caso 2: Ya hay hoteles cargados - verificar si el seleccionado existe
+    if (allHotels.length > 0) {
+      const existingHotel = hotelExistsInList(selectedHotel, allHotels);
+
+      if (!existingHotel) {
+        console.log('🏨 Agregando hotel seleccionado que no existe en la lista:', selectedHotel.nombre);
+        isAddingSelectedHotel.current = true;
+        setAllHotels((prev) => {
+          // Triple verificación antes de agregar
+          if (!hotelExistsInList(selectedHotel, prev)) {
+            console.log('✅ Hotel agregado exitosamente');
+            setTimeout(() => { isAddingSelectedHotel.current = false; }, 100);
+            return [selectedHotel, ...prev];
+          }
+          console.log('⚠️ Hotel ya existía al momento de agregar - evitando duplicado');
+          isAddingSelectedHotel.current = false;
+          return prev;
+        });
+      } else {
+        console.log('ℹ️ Hotel ya existe en la lista:', selectedHotel.nombre);
+      }
+    } else if (loading) {
+      console.log('🔄 Esperando que se carguen los hoteles para verificar duplicados');
+    }
+  }, [selectedHotel?.id, selectedHotel?.place_id, selectedHotel?.nombre, allHotels.length, loading]); // Agregar loading como dependencia
 
   const itemsPerPage = 3;
+
+  // Función utilitaria para verificar si un hotel ya existe en la lista
+  const hotelExistsInList = (hotelToCheck, hotelsList) => {
+    const found = hotelsList.find(hotel => {
+      // Para hoteles personalizados, comparar por nombre
+      if (hotel.isCustom && hotelToCheck.isCustom) {
+        const match = hotel.nombre === hotelToCheck.nombre;
+        if (match) console.log('🔍 Match encontrado por nombre (custom):', hotel.nombre);
+        return match;
+      }
+      
+      // Para hoteles de Google Places, comparar por place_id primero
+      if (!hotel.isCustom && !hotelToCheck.isCustom) {
+        // Si ambos tienen place_id, compararlos
+        if (hotel.place_id && hotelToCheck.place_id) {
+          const match = hotel.place_id === hotelToCheck.place_id;
+          if (match) console.log('🔍 Match encontrado por place_id (Google):', hotel.place_id, '=', hotelToCheck.place_id);
+          return match;
+        }
+        
+        // Si no tienen place_id o no coinciden, comparar por nombre como fallback
+        // Esto es importante para hoteles que vienen del servidor vs Google Places
+        const nameMatch = hotel.nombre === hotelToCheck.nombre;
+        if (nameMatch) console.log('🔍 Match encontrado por nombre (Google fallback):', hotel.nombre);
+        return nameMatch;
+      }
+      
+      return false;
+    });
+    
+    console.log('🔍 Verificando duplicados:', {
+      hotel: hotelToCheck.nombre,
+      isCustom: hotelToCheck.isCustom,
+      place_id: hotelToCheck.place_id,
+      id: hotelToCheck.id,
+      listaSize: hotelsList.length,
+      encontrado: !!found
+    });
+    
+    return found;
+  };
 
   const fetchHotels = useCallback(
     async (lat, lng) => {
@@ -91,13 +174,14 @@ const HotelFinder = ({ destination, onHotelSelect, selectedHotel }) => {
             place.photos && place.photos.length > 0
               ? place.photos[0].getUrl({ maxWidth: 800 })
               : null,
-
           googlePhotos: place.photos || [],
           totalPhotos: place.photos ? place.photos.length : 0,
           images: null,
           isCustom: false,
         }));
 
+        console.log('🔍 Hoteles encontrados:', formattedHotels.length);
+        console.log('🔄 Hotel seleccionado actual:', selectedHotel?.nombre || 'Ninguno');
         setAllHotels(formattedHotels);
         setCurrentPage(0);
       } catch (err) {
@@ -119,6 +203,20 @@ const HotelFinder = ({ destination, onHotelSelect, selectedHotel }) => {
   }, [destination, fetchHotels]);
 
   const handleSelectHotel = async (hotel) => {
+    // Verificar si el hotel ya está seleccionado usando la función utilitaria
+    if (selectedHotel) {
+      const isSameHotel = hotelExistsInList(hotel, [selectedHotel]);
+      
+      if (isSameHotel) {
+        // Si es el mismo hotel, deseleccionarlo
+        console.log('🔄 Deseleccionando hotel:', hotel.nombre);
+        onHotelSelect(null);
+        setIsManualFormVisible(false);
+        return;
+      }
+    }
+
+    console.log('🏨 Seleccionando hotel:', hotel.nombre, hotel.isCustom ? '(Personalizado)' : '(Google Places)');
     setIsLoadingHotelImages(true);
     let hotelWithImages = { ...hotel };
 
@@ -270,7 +368,8 @@ const HotelFinder = ({ destination, onHotelSelect, selectedHotel }) => {
   };
 
   const handleShowManualForm = () => {
-    onHotelSelect(null);
+    console.log('📝 Mostrando formulario manual - deseleccionando hotel actual');
+    onHotelSelect(null); // Deseleccionar hotel actual
     setIsManualFormVisible(true);
   };
 
@@ -280,6 +379,7 @@ const HotelFinder = ({ destination, onHotelSelect, selectedHotel }) => {
       return;
     }
     setError(null);
+    
     const newHotel = {
       id: `custom-${Date.now()}`,
       nombre: customHotel.nombre,
@@ -295,10 +395,18 @@ const HotelFinder = ({ destination, onHotelSelect, selectedHotel }) => {
       isCustom: true,
       total_calificaciones: null,
     };
+    
+    // Agregar el nuevo hotel al inicio de la lista
     setAllHotels((prev) => [newHotel, ...prev]);
+    
+    // Seleccionar el nuevo hotel (esto deselecciona automáticamente cualquier hotel anterior)
     onHotelSelect(newHotel);
+    
+    // Limpiar el formulario
     setCustomHotel({ nombre: "", estrellas: 3, images: [] });
     setIsManualFormVisible(false);
+    
+    console.log('✅ Hotel personalizado creado y seleccionado:', newHotel.nombre);
   };
 
   const handleCustomHotelChange = (e) => {
@@ -453,11 +561,29 @@ const HotelFinder = ({ destination, onHotelSelect, selectedHotel }) => {
                 {/* Grid de hoteles mejorado */}
                 <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
                   {getCurrentHotels().map((hotel) => {
-                    const isSelected = hotel.id === selectedHotel?.id;
+                    // Determinar si el hotel está seleccionado usando la función utilitaria
+                    const isSelected = selectedHotel && hotelExistsInList(hotel, [selectedHotel]);
 
-                    const imageUrl = hotel.isCustom
-                      ? hotel.imagenes?.[0]?.contenido || hotel.images?.[0]?.url
-                      : hotel.previewImageUrl;
+                    // Obtener la URL de la imagen usando las utilidades
+                    let imageUrl = null;
+                    if (hotel.isCustom) {
+                      // Para hoteles personalizados, usar la primera imagen disponible
+                      const firstImage = hotel.imagenes?.[0] || hotel.images?.[0];
+                      if (firstImage) {
+                        if (firstImage.file) {
+                          imageUrl = URL.createObjectURL(firstImage.file);
+                        } else {
+                          imageUrl = getImageUrl(firstImage.contenido || firstImage.url);
+                        }
+                      }
+                    } else {
+                      // Para hoteles de Google Places
+                      if (hotel.imagenes?.[0]?.contenido) {
+                        imageUrl = getImageUrl(hotel.imagenes[0].contenido);
+                      } else if (hotel.previewImageUrl) {
+                        imageUrl = hotel.previewImageUrl;
+                      }
+                    }
 
                     return (
                       <div
@@ -465,7 +591,7 @@ const HotelFinder = ({ destination, onHotelSelect, selectedHotel }) => {
                         onClick={() => handleSelectHotel(hotel)}
                         className={`group relative bg-white rounded-lg overflow-hidden cursor-pointer transition-all duration-200 hover:shadow-lg transform hover:-translate-y-1 ${
                           isSelected
-                            ? "ring-2 ring-blue-500 shadow-lg border-2 border-blue-500"
+                            ? "ring-4 ring-green-500 shadow-xl border-2 border-green-500 bg-green-50"
                             : "border border-gray-200 hover:border-blue-300 shadow-sm"
                         }`}
                       >
@@ -568,7 +694,7 @@ const HotelFinder = ({ destination, onHotelSelect, selectedHotel }) => {
                                 <span className="text-sm font-medium text-gray-700">
                                   {hotel.estrellas.toFixed(1)}
                                 </span>
-                                {typeof hotel.total_calificaciones === "number" && hotel.total_calificaciones > 0 && (
+                                {hotel.total_calificaciones && hotel.total_calificaciones > 0 && (
                                   <span className="text-xs text-gray-500">
                                     {hotel.total_calificaciones} reseñas
                                   </span>
