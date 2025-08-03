@@ -52,7 +52,7 @@ const ImageTile = ({
     }}
   >
     <div
-      className={`absolute top-3 left-3 z-20 text-white text-xs font-bold px-2.5 py-1 rounded-full shadow-lg transition-all duration-200 flex items-center gap-1 ${
+      className={`absolute ${index === 0 ? 'bottom-3 left-3' : 'top-3 left-3'} z-20 text-white text-xs font-bold px-2.5 py-1 rounded-full shadow-lg transition-all duration-200 flex items-center gap-1 ${
         index === 0
           ? "bg-gradient-to-r from-amber-500 to-orange-600 glow-effect"
           : "bg-slate-600"
@@ -61,12 +61,7 @@ const ImageTile = ({
       {index === 0 && <FiStar className="w-3 h-3" />}#{index + 1}
     </div>
 
-    {index === 0 && (
-      <div className="absolute top-3 right-3 z-20 bg-gradient-to-r from-amber-400 to-orange-500 text-white text-xs font-bold px-2.5 py-1 rounded-full shadow-lg flex items-center gap-1 glow-effect">
-        <FiStar className="w-3 h-3" />
-        Principal
-      </div>
-    )}
+
 
     {isDragOver && draggedIndex !== index && (
       <div className="absolute inset-0 bg-blue-50 border-4 border-dashed border-blue-400 flex items-center justify-center z-30 backdrop-blur-sm rounded-xl">
@@ -447,9 +442,9 @@ const DestinationImageManager = ({
           </div>
         </div>
       )}
-      <div className="flex justify-between items-center mb-6">
-        <div className="flex gap-3">
-          <label className="group relative bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-xl shadow-lg cursor-pointer transition-all duration-200 hover:shadow-xl hover:scale-105 flex items-center gap-2">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
+        <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+          <label className="group relative bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-xl shadow-lg cursor-pointer transition-all duration-200 hover:shadow-xl hover:scale-105 flex items-center justify-center gap-2 w-full sm:w-auto">
             <FiUpload className="w-4 h-4" />
             <span>Subir Imágenes</span>
             <input
@@ -465,7 +460,7 @@ const DestinationImageManager = ({
           {isInitialized && destination?.name && (
             <button
               onClick={() => fetchImagesFromPexels(destination.name)}
-              className="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-3 px-6 rounded-xl shadow-lg transition-all duration-200 hover:shadow-xl hover:scale-105 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+              className="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-3 px-6 rounded-xl shadow-lg transition-all duration-200 hover:shadow-xl hover:scale-105 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 w-full sm:w-auto"
               disabled={status === "loading"}
             >
               <FiSearch className="w-4 h-4" />
@@ -474,8 +469,9 @@ const DestinationImageManager = ({
           )}
         </div>
 
+        {/* Estadísticas - Solo visible en desktop */}
         {images.length > 0 && (
-          <div className="flex items-center gap-4 text-sm text-slate-600">
+          <div className="hidden sm:flex items-center gap-4 text-sm text-slate-600">
             <div className="flex items-center gap-2">
               <FiImage className="w-4 h-4" />
               <span className="font-medium">
@@ -483,17 +479,17 @@ const DestinationImageManager = ({
               </span>
             </div>
             {/* Indicadores de tipos de imagen */}
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3 flex-wrap">
               {images.filter(img => img.isUploaded || img.tipo === 'base64').length > 0 && (
                 <div className="flex items-center gap-1 px-2 py-1 bg-green-100 text-green-700 rounded-lg text-xs font-medium">
                   <FiUpload className="w-3 h-3" />
-                  {images.filter(img => img.isUploaded || img.tipo === 'base64').length} subida{images.filter(img => img.isUploaded || img.tipo === 'base64').length !== 1 ? 's' : ''}
+                  <span className="whitespace-nowrap">{images.filter(img => img.isUploaded || img.tipo === 'base64').length} subida{images.filter(img => img.isUploaded || img.tipo === 'base64').length !== 1 ? 's' : ''}</span>
                 </div>
               )}
               {images.filter(img => !img.isUploaded && img.tipo !== 'base64').length > 0 && (
                 <div className="flex items-center gap-1 px-2 py-1 bg-blue-100 text-blue-700 rounded-lg text-xs font-medium">
                   <FiSearch className="w-3 h-3" />
-                  {images.filter(img => !img.isUploaded && img.tipo !== 'base64').length} URL
+                  <span className="whitespace-nowrap">{images.filter(img => !img.isUploaded && img.tipo !== 'base64').length} URL</span>
                 </div>
               )}
             </div>
