@@ -27,7 +27,7 @@ const NotificationProvider = ({ children }) => {
         persistent: options.persistent || false,
         duration:
           options.duration ||
-          (type === "error" ? 7000 : type === "success" ? 4000 : 5000),
+          (type === "error" ? 7000 : type === "success" ? 5000 : 5000),
         action: options.action,
       };
 
@@ -67,7 +67,7 @@ const NotificationProvider = ({ children }) => {
     >
       {children}
 
-      <div className="fixed top-0 right-0 w-full max-w-sm p-4 pointer-events-none z-[1000]">
+      <div className="fixed top-0 right-0 left-0 sm:left-auto w-full sm:max-w-sm p-2 sm:p-4 pointer-events-none z-[1000]">
         <div className="space-y-2">
           {notifications.map((notif, index) => (
             <div key={notif.id} className="pointer-events-auto">

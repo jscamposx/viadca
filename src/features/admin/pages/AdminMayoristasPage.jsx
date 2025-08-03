@@ -18,6 +18,7 @@ import {
   FiSettings,
 } from "react-icons/fi";
 import api from "../../../api";
+import ConfirmDialog from "../components/ConfirmDialog";
 import { useNotification } from "./AdminLayout";
 
 const AdminMayoristasPage = () => {
@@ -32,20 +33,37 @@ const AdminMayoristasPage = () => {
   const [tipoFilter, setTipoFilter] = useState("");
   const [isFiltersOpen, setIsFiltersOpen] = useState(false);
   const [isSortMenuOpen, setIsSortMenuOpen] = useState(false);
+  const [confirmDialog, setConfirmDialog] = useState({
+    isOpen: false,
+    mayoristaId: null,
+    mayoristaName: "",
+  });
   const { addNotification } = useNotification();
 
-  const handleDelete = async (mayoristaId) => {
-    if (
-      window.confirm("¿Estás seguro de que quieres eliminar este mayorista?")
-    ) {
-      try {
-        await deleteMayorista(mayoristaId);
-        addNotification("Mayorista eliminado correctamente", "success");
-      } catch (error) {
-        console.error("Error al eliminar mayorista:", error);
-        addNotification("Error al eliminar el mayorista", "error");
-      }
+  const handleDelete = (mayoristaId, mayoristaName) => {
+    setConfirmDialog({
+      isOpen: true,
+      mayoristaId: mayoristaId,
+      mayoristaName: mayoristaName,
+    });
+  };
+
+  const confirmDelete = async () => {
+    try {
+      await deleteMayorista(confirmDialog.mayoristaId);
+      addNotification("Mayorista eliminado correctamente", "success");
+    } catch (error) {
+      console.error("Error al eliminar mayorista:", error);
+      addNotification("Error al eliminar el mayorista", "error");
     }
+  };
+
+  const closeConfirmDialog = () => {
+    setConfirmDialog({
+      isOpen: false,
+      mayoristaId: null,
+      mayoristaName: "",
+    });
   };
 
   const handleSort = (key) => {
@@ -605,7 +623,7 @@ const AdminMayoristasPage = () => {
 
                       {/* Eliminar */}
                       <button
-                        onClick={() => handleDelete(mayorista.id)}
+                        onClick={() => handleDelete(mayorista.id, mayorista.nombre)}
                         className="grupo/eliminar flex items-center justify-center gap-2 bg-gradient-to-r from-red-500 to-pink-600 hover:from-red-600 hover:to-red-700 text-white font-semibold py-2.5 px-4 rounded-xl transition-all duration-300 text-sm shadow-sm hover:shadow-xl hover:scale-105 transform hover:-translate-y-1"
                         title="Eliminar mayorista"
                       >
@@ -688,6 +706,19 @@ const AdminMayoristasPage = () => {
             </div>
           </div>
         )}
+
+        {/* Diálogo de confirmación */}
+        <ConfirmDialog
+          isOpen={confirmDialog.isOpen}
+          onClose={closeConfirmDialog}
+          onConfirm={confirmDelete}
+          title="Eliminar mayorista"
+          message="¿Estás seguro de que quieres eliminar este mayorista?"
+          itemName={confirmDialog.mayoristaName}
+          confirmText="Eliminar mayorista"
+          cancelText="Cancelar"
+          type="danger"
+        />
       </div>
     </div>
   );

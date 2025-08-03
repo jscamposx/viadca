@@ -25,6 +25,7 @@ import api from "../../../api";
 import { useNotification } from "./AdminLayout";
 import Pagination from "../../../components/ui/Pagination";
 import { getImageUrl } from "../../../utils/imageUtils";
+import ConfirmDialog from "../components/ConfirmDialog";
 
 const AdminPaquetes = () => {
   const location = useLocation();
@@ -57,8 +58,12 @@ const AdminPaquetes = () => {
   const [statusFilter, setStatusFilter] = useState("");
   const [tipoProductoFilter, setTipoProductoFilter] = useState("");
   const [isFiltersOpen, setIsFiltersOpen] = useState(false);
-
   const [isSortMenuOpen, setIsSortMenuOpen] = useState(false);
+  const [confirmDialog, setConfirmDialog] = useState({
+    isOpen: false,
+    packageId: null,
+    packageName: "",
+  });
   const { addNotification } = useNotification();
 
   // Manejar notificaciones al regresar de crear/editar paquetes
@@ -222,11 +227,19 @@ const AdminPaquetes = () => {
     setIsSortMenuOpen(false);
   };
 
-  const handleDelete = async (id) => {
+  const handleDelete = (id, packageName) => {
+    setConfirmDialog({
+      isOpen: true,
+      packageId: id,
+      packageName: packageName,
+    });
+  };
+
+  const confirmDelete = async () => {
     try {
-      await api.packages.deletePaquete(id);
+      await api.packages.deletePaquete(confirmDialog.packageId);
       setPaquetes((prevPaquetes) => 
-        Array.isArray(prevPaquetes) ? prevPaquetes.filter((p) => p.id !== id) : []
+        Array.isArray(prevPaquetes) ? prevPaquetes.filter((p) => p.id !== confirmDialog.packageId) : []
       );
       addNotification("Paquete eliminado exitosamente.", "success");
     } catch (err) {
@@ -236,6 +249,14 @@ const AdminPaquetes = () => {
         "error",
       );
     }
+  };
+
+  const closeConfirmDialog = () => {
+    setConfirmDialog({
+      isOpen: false,
+      packageId: null,
+      packageName: "",
+    });
   };
 
   const clearFilters = () => {
@@ -1005,7 +1026,7 @@ const AdminPaquetes = () => {
 
                         {/* Eliminar */}
                         <button
-                          onClick={() => handleDelete(paquete.id)}
+                          onClick={() => handleDelete(paquete.id, paquete.titulo)}
                           className="grupo/eliminar flex items-center justify-center gap-1 sm:gap-2 bg-gradient-to-r from-red-500 to-pink-600 hover:from-red-600 hover:to-red-700 text-white font-semibold py-2.5 sm:py-3 px-2 sm:px-4 rounded-lg sm:rounded-2xl transition-all duration-300 text-xs sm:text-sm shadow-sm hover:shadow-xl hover:scale-105 transform hover:-translate-y-1"
                           title="Eliminar paquete"
                         >
@@ -1123,6 +1144,19 @@ const AdminPaquetes = () => {
           onItemsPerPageChange={setItemsPerPage}
         />
       </div>
+
+      {/* Diálogo de confirmación */}
+      <ConfirmDialog
+        isOpen={confirmDialog.isOpen}
+        onClose={closeConfirmDialog}
+        onConfirm={confirmDelete}
+        title="Eliminar paquete"
+        message="¿Estás seguro de que quieres eliminar este paquete?"
+        itemName={confirmDialog.packageName}
+        confirmText="Eliminar paquete"
+        cancelText="Cancelar"
+        type="danger"
+      />
     </div>
   );
 };

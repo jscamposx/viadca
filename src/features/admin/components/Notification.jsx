@@ -147,7 +147,7 @@ const Notification = ({
             ? "opacity-100 translate-x-0 scale-100"
             : "opacity-0 translate-x-full scale-95 pointer-events-none"
         }
-        right-6 w-full max-w-sm`}
+        right-2 sm:right-6 left-2 sm:left-auto w-auto sm:w-full sm:max-w-sm`}
       style={{
         bottom: `${24 + index * 110}px`,
         transform: visible ? "translateX(0)" : "translateX(100%)",
@@ -179,8 +179,8 @@ const Notification = ({
           </div>
         )}
 
-        <div className="p-4">
-          <div className="flex items-start gap-3">
+        <div className="p-3 sm:p-4">
+          <div className="flex items-start gap-2 sm:gap-3">
             <div className="flex-shrink-0 mt-0.5">
               {notificationIcons[type]}
             </div>
@@ -195,7 +195,7 @@ const Notification = ({
 
                 <button
                   onClick={handleDismiss}
-                  className={`ml-2 p-1 rounded-full transition-all duration-200 
+                  className={`ml-1 sm:ml-2 p-1 rounded-full transition-all duration-200 
                     hover:bg-white/30 active:scale-95 ${notificationColors[type].text}`}
                   aria-label="Cerrar notificación"
                 >
