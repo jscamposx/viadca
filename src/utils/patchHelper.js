@@ -298,23 +298,30 @@ const analyzeImageChanges = (original, current) => {
     }
   }
 
-  // Revisar si hay imágenes nuevas (base64/file) o solo cambios de orden
+  // Verificar si hay cambios en el orden de las imágenes existentes
+  // Comparar el array de IDs en el orden original vs actual
+  const originalIds = originalImages.map(img => img.id);
+  const currentIds = currentImages.map(img => img.id);
+  
+  console.log('🔍 Comparando orden de imágenes:', {
+    originalIds: originalIds,
+    currentIds: currentIds,
+    orderChanged: !isEqual(originalIds, currentIds)
+  });
+
+  // Si los arrays de IDs son diferentes, hay cambios de orden
+  const hasOrderChanges = !isEqual(originalIds, currentIds);
+  
+  // Verificar si hay imágenes nuevas
   let hasNewImages = false;
-  let hasOrderChanges = false;
-
-  const imageComparisons = currentImages.map((currImg, index) => {
-    const origImg = originalImages[index];
-    
-    if (!origImg) {
-      return { isNew: true, orderChanged: false };
-    }
-
+  
+  const imageComparisons = currentImages.map((currImg, currentIndex) => {
     // Detectar si es una imagen nueva (base64, file o tipo específico)
     const isNewImageFlag = isNewImage(currImg);
 
     if (isNewImageFlag) {
       hasNewImages = true;
-      console.log(`🆕 Imagen ${index} detectada como nueva:`, {
+      console.log(`🆕 Imagen ${currentIndex} detectada como nueva:`, {
         id: currImg.id,
         tipo: currImg.tipo,
         isUploaded: currImg.isUploaded,
@@ -324,69 +331,9 @@ const analyzeImageChanges = (original, current) => {
       return { isNew: true, orderChanged: false };
     }
 
-    // Comparar orden para imágenes existentes
-    // El orden original puede venir del campo orden o ser inferido del índice
-    const ordenOriginal = origImg.orden !== undefined ? origImg.orden : (index + 1);
-    const ordenActual = currImg.orden !== undefined ? currImg.orden : (index + 1);
-    const orderChanged = ordenOriginal !== ordenActual;
-
-    if (orderChanged) {
-      hasOrderChanges = true;
-      console.log(`🔄 Cambio de orden detectado en imagen ${index}:`, {
-        id: currImg.id,
-        ordenOriginal,
-        ordenActual
-      });
-    }
-
-    // Comparar contenido para imágenes existentes
-    let originalContent = origImg.contenido || origImg.url;
-    let currentContent = currImg.originalContent || currImg.contenido || currImg.url;
-
-    // Usar originalContent si está disponible (para imágenes cargadas desde servidor)
-    if (currImg.originalContent) {
-      currentContent = currImg.originalContent;
-    } else {
-      // Si no hay originalContent, intentar extraer de la URL
-      if (currImg.url?.startsWith('data:image')) {
-        const base64Match = currImg.url.match(/^data:image\/[^;]+;base64,(.+)$/);
-        if (base64Match) {
-          currentContent = base64Match[1];
-        }
-      } else if (currImg.url?.startsWith('http')) {
-        currentContent = currImg.url;
-      }
-    }
-
-    // Comparar contenido para imágenes existentes solo si ambas existen
-    let contentMatches = true; // Por defecto asumimos que coinciden
-    
-    if (originalContent && currentContent) {
-      contentMatches = originalContent === currentContent;
-    } else if (!originalContent && !currentContent) {
-      contentMatches = true; // Ambas vacías
-    } else {
-      // Una tiene contenido y la otra no - intentar normalizar
-      const normalizedOriginal = normalizeImageUrl(originalContent, true);
-      const normalizedCurrent = normalizeImageUrl(currentContent, false);
-      contentMatches = normalizedOriginal === normalizedCurrent;
-    }
-
-    console.log(`🔍 Imagen ${index} comparación:`, {
-      id: currImg.id,
-      ordenOriginal,
-      ordenActual,
-      orderChanged,
-      originalContent: originalContent?.substring(0, 30) + '...',
-      currentContent: currentContent?.substring(0, 30) + '...',
-      contentMatches,
-      matches: !orderChanged && contentMatches
-    });
-
     return {
       isNew: false,
-      orderChanged,
-      contentChanged: !contentMatches
+      orderChanged: hasOrderChanges
     };
   });
 
@@ -409,13 +356,10 @@ const analyzeImageChanges = (original, current) => {
 
   if (hasOrderChanges) {
     console.log('🔄 Solo cambios de orden - se puede enviar solo IDs y orden');
-    console.log('📋 Ejemplo de payload optimizado:', {
-      imagenes: [
-        { id: 'uuid-imagen-1', orden: 3 },
-        { id: 'uuid-imagen-2', orden: 1 },
-        { id: 'uuid-imagen-3', orden: 2 }
-      ]
-    });
+    console.log('📋 Orden actual será:', currentImages.map((img, idx) => ({
+      id: img.id,
+      orden: idx + 1
+    })));
     return {
       hasChanges: true,
       type: 'ORDER_ONLY',

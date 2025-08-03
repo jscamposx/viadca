@@ -463,6 +463,40 @@ export const usePackageForm = (initialPackageData = null) => {
 
     await api.packages.updatePaquete(initialPackageData.id, finalPayload);
 
+    // Actualizar el estado original después de PATCH exitoso
+    // Esto asegura que las comparaciones futuras sean correctas
+    const updatedOriginalData = { ...originalDataRef.current };
+    
+    // Aplicar los cambios del payload al estado original
+    Object.keys(finalPayload).forEach(key => {
+      if (key === 'imagenes' && typeof finalPayload[key] === 'string') {
+        // Para imágenes, actualizar con el estado actual del formData
+        updatedOriginalData.imagenes = [...(formData.imagenes || [])];
+      } else if (key === 'mayoristasIds') {
+        // Para mayoristas, actualizar tanto mayoristas como mayoristasIds
+        updatedOriginalData.mayoristas = formData.mayoristas || [];
+        updatedOriginalData.mayoristasIds = formData.mayoristasIds || [];
+      } else if (key !== 'hotel' || typeof finalPayload[key] !== 'string') {
+        // Para otros campos (excepto hotel con string), aplicar directamente
+        updatedOriginalData[key] = finalPayload[key];
+      }
+      
+      if (key === 'hotel' && typeof finalPayload[key] === 'string') {
+        // Para hotel, actualizar con el estado actual del formData
+        updatedOriginalData.hotel = formData.hotel;
+      }
+    });
+    
+    // Actualizar la referencia original
+    originalDataRef.current = updatedOriginalData;
+    
+    console.log('🔄 Estado original actualizado después de PATCH exitoso:', {
+      packageId: initialPackageData.id,
+      fieldsUpdated: Object.keys(finalPayload),
+      newImageCount: updatedOriginalData.imagenes?.length || 0,
+      newMayoristasCount: updatedOriginalData.mayoristas?.length || 0
+    });
+
     const endTime = performance.now();
     const responseTime = Math.round(endTime - startTime);
 

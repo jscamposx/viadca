@@ -185,6 +185,7 @@ export const isExistingImage = (image) => {
 
 /**
  * Crea un payload optimizado para cambios solo de orden
+ * Cada imagen existente tendrá su nuevo orden basado en su posición actual
  * 
  * @param {Array} images - Array de imágenes con nuevo orden
  * @returns {Array} Array optimizado para backend
@@ -194,7 +195,6 @@ export const createOrderOnlyPayload = (images) => {
     .filter(isExistingImage)
     .map((img, index) => ({
       id: img.id,
-      orden: index + 1,
-      _orderOnlyUpdate: true
+      orden: index + 1  // El orden es simplemente la posición actual
     }));
 };
