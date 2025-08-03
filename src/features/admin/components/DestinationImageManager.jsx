@@ -10,6 +10,7 @@ import {
   FiEyeOff,
 } from "react-icons/fi";
 import axios from "axios";
+import { fileToBase64 } from "../../../utils/imageUtils";
 
 const Spinner = () => (
   <div className="flex flex-col items-center justify-center py-12 px-4">
@@ -101,15 +102,28 @@ const ImageTile = ({
     </div>
 
     <div className="absolute bottom-3 left-3 right-3 z-20 opacity-0 group-hover:opacity-100 transition-all duration-200 transform translate-y-2 group-hover:translate-y-0">
-      <div className="bg-white/90 backdrop-blur-sm text-slate-700 px-3 py-1.5 rounded-lg text-xs font-medium flex items-center justify-center gap-2 shadow-md">
-        <FiMove className="w-3 h-3" />
-        Arrastra para reordenar
+      <div className="bg-white/90 backdrop-blur-sm text-slate-700 px-3 py-1.5 rounded-lg text-xs font-medium flex items-center justify-between gap-2 shadow-md">
+        <div className="flex items-center gap-2">
+          <FiMove className="w-3 h-3" />
+          Arrastra para reordenar
+        </div>
+        <div className={`px-2 py-0.5 rounded-full text-xs font-bold ${
+          image.isUploaded || image.tipo === 'base64'
+            ? 'bg-green-100 text-green-700'
+            : 'bg-blue-100 text-blue-700'
+        }`}>
+          {image.isUploaded || image.tipo === 'base64' ? 'Subida' : 'URL'}
+        </div>
       </div>
     </div>
 
     <div className="absolute bottom-3 right-3 z-20 opacity-0 group-hover:opacity-100 transition-all duration-200">
-      <div className="bg-slate-800/80 text-white p-1.5 rounded-full">
-        {image.isUploaded ? (
+      <div className={`text-white p-1.5 rounded-full ${
+        image.isUploaded || image.tipo === 'base64' 
+          ? 'bg-green-600/80' 
+          : 'bg-blue-600/80'
+      }`}>
+        {image.isUploaded || image.tipo === 'base64' ? (
           <FiUpload className="w-3 h-3" />
         ) : (
           <FiSearch className="w-3 h-3" />
@@ -118,14 +132,6 @@ const ImageTile = ({
     </div>
   </div>
 );
-
-const fileToBase64 = (file) =>
-  new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = () => resolve(reader.result);
-    reader.onerror = (error) => reject(error);
-  });
 
 const DestinationImageManager = ({
   destination,
@@ -223,6 +229,7 @@ const DestinationImageManager = ({
           id: `pexels-${photo.id}`,
           url: optimizePexelsUrl(photo.src.large),
           isUploaded: false,
+          tipo: 'url' // Marcar explícitamente el tipo
         }));
 
         if (isInitialized && images.length > 0) {
@@ -289,6 +296,8 @@ const DestinationImageManager = ({
           id: `uploaded-${file.name}-${Date.now()}`,
           url: base64,
           isUploaded: true,
+          file: file, // Mantener referencia al archivo original
+          tipo: 'base64' // Marcar explícitamente el tipo
         };
       }),
     );
@@ -466,11 +475,28 @@ const DestinationImageManager = ({
         </div>
 
         {images.length > 0 && (
-          <div className="flex items-center gap-2 text-sm text-slate-600">
-            <FiImage className="w-4 h-4" />
-            <span className="font-medium">
-              {images.length} imagen{images.length !== 1 ? "es" : ""}
-            </span>
+          <div className="flex items-center gap-4 text-sm text-slate-600">
+            <div className="flex items-center gap-2">
+              <FiImage className="w-4 h-4" />
+              <span className="font-medium">
+                {images.length} imagen{images.length !== 1 ? "es" : ""}
+              </span>
+            </div>
+            {/* Indicadores de tipos de imagen */}
+            <div className="flex items-center gap-3">
+              {images.filter(img => img.isUploaded || img.tipo === 'base64').length > 0 && (
+                <div className="flex items-center gap-1 px-2 py-1 bg-green-100 text-green-700 rounded-lg text-xs font-medium">
+                  <FiUpload className="w-3 h-3" />
+                  {images.filter(img => img.isUploaded || img.tipo === 'base64').length} subida{images.filter(img => img.isUploaded || img.tipo === 'base64').length !== 1 ? 's' : ''}
+                </div>
+              )}
+              {images.filter(img => !img.isUploaded && img.tipo !== 'base64').length > 0 && (
+                <div className="flex items-center gap-1 px-2 py-1 bg-blue-100 text-blue-700 rounded-lg text-xs font-medium">
+                  <FiSearch className="w-3 h-3" />
+                  {images.filter(img => !img.isUploaded && img.tipo !== 'base64').length} URL
+                </div>
+              )}
+            </div>
           </div>
         )}
       </div>

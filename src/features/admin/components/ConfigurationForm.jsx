@@ -5,6 +5,7 @@ import {
   FiX,
   FiPackage
 } from "react-icons/fi";
+import ImagesSummary from "./ImagesSummary";
 
 const ConfigurationForm = ({ formData, onFormChange, isEdit = false }) => {
   const handleToggleChange = (name, value) => {
@@ -94,6 +95,9 @@ const ConfigurationForm = ({ formData, onFormChange, isEdit = false }) => {
           placeholder="Notas importantes para el viajero, condiciones especiales, recomendaciones, restricciones, etc..."
         />
       </div>
+
+      {/* Resumen de imágenes */}
+      <ImagesSummary images={formData.imagenes} />
 
       {/* Resumen del paquete - versión original */}
       <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">

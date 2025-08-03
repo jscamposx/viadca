@@ -85,17 +85,36 @@ export const usePackageForm = (initialPackageData = null) => {
       const initialDestino = initialPackageData.destinos?.[0] || {};
 
       const processedImages = (initialPackageData.imagenes || []).map(
-        (img, index) => ({
-          id: img.id || index,
-          url: img.contenido?.startsWith("http")
-            ? img.contenido
-            : img.contenido?.startsWith("data:")
-              ? img.contenido
-              : `${import.meta.env.VITE_API_URL}/uploads/${img.contenido}`,
-          orden: img.orden || index + 1,
-          tipo: img.tipo || "url",
-          file: null,
-        }),
+        (img, index) => {
+          const isBase64Content = img.tipo === 'base64' || 
+            (img.contenido && img.contenido.includes('base64')) ||
+            (img.contenido && !img.contenido.startsWith('http'));
+          
+          let imageUrl;
+          if (isBase64Content) {
+            // Para contenido base64
+            imageUrl = img.contenido.startsWith('data:') 
+              ? img.contenido 
+              : `data:${img.mime_type || 'image/jpeg'};base64,${img.contenido}`;
+          } else if (img.contenido?.startsWith("http")) {
+            // Para URLs externas
+            imageUrl = img.contenido;
+          } else {
+            // Para rutas de archivos en el servidor
+            imageUrl = `${import.meta.env.VITE_API_URL}/uploads/${img.contenido}`;
+          }
+
+          return {
+            id: img.id || `img-${index}`,
+            url: imageUrl,
+            orden: img.orden || index + 1,
+            tipo: img.tipo || (isBase64Content ? 'base64' : 'url'),
+            isUploaded: img.tipo === 'base64' || isBase64Content,
+            file: null,
+            // Preservar el contenido original para comparaciones
+            originalContent: img.contenido,
+          };
+        }
       );
 
       const mayoristasIds = initialPackageData.mayoristas
@@ -482,27 +501,70 @@ export const usePackageForm = (initialPackageData = null) => {
   };
 
   const processImages = async (images) => {
-    return await Promise.all(
+    // Debug: mostrar información sobre los tipos de imágenes
+    console.log('🖼️ Procesando imágenes para envío:', {
+      total: images.length,
+      tipos: images.map((img, idx) => ({
+        indice: idx,
+        id: img.id,
+        tipo: img.tipo || 'indefinido',
+        isUploaded: img.isUploaded,
+        esBase64: img.url.startsWith("data:"),
+        tieneArchivo: !!img.file,
+        urlPreview: img.url.substring(0, 50) + '...'
+      }))
+    });
+
+    const processedImages = await Promise.all(
       images.map(async (img, index) => {
-        if (img.url.startsWith("data:")) {
+        // Verificar si es una imagen de tipo base64 (subida por el usuario)
+        if (img.tipo === 'base64' || (img.isUploaded && img.url.startsWith("data:")) || img.url.startsWith("data:")) {
+          // Obtener información del archivo
+          const base64Content = img.url.includes(',') ? img.url.split(",")[1] : img.url;
+          const mimeType = img.file?.type || img.url.match(/data:([^;]+);/)?.[1] || 'image/jpeg';
+          const fileName = img.file?.name || `imagen-${index + 1}.jpg`;
+
+          console.log(`📤 Enviando imagen ${index + 1} como BASE64:`, {
+            nombre: fileName,
+            tipo: mimeType,
+            tamañoBase64: base64Content.length
+          });
+
           return {
             orden: index + 1,
             tipo: "base64",
-            contenido: img.url.split(",")[1],
-            mime_type: img.file.type,
-            nombre: img.file.name,
+            contenido: base64Content,
+            mime_type: mimeType,
+            nombre: fileName,
           };
         }
+
+        // Para imágenes de URL (ej. Pexels, URLs externas)
+        console.log(`🔗 Enviando imagen ${index + 1} como URL:`, {
+          url: img.url,
+          origen: img.id.includes('pexels') ? 'Pexels' : 'URL externa'
+        });
 
         return {
           orden: index + 1,
           tipo: "url",
           contenido: img.url,
           mime_type: "image/jpeg",
-          nombre: img.url.split("/").pop(),
+          nombre: img.url.split("/").pop() || `imagen-${index + 1}.jpg`,
         };
       }),
     );
+
+    // Resumen final
+    const resumen = {
+      total: processedImages.length,
+      base64: processedImages.filter(img => img.tipo === 'base64').length,
+      url: processedImages.filter(img => img.tipo === 'url').length
+    };
+    
+    console.log('✅ Resumen final de imágenes:', resumen);
+    
+    return processedImages;
   };
 
   const processHotel = async (hotel) => {

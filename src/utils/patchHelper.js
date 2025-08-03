@@ -1,3 +1,5 @@
+import { normalizeImageUrl } from './imageUtils.js';
+
 export const getDifferences = (original, current, excludeFields = []) => {
   const differences = {};
 
@@ -77,7 +79,10 @@ export const preparePatchPayload = (originalPackage, currentFormData) => {
   }
 
   if (hasImageChanges(originalPackage, currentFormData)) {
+    console.log('🖼️ Cambios detectados en imágenes');
     payload.imagenes = "PROCESS_IMAGES";
+  } else {
+    console.log('✅ No hay cambios en imágenes');
   }
 
   if (hasHotelChanges(originalPackage, currentFormData)) {
@@ -197,15 +202,62 @@ const hasImageChanges = (original, current) => {
   const originalImages = original?.imagenes || [];
   const currentImages = current.imagenes || [];
 
-  if (originalImages.length !== currentImages.length) return true;
+  console.log('🔍 Comparando imágenes:', {
+    originalCount: originalImages.length,
+    currentCount: currentImages.length
+  });
+
+  if (originalImages.length !== currentImages.length) {
+    console.log('❌ Diferente cantidad de imágenes');
+    return true;
+  }
 
   return !originalImages.every((origImg, index) => {
     const currImg = currentImages[index];
-    return (
-      currImg &&
-      origImg.orden === currImg.orden &&
-      origImg.contenido === currImg.url
-    );
+    if (!currImg) {
+      console.log(`❌ Imagen ${index} faltante en current`);
+      return false;
+    }
+
+    // Comparar el contenido original si está disponible, sino normalizar las URLs
+    let originalContent = origImg.contenido;
+    let currentContent = currImg.originalContent || currImg.url;
+
+    // Si la imagen actual tiene originalContent, usarla directamente
+    if (currImg.originalContent) {
+      currentContent = currImg.originalContent;
+    } else {
+      // Si no, intentar extraer el contenido de la URL
+      if (currImg.url?.startsWith('data:image')) {
+        // Extraer base64 de data URI
+        const base64Match = currImg.url.match(/^data:image\/[^;]+;base64,(.+)$/);
+        if (base64Match) {
+          currentContent = base64Match[1];
+        }
+      } else if (currImg.url?.startsWith('http')) {
+        currentContent = currImg.url;
+      }
+    }
+
+    // Comparar orden
+    const ordenOriginal = origImg.orden || (index + 1);
+    const ordenActual = currImg.orden || (index + 1);
+    const ordenMatches = ordenOriginal === ordenActual;
+
+    // Comparar contenido
+    const contentMatches = originalContent === currentContent;
+
+    console.log(`🔍 Imagen ${index}:`, {
+      ordenOriginal,
+      ordenActual,
+      ordenMatches,
+      originalContent: originalContent?.substring(0, 50) + '...',
+      currentContent: currentContent?.substring(0, 50) + '...',
+      contentMatches,
+      matches: ordenMatches && contentMatches
+    });
+
+    return ordenMatches && contentMatches;
   });
 };
 

@@ -24,8 +24,7 @@ import {
 import api from "../../../api";
 import { useNotification } from "./AdminLayout";
 import Pagination from "../../../components/ui/Pagination";
-
-const API_URL = import.meta.env.VITE_API_URL;
+import { getImageUrl } from "../../../utils/imageUtils";
 
 const AdminPaquetes = () => {
   const location = useLocation();
@@ -221,22 +220,6 @@ const AdminPaquetes = () => {
     }
     setSortConfig({ key, direction });
     setIsSortMenuOpen(false);
-  };
-
-  const getImageUrl = (url) => {
-    if (!url) return "https://via.placeholder.com/600x400?text=Sin+Imagen";
-    if (url.startsWith("http") || url.startsWith("data:")) {
-      // Optimizar imágenes de Pexels con parámetros recomendados
-      if (url.includes('images.pexels.com')) {
-        // Remover parámetros existentes si los hay
-        const baseUrl = url.split('?')[0];
-        // Aplicar optimización: auto=compress, formato WebP, calidad 75, ajuste crop
-        // Dimensiones optimizadas para tarjetas: 600x400 para buena calidad visual
-        return `${baseUrl}?auto=compress&w=600&h=400&fit=crop&fm=webp&q=75`;
-      }
-      return url;
-    }
-    return `${API_URL}${url}`;
   };
 
   const handleDelete = async (id) => {
