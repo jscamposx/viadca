@@ -120,3 +120,58 @@ export const normalizeImageUrl = (url, isServerContent = false) => {
   
   return url;
 };
+
+/**
+ * Detecta si una imagen es nueva (necesita ser subida) basada en sus propiedades
+ * 
+ * @param {Object} image - Objeto imagen a analizar
+ * @returns {boolean} True si es una imagen nueva
+ */
+export const isNewImage = (image) => {
+  if (!image) return false;
+  
+  return (
+    image.tipo === 'base64' ||
+    image.isUploaded ||
+    !!image.file ||
+    image.url?.startsWith('data:image') ||
+    !image.id ||
+    image.id.includes('temp-') ||
+    image.id.includes('new-')
+  );
+};
+
+/**
+ * Detecta si una imagen es existente (ya está en el servidor)
+ * 
+ * @param {Object} image - Objeto imagen a analizar
+ * @returns {boolean} True si es una imagen existente
+ */
+export const isExistingImage = (image) => {
+  if (!image) return false;
+  
+  return (
+    image.id &&
+    !image.id.includes('temp-') &&
+    !image.id.includes('new-') &&
+    !image.isUploaded &&
+    !image.file &&
+    !image.url?.startsWith('data:image')
+  );
+};
+
+/**
+ * Crea un payload optimizado para cambios solo de orden
+ * 
+ * @param {Array} images - Array de imágenes con nuevo orden
+ * @returns {Array} Array optimizado para backend
+ */
+export const createOrderOnlyPayload = (images) => {
+  return images
+    .filter(isExistingImage)
+    .map((img, index) => ({
+      id: img.id,
+      orden: index + 1,
+      _orderOnlyUpdate: true
+    }));
+};

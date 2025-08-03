@@ -10,10 +10,15 @@ export const useMayoristas = () => {
     try {
       setLoading(true);
       setError(null);
+      console.log('🔄 Cargando mayoristas desde API...');
       const response = await api.mayoristas.getMayoristas();
+      console.log('✅ Mayoristas cargados:', {
+        count: response.data?.length || 0,
+        mayoristas: response.data
+      });
       setMayoristas(response.data);
     } catch (err) {
-      console.error("Error al cargar mayoristas:", err);
+      console.error("❌ Error al cargar mayoristas:", err);
       setError("Error al cargar los mayoristas");
     } finally {
       setLoading(false);

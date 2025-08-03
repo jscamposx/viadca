@@ -5,7 +5,9 @@ import {
   preparePatchPayload,
   hasChanges,
   formatPayloadForLogging,
+  analyzeImageChanges,
 } from "../../../utils/patchHelper";
+import { isExistingImage, createOrderOnlyPayload } from "../../../utils/imageUtils";
 import {
   logPatchOperation,
   createPatchSummary,
@@ -53,6 +55,7 @@ export const usePackageForm = (initialPackageData = null) => {
     destinos: [],
     imagenes: [],
     hotel: null,
+    mayoristas: [],
     mayoristasIds: [],
   });
 
@@ -121,6 +124,12 @@ export const usePackageForm = (initialPackageData = null) => {
         ? initialPackageData.mayoristas.map((m) => m.id)
         : initialPackageData.mayoristasIds || [];
 
+      console.log('🔄 Inicializando paquete existente - Mayoristas:', {
+        mayoristasOriginales: initialPackageData.mayoristas,
+        mayoristasIds: mayoristasIds,
+        directMayoristasIds: initialPackageData.mayoristasIds
+      });
+
       setFormData({
         titulo: initialPackageData.titulo || "",
         fecha_inicio: initialPackageData.fecha_inicio || "",
@@ -168,6 +177,7 @@ export const usePackageForm = (initialPackageData = null) => {
         destinos: initialPackageData.destinos || [],
         imagenes: processedImages,
         hotel: initialPackageData.hotel || null,
+        mayoristas: initialPackageData.mayoristas || [],
         mayoristasIds: mayoristasIds,
       });
     }
@@ -254,6 +264,31 @@ export const usePackageForm = (initialPackageData = null) => {
 
   const handleFormChange = (e) => {
     const { name, value } = e.target;
+    
+    // Manejar tanto 'mayoristas' como 'mayoristasIds' para compatibilidad
+    if (name === 'mayoristas') {
+      const mayoristasIds = Array.isArray(value) ? value.map(m => m.id) : [];
+      console.log('🏢 Actualizando mayoristas desde MayoristasForm:', {
+        mayoristasCompletos: value,
+        mayoristasIds: mayoristasIds,
+        previousValue: formData.mayoristasIds
+      });
+      setFormData((prev) => ({ 
+        ...prev, 
+        mayoristas: value,
+        mayoristasIds: mayoristasIds
+      }));
+      return;
+    }
+    
+    if (name === 'mayoristasIds') {
+      console.log('🏢 Actualizando mayoristasIds directamente:', {
+        name,
+        value,
+        previousValue: formData.mayoristasIds
+      });
+    }
+    
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
@@ -394,15 +429,20 @@ export const usePackageForm = (initialPackageData = null) => {
 
     const processingFlags = {
       images: patchPayload.imagenes === "PROCESS_IMAGES",
+      imagesOrderOnly: patchPayload.imagenes === "PROCESS_IMAGES_ORDER_ONLY",
       hotel: patchPayload.hotel === "PROCESS_HOTEL",
     };
 
-    if (processingFlags.images || processingFlags.hotel) {
+    if (processingFlags.images || processingFlags.imagesOrderOnly || processingFlags.hotel) {
       logPatchOperation("processing", processingFlags);
     }
 
     if (processingFlags.images) {
+      console.log('🖼️ Modo: Procesamiento completo de imágenes');
       finalPayload.imagenes = await processImages(formData.imagenes || []);
+    } else if (processingFlags.imagesOrderOnly) {
+      console.log('⚡ Modo: Solo actualización de orden (optimizado)');
+      finalPayload.imagenes = await processImagesOrderOnly(formData.imagenes || []);
     }
 
     if (processingFlags.hotel) {
@@ -411,6 +451,14 @@ export const usePackageForm = (initialPackageData = null) => {
 
     logPatchOperation("sending", {
       fieldCount: Object.keys(finalPayload).length,
+      mayoristasIncluded: 'mayoristasIds' in finalPayload,
+      mayoristasIds: finalPayload.mayoristasIds || 'no incluidos'
+    });
+
+    console.log('📤 Enviando PATCH - Payload final:', {
+      keys: Object.keys(finalPayload),
+      mayoristasIds: finalPayload.mayoristasIds,
+      payload: finalPayload
     });
 
     await api.packages.updatePaquete(initialPackageData.id, finalPayload);
@@ -437,6 +485,11 @@ export const usePackageForm = (initialPackageData = null) => {
 
     const packageImages = await processImages(formData.imagenes || []);
     const hotelPayload = await processHotel(formData.hotel);
+
+    console.log('🆕 Creando paquete - Mayoristas:', {
+      mayoristasIds: formData.mayoristasIds,
+      count: (formData.mayoristasIds || []).length
+    });
 
     const payload = {
       titulo: formData.titulo,
@@ -488,6 +541,12 @@ export const usePackageForm = (initialPackageData = null) => {
       imagenes: packageImages,
       hotel: hotelPayload,
     };
+
+    console.log('📤 Enviando CREATE - Payload completo:', {
+      payload,
+      mayoristasIncluded: 'mayoristasIds' in payload,
+      mayoristasCount: (payload.mayoristasIds || []).length
+    });
 
     const response = await api.packages.createPaquete(payload);
 
@@ -565,6 +624,65 @@ export const usePackageForm = (initialPackageData = null) => {
     console.log('✅ Resumen final de imágenes:', resumen);
     
     return processedImages;
+  };
+
+  const processImagesOrderOnly = async (images) => {
+    console.log('🔄 Procesando solo cambios de orden de imágenes:', {
+      total: images.length
+    });
+
+    // Usar la función auxiliar para crear el payload optimizado
+    const orderOnlyPayload = createOrderOnlyPayload(images);
+
+    // Verificar si hay imágenes que no son existentes (error en detección)
+    const nonExistingImages = images.filter(img => !isExistingImage(img));
+    
+    if (nonExistingImages.length > 0) {
+      console.warn('⚠️ Encontradas imágenes no existentes en processImagesOrderOnly:', 
+        nonExistingImages.map(img => ({
+          id: img.id,
+          isUploaded: img.isUploaded,
+          hasFile: !!img.file,
+          tipo: img.tipo
+        }))
+      );
+      
+      // Procesar las nuevas imágenes de forma normal
+      const newImagesPayload = await Promise.all(
+        nonExistingImages.map(async (img, index) => {
+          if (img.url?.startsWith('data:image') || img.file) {
+            const base64Content = img.url.includes(',') ? img.url.split(",")[1] : img.url;
+            const mimeType = img.file?.type || img.url.match(/data:([^;]+);/)?.[1] || 'image/jpeg';
+            const fileName = img.file?.name || `imagen-nueva-${index + 1}.jpg`;
+
+            return {
+              orden: images.indexOf(img) + 1,
+              tipo: "base64",
+              contenido: base64Content,
+              mime_type: mimeType,
+              nombre: fileName,
+            };
+          }
+          
+          return {
+            orden: images.indexOf(img) + 1,
+            tipo: "url",
+            contenido: img.url,
+            mime_type: "image/jpeg",
+            nombre: `imagen-nueva-${index + 1}.jpg`,
+          };
+        })
+      );
+      
+      // Combinar imágenes existentes (solo orden) con nuevas (completas)
+      return [...orderOnlyPayload, ...newImagesPayload];
+    }
+
+    console.log('✅ Payload optimizado solo para orden:', {
+      total: orderOnlyPayload.length
+    });
+
+    return orderOnlyPayload;
   };
 
   const processHotel = async (hotel) => {

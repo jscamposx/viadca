@@ -6,6 +6,16 @@ const PackageForm = ({ formData, onFormChange }) => {
   const [showDiscount, setShowDiscount] = useState(!!formData.descuento);
   const { mayoristas, loading: mayoristasLoading } = useMayoristas();
 
+  // Debug: Verificar que los mayoristas se cargan y el estado actual
+  useEffect(() => {
+    console.log('🏢 PackageForm - Estado de mayoristas:', {
+      mayoristasCount: mayoristas?.length || 0,
+      mayoristasLoading,
+      currentMayoristasIds: formData.mayoristasIds || [],
+      formData: formData
+    });
+  }, [mayoristas, mayoristasLoading, formData.mayoristasIds]);
+
   const formatNumber = (value) => {
     if (!value) return "";
     const numberValue = parseFloat(String(value).replace(/,/g, ""));
@@ -29,6 +39,13 @@ const PackageForm = ({ formData, onFormChange }) => {
     } else {
       newIds = [...currentIds, mayoristaId];
     }
+
+    console.log('🏢 Cambio en mayorista:', {
+      mayoristaId,
+      currentIds,
+      newIds,
+      action: currentIds.includes(mayoristaId) ? 'remove' : 'add'
+    });
 
     onFormChange({ target: { name: "mayoristasIds", value: newIds } });
   };
@@ -202,7 +219,7 @@ const PackageForm = ({ formData, onFormChange }) => {
           </label>
           {mayoristasLoading ? (
             <div className="text-gray-500">Cargando mayoristas...</div>
-          ) : (
+          ) : mayoristas && mayoristas.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
               {mayoristas.map((mayorista) => (
                 <label
@@ -214,7 +231,15 @@ const PackageForm = ({ formData, onFormChange }) => {
                     checked={(formData.mayoristasIds || []).includes(
                       mayorista.id,
                     )}
-                    onChange={() => handleMayoristaChange(mayorista.id)}
+                    onChange={(e) => {
+                      console.log('✅ Checkbox mayorista clicked:', {
+                        mayoristaId: mayorista.id,
+                        mayoristaNombre: mayorista.nombre,
+                        checked: e.target.checked,
+                        currentIds: formData.mayoristasIds
+                      });
+                      handleMayoristaChange(mayorista.id);
+                    }}
                     className="mr-3 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
                   />
                   <div className="flex-1">
@@ -229,6 +254,12 @@ const PackageForm = ({ formData, onFormChange }) => {
                   </div>
                 </label>
               ))}
+            </div>
+          ) : (
+            <div className="text-gray-500 p-4 border border-gray-200 rounded-lg">
+              No hay mayoristas disponibles. 
+              <br />
+              <small>Verifica que existan mayoristas en el sistema.</small>
             </div>
           )}
         </div>

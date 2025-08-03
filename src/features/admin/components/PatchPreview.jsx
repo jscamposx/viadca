@@ -45,6 +45,10 @@ const PatchPreview = ({ patchPayload, onToggle }) => {
       return "Modificadas";
     }
 
+    if (fieldName === "imagenes" && value === "PROCESS_IMAGES_ORDER_ONLY") {
+      return "Solo orden modificado";
+    }
+
     if (fieldName === "hotel" && value === "PROCESS_HOTEL") {
       return "Modificado";
     }
