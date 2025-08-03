@@ -722,6 +722,17 @@ export const usePackageForm = (initialPackageData = null) => {
   const processHotel = async (hotel) => {
     if (!hotel) return null;
 
+    console.log('🏨 Procesando hotel:', {
+      place_id: hotel.place_id,
+      id: hotel.id,
+      nombre: hotel.nombre,
+      estrellas: hotel.estrellas,
+      estrellas_type: typeof hotel.estrellas,
+      total_calificaciones: hotel.total_calificaciones,
+      total_calificaciones_type: typeof hotel.total_calificaciones,
+      isCustom: hotel.isCustom
+    });
+
     let hotelImages = [];
     const imageList = hotel.imagenes || hotel.images || [];
 
@@ -768,14 +779,22 @@ export const usePackageForm = (initialPackageData = null) => {
       }),
     );
 
-    return {
+    const hotelPayload = {
       placeId: hotel.place_id || hotel.id,
       nombre: hotel.nombre,
-      estrellas: hotel.estrellas,
+      estrellas: hotel.estrellas && !isNaN(hotel.estrellas) 
+        ? Number(hotel.estrellas) 
+        : 0,
       isCustom: hotel.isCustom || false,
-      total_calificaciones: hotel.total_calificaciones,
+      total_calificaciones: hotel.total_calificaciones && !isNaN(hotel.total_calificaciones) 
+        ? Number(hotel.total_calificaciones) 
+        : 0,
       imagenes: hotelImages,
     };
+
+    console.log('📋 Hotel payload final:', hotelPayload);
+    
+    return hotelPayload;
   };
 
   const origin = useMemo(
