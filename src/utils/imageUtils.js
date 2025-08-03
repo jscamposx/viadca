@@ -123,6 +123,10 @@ export const normalizeImageUrl = (url, isServerContent = false) => {
 
 /**
  * Detecta si una imagen es nueva (necesita ser subida) basada en sus propiedades
+ * Una imagen es NUEVA si:
+ * - No tiene ID o tiene ID temporal
+ * - Tiene un archivo File adjunto
+ * - Se acaba de subir desde el formulario (no cargada desde servidor)
  * 
  * @param {Object} image - Objeto imagen a analizar
  * @returns {boolean} True si es una imagen nueva
@@ -130,19 +134,37 @@ export const normalizeImageUrl = (url, isServerContent = false) => {
 export const isNewImage = (image) => {
   if (!image) return false;
   
-  return (
-    image.tipo === 'base64' ||
-    image.isUploaded ||
-    !!image.file ||
-    image.url?.startsWith('data:image') ||
-    !image.id ||
-    image.id.includes('temp-') ||
-    image.id.includes('new-')
-  );
+  // Si no tiene ID o tiene ID temporal, es nueva
+  if (!image.id || image.id.includes('temp-') || image.id.includes('new-')) {
+    return true;
+  }
+  
+  // Si tiene un archivo File adjunto, es nueva (recién seleccionada)
+  if (image.file) {
+    return true;
+  }
+  
+  // Si tiene ID válido de UUID y originalContent, es existente (cargada desde servidor)
+  if (image.id && image.originalContent) {
+    return false;
+  }
+  
+  // Si tiene ID válido y no tiene file, probablemente es existente
+  const hasValidId = image.id && /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$/i.test(image.id);
+  if (hasValidId && !image.file) {
+    return false;
+  }
+  
+  // Por defecto, si no está claro, considerar nueva para ser seguro
+  return true;
 };
 
 /**
  * Detecta si una imagen es existente (ya está en el servidor)
+ * Una imagen es EXISTENTE si:
+ * - Tiene ID válido de UUID (no temporal)
+ * - No tiene archivo File adjunto
+ * - Opcionalmente tiene originalContent (cargada desde servidor)
  * 
  * @param {Object} image - Objeto imagen a analizar
  * @returns {boolean} True si es una imagen existente
@@ -150,13 +172,14 @@ export const isNewImage = (image) => {
 export const isExistingImage = (image) => {
   if (!image) return false;
   
+  // Debe tener un ID válido de UUID
+  const hasValidId = image.id && /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$/i.test(image.id);
+  
   return (
-    image.id &&
+    hasValidId &&
     !image.id.includes('temp-') &&
     !image.id.includes('new-') &&
-    !image.isUploaded &&
-    !image.file &&
-    !image.url?.startsWith('data:image')
+    !image.file  // No debe tener archivo adjunto
   );
 };
 
