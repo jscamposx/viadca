@@ -156,14 +156,11 @@ const PricingForm = ({ formData, onFormChange }) => {
             </span>
           </label>
           <div className="relative">
-            <span className="absolute inset-y-0 left-0 flex items-center pl-2.5 sm:pl-3 text-gray-500">
-              <FiDollarSign className="w-4 h-4" />
-            </span>
             <input
               type="text"
               value={formatNumber(precioOriginal)}
               onChange={handlePrecioOriginalChange}
-              className="w-full pl-8 p-2.5 sm:p-3 border border-gray-300 rounded-lg sm:rounded-md focus:ring-2 focus:ring-blue-500 text-sm sm:text-base"
+              className="w-full p-2.5 sm:p-3 border border-gray-300 rounded-lg sm:rounded-md focus:ring-2 focus:ring-blue-500 text-sm sm:text-base"
               placeholder="Ej. 5,000"
               required
             />
@@ -176,15 +173,12 @@ const PricingForm = ({ formData, onFormChange }) => {
             <span className="text-xs text-gray-500 block">(Para reservar)</span>
           </label>
           <div className="relative">
-            <span className="absolute inset-y-0 left-0 flex items-center pl-2.5 sm:pl-3 text-gray-500">
-              <FiDollarSign className="w-4 h-4" />
-            </span>
             <input
               type="text"
               name="anticipo"
               value={formatNumber(formData.anticipo)}
               onChange={handleNumericChange}
-              className="w-full pl-8 p-2.5 sm:p-3 border border-gray-300 rounded-lg sm:rounded-md focus:ring-2 focus:ring-blue-500 text-sm sm:text-base"
+              className="w-full p-2.5 sm:p-3 border border-gray-300 rounded-lg sm:rounded-md focus:ring-2 focus:ring-blue-500 text-sm sm:text-base"
               placeholder="Ej. 1,000"
             />
           </div>
@@ -197,17 +191,23 @@ const PricingForm = ({ formData, onFormChange }) => {
 
         <div className="sm:col-span-2 lg:col-span-1">
           {!showDiscount ? (
-            <div className="flex flex-col justify-end h-full">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1 sm:mb-2">
+                <span className="opacity-0">Placeholder</span>
+                <span className="text-xs text-gray-500 block opacity-0">
+                  (Placeholder)
+                </span>
+              </label>
               <button
                 type="button"
                 onClick={handleToggleDiscount}
-                className="flex items-center justify-center w-full py-2.5 sm:py-3 px-3 sm:px-4 border border-dashed border-green-300 rounded-lg hover:border-green-500 hover:bg-green-50 text-green-600 transition-all duration-200 text-sm sm:text-base"
+                className="flex items-center justify-center w-full p-2.5 sm:p-3 border border-dashed border-green-300 rounded-lg hover:border-green-500 hover:bg-green-50 text-green-600 transition-all duration-200 text-sm sm:text-base"
               >
                 <FiTag className="mr-2 w-4 h-4" /> Agregar descuento
               </button>
             </div>
           ) : (
-            <div className="relative">
+            <div>
               <label className="block text-sm font-medium text-gray-700 mb-1 sm:mb-2">
                 Precio Final *
                 <span className="text-xs text-gray-500 block">
@@ -215,26 +215,23 @@ const PricingForm = ({ formData, onFormChange }) => {
                 </span>
               </label>
               <div className="relative">
-                <span className="absolute inset-y-0 left-0 flex items-center pl-2.5 sm:pl-3 text-gray-500">
-                  <FiDollarSign className="w-4 h-4" />
-                </span>
                 <input
                   type="text"
                   value={formatNumber(precioConDescuento)}
                   onChange={handlePrecioConDescuentoChange}
-                  className="w-full pl-8 p-2.5 sm:p-3 border border-gray-300 rounded-lg sm:rounded-md focus:ring-2 focus:ring-green-500 text-sm sm:text-base"
-                  placeholder="Ej. 4,500"
+                  className="w-full pr-10 p-2.5 sm:p-3 border border-gray-300 rounded-lg sm:rounded-md focus:ring-2 focus:ring-green-500 text-sm sm:text-base"
+                  placeholder="4,500"
                   required
                 />
+                <button
+                  type="button"
+                  onClick={handleToggleDiscount}
+                  className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-500 hover:text-red-500 transition-colors"
+                  title="Quitar descuento"
+                >
+                  <FiX className="w-4 h-4" />
+                </button>
               </div>
-              <button
-                type="button"
-                onClick={handleToggleDiscount}
-                className="absolute top-0 right-0 p-1 text-gray-500 hover:text-red-500 transition-colors"
-                title="Quitar descuento"
-              >
-                <FiX className="w-4 h-4" />
-              </button>
             </div>
           )}
         </div>

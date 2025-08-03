@@ -466,7 +466,7 @@ const HotelFinder = ({ destination, onHotelSelect, selectedHotel }) => {
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+    <div className="bg-white rounded-lg shadow-sm overflow-hidden">
       <div className="p-6">
         {!destination?.lat ? (
           <div className="text-center py-12">

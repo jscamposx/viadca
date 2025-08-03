@@ -70,7 +70,6 @@ const GooglePlacesSearch = ({
       autocompleteRef.current = new places.Autocomplete(inputRef.current, {
         types: ["(cities)"],
         language: "es",
-
         fields: [
           "place_id",
           "formatted_address",
@@ -91,12 +90,60 @@ const GooglePlacesSearch = ({
       },
     );
 
+    // Mejora para compatibilidad móvil - Forzar eventos táctiles
+    const pacContainer = document.querySelector('.pac-container');
+    if (pacContainer) {
+      pacContainer.style.touchAction = 'manipulation';
+      pacContainer.style.webkitTouchCallout = 'none';
+      pacContainer.style.webkitUserSelect = 'none';
+      pacContainer.style.webkitTapHighlightColor = 'transparent';
+    }
+
+    // Observador para elementos dinámicos del dropdown
+    const observer = new MutationObserver(() => {
+      const pacItems = document.querySelectorAll('.pac-item');
+      pacItems.forEach(item => {
+        if (!item.dataset.mobileFixed) {
+          item.style.touchAction = 'manipulation';
+          item.style.cursor = 'pointer';
+          item.dataset.mobileFixed = 'true';
+          
+          // Agregar eventos táctiles adicionales para móvil
+          item.addEventListener('touchstart', (e) => {
+            e.stopPropagation();
+            item.style.backgroundColor = '#f0f0f0';
+          }, { passive: true });
+          
+          item.addEventListener('touchend', (e) => {
+            e.stopPropagation();
+            item.style.backgroundColor = '';
+            // Simular un click después de un pequeño delay
+            setTimeout(() => {
+              const mouseEvent = new MouseEvent('mousedown', {
+                bubbles: true,
+                cancelable: true,
+                view: window
+              });
+              item.dispatchEvent(mouseEvent);
+            }, 10);
+          }, { passive: true });
+        }
+      });
+    });
+
+    // Iniciar observación del DOM
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true
+    });
+
     console.warn = originalWarn;
 
     return () => {
       if (listener) {
         window.google.maps.event.removeListener(listener);
       }
+      observer.disconnect();
     };
   }, [places, onPlaceSelected]);
 
@@ -117,21 +164,31 @@ const GooglePlacesSearch = ({
 
   return (
     <div className="relative flex items-center">
-      <FiSearch className="absolute left-3 h-5 w-5 text-gray-400" />
+      <FiSearch className="absolute left-3 h-5 w-5 text-gray-400 pointer-events-none z-10" />
       <input
         ref={inputRef}
         type="text"
         placeholder={placeholder}
-        className="w-full rounded bg-white p-2 pl-10 pr-10 border border-gray-300"
+        className="w-full rounded bg-white p-3 pl-10 pr-10 border border-gray-300 text-base leading-6 touch-manipulation"
+        style={{
+          fontSize: '16px', // Previene zoom en iOS
+          WebkitAppearance: 'none',
+          touchAction: 'manipulation'
+        }}
         value={value || ""}
         onChange={(e) => onChange(e.target.value)}
         onKeyDown={handleKeyDown}
+        autoComplete="off"
+        autoCorrect="off"
+        autoCapitalize="off"
+        spellCheck="false"
       />
       {value && (
         <button
           type="button"
           onClick={handleClearInput}
-          className="absolute right-3"
+          className="absolute right-3 p-1 touch-manipulation"
+          style={{ touchAction: 'manipulation' }}
         >
           <FiX className="h-5 w-5 text-gray-500 hover:text-gray-700" />
         </button>
