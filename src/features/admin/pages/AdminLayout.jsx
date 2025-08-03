@@ -1,4 +1,4 @@
-import { Outlet, useOutletContext } from "react-router-dom";
+import { Outlet, useOutletContext, useLocation } from "react-router-dom";
 import AdminNav from "../components/AdminNav";
 import {
   useState,
@@ -102,6 +102,7 @@ const NotificationProvider = ({ children }) => {
 };
 
 const AdminLayout = () => {
+  const location = useLocation();
   const [isMobile, setIsMobile] = useState(() => {
     if (typeof window !== "undefined") {
       return window.innerWidth < 768;
@@ -110,6 +111,12 @@ const AdminLayout = () => {
   });
 
   const [isSidebarOpen, setSidebarOpen] = useState(false);
+
+  // Detectar si estamos en páginas de creación/edición de paquetes o mayoristas
+  const isFormPage = location.pathname.includes('/paquetes/nuevo') || 
+                     location.pathname.includes('/paquetes/editar/') ||
+                     location.pathname.includes('/mayoristas/nuevo') ||
+                     location.pathname.includes('/mayoristas/editar/');
 
   useEffect(() => {
     const handleResize = () => {
@@ -129,10 +136,19 @@ const AdminLayout = () => {
   return (
     <NotificationProvider>
       <div className="bg-gray-100 min-h-screen">
-        <AdminNav isOpen={isSidebarOpen} setIsOpen={setSidebarOpen} />
+        {/* Solo mostrar AdminNav si no estamos en páginas de formulario */}
+        {!isFormPage && (
+          <AdminNav isOpen={isSidebarOpen} setIsOpen={setSidebarOpen} />
+        )}
         <main
           className={`transition-[margin-left] duration-300 ease-in-out ${
-            isMobile ? "pt-16" : isSidebarOpen ? "ml-64" : "ml-20"
+            isFormPage 
+              ? "" // Sin margen cuando la navbar está oculta
+              : isMobile 
+                ? "pt-16" 
+                : isSidebarOpen 
+                  ? "ml-64" 
+                  : "ml-20"
           }`}
         >
           <div className=" bg-white">
