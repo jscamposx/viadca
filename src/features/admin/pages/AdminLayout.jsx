@@ -118,6 +118,9 @@ const AdminLayout = () => {
                      location.pathname.includes('/mayoristas/nuevo') ||
                      location.pathname.includes('/mayoristas/editar/');
 
+  // Solo ocultar navbar en móviles cuando estemos en páginas de formulario
+  const shouldHideNav = isMobile && isFormPage;
+
   useEffect(() => {
     const handleResize = () => {
       const mobile = window.innerWidth < 768;
@@ -136,14 +139,14 @@ const AdminLayout = () => {
   return (
     <NotificationProvider>
       <div className="bg-gray-100 min-h-screen">
-        {/* Solo mostrar AdminNav si no estamos en páginas de formulario */}
-        {!isFormPage && (
+        {/* Solo ocultar AdminNav en móviles cuando estemos en páginas de formulario */}
+        {!shouldHideNav && (
           <AdminNav isOpen={isSidebarOpen} setIsOpen={setSidebarOpen} />
         )}
         <main
           className={`transition-[margin-left] duration-300 ease-in-out ${
-            isFormPage 
-              ? "" // Sin margen cuando la navbar está oculta
+            shouldHideNav 
+              ? "" // Sin margen cuando la navbar está oculta (solo móviles)
               : isMobile 
                 ? "pt-16" 
                 : isSidebarOpen 
