@@ -12,7 +12,6 @@ import {
   FiAlertCircle,
   FiCheckCircle,
   FiX,
-  FiWifi,
 } from "react-icons/fi";
 
 const NewMayoristaPage = () => {
@@ -31,11 +30,6 @@ const NewMayoristaPage = () => {
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const [isLoadingData, setIsLoadingData] = useState(isEditing);
-  const [connectionTest, setConnectionTest] = useState({
-    tested: false,
-    success: false,
-    error: null,
-  });
 
   const tiposProducto = [
     "Circuito",
@@ -71,34 +65,6 @@ const NewMayoristaPage = () => {
       loadMayorista();
     }
   }, [isEditing, id]);
-
-  // Función para probar la conectividad
-  const testConnection = async () => {
-    try {
-      if (import.meta.env.DEV) {
-        console.log("🔍 Probando conectividad con API...");
-      }
-      const response = await api.mayoristas.getMayoristas();
-      if (import.meta.env.DEV) {
-        console.log("✅ Test de conectividad exitoso:", response);
-      }
-      setConnectionTest({ tested: true, success: true, error: null });
-    } catch (error) {
-      if (import.meta.env.DEV) {
-        console.error("❌ Test de conectividad falló:", error);
-      }
-      setConnectionTest({
-        tested: true,
-        success: false,
-        error: error.message || "Error de conexión",
-      });
-    }
-  };
-
-  useEffect(() => {
-    // Probar conectividad al cargar la página
-    testConnection();
-  }, []);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -415,38 +381,6 @@ const NewMayoristaPage = () => {
                 </div>
               </div>
 
-              {/* Panel de diagnóstico de conexión */}
-              <div className="bg-gradient-to-r from-green-50 via-teal-50 to-cyan-50 border border-green-200 rounded-xl sm:rounded-2xl p-4 sm:p-6">
-                <div className="flex items-start gap-3 sm:gap-4">
-                  <div className={`p-2 rounded-lg shadow-sm ${connectionTest.success ? 'bg-green-500' : connectionTest.tested ? 'bg-red-500' : 'bg-gray-500'}`}>
-                    <FiWifi className="text-white w-5 h-5" />
-                  </div>
-                  <div className="flex-1">
-                    <h4 className="text-sm sm:text-base font-semibold text-green-900 mb-2">
-                      🌐 Estado de Conexión
-                    </h4>
-                    {!connectionTest.tested ? (
-                      <p className="text-sm text-gray-600">Verificando conexión...</p>
-                    ) : connectionTest.success ? (
-                      <p className="text-sm text-green-800">✅ Conexión con API exitosa</p>
-                    ) : (
-                      <div>
-                        <p className="text-sm text-red-800 mb-2">❌ Error de conexión: {connectionTest.error}</p>
-                        <button
-                          type="button"
-                          onClick={testConnection}
-                          className="text-xs bg-red-100 hover:bg-red-200 text-red-800 px-3 py-1 rounded-lg transition-colors"
-                        >
-                          Reintentar
-                        </button>
-                      </div>
-                    )}
-                    <p className="text-xs text-gray-600 mt-2">
-                      API: {import.meta.env.VITE_API_BASE_URL} | Entorno: {import.meta.env.MODE}
-                    </p>
-                  </div>
-                </div>
-              </div>
             </div>
 
             {/* Botones de acción */}
