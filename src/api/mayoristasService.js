@@ -13,6 +13,11 @@ export const getMayoristaByClave = (clave) => {
 };
 
 export const createMayorista = (mayoristaData) => {
+  console.log("📤 Enviando request de creación de mayorista:", {
+    data: mayoristaData,
+    endpoint: "/admin/mayoristas",
+    method: "POST"
+  });
   return apiClient.post("/admin/mayoristas", mayoristaData);
 };
 

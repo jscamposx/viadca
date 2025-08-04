@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useMayoristas } from "../hooks/useMayoristas";
 import { useNotification } from "./AdminLayout";
+import api from "../../../api";
 import {
   FiSave,
   FiArrowLeft,
@@ -11,6 +12,7 @@ import {
   FiAlertCircle,
   FiCheckCircle,
   FiX,
+  FiWifi,
 } from "react-icons/fi";
 
 const NewMayoristaPage = () => {
@@ -29,6 +31,11 @@ const NewMayoristaPage = () => {
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const [isLoadingData, setIsLoadingData] = useState(isEditing);
+  const [connectionTest, setConnectionTest] = useState({
+    tested: false,
+    success: false,
+    error: null,
+  });
 
   const tiposProducto = [
     "Circuito",
@@ -62,6 +69,28 @@ const NewMayoristaPage = () => {
       loadMayorista();
     }
   }, [isEditing, id]);
+
+  // Función para probar la conectividad
+  const testConnection = async () => {
+    try {
+      console.log("🔍 Probando conectividad con API...");
+      const response = await api.mayoristas.getMayoristas();
+      console.log("✅ Test de conectividad exitoso:", response);
+      setConnectionTest({ tested: true, success: true, error: null });
+    } catch (error) {
+      console.error("❌ Test de conectividad falló:", error);
+      setConnectionTest({
+        tested: true,
+        success: false,
+        error: error.message || "Error de conexión",
+      });
+    }
+  };
+
+  useEffect(() => {
+    // Probar conectividad al cargar la página
+    testConnection();
+  }, []);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -110,24 +139,55 @@ const NewMayoristaPage = () => {
         tipo_producto: formData.tipo_producto,
       };
 
+      console.log(
+        "🚀 Iniciando proceso de creación/actualización de mayorista:",
+        {
+          isEditing,
+          mayoristData,
+          id,
+          environment: import.meta.env.MODE,
+          apiUrl: import.meta.env.VITE_API_BASE_URL,
+        }
+      );
+
       if (isEditing) {
+        console.log("📝 Actualizando mayorista existente...");
         await updateMayorista(id, mayoristData);
         addNotification("Mayorista actualizado correctamente", "success");
       } else {
-        await createMayorista(mayoristData);
+        console.log("✨ Creando nuevo mayorista...");
+        const result = await createMayorista(mayoristData);
+        console.log("✅ Mayorista creado exitosamente:", result);
         addNotification("Mayorista creado correctamente", "success");
       }
 
       navigate("/admin/mayoristas");
     } catch (error) {
-      console.error("Error al guardar mayorista:", error);
+      console.error("❌ Error completo al guardar mayorista:", {
+        error,
+        message: error.message,
+        response: error.response,
+        status: error.response?.status,
+        statusText: error.response?.statusText,
+        data: error.response?.data,
+        config: error.config,
+        isAxiosError: error.isAxiosError,
+        code: error.code,
+      });
 
       if (error.response?.data?.message) {
         addNotification(error.response.data.message, "error");
+      } else if (
+        error.code === "NETWORK_ERROR" ||
+        error.message.includes("Network Error")
+      ) {
+        addNotification("Error de conexión. Verifica tu conexión a internet.", "error");
+      } else if (error.code === "TIMEOUT" || error.message.includes("timeout")) {
+        addNotification("La solicitud tardó demasiado. Intenta de nuevo.", "error");
       } else {
         addNotification(
-          `Error al ${isEditing ? "actualizar" : "crear"} el mayorista`,
-          "error",
+          `Error al ${isEditing ? "actualizar" : "crear"} el mayorista: ${error.message}`,
+          "error"
         );
       }
     } finally {
@@ -229,8 +289,8 @@ const NewMayoristaPage = () => {
                       errors.nombre
                         ? "border-red-300 bg-red-50"
                         : formData.nombre.trim()
-                          ? "border-green-300 bg-green-50"
-                          : "border-gray-200 bg-gray-50 hover:bg-white hover:border-gray-300"
+                        ? "border-green-300 bg-green-50"
+                        : "border-gray-200 bg-gray-50 hover:bg-white hover:border-gray-300"
                     }`}
                     placeholder="Ej: Agencia de Viajes Central"
                   />
@@ -276,8 +336,8 @@ const NewMayoristaPage = () => {
                       errors.tipo_producto
                         ? "border-red-300 bg-red-50"
                         : formData.tipo_producto
-                          ? "border-green-300 bg-green-50"
-                          : "border-gray-200 bg-gray-50 hover:bg-white hover:border-gray-300"
+                        ? "border-green-300 bg-green-50"
+                        : "border-gray-200 bg-gray-50 hover:bg-white hover:border-gray-300"
                     }`}
                   >
                     <option value="">Selecciona un tipo de producto</option>
@@ -332,6 +392,39 @@ const NewMayoristaPage = () => {
                       se generará automáticamente una vez guardado el registro.
                       Esta clave será única y se utilizará para identificar al
                       mayorista en el sistema.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Panel de diagnóstico de conexión */}
+              <div className="bg-gradient-to-r from-green-50 via-teal-50 to-cyan-50 border border-green-200 rounded-xl sm:rounded-2xl p-4 sm:p-6">
+                <div className="flex items-start gap-3 sm:gap-4">
+                  <div className={`p-2 rounded-lg shadow-sm ${connectionTest.success ? 'bg-green-500' : connectionTest.tested ? 'bg-red-500' : 'bg-gray-500'}`}>
+                    <FiWifi className="text-white w-5 h-5" />
+                  </div>
+                  <div className="flex-1">
+                    <h4 className="text-sm sm:text-base font-semibold text-green-900 mb-2">
+                      🌐 Estado de Conexión
+                    </h4>
+                    {!connectionTest.tested ? (
+                      <p className="text-sm text-gray-600">Verificando conexión...</p>
+                    ) : connectionTest.success ? (
+                      <p className="text-sm text-green-800">✅ Conexión con API exitosa</p>
+                    ) : (
+                      <div>
+                        <p className="text-sm text-red-800 mb-2">❌ Error de conexión: {connectionTest.error}</p>
+                        <button
+                          type="button"
+                          onClick={testConnection}
+                          className="text-xs bg-red-100 hover:bg-red-200 text-red-800 px-3 py-1 rounded-lg transition-colors"
+                        >
+                          Reintentar
+                        </button>
+                      </div>
+                    )}
+                    <p className="text-xs text-gray-600 mt-2">
+                      API: {import.meta.env.VITE_API_BASE_URL} | Entorno: {import.meta.env.MODE}
                     </p>
                   </div>
                 </div>

@@ -28,11 +28,28 @@ export const useMayoristas = () => {
 
   const createMayorista = useCallback(async (mayoristaData) => {
     try {
+      console.log("🚀 Creando mayorista...", {
+        data: mayoristaData,
+        apiBaseUrl: import.meta.env.VITE_API_BASE_URL,
+        environment: import.meta.env.MODE
+      });
+      
       const response = await api.mayoristas.createMayorista(mayoristaData);
+      
+      console.log("✅ Mayorista creado exitosamente:", response.data);
+      
       setMayoristas((prev) => [response.data, ...prev]);
       return response.data;
     } catch (err) {
-      console.error("Error al crear mayorista:", err);
+      console.error("❌ Error detallado al crear mayorista:", {
+        error: err,
+        message: err.message,
+        response: err.response,
+        status: err.response?.status,
+        statusText: err.response?.statusText,
+        data: err.response?.data,
+        headers: err.response?.headers
+      });
       throw err;
     }
   }, []);
