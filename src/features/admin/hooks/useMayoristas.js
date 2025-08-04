@@ -10,16 +10,22 @@ export const useMayoristas = () => {
     try {
       setLoading(true);
       setError(null);
-      console.log("🔄 Cargando mayoristas desde API...");
+      if (import.meta.env.DEV) {
+        console.log("🔄 Cargando mayoristas desde API...");
+      }
       const response = await api.mayoristas.getMayoristas();
-      console.log("✅ Mayoristas cargados:", {
-        count: response.data?.length || 0,
-        mayoristas: response.data,
-      });
+      if (import.meta.env.DEV) {
+        console.log("✅ Mayoristas cargados:", {
+          count: response.data?.length || 0,
+          mayoristas: response.data,
+        });
+      }
       // Asegurar que siempre sea un array
       setMayoristas(Array.isArray(response.data) ? response.data : []);
     } catch (err) {
-      console.error("❌ Error al cargar mayoristas:", err);
+      if (import.meta.env.DEV) {
+        console.error("❌ Error al cargar mayoristas:", err);
+      }
       setError("Error al cargar los mayoristas");
     } finally {
       setLoading(false);
@@ -28,28 +34,34 @@ export const useMayoristas = () => {
 
   const createMayorista = useCallback(async (mayoristaData) => {
     try {
-      console.log("🚀 Creando mayorista...", {
-        data: mayoristaData,
-        apiBaseUrl: import.meta.env.VITE_API_BASE_URL,
-        environment: import.meta.env.MODE
-      });
+      if (import.meta.env.DEV) {
+        console.log("🚀 Creando mayorista...", {
+          data: mayoristaData,
+          apiBaseUrl: import.meta.env.VITE_API_BASE_URL,
+          environment: import.meta.env.MODE
+        });
+      }
       
       const response = await api.mayoristas.createMayorista(mayoristaData);
       
-      console.log("✅ Mayorista creado exitosamente:", response.data);
+      if (import.meta.env.DEV) {
+        console.log("✅ Mayorista creado exitosamente:", response.data);
+      }
       
       setMayoristas((prev) => [response.data, ...prev]);
       return response.data;
     } catch (err) {
-      console.error("❌ Error detallado al crear mayorista:", {
-        error: err,
-        message: err.message,
-        response: err.response,
-        status: err.response?.status,
-        statusText: err.response?.statusText,
-        data: err.response?.data,
-        headers: err.response?.headers
-      });
+      if (import.meta.env.DEV) {
+        console.error("❌ Error detallado al crear mayorista:", {
+          error: err,
+          message: err.message,
+          response: err.response,
+          status: err.response?.status,
+          statusText: err.response?.statusText,
+          data: err.response?.data,
+          headers: err.response?.headers
+        });
+      }
       throw err;
     }
   }, []);
@@ -64,7 +76,9 @@ export const useMayoristas = () => {
       );
       return response.data;
     } catch (err) {
-      console.error("Error al actualizar mayorista:", err);
+      if (import.meta.env.DEV) {
+        console.error("Error al actualizar mayorista:", err);
+      }
       throw err;
     }
   }, []);
@@ -74,7 +88,9 @@ export const useMayoristas = () => {
       await api.mayoristas.deleteMayorista(id);
       setMayoristas((prev) => prev.filter((mayorista) => mayorista.id !== id));
     } catch (err) {
-      console.error("Error al eliminar mayorista:", err);
+      if (import.meta.env.DEV) {
+        console.error("Error al eliminar mayorista:", err);
+      }
       throw err;
     }
   }, []);
@@ -84,7 +100,9 @@ export const useMayoristas = () => {
       const response = await api.mayoristas.getMayoristaById(id);
       return response.data;
     } catch (err) {
-      console.error("Error al obtener mayorista:", err);
+      if (import.meta.env.DEV) {
+        console.error("Error al obtener mayorista:", err);
+      }
       throw err;
     }
   }, []);

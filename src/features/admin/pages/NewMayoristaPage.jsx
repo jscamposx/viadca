@@ -59,7 +59,9 @@ const NewMayoristaPage = () => {
             tipo_producto: mayorista.tipo_producto || "",
           });
         } catch (error) {
-          console.error("Error al cargar mayorista:", error);
+          if (import.meta.env.DEV) {
+            console.error("Error al cargar mayorista:", error);
+          }
           addNotification("Error al cargar los datos del mayorista", "error");
           navigate("/admin/mayoristas");
         } finally {
@@ -73,12 +75,18 @@ const NewMayoristaPage = () => {
   // Función para probar la conectividad
   const testConnection = async () => {
     try {
-      console.log("🔍 Probando conectividad con API...");
+      if (import.meta.env.DEV) {
+        console.log("🔍 Probando conectividad con API...");
+      }
       const response = await api.mayoristas.getMayoristas();
-      console.log("✅ Test de conectividad exitoso:", response);
+      if (import.meta.env.DEV) {
+        console.log("✅ Test de conectividad exitoso:", response);
+      }
       setConnectionTest({ tested: true, success: true, error: null });
     } catch (error) {
-      console.error("❌ Test de conectividad falló:", error);
+      if (import.meta.env.DEV) {
+        console.error("❌ Test de conectividad falló:", error);
+      }
       setConnectionTest({
         tested: true,
         success: false,
@@ -139,41 +147,51 @@ const NewMayoristaPage = () => {
         tipo_producto: formData.tipo_producto,
       };
 
-      console.log(
-        "🚀 Iniciando proceso de creación/actualización de mayorista:",
-        {
-          isEditing,
-          mayoristData,
-          id,
-          environment: import.meta.env.MODE,
-          apiUrl: import.meta.env.VITE_API_BASE_URL,
-        }
-      );
+      if (import.meta.env.DEV) {
+        console.log(
+          "🚀 Iniciando proceso de creación/actualización de mayorista:",
+          {
+            isEditing,
+            mayoristData,
+            id,
+            environment: import.meta.env.MODE,
+            apiUrl: import.meta.env.VITE_API_BASE_URL,
+          }
+        );
+      }
 
       if (isEditing) {
-        console.log("📝 Actualizando mayorista existente...");
+        if (import.meta.env.DEV) {
+          console.log("📝 Actualizando mayorista existente...");
+        }
         await updateMayorista(id, mayoristData);
         addNotification("Mayorista actualizado correctamente", "success");
       } else {
-        console.log("✨ Creando nuevo mayorista...");
+        if (import.meta.env.DEV) {
+          console.log("✨ Creando nuevo mayorista...");
+        }
         const result = await createMayorista(mayoristData);
-        console.log("✅ Mayorista creado exitosamente:", result);
+        if (import.meta.env.DEV) {
+          console.log("✅ Mayorista creado exitosamente:", result);
+        }
         addNotification("Mayorista creado correctamente", "success");
       }
 
       navigate("/admin/mayoristas");
     } catch (error) {
-      console.error("❌ Error completo al guardar mayorista:", {
-        error,
-        message: error.message,
-        response: error.response,
-        status: error.response?.status,
-        statusText: error.response?.statusText,
-        data: error.response?.data,
-        config: error.config,
-        isAxiosError: error.isAxiosError,
-        code: error.code,
-      });
+      if (import.meta.env.DEV) {
+        console.error("❌ Error completo al guardar mayorista:", {
+          error,
+          message: error.message,
+          response: error.response,
+          status: error.response?.status,
+          statusText: error.response?.statusText,
+          data: error.response?.data,
+          config: error.config,
+          isAxiosError: error.isAxiosError,
+          code: error.code,
+        });
+      }
 
       if (error.response?.data?.message) {
         addNotification(error.response.data.message, "error");

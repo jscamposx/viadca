@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "node env-check.js && vite build",
+    "build": "vite build",
     "lint": "eslint .",
     "format": "prettier --write .",
     "preview": "vite preview",

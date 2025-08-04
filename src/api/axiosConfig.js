@@ -3,12 +3,16 @@ import axios from "axios";
 // Obtener la URL base con fallback
 const getBaseURL = () => {
   const envURL = import.meta.env.VITE_API_BASE_URL;
-  console.log("🔧 Variables de entorno:", {
-    VITE_API_BASE_URL: envURL,
-    MODE: import.meta.env.MODE,
-    DEV: import.meta.env.DEV,
-    PROD: import.meta.env.PROD
-  });
+  
+  // Solo mostrar logs en desarrollo
+  if (import.meta.env.DEV) {
+    console.log("🔧 Variables de entorno:", {
+      VITE_API_BASE_URL: envURL,
+      MODE: import.meta.env.MODE,
+      DEV: import.meta.env.DEV,
+      PROD: import.meta.env.PROD
+    });
+  }
   
   // Fallback basado en el entorno
   if (envURL) {
@@ -19,12 +23,16 @@ const getBaseURL = () => {
   if (import.meta.env.DEV) {
     return "http://localhost:3000";
   } else {
-    return "https://viadca-back.onrender.com";
+    return "https://api.jscamposx.dev";
   }
 };
 
 const baseURL = getBaseURL();
-console.log("🌐 URL base de API configurada:", baseURL);
+
+// Solo mostrar logs en desarrollo
+if (import.meta.env.DEV) {
+  console.log("🌐 URL base de API configurada:", baseURL);
+}
 
 const apiClient = axios.create({
   baseURL: baseURL,
@@ -34,45 +42,53 @@ const apiClient = axios.create({
   timeout: 30000, // 30 segundos de timeout
 });
 
-// Interceptor para logs de request
+// Interceptor para logs de request (solo en desarrollo)
 apiClient.interceptors.request.use(
   (config) => {
-    console.log("🔄 API Request:", {
-      method: config.method?.toUpperCase(),
-      url: config.url,
-      baseURL: config.baseURL,
-      fullURL: `${config.baseURL}${config.url}`,
-      data: config.data,
-      headers: config.headers
-    });
+    if (import.meta.env.DEV) {
+      console.log("🔄 API Request:", {
+        method: config.method?.toUpperCase(),
+        url: config.url,
+        baseURL: config.baseURL,
+        fullURL: `${config.baseURL}${config.url}`,
+        data: config.data,
+        headers: config.headers
+      });
+    }
     return config;
   },
   (error) => {
-    console.error("❌ Request Error:", error);
+    if (import.meta.env.DEV) {
+      console.error("❌ Request Error:", error);
+    }
     return Promise.reject(error);
   }
 );
 
-// Interceptor para logs de response
+// Interceptor para logs de response (solo en desarrollo)
 apiClient.interceptors.response.use(
   (response) => {
-    console.log("✅ API Response:", {
-      status: response.status,
-      statusText: response.statusText,
-      url: response.config.url,
-      data: response.data
-    });
+    if (import.meta.env.DEV) {
+      console.log("✅ API Response:", {
+        status: response.status,
+        statusText: response.statusText,
+        url: response.config.url,
+        data: response.data
+      });
+    }
     return response;
   },
   (error) => {
-    console.error("❌ API Response Error:", {
-      message: error.message,
-      status: error.response?.status,
-      statusText: error.response?.statusText,
-      url: error.config?.url,
-      data: error.response?.data,
-      headers: error.response?.headers
-    });
+    if (import.meta.env.DEV) {
+      console.error("❌ API Response Error:", {
+        message: error.message,
+        status: error.response?.status,
+        statusText: error.response?.statusText,
+        url: error.config?.url,
+        data: error.response?.data,
+        headers: error.response?.headers
+      });
+    }
     return Promise.reject(error);
   }
 );
