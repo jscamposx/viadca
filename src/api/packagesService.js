@@ -31,7 +31,7 @@ export const deletePaquete = (id) => {
 };
 
 export const exportToExcel = (id) => {
-  return apiClient.get(`/admin/paquetes/${id}/export`, {
+  return apiClient.get(`/admin/paquetes/excel/${id}`, {
     responseType: "blob",
   });
 };
