@@ -2,22 +2,25 @@ import { useState, useEffect } from "react";
 import { useAllPackages } from "../../package/hooks/useAllPackages";
 import { useNotifications } from "../hooks/useNotifications";
 import { getImageUrl } from "../../../utils/imageUtils";
+import OptimizedImage from "../../../components/ui/OptimizedImage";
 
 const AdminDashboard = () => {
   const { notify } = useNotifications();
   const [timeFilter, setTimeFilter] = useState("monthly");
   const { paquetes, loading, error } = useAllPackages();
-  
+
   // Calcular estadísticas basadas en los paquetes reales
   const totalPaquetes = paquetes?.length || 0;
-  const paquetesActivos = paquetes?.filter(p => p.activo).length || 0;
-  const totalVentas = paquetes?.reduce((sum, p) => sum + (p.precio_total || 0), 0) || 0;
-  
+  const paquetesActivos = paquetes?.filter((p) => p.activo).length || 0;
+  const totalVentas =
+    paquetes?.reduce((sum, p) => sum + (p.precio_total || 0), 0) || 0;
+
   // Obtener los 3 paquetes más caros (simulando "más vendidos")
-  const topPaquetes = paquetes
-    ?.filter(p => p.activo)
-    ?.sort((a, b) => (b.precio_total || 0) - (a.precio_total || 0))
-    ?.slice(0, 3) || [];
+  const topPaquetes =
+    paquetes
+      ?.filter((p) => p.activo)
+      ?.sort((a, b) => (b.precio_total || 0) - (a.precio_total || 0))
+      ?.slice(0, 3) || [];
 
   return (
     <main className="min-h-screen bg-white p-4 sm:p-6 lg:p-8" role="main">
@@ -605,7 +608,9 @@ const AdminDashboard = () => {
             </div>
           ) : error ? (
             <div className="flex justify-center items-center h-32">
-              <div className="text-red-500">Error al cargar paquetes: {error}</div>
+              <div className="text-red-500">
+                Error al cargar paquetes: {error}
+              </div>
             </div>
           ) : topPaquetes.length === 0 ? (
             <div className="flex justify-center items-center h-32">
@@ -619,12 +624,21 @@ const AdminDashboard = () => {
             >
               {topPaquetes.map((paquete, index) => {
                 const colors = [
-                  { bg: "from-blue-500 to-indigo-600", badge: "bg-blue-100 text-blue-800" },
-                  { bg: "from-amber-500 to-orange-500", badge: "bg-amber-100 text-amber-800" },
-                  { bg: "from-green-500 to-teal-500", badge: "bg-green-100 text-green-800" }
+                  {
+                    bg: "from-blue-500 to-indigo-600",
+                    badge: "bg-blue-100 text-blue-800",
+                  },
+                  {
+                    bg: "from-amber-500 to-orange-500",
+                    badge: "bg-amber-100 text-amber-800",
+                  },
+                  {
+                    bg: "from-green-500 to-teal-500",
+                    badge: "bg-green-100 text-green-800",
+                  },
                 ];
                 const color = colors[index] || colors[0];
-                
+
                 return (
                   <article
                     key={paquete.id}
@@ -633,12 +647,20 @@ const AdminDashboard = () => {
                     tabIndex="0"
                     aria-labelledby={`paquete-${paquete.id}-title`}
                   >
-                    <div className={`bg-gradient-to-r ${color.bg} h-32 relative`}>
+                    <div
+                      className={`bg-gradient-to-r ${color.bg} h-32 relative`}
+                    >
                       {paquete.primera_imagen && (
-                        <img 
-                          src={getImageUrl(paquete.primera_imagen)} 
+                        <OptimizedImage
+                          src={paquete.primera_imagen}
                           alt={paquete.titulo}
+                          width={400}
+                          height={200}
+                          quality="auto"
+                          format="webp"
+                          crop="fill"
                           className="w-full h-full object-cover"
+                          lazy={index > 2}
                         />
                       )}
                       <div className="absolute inset-0 bg-gradient-to-r from-black/30 to-transparent"></div>
@@ -657,13 +679,16 @@ const AdminDashboard = () => {
                         {paquete.titulo}
                       </h3>
                       <p className="text-gray-700 text-sm mt-1">
-                        {paquete.mayoristas?.[0]?.tipo_producto || "Paquete turístico"}
+                        {paquete.mayoristas?.[0]?.tipo_producto ||
+                          "Paquete turístico"}
                       </p>
                       <div className="flex justify-between items-center mt-4">
                         <span className="font-bold text-gray-900 text-lg">
                           ${paquete.precio_total?.toLocaleString() || 0}
                         </span>
-                        <span className={`text-sm ${color.badge} px-2 py-1 rounded font-medium`}>
+                        <span
+                          className={`text-sm ${color.badge} px-2 py-1 rounded font-medium`}
+                        >
                           {paquete.activo ? "Activo" : "Inactivo"}
                         </span>
                       </div>

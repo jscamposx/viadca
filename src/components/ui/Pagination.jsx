@@ -1,20 +1,20 @@
-import React from 'react';
-import { FiChevronLeft, FiChevronRight } from 'react-icons/fi';
+import React from "react";
+import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
 
-const Pagination = ({ 
-  currentPage, 
-  totalPages, 
-  totalItems, 
-  itemsPerPage, 
-  onPageChange, 
-  onItemsPerPageChange 
+const Pagination = ({
+  currentPage,
+  totalPages,
+  totalItems,
+  itemsPerPage,
+  onPageChange,
+  onItemsPerPageChange,
 }) => {
   if (totalPages <= 1) return null;
 
   const getVisiblePages = () => {
     const visiblePages = [];
     const maxVisible = 5;
-    
+
     if (totalPages <= maxVisible) {
       for (let i = 1; i <= totalPages; i++) {
         visiblePages.push(i);
@@ -22,12 +22,12 @@ const Pagination = ({
     } else {
       const start = Math.max(1, currentPage - 2);
       const end = Math.min(totalPages, start + maxVisible - 1);
-      
+
       for (let i = start; i <= end; i++) {
         visiblePages.push(i);
       }
     }
-    
+
     return visiblePages;
   };
 
@@ -37,9 +37,11 @@ const Pagination = ({
     <div className="flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0 mt-8">
       {/* Información de elementos */}
       <div className="text-sm text-gray-600">
-        Mostrando {((currentPage - 1) * itemsPerPage) + 1} - {Math.min(currentPage * itemsPerPage, totalItems)} de {totalItems} elementos
+        Mostrando {(currentPage - 1) * itemsPerPage + 1} -{" "}
+        {Math.min(currentPage * itemsPerPage, totalItems)} de {totalItems}{" "}
+        elementos
       </div>
-      
+
       <div className="flex items-center space-x-4">
         {/* Selector de elementos por página */}
         <select
@@ -52,7 +54,7 @@ const Pagination = ({
           <option value={20}>20 por página</option>
           <option value={50}>50 por página</option>
         </select>
-        
+
         {/* Controles de paginación */}
         <div className="flex items-center space-x-2">
           <button
@@ -63,7 +65,7 @@ const Pagination = ({
             <FiChevronLeft className="w-4 h-4 mr-1" />
             Anterior
           </button>
-          
+
           <div className="flex space-x-1">
             {/* Primera página */}
             {visiblePages[0] > 1 && (
@@ -79,7 +81,7 @@ const Pagination = ({
                 )}
               </>
             )}
-            
+
             {/* Páginas visibles */}
             {visiblePages.map((pageNum) => (
               <button
@@ -94,7 +96,7 @@ const Pagination = ({
                 {pageNum}
               </button>
             ))}
-            
+
             {/* Última página */}
             {visiblePages[visiblePages.length - 1] < totalPages && (
               <>
@@ -110,7 +112,7 @@ const Pagination = ({
               </>
             )}
           </div>
-          
+
           <button
             onClick={() => onPageChange(currentPage + 1)}
             disabled={currentPage === totalPages}

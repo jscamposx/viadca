@@ -8,11 +8,11 @@ const PackageForm = ({ formData, onFormChange }) => {
 
   // Debug: Verificar que los mayoristas se cargan y el estado actual
   useEffect(() => {
-    console.log('🏢 PackageForm - Estado de mayoristas:', {
+    console.log("🏢 PackageForm - Estado de mayoristas:", {
       mayoristasCount: mayoristas?.length || 0,
       mayoristasLoading,
       currentMayoristasIds: formData.mayoristasIds || [],
-      formData: formData
+      formData: formData,
     });
   }, [mayoristas, mayoristasLoading, formData.mayoristasIds]);
 
@@ -40,11 +40,11 @@ const PackageForm = ({ formData, onFormChange }) => {
       newIds = [...currentIds, mayoristaId];
     }
 
-    console.log('🏢 Cambio en mayorista:', {
+    console.log("🏢 Cambio en mayorista:", {
       mayoristaId,
       currentIds,
       newIds,
-      action: currentIds.includes(mayoristaId) ? 'remove' : 'add'
+      action: currentIds.includes(mayoristaId) ? "remove" : "add",
     });
 
     onFormChange({ target: { name: "mayoristasIds", value: newIds } });
@@ -232,11 +232,11 @@ const PackageForm = ({ formData, onFormChange }) => {
                       mayorista.id,
                     )}
                     onChange={(e) => {
-                      console.log('✅ Checkbox mayorista clicked:', {
+                      console.log("✅ Checkbox mayorista clicked:", {
                         mayoristaId: mayorista.id,
                         mayoristaNombre: mayorista.nombre,
                         checked: e.target.checked,
-                        currentIds: formData.mayoristasIds
+                        currentIds: formData.mayoristasIds,
                       });
                       handleMayoristaChange(mayorista.id);
                     }}
@@ -257,7 +257,7 @@ const PackageForm = ({ formData, onFormChange }) => {
             </div>
           ) : (
             <div className="text-gray-500 p-4 border border-gray-200 rounded-lg">
-              No hay mayoristas disponibles. 
+              No hay mayoristas disponibles.
               <br />
               <small>Verifica que existan mayoristas en el sistema.</small>
             </div>

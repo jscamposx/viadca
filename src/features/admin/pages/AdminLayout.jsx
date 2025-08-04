@@ -113,10 +113,11 @@ const AdminLayout = () => {
   const [isSidebarOpen, setSidebarOpen] = useState(false);
 
   // Detectar si estamos en páginas de creación/edición de paquetes o mayoristas
-  const isFormPage = location.pathname.includes('/paquetes/nuevo') || 
-                     location.pathname.includes('/paquetes/editar/') ||
-                     location.pathname.includes('/mayoristas/nuevo') ||
-                     location.pathname.includes('/mayoristas/editar/');
+  const isFormPage =
+    location.pathname.includes("/paquetes/nuevo") ||
+    location.pathname.includes("/paquetes/editar/") ||
+    location.pathname.includes("/mayoristas/nuevo") ||
+    location.pathname.includes("/mayoristas/editar/");
 
   // Solo ocultar navbar en móviles cuando estemos en páginas de formulario
   const shouldHideNav = isMobile && isFormPage;
@@ -145,12 +146,12 @@ const AdminLayout = () => {
         )}
         <main
           className={`transition-[margin-left] duration-300 ease-in-out ${
-            shouldHideNav 
+            shouldHideNav
               ? "" // Sin margen cuando la navbar está oculta (solo móviles)
-              : isMobile 
-                ? "pt-16" 
-                : isSidebarOpen 
-                  ? "ml-64" 
+              : isMobile
+                ? "pt-16"
+                : isSidebarOpen
+                  ? "ml-64"
                   : "ml-20"
           }`}
         >

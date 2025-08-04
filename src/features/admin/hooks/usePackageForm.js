@@ -7,7 +7,10 @@ import {
   formatPayloadForLogging,
   analyzeImageChanges,
 } from "../../../utils/patchHelper";
-import { isExistingImage, createOrderOnlyPayload } from "../../../utils/imageUtils";
+import {
+  isExistingImage,
+  createOrderOnlyPayload,
+} from "../../../utils/imageUtils";
 import {
   logPatchOperation,
   createPatchSummary,
@@ -89,16 +92,18 @@ export const usePackageForm = (initialPackageData = null) => {
 
       const processedImages = (initialPackageData.imagenes || []).map(
         (img, index) => {
-          const isBase64Content = img.tipo === 'base64' || 
-            (img.contenido && img.contenido.includes('base64')) ||
-            (img.contenido && !img.contenido.startsWith('http'));
-          
+          // Determinar si es contenido subido por usuario (que debería ir a Cloudinary)
+          const isUserUpload =
+            img.tipo === "cloudinary" ||
+            (img.contenido && img.contenido.includes("base64")) ||
+            (img.contenido && !img.contenido.startsWith("http"));
+
           let imageUrl;
-          if (isBase64Content) {
-            // Para contenido base64
-            imageUrl = img.contenido.startsWith('data:') 
-              ? img.contenido 
-              : `data:${img.mime_type || 'image/jpeg'};base64,${img.contenido}`;
+          if (isUserUpload && !img.contenido?.startsWith("http")) {
+            // Para contenido de usuario o base64 legacy
+            imageUrl = img.contenido?.startsWith("data:")
+              ? img.contenido
+              : `data:${img.mime_type || "image/jpeg"};base64,${img.contenido}`;
           } else if (img.contenido?.startsWith("http")) {
             // Para URLs externas
             imageUrl = img.contenido;
@@ -111,23 +116,23 @@ export const usePackageForm = (initialPackageData = null) => {
             id: img.id || `img-${index}`,
             url: imageUrl,
             orden: img.orden || index + 1,
-            tipo: img.tipo || (isBase64Content ? 'base64' : 'url'),
-            isUploaded: img.tipo === 'base64' || isBase64Content,
+            tipo: img.tipo || (isUserUpload ? "cloudinary" : "url"),
+            isUploaded: img.tipo === "cloudinary" || isUserUpload,
             file: null,
             // Preservar el contenido original para comparaciones
             originalContent: img.contenido,
           };
-        }
+        },
       );
 
       const mayoristasIds = initialPackageData.mayoristas
         ? initialPackageData.mayoristas.map((m) => m.id)
         : initialPackageData.mayoristasIds || [];
 
-      console.log('🔄 Inicializando paquete existente - Mayoristas:', {
+      console.log("🔄 Inicializando paquete existente - Mayoristas:", {
         mayoristasOriginales: initialPackageData.mayoristas,
         mayoristasIds: mayoristasIds,
-        directMayoristasIds: initialPackageData.mayoristasIds
+        directMayoristasIds: initialPackageData.mayoristasIds,
       });
 
       setFormData({
@@ -264,31 +269,31 @@ export const usePackageForm = (initialPackageData = null) => {
 
   const handleFormChange = (e) => {
     const { name, value } = e.target;
-    
+
     // Manejar tanto 'mayoristas' como 'mayoristasIds' para compatibilidad
-    if (name === 'mayoristas') {
-      const mayoristasIds = Array.isArray(value) ? value.map(m => m.id) : [];
-      console.log('🏢 Actualizando mayoristas desde MayoristasForm:', {
+    if (name === "mayoristas") {
+      const mayoristasIds = Array.isArray(value) ? value.map((m) => m.id) : [];
+      console.log("🏢 Actualizando mayoristas desde MayoristasForm:", {
         mayoristasCompletos: value,
         mayoristasIds: mayoristasIds,
-        previousValue: formData.mayoristasIds
+        previousValue: formData.mayoristasIds,
       });
-      setFormData((prev) => ({ 
-        ...prev, 
+      setFormData((prev) => ({
+        ...prev,
         mayoristas: value,
-        mayoristasIds: mayoristasIds
+        mayoristasIds: mayoristasIds,
       }));
       return;
     }
-    
-    if (name === 'mayoristasIds') {
-      console.log('🏢 Actualizando mayoristasIds directamente:', {
+
+    if (name === "mayoristasIds") {
+      console.log("🏢 Actualizando mayoristasIds directamente:", {
         name,
         value,
-        previousValue: formData.mayoristasIds
+        previousValue: formData.mayoristasIds,
       });
     }
-    
+
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
@@ -333,7 +338,11 @@ export const usePackageForm = (initialPackageData = null) => {
     }));
   }, []);
 
-  const handleSubmit = async (event, addNotification, backgroundMode = false) => {
+  const handleSubmit = async (
+    event,
+    addNotification,
+    backgroundMode = false,
+  ) => {
     event.preventDefault();
 
     if (!formData.origen_lat || !formData.destino_lat) {
@@ -349,22 +358,22 @@ export const usePackageForm = (initialPackageData = null) => {
     try {
       // Crear una función de notificación que solo maneje errores
       const errorOnlyNotification = (message, type) => {
-        if (type === 'error' && addNotification) {
+        if (type === "error" && addNotification) {
           addNotification(message, type);
         }
       };
 
       if (backgroundMode) {
         // En modo background, retornamos inmediatamente la promesa sin esperar
-        const operation = initialPackageData ? 
-          handlePatchUpdate(errorOnlyNotification) : 
-          handleFullCreate(errorOnlyNotification);
-        
+        const operation = initialPackageData
+          ? handlePatchUpdate(errorOnlyNotification)
+          : handleFullCreate(errorOnlyNotification);
+
         // Retornar la promesa para que se pueda manejar en background
         return {
           operation,
           isEdit: !!initialPackageData,
-          packageTitle: formData.titulo
+          packageTitle: formData.titulo,
         };
       } else {
         // Modo normal (síncrono)
@@ -375,17 +384,17 @@ export const usePackageForm = (initialPackageData = null) => {
         }
 
         // Navegar de vuelta con información de éxito SOLO si no hubo errores
-        const successMessage = initialPackageData ? 
-          "Paquete actualizado exitosamente" : 
-          "Paquete creado exitosamente";
-        
-        navigate("/admin/paquetes", { 
-          state: { 
+        const successMessage = initialPackageData
+          ? "Paquete actualizado exitosamente"
+          : "Paquete creado exitosamente";
+
+        navigate("/admin/paquetes", {
+          state: {
             showNotification: true,
             notificationType: "success",
             notificationMessage: successMessage,
-            shouldRefresh: true
-          }
+            shouldRefresh: true,
+          },
         });
       }
     } catch (error) {
@@ -396,7 +405,7 @@ export const usePackageForm = (initialPackageData = null) => {
       const errorMessage =
         error.response?.data?.message || "Ocurrió un error inesperado.";
       if (addNotification) addNotification(`Error: ${errorMessage}`, "error");
-      
+
       // NO navegar en caso de error, permitir que el usuario vea el error y corrija
       throw error; // Re-lanzar el error para que NewPackagePage lo maneje
     }
@@ -433,16 +442,22 @@ export const usePackageForm = (initialPackageData = null) => {
       hotel: patchPayload.hotel === "PROCESS_HOTEL",
     };
 
-    if (processingFlags.images || processingFlags.imagesOrderOnly || processingFlags.hotel) {
+    if (
+      processingFlags.images ||
+      processingFlags.imagesOrderOnly ||
+      processingFlags.hotel
+    ) {
       logPatchOperation("processing", processingFlags);
     }
 
     if (processingFlags.images) {
-      console.log('🖼️ Modo: Procesamiento completo de imágenes');
+      console.log("🖼️ Modo: Procesamiento completo de imágenes");
       finalPayload.imagenes = await processImages(formData.imagenes || []);
     } else if (processingFlags.imagesOrderOnly) {
-      console.log('⚡ Modo: Solo actualización de orden (optimizado)');
-      finalPayload.imagenes = await processImagesOrderOnly(formData.imagenes || []);
+      console.log("⚡ Modo: Solo actualización de orden (optimizado)");
+      finalPayload.imagenes = await processImagesOrderOnly(
+        formData.imagenes || [],
+      );
     }
 
     if (processingFlags.hotel) {
@@ -451,14 +466,14 @@ export const usePackageForm = (initialPackageData = null) => {
 
     logPatchOperation("sending", {
       fieldCount: Object.keys(finalPayload).length,
-      mayoristasIncluded: 'mayoristasIds' in finalPayload,
-      mayoristasIds: finalPayload.mayoristasIds || 'no incluidos'
+      mayoristasIncluded: "mayoristasIds" in finalPayload,
+      mayoristasIds: finalPayload.mayoristasIds || "no incluidos",
     });
 
-    console.log('📤 Enviando PATCH - Payload final:', {
+    console.log("📤 Enviando PATCH - Payload final:", {
       keys: Object.keys(finalPayload),
       mayoristasIds: finalPayload.mayoristasIds,
-      payload: finalPayload
+      payload: finalPayload,
     });
 
     await api.packages.updatePaquete(initialPackageData.id, finalPayload);
@@ -466,35 +481,35 @@ export const usePackageForm = (initialPackageData = null) => {
     // Actualizar el estado original después de PATCH exitoso
     // Esto asegura que las comparaciones futuras sean correctas
     const updatedOriginalData = { ...originalDataRef.current };
-    
+
     // Aplicar los cambios del payload al estado original
-    Object.keys(finalPayload).forEach(key => {
-      if (key === 'imagenes' && typeof finalPayload[key] === 'string') {
+    Object.keys(finalPayload).forEach((key) => {
+      if (key === "imagenes" && typeof finalPayload[key] === "string") {
         // Para imágenes, actualizar con el estado actual del formData
         updatedOriginalData.imagenes = [...(formData.imagenes || [])];
-      } else if (key === 'mayoristasIds') {
+      } else if (key === "mayoristasIds") {
         // Para mayoristas, actualizar tanto mayoristas como mayoristasIds
         updatedOriginalData.mayoristas = formData.mayoristas || [];
         updatedOriginalData.mayoristasIds = formData.mayoristasIds || [];
-      } else if (key !== 'hotel' || typeof finalPayload[key] !== 'string') {
+      } else if (key !== "hotel" || typeof finalPayload[key] !== "string") {
         // Para otros campos (excepto hotel con string), aplicar directamente
         updatedOriginalData[key] = finalPayload[key];
       }
-      
-      if (key === 'hotel' && typeof finalPayload[key] === 'string') {
+
+      if (key === "hotel" && typeof finalPayload[key] === "string") {
         // Para hotel, actualizar con el estado actual del formData
         updatedOriginalData.hotel = formData.hotel;
       }
     });
-    
+
     // Actualizar la referencia original
     originalDataRef.current = updatedOriginalData;
-    
-    console.log('🔄 Estado original actualizado después de PATCH exitoso:', {
+
+    console.log("🔄 Estado original actualizado después de PATCH exitoso:", {
       packageId: initialPackageData.id,
       fieldsUpdated: Object.keys(finalPayload),
       newImageCount: updatedOriginalData.imagenes?.length || 0,
-      newMayoristasCount: updatedOriginalData.mayoristas?.length || 0
+      newMayoristasCount: updatedOriginalData.mayoristas?.length || 0,
     });
 
     const endTime = performance.now();
@@ -505,12 +520,12 @@ export const usePackageForm = (initialPackageData = null) => {
       responseTime,
     });
 
-    return { 
+    return {
       hasChanges: true,
       fieldsModified: Object.keys(finalPayload).length,
       responseTime,
       packageId: initialPackageData.id,
-      packageTitle: formData.titulo
+      packageTitle: formData.titulo,
     };
   };
 
@@ -520,9 +535,9 @@ export const usePackageForm = (initialPackageData = null) => {
     const packageImages = await processImages(formData.imagenes || []);
     const hotelPayload = await processHotel(formData.hotel);
 
-    console.log('🆕 Creando paquete - Mayoristas:', {
+    console.log("🆕 Creando paquete - Mayoristas:", {
       mayoristasIds: formData.mayoristasIds,
-      count: (formData.mayoristasIds || []).length
+      count: (formData.mayoristasIds || []).length,
     });
 
     const payload = {
@@ -576,10 +591,10 @@ export const usePackageForm = (initialPackageData = null) => {
       hotel: hotelPayload,
     };
 
-    console.log('📤 Enviando CREATE - Payload completo:', {
+    console.log("📤 Enviando CREATE - Payload completo:", {
       payload,
-      mayoristasIncluded: 'mayoristasIds' in payload,
-      mayoristasCount: (payload.mayoristasIds || []).length
+      mayoristasIncluded: "mayoristasIds" in payload,
+      mayoristasCount: (payload.mayoristasIds || []).length,
     });
 
     const response = await api.packages.createPaquete(payload);
@@ -589,61 +604,101 @@ export const usePackageForm = (initialPackageData = null) => {
     return {
       packageId: response.data?.id || null,
       packageTitle: formData.titulo,
-      created: true
+      created: true,
     };
   };
 
   const processImages = async (images) => {
-    // Debug: mostrar información sobre los tipos de imágenes
-    console.log('🖼️ Procesando imágenes para envío:', {
+    // Debug: mostrar información DETALLADA sobre los tipos de imágenes
+    console.log("🔍 ANÁLISIS DETALLADO de imágenes a procesar:", {
       total: images.length,
       tipos: images.map((img, idx) => ({
         indice: idx,
         id: img.id,
-        tipo: img.tipo || 'indefinido',
+        tipo: img.tipo || "indefinido",
+        source: img.source || "sin source",
         isUploaded: img.isUploaded,
-        esBase64: img.url.startsWith("data:"),
+        esUsuario: img.file || img.url?.startsWith("data:"),
         tieneArchivo: !!img.file,
-        urlPreview: img.url.substring(0, 50) + '...'
-      }))
+        tieneCloudinaryId: !!img.cloudinary_public_id,
+        urlPreview: img.url?.substring(0, 50) + "...",
+      })),
     });
 
     const processedImages = await Promise.all(
       images.map(async (img, index) => {
-        // Verificar si es una imagen de tipo base64 (subida por el usuario)
-        if (img.tipo === 'base64' || (img.isUploaded && img.url.startsWith("data:")) || img.url.startsWith("data:")) {
-          // Obtener información del archivo
-          const base64Content = img.url.includes(',') ? img.url.split(",")[1] : img.url;
-          const mimeType = img.file?.type || img.url.match(/data:([^;]+);/)?.[1] || 'image/jpeg';
-          const fileName = img.file?.name || `imagen-${index + 1}.jpg`;
+        console.log(`\n🔎 Procesando imagen ${index + 1}:`, {
+          id: img.id,
+          tipo: img.tipo,
+          source: img.source,
+          isUploaded: img.isUploaded,
+          hasFile: !!img.file,
+          hasCloudinaryId: !!img.cloudinary_public_id,
+          isUserUpload: img.file || img.url?.startsWith("data:"),
+        });
 
-          console.log(`📤 Enviando imagen ${index + 1} como BASE64:`, {
-            nombre: fileName,
-            tipo: mimeType,
-            tamañoBase64: base64Content.length
-          });
-
+        // PRIORIDAD 1: Imágenes de Google Places - DIRECTO AL BACKEND
+        if (img.tipo === "google_places_url") {
+          console.log(`🗺️ ✅ GOOGLE PLACES - Directo al backend`);
           return {
             orden: index + 1,
-            tipo: "base64",
-            contenido: base64Content,
-            mime_type: mimeType,
-            nombre: fileName,
+            tipo: "google_places_url",
+            contenido: img.url || img.contenido,
+            mime_type: "image/jpeg",
+            nombre: img.nombre || `google-places-${index + 1}.jpg`,
           };
         }
 
-        // Para imágenes de URL (ej. Pexels, URLs externas)
-        console.log(`🔗 Enviando imagen ${index + 1} como URL:`, {
-          url: img.url,
-          origen: img.id.includes('pexels') ? 'Pexels' : 'URL externa'
-        });
+        // PRIORIDAD 2: Imágenes de Pexels/URLs externas - DIRECTO AL BACKEND
+        if (
+          img.tipo === "url" ||
+          img.source === "pexels" ||
+          img.id?.includes("pexels")
+        ) {
+          console.log(`🔗 ✅ PEXELS/URL - Directo al backend`);
+          return {
+            orden: index + 1,
+            tipo: "url",
+            contenido: img.url,
+            mime_type: "image/jpeg",
+            nombre: img.url?.split("/").pop() || `pexels-${index + 1}.jpg`,
+          };
+        }
 
+        // PRIORIDAD 3: Imágenes ya en Cloudinary - MANTENER REFERENCIA
+        if (img.tipo === "cloudinary" && img.cloudinary_public_id) {
+          console.log(`☁️ ✅ YA EN CLOUDINARY - Mantener referencia`);
+          return {
+            orden: index + 1,
+            tipo: "cloudinary",
+            contenido: img.cloudinary_url || img.url,
+            cloudinary_public_id: img.cloudinary_public_id,
+            cloudinary_url: img.cloudinary_url || img.url,
+            mime_type: "image/jpeg",
+            nombre: img.file?.name || `imagen-${index + 1}.jpg`,
+          };
+        }
+
+        // PRIORIDAD 4: Imágenes subidas por el usuario - ENVIAR A CLOUDINARY
+        if (img.file || img.url?.startsWith("data:") || img.isUploaded) {
+          console.log(`☁️ ✅ IMAGEN DE USUARIO - Enviar a Cloudinary`);
+          return {
+            orden: index + 1,
+            tipo: "cloudinary",
+            contenido: img.url, // El backend se encarga de subirla a Cloudinary
+            mime_type: img.file?.type || "image/jpeg",
+            nombre: img.file?.name || `imagen-usuario-${index + 1}.jpg`,
+          };
+        }
+
+        // FALLBACK: Si llegamos aquí, es una URL externa
+        console.log(`⚠️ FALLBACK - Tratando como URL externa`);
         return {
           orden: index + 1,
           tipo: "url",
           contenido: img.url,
           mime_type: "image/jpeg",
-          nombre: img.url.split("/").pop() || `imagen-${index + 1}.jpg`,
+          nombre: img.url?.split("/").pop() || `imagen-${index + 1}.jpg`,
         };
       }),
     );
@@ -651,53 +706,73 @@ export const usePackageForm = (initialPackageData = null) => {
     // Resumen final
     const resumen = {
       total: processedImages.length,
-      base64: processedImages.filter(img => img.tipo === 'base64').length,
-      url: processedImages.filter(img => img.tipo === 'url').length
+      cloudinary: processedImages.filter((img) => img.tipo === "cloudinary")
+        .length,
+      url: processedImages.filter((img) => img.tipo === "url").length,
+      google_places: processedImages.filter(
+        (img) => img.tipo === "google_places_url",
+      ).length,
     };
-    
-    console.log('✅ Resumen final de imágenes:', resumen);
-    
+
+    console.log(
+      "✅ RESUMEN FINAL - Usuario→Cloudinary, Pexels/Google→Backend directo:",
+      resumen,
+    );
+
     return processedImages;
   };
 
   const processImagesOrderOnly = async (images) => {
-    console.log('🔄 Procesando solo cambios de orden de imágenes:', {
-      total: images.length
+    console.log("🔄 Procesando solo cambios de orden de imágenes:", {
+      total: images.length,
+      imagenes: images.map((img) => ({
+        id: img.id,
+        isExisting: isExistingImage(img),
+        hasFile: !!img.file,
+        tipo: img.tipo,
+      })),
     });
 
     // Usar la función auxiliar para crear el payload optimizado
     const orderOnlyPayload = createOrderOnlyPayload(images);
 
+    console.log("📋 Payload de orden creado:", {
+      count: orderOnlyPayload.length,
+      payload: orderOnlyPayload,
+    });
+
     // Verificar si hay imágenes que no son existentes (error en detección)
-    const nonExistingImages = images.filter(img => !isExistingImage(img));
-    
+    const nonExistingImages = images.filter((img) => !isExistingImage(img));
+
     if (nonExistingImages.length > 0) {
-      console.warn('⚠️ Encontradas imágenes no existentes en processImagesOrderOnly:', 
-        nonExistingImages.map(img => ({
+      console.warn(
+        "⚠️ Encontradas imágenes no existentes en processImagesOrderOnly:",
+        nonExistingImages.map((img) => ({
           id: img.id,
           isUploaded: img.isUploaded,
           hasFile: !!img.file,
-          tipo: img.tipo
-        }))
+          tipo: img.tipo,
+        })),
       );
-      
+
       // Procesar las nuevas imágenes de forma normal
       const newImagesPayload = await Promise.all(
         nonExistingImages.map(async (img, index) => {
-          if (img.url?.startsWith('data:image') || img.file) {
-            const base64Content = img.url.includes(',') ? img.url.split(",")[1] : img.url;
-            const mimeType = img.file?.type || img.url.match(/data:([^;]+);/)?.[1] || 'image/jpeg';
-            const fileName = img.file?.name || `imagen-nueva-${index + 1}.jpg`;
-
+          if (img.url?.startsWith("data:image") || img.file) {
+            // Imágenes subidas por el usuario van a Cloudinary
+            console.log(
+              `☁️ Nueva imagen de usuario ${index + 1} - A Cloudinary`,
+            );
             return {
               orden: images.indexOf(img) + 1,
-              tipo: "base64",
-              contenido: base64Content,
-              mime_type: mimeType,
-              nombre: fileName,
+              tipo: "cloudinary",
+              contenido: img.url,
+              mime_type: img.file?.type || "image/jpeg",
+              nombre: img.file?.name || `imagen-nueva-${index + 1}.jpg`,
             };
           }
-          
+
+          console.log(`🔗 Nueva imagen externa ${index + 1} - URL`);
           return {
             orden: images.indexOf(img) + 1,
             tipo: "url",
@@ -705,15 +780,21 @@ export const usePackageForm = (initialPackageData = null) => {
             mime_type: "image/jpeg",
             nombre: `imagen-nueva-${index + 1}.jpg`,
           };
-        })
+        }),
       );
-      
+
+      console.log("🔄 Combinando imágenes existentes + nuevas:", {
+        existentes: orderOnlyPayload.length,
+        nuevas: newImagesPayload.length,
+        total: orderOnlyPayload.length + newImagesPayload.length,
+      });
+
       // Combinar imágenes existentes (solo orden) con nuevas (completas)
       return [...orderOnlyPayload, ...newImagesPayload];
     }
 
-    console.log('✅ Payload optimizado solo para orden:', {
-      total: orderOnlyPayload.length
+    console.log("✅ Payload optimizado solo para orden:", {
+      total: orderOnlyPayload.length,
     });
 
     return orderOnlyPayload;
@@ -722,7 +803,7 @@ export const usePackageForm = (initialPackageData = null) => {
   const processHotel = async (hotel) => {
     if (!hotel) return null;
 
-    console.log('🏨 Procesando hotel:', {
+    console.log("🏨 Procesando hotel:", {
       place_id: hotel.place_id,
       id: hotel.id,
       nombre: hotel.nombre,
@@ -730,7 +811,7 @@ export const usePackageForm = (initialPackageData = null) => {
       estrellas_type: typeof hotel.estrellas,
       total_calificaciones: hotel.total_calificaciones,
       total_calificaciones_type: typeof hotel.total_calificaciones,
-      isCustom: hotel.isCustom
+      isCustom: hotel.isCustom,
     });
 
     let hotelImages = [];
@@ -738,7 +819,16 @@ export const usePackageForm = (initialPackageData = null) => {
 
     hotelImages = await Promise.all(
       imageList.map(async (img, index) => {
+        console.log(`🏨 Procesando imagen de hotel ${index + 1}:`, {
+          tipo: img.tipo,
+          hasFile: !!img.file,
+          contenido: img.contenido?.substring(0, 50) + "...",
+          isUserUpload: img.file || img.contenido?.startsWith("data:"),
+        });
+
+        // PRIORIDAD 1: Imágenes de Google Places
         if (img.tipo === "google_places_url" && img.contenido) {
+          console.log(`🗺️ Hotel imagen Google Places`);
           return {
             orden: index + 1,
             tipo: "google_places_url",
@@ -748,27 +838,21 @@ export const usePackageForm = (initialPackageData = null) => {
           };
         }
 
-        if (img.tipo === "base64" && img.contenido) {
+        // PRIORIDAD 2: Imágenes subidas por el usuario - VAN A CLOUDINARY
+        if (img.file || (img.contenido && img.contenido.startsWith("data:"))) {
+          console.log(`☁️ Hotel imagen de usuario - A Cloudinary`);
           return {
             orden: index + 1,
-            tipo: "base64",
-            contenido: img.contenido,
-            mime_type: img.mime_type || "image/jpeg",
-            nombre: img.nombre || `hotel-imagen-${index + 1}.jpg`,
+            tipo: "cloudinary",
+            contenido: img.contenido || img.url,
+            mime_type: img.file?.type || "image/jpeg",
+            nombre: img.file?.name || `hotel-imagen-usuario-${index + 1}.jpg`,
           };
         }
 
-        if (img.file && img.contenido && img.contenido.startsWith("data:")) {
-          return {
-            orden: index + 1,
-            tipo: "base64",
-            contenido: img.contenido.split(",")[1],
-            mime_type: img.file.type,
-            nombre: img.file.name,
-          };
-        }
-
+        // PRIORIDAD 3: URLs externas
         const imageUrl = img.contenido || img.url;
+        console.log(`🔗 Hotel imagen URL externa`);
         return {
           orden: index + 1,
           tipo: "url",
@@ -782,18 +866,20 @@ export const usePackageForm = (initialPackageData = null) => {
     const hotelPayload = {
       placeId: hotel.place_id || hotel.id,
       nombre: hotel.nombre,
-      estrellas: hotel.estrellas && !isNaN(hotel.estrellas) 
-        ? Number(hotel.estrellas) 
-        : 0,
+      estrellas:
+        hotel.estrellas && !isNaN(hotel.estrellas)
+          ? Number(hotel.estrellas)
+          : 0,
       isCustom: hotel.isCustom || false,
-      total_calificaciones: hotel.total_calificaciones && !isNaN(hotel.total_calificaciones) 
-        ? Number(hotel.total_calificaciones) 
-        : 0,
+      total_calificaciones:
+        hotel.total_calificaciones && !isNaN(hotel.total_calificaciones)
+          ? Number(hotel.total_calificaciones)
+          : 0,
       imagenes: hotelImages,
     };
 
-    console.log('📋 Hotel payload final:', hotelPayload);
-    
+    console.log("📋 Hotel payload final:", hotelPayload);
+
     return hotelPayload;
   };
 
@@ -843,7 +929,6 @@ export const usePackageForm = (initialPackageData = null) => {
     handleAddDestination,
     handleRemoveDestination,
     handleSubmit,
-
     currentPatchPayload,
   };
 };

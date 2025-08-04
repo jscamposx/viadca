@@ -1,4 +1,4 @@
-import { normalizeImageUrl, isNewImage } from './imageUtils.js';
+import { normalizeImageUrl, isNewImage } from "./imageUtils.js";
 
 export const getDifferences = (original, current, excludeFields = []) => {
   const differences = {};
@@ -75,16 +75,16 @@ export const preparePatchPayload = (originalPackage, currentFormData) => {
   }
 
   if (hasMayoristasChanges(originalPackage, currentFormData)) {
-    console.log('✅ Cambios en mayoristas detectados - incluyendo en payload');
+    console.log("✅ Cambios en mayoristas detectados - incluyendo en payload");
     payload.mayoristasIds = currentFormData.mayoristasIds || [];
   }
 
   // Analizar cambios en imágenes
   const imageAnalysis = analyzeImageChanges(originalPackage, currentFormData);
   if (imageAnalysis.hasChanges) {
-    console.log('🖼️ Cambios detectados en imágenes:', imageAnalysis);
-    
-    if (imageAnalysis.type === 'ORDER_ONLY') {
+    console.log("🖼️ Cambios detectados en imágenes:", imageAnalysis);
+
+    if (imageAnalysis.type === "ORDER_ONLY") {
       // Solo cambios de orden - enviar payload optimizado
       payload.imagenes = "PROCESS_IMAGES_ORDER_ONLY";
     } else {
@@ -92,7 +92,7 @@ export const preparePatchPayload = (originalPackage, currentFormData) => {
       payload.imagenes = "PROCESS_IMAGES";
     }
   } else {
-    console.log('✅ No hay cambios en imágenes');
+    console.log("✅ No hay cambios en imágenes");
   }
 
   if (hasHotelChanges(originalPackage, currentFormData)) {
@@ -204,7 +204,7 @@ const buildDestinosPayload = (formData) => {
 const hasMayoristasChanges = (original, current) => {
   // Si no hay original (nuevo paquete), y hay mayoristas actuales, hay "cambios"
   if (!original && current.mayoristasIds && current.mayoristasIds.length > 0) {
-    console.log('🆕 Nuevo paquete con mayoristas - considerado como cambio');
+    console.log("🆕 Nuevo paquete con mayoristas - considerado como cambio");
     return true;
   }
 
@@ -213,21 +213,26 @@ const hasMayoristasChanges = (original, current) => {
 
   const hasChanges = !isEqual(originalIds, currentIds);
 
-  console.log('🏢 Comparando mayoristas:', {
+  console.log("🏢 Comparando mayoristas:", {
     isNewPackage: !original,
     originalMayoristas: original?.mayoristas || [],
     originalIds,
     currentMayoristasIds: current.mayoristasIds || [],
     currentIds,
     hasChanges,
-    reason: !original ? 'Nuevo paquete' : 
-      (hasChanges ? 
-        (originalIds.length !== currentIds.length ? 'Diferente cantidad' : 'IDs diferentes') 
-        : 'Sin cambios')
+    reason: !original
+      ? "Nuevo paquete"
+      : hasChanges
+        ? originalIds.length !== currentIds.length
+          ? "Diferente cantidad"
+          : "IDs diferentes"
+        : "Sin cambios",
   });
 
   if (hasChanges) {
-    console.log('📋 Cambios en mayoristas detectados - se incluirán en el payload');
+    console.log(
+      "📋 Cambios en mayoristas detectados - se incluirán en el payload",
+    );
   }
 
   return hasChanges;
@@ -237,84 +242,89 @@ const analyzeImageChanges = (original, current) => {
   const originalImages = original?.imagenes || [];
   const currentImages = current.imagenes || [];
 
-  console.log('🔍 Analizando cambios en imágenes:', {
+  console.log("🔍 Analizando cambios en imágenes:", {
     originalCount: originalImages.length,
     currentCount: currentImages.length,
     originalImages: originalImages.map((img, idx) => ({
       index: idx,
       id: img.id,
       orden: img.orden,
-      url: img.url?.substring(0, 50) + '...'
+      url: img.url?.substring(0, 50) + "...",
     })),
     currentImages: currentImages.map((img, idx) => ({
       index: idx,
       id: img.id,
       orden: img.orden,
       isNew: isNewImage(img),
-      url: img.url?.substring(0, 50) + '...'
-    }))
+      url: img.url?.substring(0, 50) + "...",
+    })),
   });
 
   // Caso 1: Diferente cantidad de imágenes (hay nuevas o eliminadas)
   if (originalImages.length !== currentImages.length) {
-    console.log('📈 Hay nuevas imágenes o se eliminaron');
+    console.log("📈 Hay nuevas imágenes o se eliminaron");
     return {
       hasChanges: true,
-      type: 'FULL_UPDATE',
-      reason: 'Cantidad de imágenes diferente'
+      type: "FULL_UPDATE",
+      reason: "Cantidad de imágenes diferente",
     };
   }
 
   // Si no hay imágenes en ningún lado, no hay cambios
   if (originalImages.length === 0 && currentImages.length === 0) {
-    console.log('✅ No hay imágenes en original ni current');
+    console.log("✅ No hay imágenes en original ni current");
     return {
       hasChanges: false,
-      type: 'NO_CHANGES',
-      reason: 'Sin imágenes'
+      type: "NO_CHANGES",
+      reason: "Sin imágenes",
     };
   }
 
   // Si todas las imágenes current tienen originalContent y coinciden exactamente
   // con las originales, entonces no hay cambios (caso común al cargar paquete)
-  const allHaveOriginalContent = currentImages.every(img => img.originalContent);
-  if (allHaveOriginalContent && originalImages.length === currentImages.length) {
+  const allHaveOriginalContent = currentImages.every(
+    (img) => img.originalContent,
+  );
+  if (
+    allHaveOriginalContent &&
+    originalImages.length === currentImages.length
+  ) {
     const exactMatch = originalImages.every((origImg, index) => {
       const currImg = currentImages[index];
       return (
         origImg.id === currImg.id &&
         origImg.contenido === currImg.originalContent &&
-        (origImg.orden || (index + 1)) === (currImg.orden || (index + 1))
+        (origImg.orden || index + 1) === (currImg.orden || index + 1)
       );
     });
-    
+
     if (exactMatch) {
-      console.log('✅ Todas las imágenes coinciden exactamente - sin cambios');
+      console.log("✅ Todas las imágenes coinciden exactamente - sin cambios");
       return {
         hasChanges: false,
-        type: 'NO_CHANGES',
-        reason: 'Coincidencia exacta con originalContent'
+        type: "NO_CHANGES",
+        reason: "Coincidencia exacta con originalContent",
       };
     }
   }
 
   // Verificar si hay cambios en el orden de las imágenes existentes
   // Comparar el array de IDs en el orden original vs actual
-  const originalIds = originalImages.map(img => img.id);
-  const currentIds = currentImages.map(img => img.id);
-  
-  console.log('🔍 Comparando orden de imágenes:', {
+  const originalIds = originalImages.map((img) => img.id);
+  const currentIds = currentImages.map((img) => img.id);
+
+  console.log("🔍 Comparando orden de imágenes:", {
     originalIds: originalIds,
     currentIds: currentIds,
-    orderChanged: !isEqual(originalIds, currentIds)
+    orderChanged: !isEqual(originalIds, currentIds),
   });
 
   // Si los arrays de IDs son diferentes, hay cambios de orden
   const hasOrderChanges = !isEqual(originalIds, currentIds);
-  
+
   // Verificar si hay imágenes nuevas
   let hasNewImages = false;
-  
+
   const imageComparisons = currentImages.map((currImg, currentIndex) => {
     // Detectar si es una imagen nueva (base64, file o tipo específico)
     const isNewImageFlag = isNewImage(currImg);
@@ -326,64 +336,75 @@ const analyzeImageChanges = (original, current) => {
         tipo: currImg.tipo,
         isUploaded: currImg.isUploaded,
         hasFile: !!currImg.file,
-        url: currImg.url?.substring(0, 30) + '...'
+        url: currImg.url?.substring(0, 30) + "...",
       });
       return { isNew: true, orderChanged: false };
     }
 
     return {
       isNew: false,
-      orderChanged: hasOrderChanges
+      orderChanged: hasOrderChanges,
     };
   });
 
   // Determinar el tipo de cambio
   if (hasNewImages) {
-    console.log('🆕 Hay imágenes nuevas - se requiere actualización completa');
-    console.log('📋 Ejemplo de payload completo:', {
+    console.log("🆕 Hay imágenes nuevas - se requiere actualización completa");
+    console.log("📋 Ejemplo de payload completo:", {
       imagenes: [
-        { id: 'uuid-existente-1', orden: 1 },
-        { orden: 2, tipo: 'base64', contenido: 'data:image/jpeg;base64,/9j/4AAQ...', mime_type: 'image/jpeg', nombre: 'nueva-imagen.jpg' }
-      ]
+        { id: "uuid-existente-1", orden: 1 },
+        {
+          orden: 2,
+          tipo: "base64",
+          contenido: "data:image/jpeg;base64,/9j/4AAQ...",
+          mime_type: "image/jpeg",
+          nombre: "nueva-imagen.jpg",
+        },
+      ],
     });
     return {
       hasChanges: true,
-      type: 'FULL_UPDATE',
-      reason: 'Hay imágenes nuevas',
-      details: { hasNewImages, hasOrderChanges }
+      type: "FULL_UPDATE",
+      reason: "Hay imágenes nuevas",
+      details: { hasNewImages, hasOrderChanges },
     };
   }
 
   if (hasOrderChanges) {
-    console.log('🔄 Solo cambios de orden - se puede enviar solo IDs y orden');
-    console.log('📋 Orden actual será:', currentImages.map((img, idx) => ({
-      id: img.id,
-      orden: idx + 1
-    })));
+    console.log("🔄 Solo cambios de orden - se puede enviar solo IDs y orden");
+    console.log(
+      "📋 Orden actual será:",
+      currentImages.map((img, idx) => ({
+        id: img.id,
+        orden: idx + 1,
+      })),
+    );
     return {
       hasChanges: true,
-      type: 'ORDER_ONLY',
-      reason: 'Solo cambios de orden',
-      details: { hasNewImages: false, hasOrderChanges: true }
+      type: "ORDER_ONLY",
+      reason: "Solo cambios de orden",
+      details: { hasNewImages: false, hasOrderChanges: true },
     };
   }
 
   // Verificar si hay cambios de contenido en imágenes existentes
-  const hasContentChanges = imageComparisons.some(comp => comp.contentChanged);
+  const hasContentChanges = imageComparisons.some(
+    (comp) => comp.contentChanged,
+  );
   if (hasContentChanges) {
-    console.log('� Cambios en contenido de imágenes existentes');
+    console.log("� Cambios en contenido de imágenes existentes");
     return {
       hasChanges: true,
-      type: 'FULL_UPDATE',
-      reason: 'Cambios en contenido de imágenes existentes'
+      type: "FULL_UPDATE",
+      reason: "Cambios en contenido de imágenes existentes",
     };
   }
 
-  console.log('✅ No hay cambios en imágenes');
+  console.log("✅ No hay cambios en imágenes");
   return {
     hasChanges: false,
-    type: 'NO_CHANGES',
-    reason: 'Sin cambios detectados'
+    type: "NO_CHANGES",
+    reason: "Sin cambios detectados",
   };
 };
 

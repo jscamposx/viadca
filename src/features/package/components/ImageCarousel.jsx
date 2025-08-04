@@ -3,7 +3,7 @@ import { Carousel } from "react-responsive-carousel";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 import { FiChevronLeft, FiChevronRight, FiCamera, FiEye } from "react-icons/fi";
 
-const API_URL = import.meta.env.VITE_API_URL;
+const API_URL = import.meta.env.VITE_API_BASE_URL;
 
 const CustomArrow = ({ direction, onClick, isVisible }) => {
   const isPrev = direction === "prev";

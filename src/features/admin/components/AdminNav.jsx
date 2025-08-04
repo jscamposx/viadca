@@ -18,9 +18,11 @@ import UserAvatar from "./UserAvatar";
 
 const NavItem = ({ to, icon, label, isOpen, isMobile = false }) => {
   const activeLinkStyle = {
-    background: "linear-gradient(135deg, #3b82f6 0%, #6366f1 50%, #8b5cf6 100%)",
+    background:
+      "linear-gradient(135deg, #3b82f6 0%, #6366f1 50%, #8b5cf6 100%)",
     color: "#fff",
-    boxShadow: "0 8px 25px -5px rgba(59, 130, 246, 0.4), 0 0 0 1px rgba(255,255,255,0.1)",
+    boxShadow:
+      "0 8px 25px -5px rgba(59, 130, 246, 0.4), 0 0 0 1px rgba(255,255,255,0.1)",
   };
 
   const commonClasses =
@@ -46,7 +48,8 @@ const NavItem = ({ to, icon, label, isOpen, isMobile = false }) => {
           className={`transition-all duration-300 ${isOpen || isMobile ? "mr-3" : ""} flex items-center justify-center`}
         >
           {React.cloneElement(icon, {
-            className: "transition-all duration-300 group-hover:scale-110 group-hover:rotate-3",
+            className:
+              "transition-all duration-300 group-hover:scale-110 group-hover:rotate-3",
             size: 20,
           })}
         </div>
@@ -122,13 +125,17 @@ const AdminNav = ({ isOpen, setIsOpen }) => {
         <div className="flex justify-between items-center p-4 h-16">
           <div className="flex items-center">
             <div className="bg-white/10 backdrop-blur-sm p-2 rounded-xl shadow-lg border border-white/20">
-              <FiCompass className="text-white text-xl" />
+              <img
+                src="/logo-short-sinbg.svg"
+                alt="VIADCA Logo"
+                className="w-6 h-6 filter brightness-0 invert"
+              />
             </div>
             <h1 className="font-bold text-lg ml-3">
               <span className="font-extrabold">VIADCA</span> Admin
             </h1>
           </div>
-          
+
           <div className="flex items-center">
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
@@ -155,8 +162,8 @@ const AdminNav = ({ isOpen, setIsOpen }) => {
         {isMobileMenuOpen && (
           <nav className="bg-white text-gray-700 shadow-xl border-t border-gray-100">
             <div className="p-4 border-b border-gray-100 bg-gradient-to-r from-gray-50 to-blue-50">
-              <UserAvatar 
-                name="Administrador" 
+              <UserAvatar
+                name="Administrador"
                 email="admin@viadca.com"
                 size="md"
                 showInfo={true}
@@ -227,7 +234,7 @@ const AdminNav = ({ isOpen, setIsOpen }) => {
 
       <div
         className={`flex items-center mb-8 mt-4 px-2 py-3 cursor-pointer group/logo
-                   hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 rounded-xl transition-all duration-300 border border-transparent hover:border-blue-100 hover:shadow-sm nav-hover-lift ${!isOpen ? 'justify-center' : ''}`}
+                   hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 rounded-xl transition-all duration-300 border border-transparent hover:border-blue-100 hover:shadow-sm nav-hover-lift ${!isOpen ? "justify-center" : ""}`}
         onClick={() => !isOpen && setIsOpen(true)}
         title={!isOpen ? "Clic para expandir" : ""}
       >
@@ -243,7 +250,9 @@ const AdminNav = ({ isOpen, setIsOpen }) => {
           }`}
         >
           <h1 className="font-bold text-2xl text-gray-800">
-            <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent font-extrabold">VIADCA</span>
+            <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent font-extrabold">
+              VIADCA
+            </span>
           </h1>
           <p className="text-sm text-gray-500 mt-1">Panel de administración</p>
         </div>
@@ -272,17 +281,19 @@ const AdminNav = ({ isOpen, setIsOpen }) => {
       </ul>
 
       <div className="mt-auto border-t border-gray-200 pt-4">
-        <div className={`flex items-center p-3 rounded-xl bg-gradient-to-r from-gray-50 to-blue-50 mb-4 border border-gray-100 shadow-sm nav-hover-lift ${!isOpen ? 'justify-center' : ''}`}>
+        <div
+          className={`flex items-center p-3 rounded-xl bg-gradient-to-r from-gray-50 to-blue-50 mb-4 border border-gray-100 shadow-sm nav-hover-lift ${!isOpen ? "justify-center" : ""}`}
+        >
           {isOpen ? (
-            <UserAvatar 
-              name="Administrador" 
+            <UserAvatar
+              name="Administrador"
               email="admin@viadca.com"
               size="md"
               showInfo={true}
             />
           ) : (
-            <UserAvatar 
-              name="Administrador" 
+            <UserAvatar
+              name="Administrador"
               email="admin@viadca.com"
               size="md"
               showInfo={false}

@@ -170,12 +170,14 @@
 /* Animaciones adicionales para hover en cards */
 .admin-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  box-shadow:
+    0 10px 25px -3px rgba(0, 0, 0, 0.1),
+    0 4px 6px -2px rgba(0, 0, 0, 0.05);
 }
 
 /* Clases de utilidad para la navbar */
 .nav-glow {
-  box-shadow: 
+  box-shadow:
     0 0 20px rgba(59, 130, 246, 0.15),
     0 8px 32px rgba(59, 130, 246, 0.1);
 }
@@ -185,7 +187,7 @@
 }
 
 .nav-item-active::before {
-  content: '';
+  content: "";
   position: absolute;
   inset: 0;
   border-radius: 0.75rem;
@@ -194,7 +196,7 @@
 }
 
 .nav-item-active::after {
-  content: '';
+  content: "";
   position: absolute;
   inset: 1px;
   border-radius: calc(0.75rem - 1px);
@@ -208,13 +210,14 @@
 }
 
 .nav-gradient-border {
-  background: linear-gradient(white, white) padding-box,
-              linear-gradient(135deg, #3b82f6, #6366f1, #8b5cf6) border-box;
+  background:
+    linear-gradient(white, white) padding-box,
+    linear-gradient(135deg, #3b82f6, #6366f1, #8b5cf6) border-box;
   border: 1px solid transparent;
 }
 
 .floating-shadow {
-  box-shadow: 
+  box-shadow:
     0 20px 25px -5px rgba(0, 0, 0, 0.1),
     0 10px 10px -5px rgba(0, 0, 0, 0.04),
     0 0 0 1px rgba(255, 255, 255, 0.05);
@@ -222,7 +225,8 @@
 
 /* Animaciones personalizadas */
 @keyframes nav-float {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0px);
   }
   50% {
@@ -235,7 +239,8 @@
 }
 
 @keyframes nav-pulse {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 1;
   }
   50% {
@@ -258,7 +263,7 @@
 
 .nav-hover-lift:hover {
   transform: translateY(-2px);
-  box-shadow: 
+  box-shadow:
     0 10px 25px -3px rgba(0, 0, 0, 0.1),
     0 4px 6px -2px rgba(0, 0, 0, 0.05);
 }
@@ -271,7 +276,11 @@
 }
 
 .image-tile-drop-zone {
-  background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(147, 197, 253, 0.1));
+  background: linear-gradient(
+    135deg,
+    rgba(59, 130, 246, 0.1),
+    rgba(147, 197, 253, 0.1)
+  );
   border: 2px dashed rgb(59, 130, 246);
   transform: scale(1.05);
 }
@@ -283,9 +292,15 @@
 }
 
 @keyframes gradient-shift {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
 }
 
 .btn-pulse-ring {
@@ -293,13 +308,20 @@
 }
 
 .btn-pulse-ring::before {
-  content: '';
+  content: "";
   position: absolute;
   inset: 0;
   padding: 2px;
-  background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  background: linear-gradient(
+    45deg,
+    transparent,
+    rgba(255, 255, 255, 0.3),
+    transparent
+  );
   border-radius: inherit;
-  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
   mask-composite: exclude;
   opacity: 0;
   transition: opacity 0.3s ease;
@@ -316,17 +338,23 @@
 
 /* Efecto de shimmer para elementos loading */
 .shimmer {
-  background: linear-gradient(90deg, 
-    rgba(255, 255, 255, 0) 0%, 
-    rgba(255, 255, 255, 0.4) 50%, 
-    rgba(255, 255, 255, 0) 100%);
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.4) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
   background-size: 200% 100%;
   animation: shimmer 2s infinite;
 }
 
 @keyframes shimmer {
-  0% { background-position: -200% 0; }
-  100% { background-position: 200% 0; }
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
 }
 
 /* Transiciones suaves para toggles */
@@ -336,7 +364,7 @@
 
 /* Efecto de glow para elementos activos */
 .glow-effect {
-  box-shadow: 
+  box-shadow:
     0 0 20px rgba(59, 130, 246, 0.3),
     0 0 40px rgba(59, 130, 246, 0.1);
 }
@@ -365,9 +393,11 @@
 }
 
 .drop-target-active {
-  background: linear-gradient(45deg, 
-    rgba(59, 130, 246, 0.1), 
-    rgba(99, 102, 241, 0.1));
+  background: linear-gradient(
+    45deg,
+    rgba(59, 130, 246, 0.1),
+    rgba(99, 102, 241, 0.1)
+  );
   border-color: rgb(59, 130, 246);
   transform: scale(1.02);
 }
@@ -383,7 +413,8 @@
 }
 
 @keyframes submitPulse {
-  0%, 100% {
+  0%,
+  100% {
     transform: scale(1);
     box-shadow: 0 4px 20px rgba(59, 130, 246, 0.3);
   }
@@ -405,7 +436,11 @@
 }
 
 @keyframes success-bounce {
-  0%, 20%, 50%, 80%, 100% {
+  0%,
+  20%,
+  50%,
+  80%,
+  100% {
     transform: translateY(0);
   }
   40% {
@@ -430,7 +465,7 @@
 }
 
 .ripple-effect::after {
-  content: '';
+  content: "";
   position: absolute;
   top: 50%;
   left: 50%;
@@ -449,7 +484,8 @@
 
 /* Transición suave para elementos con estados complejos */
 .transition-complex {
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-              transform 0.2s cubic-bezier(0.4, 0, 0.2, 1),
-              box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition:
+    all 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+    transform 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+    box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }

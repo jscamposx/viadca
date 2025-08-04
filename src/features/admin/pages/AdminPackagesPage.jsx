@@ -24,26 +24,27 @@ import {
 import api from "../../../api";
 import { useNotification } from "./AdminLayout";
 import Pagination from "../../../components/ui/Pagination";
+import OptimizedImage from "../../../components/ui/OptimizedImage";
 import { getImageUrl } from "../../../utils/imageUtils";
 import ConfirmDialog from "../components/ConfirmDialog";
 
 const AdminPaquetes = () => {
   const location = useLocation();
   const processedLocationKey = useRef(null);
-  const { 
-    paquetes, 
-    setPaquetes, 
-    loading, 
-    error, 
-    page, 
-    limit, 
-    totalPages, 
+  const {
+    paquetes,
+    setPaquetes,
+    loading,
+    error,
+    page,
+    limit,
+    totalPages,
     totalItems,
     goToPage,
     nextPage,
     prevPage,
     setItemsPerPage,
-    refetch
+    refetch,
   } = usePaginatedPackages();
   const { mayoristas, loading: mayoristasLoading } = useMayoristas();
   const [searchTerm, setSearchTerm] = useState("");
@@ -69,46 +70,60 @@ const AdminPaquetes = () => {
   // Manejar notificaciones al regresar de crear/editar paquetes
   useEffect(() => {
     // Solo procesar si hay un estado de notificación y no se ha procesado esta navegación
-    if (location.state?.showNotification && location.key !== processedLocationKey.current) {
-      const { notificationMessage, notificationType, shouldRefresh } = location.state;
-      
+    if (
+      location.state?.showNotification &&
+      location.key !== processedLocationKey.current
+    ) {
+      const { notificationMessage, notificationType, shouldRefresh } =
+        location.state;
+
       // Marcar esta navegación como procesada
       processedLocationKey.current = location.key;
-      
+
       // Mostrar notificación
       addNotification(notificationMessage, notificationType);
-      
+
       // Refrescar la lista si es necesario
       if (shouldRefresh && refetch) {
         refetch();
       }
-      
+
       // Limpiar el estado después de un breve delay para evitar conflictos
       setTimeout(() => {
         window.history.replaceState({}, document.title);
       }, 100);
     }
-    
+
     // Manejar operaciones en segundo plano
-    if (location.state?.backgroundOperation && location.key !== processedLocationKey.current) {
+    if (
+      location.state?.backgroundOperation &&
+      location.key !== processedLocationKey.current
+    ) {
       const { operationType, packageTitle } = location.state;
-      
+
       // Marcar esta navegación como procesada
       processedLocationKey.current = location.key;
-      
+
       // Mostrar notificación informativa sobre la operación en segundo plano
-      const message = operationType === 'update' ? 
-        `La actualización de "${packageTitle}" continúa en segundo plano` :
-        `La creación de "${packageTitle}" continúa en segundo plano`;
-      
+      const message =
+        operationType === "update"
+          ? `La actualización de "${packageTitle}" continúa en segundo plano`
+          : `La creación de "${packageTitle}" continúa en segundo plano`;
+
       addNotification(message, "info");
-      
+
       // Limpiar el estado después de un breve delay para evitar conflictos
       setTimeout(() => {
         window.history.replaceState({}, document.title);
       }, 100);
     }
-  }, [location.state?.showNotification, location.state?.backgroundOperation, location.key, addNotification, refetch]);
+  }, [
+    location.state?.showNotification,
+    location.state?.backgroundOperation,
+    location.key,
+    addNotification,
+    refetch,
+  ]);
 
   const handleExport = async (paqueteId) => {
     try {
@@ -238,8 +253,10 @@ const AdminPaquetes = () => {
   const confirmDelete = async () => {
     try {
       await api.packages.deletePaquete(confirmDialog.packageId);
-      setPaquetes((prevPaquetes) => 
-        Array.isArray(prevPaquetes) ? prevPaquetes.filter((p) => p.id !== confirmDialog.packageId) : []
+      setPaquetes((prevPaquetes) =>
+        Array.isArray(prevPaquetes)
+          ? prevPaquetes.filter((p) => p.id !== confirmDialog.packageId)
+          : [],
       );
       addNotification("Paquete eliminado exitosamente.", "success");
     } catch (err) {
@@ -646,10 +663,18 @@ const AdminPaquetes = () => {
               {/* Botones de acción - Mejorados para desktop */}
               <div className="flex flex-col lg:flex-row justify-between items-center pt-4 lg:pt-6 gap-3 lg:gap-4 border-t border-gray-200 mt-4 lg:mt-6">
                 <div className="text-sm lg:text-base text-gray-600 order-2 lg:order-1 text-center lg:text-left">
-                  <span className="font-semibold text-blue-600">{filteredPaquetes.length}</span>
-                  <span> paquete{filteredPaquetes.length !== 1 ? "s" : ""} encontrado{filteredPaquetes.length !== 1 ? "s" : ""}</span>
+                  <span className="font-semibold text-blue-600">
+                    {filteredPaquetes.length}
+                  </span>
+                  <span>
+                    {" "}
+                    paquete{filteredPaquetes.length !== 1 ? "s" : ""} encontrado
+                    {filteredPaquetes.length !== 1 ? "s" : ""}
+                  </span>
                   {totalItems > 0 && (
-                    <span className="text-gray-500 ml-2">de {totalItems} total</span>
+                    <span className="text-gray-500 ml-2">
+                      de {totalItems} total
+                    </span>
                   )}
                 </div>
                 <div className="flex gap-3 lg:gap-4 order-1 lg:order-2 w-full lg:w-auto">
@@ -673,16 +698,28 @@ const AdminPaquetes = () => {
         </div>
 
         {/* Filtros Rápidos - Mejorado para móvil */}
-        <section className="bg-gradient-to-r from-white via-gray-50 to-white rounded-xl sm:rounded-2xl shadow-lg border border-gray-100 p-3 sm:p-4 lg:p-5 mb-4 sm:mb-6" aria-labelledby="filtros-rapidos">
+        <section
+          className="bg-gradient-to-r from-white via-gray-50 to-white rounded-xl sm:rounded-2xl shadow-lg border border-gray-100 p-3 sm:p-4 lg:p-5 mb-4 sm:mb-6"
+          aria-labelledby="filtros-rapidos"
+        >
           <div className="space-y-3 sm:space-y-4">
             {/* Header de filtros */}
             <div className="flex items-center gap-2 sm:gap-3">
               <div className="w-1 h-4 sm:h-6 bg-gradient-to-b from-blue-500 to-indigo-600 rounded-full"></div>
-              <h2 id="filtros-rapidos" className="text-xs sm:text-sm font-semibold text-gray-800">Filtros Rápidos</h2>
+              <h2
+                id="filtros-rapidos"
+                className="text-xs sm:text-sm font-semibold text-gray-800"
+              >
+                Filtros Rápidos
+              </h2>
             </div>
-            
+
             {/* Filtros principales */}
-            <div className="flex flex-col sm:flex-row flex-wrap gap-2 sm:gap-3" role="group" aria-labelledby="filtros-rapidos">
+            <div
+              className="flex flex-col sm:flex-row flex-wrap gap-2 sm:gap-3"
+              role="group"
+              aria-labelledby="filtros-rapidos"
+            >
               <button
                 onClick={() => {
                   setStatusFilter("activo");
@@ -697,7 +734,9 @@ const AdminPaquetes = () => {
                 }`}
               >
                 <div className="flex items-center justify-center gap-2">
-                  <div className={`w-2 h-2 rounded-full ${statusFilter === "activo" ? "bg-white" : "bg-emerald-500"}`}></div>
+                  <div
+                    className={`w-2 h-2 rounded-full ${statusFilter === "activo" ? "bg-white" : "bg-emerald-500"}`}
+                  ></div>
                   <span className="hidden sm:inline">Paquetes Activos</span>
                   <span className="sm:hidden">Activos</span>
                 </div>
@@ -717,7 +756,9 @@ const AdminPaquetes = () => {
                 }`}
               >
                 <div className="flex items-center justify-center gap-2">
-                  <div className={`w-2 h-2 rounded-full ${statusFilter === "inactivo" ? "bg-white" : "bg-red-500"}`}></div>
+                  <div
+                    className={`w-2 h-2 rounded-full ${statusFilter === "inactivo" ? "bg-white" : "bg-red-500"}`}
+                  ></div>
                   <span className="hidden sm:inline">Paquetes Inactivos</span>
                   <span className="sm:hidden">Inactivos</span>
                 </div>
@@ -730,7 +771,9 @@ const AdminPaquetes = () => {
                   setStatusFilter("");
                   setIsFiltersOpen(false);
                 }}
-                aria-pressed={!mayoristaFilter && !tipoProductoFilter && !statusFilter}
+                aria-pressed={
+                  !mayoristaFilter && !tipoProductoFilter && !statusFilter
+                }
                 aria-label="Mostrar todos los paquetes sin filtros"
                 className={`group relative px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg sm:rounded-xl text-xs sm:text-sm font-medium transition-all duration-200 ${
                   !mayoristaFilter && !tipoProductoFilter && !statusFilter
@@ -751,9 +794,11 @@ const AdminPaquetes = () => {
               <div className="space-y-2 sm:space-y-3">
                 <div className="flex items-center gap-2">
                   <FiUsers className="w-3 h-3 sm:w-4 sm:h-4 text-purple-500" />
-                  <span className="text-xs sm:text-sm font-medium text-gray-700">Filtrar por Mayorista:</span>
+                  <span className="text-xs sm:text-sm font-medium text-gray-700">
+                    Filtrar por Mayorista:
+                  </span>
                 </div>
-                
+
                 {/* Versión móvil - limitada */}
                 <div className="grid grid-cols-2 gap-2 lg:hidden">
                   {mayoristas.slice(0, 3).map((mayorista) => (
@@ -770,7 +815,9 @@ const AdminPaquetes = () => {
                       }`}
                       title={mayorista.nombre}
                     >
-                      {mayorista.nombre.length > 12 ? `${mayorista.nombre.substring(0, 12)}...` : mayorista.nombre}
+                      {mayorista.nombre.length > 12
+                        ? `${mayorista.nombre.substring(0, 12)}...`
+                        : mayorista.nombre}
                     </button>
                   ))}
                   {mayoristas.length > 3 && (
@@ -799,9 +846,13 @@ const AdminPaquetes = () => {
                       }`}
                       title={`${mayorista.nombre} - ${mayorista.clave}`}
                     >
-                      <div className={`w-2 h-2 rounded-full ${
-                        mayoristaFilter === mayorista.id ? "bg-white" : "bg-purple-500"
-                      }`}></div>
+                      <div
+                        className={`w-2 h-2 rounded-full ${
+                          mayoristaFilter === mayorista.id
+                            ? "bg-white"
+                            : "bg-purple-500"
+                        }`}
+                      ></div>
                       <span className="truncate">{mayorista.nombre}</span>
                     </button>
                   ))}
@@ -823,7 +874,9 @@ const AdminPaquetes = () => {
                   className="w-full px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg sm:rounded-xl text-xs sm:text-sm font-medium bg-gradient-to-r from-red-50 to-pink-50 text-red-600 hover:from-red-100 hover:to-pink-100 border border-red-200 hover:border-red-300 transition-all duration-200 flex items-center justify-center gap-2"
                 >
                   <FiX className="w-3 h-3 sm:w-4 sm:h-4" />
-                  <span className="hidden sm:inline">Limpiar todos los filtros</span>
+                  <span className="hidden sm:inline">
+                    Limpiar todos los filtros
+                  </span>
                   <span className="sm:hidden">Limpiar filtros</span>
                 </button>
               </div>
@@ -842,15 +895,16 @@ const AdminPaquetes = () => {
                   {/* Imagen del paquete */}
                   <div className="relative h-48 sm:h-56 lg:h-64 overflow-hidden">
                     {paquete.primera_imagen ? (
-                      <img
-                        src={getImageUrl(paquete.primera_imagen)}
+                      <OptimizedImage
+                        src={paquete.primera_imagen}
                         alt={paquete.titulo}
+                        width={600}
+                        height={400}
+                        quality="auto"
+                        format="webp"
+                        crop="fill"
                         className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                        onError={(e) => {
-                          e.target.onerror = null;
-                          e.target.src =
-                            "https://via.placeholder.com/600x400?text=Imagen+No+Disponible";
-                        }}
+                        lazy={true}
                       />
                     ) : (
                       <div className="w-full h-full bg-gradient-to-br from-blue-100 via-indigo-50 to-purple-100 flex flex-col items-center justify-center text-gray-500 p-4 sm:p-6">
@@ -891,8 +945,12 @@ const AdminPaquetes = () => {
                       >
                         <div className="flex items-center gap-1 sm:gap-2">
                           <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-white animate-pulse"></div>
-                          <span className="hidden sm:inline">{paquete.activo ? "ACTIVO" : "INACTIVO"}</span>
-                          <span className="sm:hidden">{paquete.activo ? "ACTIVO" : "INACTIVO"}</span>
+                          <span className="hidden sm:inline">
+                            {paquete.activo ? "ACTIVO" : "INACTIVO"}
+                          </span>
+                          <span className="sm:hidden">
+                            {paquete.activo ? "ACTIVO" : "INACTIVO"}
+                          </span>
                         </div>
                       </div>
                     </div>
@@ -918,75 +976,86 @@ const AdminPaquetes = () => {
                     <div className="flex-1">
                       {/* Información en cards pequeñas */}
                       <div className="grid grid-cols-3 gap-1.5 sm:gap-2 mb-3 sm:mb-4">
-                      {paquete.fecha_inicio && (
-                        <div className="bg-blue-50 hover:bg-blue-100 rounded-lg sm:rounded-xl p-2 sm:p-3 text-center transition-all duration-200 hover:shadow-md hover:scale-105 cursor-pointer">
-                          <FiCalendar className="w-3 h-3 sm:w-4 sm:h-4 text-blue-500 mx-auto mb-1 transition-transform duration-200" />
-                          <div className="text-xs text-blue-700 font-medium">
-                            {new Date(paquete.fecha_inicio).toLocaleDateString("es-MX", {
-                              month: "short",
-                              day: "numeric",
-                            })}
+                        {paquete.fecha_inicio && (
+                          <div className="bg-blue-50 hover:bg-blue-100 rounded-lg sm:rounded-xl p-2 sm:p-3 text-center transition-all duration-200 hover:shadow-md hover:scale-105 cursor-pointer">
+                            <FiCalendar className="w-3 h-3 sm:w-4 sm:h-4 text-blue-500 mx-auto mb-1 transition-transform duration-200" />
+                            <div className="text-xs text-blue-700 font-medium">
+                              {new Date(
+                                paquete.fecha_inicio,
+                              ).toLocaleDateString("es-MX", {
+                                month: "short",
+                                day: "numeric",
+                              })}
+                            </div>
                           </div>
-                        </div>
-                      )}
+                        )}
 
-                      {paquete.mayoristas && paquete.mayoristas.length > 0 && (
-                        <div className="bg-purple-50 hover:bg-purple-100 rounded-lg sm:rounded-xl p-2 sm:p-3 text-center transition-all duration-200 hover:shadow-md hover:scale-105 cursor-pointer">
-                          <FiUsers className="w-3 h-3 sm:w-4 sm:h-4 text-purple-500 mx-auto mb-1 transition-transform duration-200" />
-                          <div className="text-xs text-purple-700 font-medium">
-                            {paquete.mayoristas.length} <span className="hidden sm:inline">mayor.</span>
-                          </div>
-                        </div>
-                      )}
+                        {paquete.mayoristas &&
+                          paquete.mayoristas.length > 0 && (
+                            <div className="bg-purple-50 hover:bg-purple-100 rounded-lg sm:rounded-xl p-2 sm:p-3 text-center transition-all duration-200 hover:shadow-md hover:scale-105 cursor-pointer">
+                              <FiUsers className="w-3 h-3 sm:w-4 sm:h-4 text-purple-500 mx-auto mb-1 transition-transform duration-200" />
+                              <div className="text-xs text-purple-700 font-medium">
+                                {paquete.mayoristas.length}{" "}
+                                <span className="hidden sm:inline">mayor.</span>
+                              </div>
+                            </div>
+                          )}
 
-                      {paquete.destinos && paquete.destinos.length > 0 && (
-                        <div className="bg-orange-50 hover:bg-orange-100 rounded-lg sm:rounded-xl p-2 sm:p-3 text-center transition-all duration-200 hover:shadow-md hover:scale-105 cursor-pointer">
-                          <FiMapPin className="w-3 h-3 sm:w-4 sm:h-4 text-orange-500 mx-auto mb-1 transition-transform duration-200" />
-                          <div className="text-xs text-orange-700 font-medium">
-                            {paquete.destinos.length} <span className="hidden sm:inline">dest.</span>
+                        {paquete.destinos && paquete.destinos.length > 0 && (
+                          <div className="bg-orange-50 hover:bg-orange-100 rounded-lg sm:rounded-xl p-2 sm:p-3 text-center transition-all duration-200 hover:shadow-md hover:scale-105 cursor-pointer">
+                            <FiMapPin className="w-3 h-3 sm:w-4 sm:h-4 text-orange-500 mx-auto mb-1 transition-transform duration-200" />
+                            <div className="text-xs text-orange-700 font-medium">
+                              {paquete.destinos.length}{" "}
+                              <span className="hidden sm:inline">dest.</span>
+                            </div>
                           </div>
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Mayoristas - Completo para desktop, simplificado para móvil */}
-                    {paquete.mayoristas && paquete.mayoristas.length > 0 && (
-                      <div className="mb-3 sm:mb-4">
-                        <p className="text-xs text-gray-500 mb-1 sm:mb-2 font-medium">MAYORISTAS</p>
-                        <div className="flex flex-wrap gap-1 lg:gap-2">
-                          {/* Versión móvil - limitada a 2 */}
-                          <div className="flex flex-wrap gap-1 lg:hidden">
-                            {paquete.mayoristas.slice(0, 2).map((mayorista) => (
-                              <span
-                                key={mayorista.id}
-                                className="inline-block bg-gradient-to-r from-gray-100 to-gray-200 text-gray-700 text-xs font-medium px-2 py-1 rounded-lg"
-                                title={mayorista.clave}
-                              >
-                                {mayorista.clave.length > 8 ? `${mayorista.clave.substring(0, 8)}...` : mayorista.clave}
-                              </span>
-                            ))}
-                            {paquete.mayoristas.length > 2 && (
-                              <span className="inline-block bg-gradient-to-r from-blue-100 to-indigo-100 text-blue-700 text-xs font-medium px-2 py-1 rounded-lg">
-                                +{paquete.mayoristas.length - 2}
-                              </span>
-                            )}
-                          </div>
-                          
-                          {/* Versión desktop - completa */}
-                          <div className="hidden lg:flex lg:flex-wrap lg:gap-2">
-                            {paquete.mayoristas.map((mayorista) => (
-                              <span
-                                key={mayorista.id}
-                                className="inline-block bg-gradient-to-r from-gray-100 to-gray-200 hover:from-purple-100 hover:to-indigo-100 text-gray-700 hover:text-purple-700 text-sm font-medium px-3 py-1.5 rounded-xl transition-all duration-200 shadow-sm hover:shadow-md"
-                                title={`${mayorista.nombre} - ${mayorista.clave}`}
-                              >
-                                {mayorista.clave}
-                              </span>
-                            ))}
-                          </div>
-                        </div>
+                        )}
                       </div>
-                    )}
+
+                      {/* Mayoristas - Completo para desktop, simplificado para móvil */}
+                      {paquete.mayoristas && paquete.mayoristas.length > 0 && (
+                        <div className="mb-3 sm:mb-4">
+                          <p className="text-xs text-gray-500 mb-1 sm:mb-2 font-medium">
+                            MAYORISTAS
+                          </p>
+                          <div className="flex flex-wrap gap-1 lg:gap-2">
+                            {/* Versión móvil - limitada a 2 */}
+                            <div className="flex flex-wrap gap-1 lg:hidden">
+                              {paquete.mayoristas
+                                .slice(0, 2)
+                                .map((mayorista) => (
+                                  <span
+                                    key={mayorista.id}
+                                    className="inline-block bg-gradient-to-r from-gray-100 to-gray-200 text-gray-700 text-xs font-medium px-2 py-1 rounded-lg"
+                                    title={mayorista.clave}
+                                  >
+                                    {mayorista.clave.length > 8
+                                      ? `${mayorista.clave.substring(0, 8)}...`
+                                      : mayorista.clave}
+                                  </span>
+                                ))}
+                              {paquete.mayoristas.length > 2 && (
+                                <span className="inline-block bg-gradient-to-r from-blue-100 to-indigo-100 text-blue-700 text-xs font-medium px-2 py-1 rounded-lg">
+                                  +{paquete.mayoristas.length - 2}
+                                </span>
+                              )}
+                            </div>
+
+                            {/* Versión desktop - completa */}
+                            <div className="hidden lg:flex lg:flex-wrap lg:gap-2">
+                              {paquete.mayoristas.map((mayorista) => (
+                                <span
+                                  key={mayorista.id}
+                                  className="inline-block bg-gradient-to-r from-gray-100 to-gray-200 hover:from-purple-100 hover:to-indigo-100 text-gray-700 hover:text-purple-700 text-sm font-medium px-3 py-1.5 rounded-xl transition-all duration-200 shadow-sm hover:shadow-md"
+                                  title={`${mayorista.nombre} - ${mayorista.clave}`}
+                                >
+                                  {mayorista.clave}
+                                </span>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+                      )}
                     </div>
 
                     {/* Botones de acción - Rediseñados para móvil y siempre en la parte inferior */}
@@ -1002,7 +1071,9 @@ const AdminPaquetes = () => {
                           title="Vista previa del paquete"
                         >
                           <FiEye className="w-3 h-3 sm:w-4 sm:h-4 grupo-hover/vista-previa:scale-125 grupo-hover/vista-previa:text-blue-600 transition-all duration-300" />
-                          <span className="hidden sm:inline grupo-hover/vista-previa:font-bold transition-all duration-200">Vista previa</span>
+                          <span className="hidden sm:inline grupo-hover/vista-previa:font-bold transition-all duration-200">
+                            Vista previa
+                          </span>
                           <span className="sm:hidden">Ver</span>
                         </Link>
 
@@ -1013,7 +1084,9 @@ const AdminPaquetes = () => {
                           title="Editar paquete"
                         >
                           <FiEdit2 className="w-3 h-3 sm:w-4 sm:h-4 grupo-hover/editar:scale-110 grupo-hover/editar:rotate-45 grupo-hover/editar:text-yellow-200 transition-all duration-300" />
-                          <span className="hidden sm:inline grupo-hover/editar:tracking-wide transition-all duration-200">Editar</span>
+                          <span className="hidden sm:inline grupo-hover/editar:tracking-wide transition-all duration-200">
+                            Editar
+                          </span>
                           <span className="sm:hidden">Editar</span>
                         </Link>
                       </div>
@@ -1027,18 +1100,24 @@ const AdminPaquetes = () => {
                           title="Exportar a Excel"
                         >
                           <FiDownload className="w-3 h-3 sm:w-4 sm:h-4 grupo-hover/exportar:scale-125 grupo-hover/exportar:translate-y-2 grupo-hover/exportar:text-green-200 transition-all duration-300" />
-                          <span className="hidden sm:inline grupo-hover/exportar:font-bold grupo-hover/exportar:text-green-100 transition-all duration-200">Exportar</span>
+                          <span className="hidden sm:inline grupo-hover/exportar:font-bold grupo-hover/exportar:text-green-100 transition-all duration-200">
+                            Exportar
+                          </span>
                           <span className="sm:hidden">Excel</span>
                         </button>
 
                         {/* Eliminar */}
                         <button
-                          onClick={() => handleDelete(paquete.id, paquete.titulo)}
+                          onClick={() =>
+                            handleDelete(paquete.id, paquete.titulo)
+                          }
                           className="grupo/eliminar flex items-center justify-center gap-1 sm:gap-2 bg-gradient-to-r from-red-500 to-pink-600 hover:from-red-600 hover:to-red-700 text-white font-semibold py-2.5 sm:py-3 px-2 sm:px-4 rounded-lg sm:rounded-2xl transition-all duration-300 text-xs sm:text-sm shadow-sm hover:shadow-xl hover:scale-105 transform hover:-translate-y-1"
                           title="Eliminar paquete"
                         >
                           <FiTrash2 className="w-3 h-3 sm:w-4 sm:h-4 grupo-hover/eliminar:scale-125 grupo-hover/eliminar:rotate-12 grupo-hover/eliminar:text-red-200 transition-all duration-300" />
-                          <span className="hidden sm:inline grupo-hover/eliminar:font-bold grupo-hover/eliminar:text-red-100 transition-all duration-200">Eliminar</span>
+                          <span className="hidden sm:inline grupo-hover/eliminar:font-bold grupo-hover/eliminar:text-red-100 transition-all duration-200">
+                            Eliminar
+                          </span>
                           <span className="sm:hidden">Eliminar</span>
                         </button>
                       </div>
@@ -1056,11 +1135,11 @@ const AdminPaquetes = () => {
                 <FiSearch className="w-10 h-10 sm:w-12 sm:h-12" />
                 <div className="absolute inset-0 rounded-full bg-gradient-to-br from-blue-500/20 to-indigo-500/20 animate-ping"></div>
               </div>
-              
+
               <h3 className="text-xl sm:text-2xl lg:text-3xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent mb-3 sm:mb-4">
                 No se encontraron paquetes
               </h3>
-              
+
               <p className="text-gray-600 mb-6 sm:mb-8 leading-relaxed text-sm sm:text-base">
                 {searchTerm
                   ? `No hay resultados para "${searchTerm}".`
@@ -1086,27 +1165,36 @@ const AdminPaquetes = () => {
                   <div className="flex flex-wrap gap-1 sm:gap-2 justify-center">
                     {searchTerm && (
                       <span className="px-2 sm:px-3 py-1 sm:py-2 bg-gradient-to-r from-blue-500 to-indigo-600 text-white text-xs rounded-lg sm:rounded-xl font-medium shadow-md">
-                        <span className="hidden sm:inline">Búsqueda: "</span>{searchTerm}<span className="hidden sm:inline">"</span>
+                        <span className="hidden sm:inline">Búsqueda: "</span>
+                        {searchTerm}
+                        <span className="hidden sm:inline">"</span>
                       </span>
                     )}
                     {mayoristaFilter && (
                       <span className="px-2 sm:px-3 py-1 sm:py-2 bg-gradient-to-r from-purple-500 to-indigo-600 text-white text-xs rounded-lg sm:rounded-xl font-medium shadow-md">
-                        <span className="hidden sm:inline">Mayorista: </span>{mayoristas?.find((m) => m.id === mayoristaFilter)?.nombre}
+                        <span className="hidden sm:inline">Mayorista: </span>
+                        {
+                          mayoristas?.find((m) => m.id === mayoristaFilter)
+                            ?.nombre
+                        }
                       </span>
                     )}
                     {statusFilter && (
                       <span className="px-2 sm:px-3 py-1 sm:py-2 bg-gradient-to-r from-emerald-500 to-green-600 text-white text-xs rounded-lg sm:rounded-xl font-medium shadow-md">
-                        <span className="hidden sm:inline">Estado: </span>{statusFilter === "activo" ? "Activos" : "Inactivos"}
+                        <span className="hidden sm:inline">Estado: </span>
+                        {statusFilter === "activo" ? "Activos" : "Inactivos"}
                       </span>
                     )}
                     {tipoProductoFilter && (
                       <span className="px-2 sm:px-3 py-1 sm:py-2 bg-gradient-to-r from-orange-500 to-red-600 text-white text-xs rounded-lg sm:rounded-xl font-medium shadow-md">
-                        <span className="hidden sm:inline">Tipo: </span>{tipoProductoFilter}
+                        <span className="hidden sm:inline">Tipo: </span>
+                        {tipoProductoFilter}
                       </span>
                     )}
                     {(priceFilter.min || priceFilter.max) && (
                       <span className="px-2 sm:px-3 py-1 sm:py-2 bg-gradient-to-r from-yellow-500 to-orange-600 text-white text-xs rounded-lg sm:rounded-xl font-medium shadow-md">
-                        <span className="hidden sm:inline">Precio: </span>${priceFilter.min || "0"} - ${priceFilter.max || "∞"}
+                        <span className="hidden sm:inline">Precio: </span>$
+                        {priceFilter.min || "0"} - ${priceFilter.max || "∞"}
                       </span>
                     )}
                   </div>
@@ -1125,14 +1213,16 @@ const AdminPaquetes = () => {
                     <span className="sm:hidden">Limpiar</span>
                   </span>
                 </button>
-                
+
                 <Link
                   to="/admin/paquetes/nuevo"
                   className="group px-4 sm:px-6 py-2.5 sm:py-3 bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white font-semibold rounded-xl sm:rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 text-sm sm:text-base"
                 >
                   <span className="flex items-center justify-center gap-2">
                     <FiPlus className="w-4 h-4 group-hover:rotate-90 transition-transform duration-200" />
-                    <span className="hidden sm:inline">Crear nuevo paquete</span>
+                    <span className="hidden sm:inline">
+                      Crear nuevo paquete
+                    </span>
                     <span className="sm:hidden">Crear paquete</span>
                   </span>
                 </Link>

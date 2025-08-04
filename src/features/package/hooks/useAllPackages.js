@@ -11,7 +11,7 @@ export const useAllPackages = () => {
       setLoading(true);
       setError(null);
       const response = await api.packages.getAllPaquetes();
-      
+
       if (response.data) {
         // Nueva estructura de respuesta con paginación
         if (response.data.data) {

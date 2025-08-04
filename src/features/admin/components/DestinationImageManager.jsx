@@ -11,6 +11,9 @@ import {
 } from "react-icons/fi";
 import axios from "axios";
 import { fileToBase64 } from "../../../utils/imageUtils";
+import { cloudinaryService } from "../../../services/cloudinaryService";
+import CloudinaryImageUploader from "../../../components/ui/CloudinaryImageUploader";
+import OptimizedImage from "../../../components/ui/OptimizedImage";
 
 const Spinner = () => (
   <div className="flex flex-col items-center justify-center py-12 px-4">
@@ -47,12 +50,12 @@ const ImageTile = ({
         : ""
     } ${isDragging && draggedIndex === index ? "image-tile-dragging opacity-70" : "cursor-grab hover:cursor-grab"} hover:shadow-xl hover:border-gray-200 active:cursor-grabbing hover:scale-105`}
     style={{
-      transformStyle: 'preserve-3d',
-      zIndex: isDragging && draggedIndex === index ? 1000 : 'auto',
+      transformStyle: "preserve-3d",
+      zIndex: isDragging && draggedIndex === index ? 1000 : "auto",
     }}
   >
     <div
-      className={`absolute ${index === 0 ? 'bottom-3 left-3' : 'top-3 left-3'} z-20 text-white text-xs font-bold px-2.5 py-1 rounded-full shadow-lg transition-all duration-200 flex items-center gap-1 ${
+      className={`absolute ${index === 0 ? "bottom-3 left-3" : "top-3 left-3"} z-20 text-white text-xs font-bold px-2.5 py-1 rounded-full shadow-lg transition-all duration-200 flex items-center gap-1 ${
         index === 0
           ? "bg-gradient-to-r from-amber-500 to-orange-600 glow-effect"
           : "bg-slate-600"
@@ -60,8 +63,6 @@ const ImageTile = ({
     >
       {index === 0 && <FiStar className="w-3 h-3" />}#{index + 1}
     </div>
-
-
 
     {isDragOver && draggedIndex !== index && (
       <div className="absolute inset-0 bg-blue-50 border-4 border-dashed border-blue-400 flex items-center justify-center z-30 backdrop-blur-sm rounded-xl">
@@ -73,11 +74,15 @@ const ImageTile = ({
     )}
 
     <div className="h-full w-full overflow-hidden">
-      <img
-        src={image.url}
+      <OptimizedImage
+        src={image.url || image}
         alt={`Imagen del destino - Posición ${index + 1}`}
         className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-        draggable={false}
+        width={400}
+        height={400}
+        quality="auto"
+        crop="fill"
+        lazy={false}
       />
     </div>
 
@@ -102,23 +107,27 @@ const ImageTile = ({
           <FiMove className="w-3 h-3" />
           Arrastra para reordenar
         </div>
-        <div className={`px-2 py-0.5 rounded-full text-xs font-bold ${
-          image.isUploaded || image.tipo === 'base64'
-            ? 'bg-green-100 text-green-700'
-            : 'bg-blue-100 text-blue-700'
-        }`}>
-          {image.isUploaded || image.tipo === 'base64' ? 'Subida' : 'URL'}
+        <div
+          className={`px-2 py-0.5 rounded-full text-xs font-bold ${
+            image.isUploaded || image.tipo === "base64"
+              ? "bg-green-100 text-green-700"
+              : "bg-blue-100 text-blue-700"
+          }`}
+        >
+          {image.isUploaded || image.tipo === "base64" ? "Subida" : "URL"}
         </div>
       </div>
     </div>
 
     <div className="absolute bottom-3 right-3 z-20 opacity-0 group-hover:opacity-100 transition-all duration-200">
-      <div className={`text-white p-1.5 rounded-full ${
-        image.isUploaded || image.tipo === 'base64' 
-          ? 'bg-green-600/80' 
-          : 'bg-blue-600/80'
-      }`}>
-        {image.isUploaded || image.tipo === 'base64' ? (
+      <div
+        className={`text-white p-1.5 rounded-full ${
+          image.isUploaded || image.tipo === "base64"
+            ? "bg-green-600/80"
+            : "bg-blue-600/80"
+        }`}
+      >
+        {image.isUploaded || image.tipo === "base64" ? (
           <FiUpload className="w-3 h-3" />
         ) : (
           <FiSearch className="w-3 h-3" />
@@ -154,9 +163,9 @@ const DestinationImageManager = ({
 
   // Función para optimizar URLs de imágenes de Pexels
   const optimizePexelsUrl = (url) => {
-    if (url.includes('images.pexels.com')) {
+    if (url.includes("images.pexels.com")) {
       // Remover parámetros existentes si los hay
-      const baseUrl = url.split('?')[0];
+      const baseUrl = url.split("?")[0];
       // Aplicar optimización: auto=compress, formato WebP, calidad 75, ajuste crop
       // Dimensiones optimizadas para el gestor de imágenes: 600x400 para buena calidad visual
       return `${baseUrl}?auto=compress&w=600&h=400&fit=crop&fm=webp&q=75`;
@@ -224,7 +233,8 @@ const DestinationImageManager = ({
           id: `pexels-${photo.id}`,
           url: optimizePexelsUrl(photo.src.large),
           isUploaded: false,
-          tipo: 'url' // Marcar explícitamente el tipo
+          tipo: "url", // Marcar explícitamente como URL externa
+          source: "pexels", // Identificar la fuente para evitar subir a Cloudinary
         }));
 
         if (isInitialized && images.length > 0) {
@@ -282,24 +292,65 @@ const DestinationImageManager = ({
   }, [images]);
 
   const handleFiles = async (files) => {
+    // Esta función solo debe manejar archivos subidos por el usuario
+    // NO debe procesar imágenes de Pexels o Google Places
+    if (!files || files.length === 0) return;
+
     const fileArray = Array.from(files);
     setStatus("loading");
-    const newImages = await Promise.all(
-      fileArray.map(async (file) => {
-        const base64 = await fileToBase64(file);
-        return {
-          id: `uploaded-${file.name}-${Date.now()}`,
-          url: base64,
-          isUploaded: true,
-          file: file, // Mantener referencia al archivo original
-          tipo: 'base64' // Marcar explícitamente el tipo
-        };
-      }),
-    );
 
-    setImages((prevImages) => [...prevImages, ...newImages]);
-    setAllAvailableImages((prevImages) => [...prevImages, ...newImages]);
-    setStatus("success");
+    try {
+      // Subir archivos del usuario a Cloudinary
+      const uploadedImages = await Promise.all(
+        fileArray.map(async (file, index) => {
+          try {
+            console.log(
+              `📤 Subiendo archivo del usuario a Cloudinary: ${file.name}`,
+            );
+            // Intentar subir a Cloudinary primero
+            const cloudinaryResult = await cloudinaryService.uploadImage(
+              file,
+              "paquetes",
+            );
+
+            return {
+              id: `cloudinary-${Date.now()}-${index}`,
+              url: cloudinaryResult.data.url,
+              cloudinary_public_id: cloudinaryResult.data.public_id,
+              cloudinary_url: cloudinaryResult.data.url,
+              isUploaded: true,
+              file: file,
+              tipo: "cloudinary",
+              source: "user_upload", // Identificar como subida del usuario
+            };
+          } catch (cloudinaryError) {
+            console.warn(
+              "⚠️ Error subiendo a Cloudinary, usando base64 como fallback:",
+              cloudinaryError,
+            );
+
+            // Fallback a base64 si Cloudinary falla
+            const base64 = await fileToBase64(file);
+            return {
+              id: `base64-${Date.now()}-${index}`,
+              url: base64,
+              isUploaded: true,
+              file: file,
+              tipo: "base64",
+              source: "user_upload", // Identificar como subida del usuario
+            };
+          }
+        }),
+      );
+
+      setImages((prevImages) => [...prevImages, ...uploadedImages]);
+      setAllAvailableImages((prevImages) => [...prevImages, ...uploadedImages]);
+      setStatus("success");
+    } catch (error) {
+      console.error("❌ Error procesando archivos del usuario:", error);
+      setStatus("error");
+      setError("Error al procesar las imágenes");
+    }
   };
 
   const handleFileUpload = (event) => {
@@ -378,7 +429,7 @@ const DestinationImageManager = ({
 
   const handleContainerDragOver = (e) => {
     // Solo manejar el drag para archivos externos, no para reordenamiento interno
-    if (draggedIndex === null && e.dataTransfer.types.includes('Files')) {
+    if (draggedIndex === null && e.dataTransfer.types.includes("Files")) {
       e.preventDefault();
       setIsDragging(true);
     }
@@ -480,16 +531,37 @@ const DestinationImageManager = ({
             </div>
             {/* Indicadores de tipos de imagen */}
             <div className="flex items-center gap-3 flex-wrap">
-              {images.filter(img => img.isUploaded || img.tipo === 'base64').length > 0 && (
+              {images.filter((img) => img.isUploaded || img.tipo === "base64")
+                .length > 0 && (
                 <div className="flex items-center gap-1 px-2 py-1 bg-green-100 text-green-700 rounded-lg text-xs font-medium">
                   <FiUpload className="w-3 h-3" />
-                  <span className="whitespace-nowrap">{images.filter(img => img.isUploaded || img.tipo === 'base64').length} subida{images.filter(img => img.isUploaded || img.tipo === 'base64').length !== 1 ? 's' : ''}</span>
+                  <span className="whitespace-nowrap">
+                    {
+                      images.filter(
+                        (img) => img.isUploaded || img.tipo === "base64",
+                      ).length
+                    }{" "}
+                    subida
+                    {images.filter(
+                      (img) => img.isUploaded || img.tipo === "base64",
+                    ).length !== 1
+                      ? "s"
+                      : ""}
+                  </span>
                 </div>
               )}
-              {images.filter(img => !img.isUploaded && img.tipo !== 'base64').length > 0 && (
+              {images.filter((img) => !img.isUploaded && img.tipo !== "base64")
+                .length > 0 && (
                 <div className="flex items-center gap-1 px-2 py-1 bg-blue-100 text-blue-700 rounded-lg text-xs font-medium">
                   <FiSearch className="w-3 h-3" />
-                  <span className="whitespace-nowrap">{images.filter(img => !img.isUploaded && img.tipo !== 'base64').length} URL</span>
+                  <span className="whitespace-nowrap">
+                    {
+                      images.filter(
+                        (img) => !img.isUploaded && img.tipo !== "base64",
+                      ).length
+                    }{" "}
+                    URL
+                  </span>
                 </div>
               )}
             </div>
@@ -574,17 +646,19 @@ const DestinationImageManager = ({
             ))}
           </div>
 
-          {!showAllImages && allAvailableImages.length > images.length && images.length >= 10 && (
-            <div className="flex justify-center">
-              <button
-                onClick={handleShowMoreImages}
-                className="px-6 py-3 bg-slate-600 hover:bg-slate-700 text-white rounded-xl shadow-lg font-medium transition-all duration-200 hover:shadow-xl hover:scale-105 flex items-center gap-2"
-              >
-                <FiEye className="w-4 h-4" />
-                Ver más imágenes ({allAvailableImages.length - 10} restantes)
-              </button>
-            </div>
-          )}
+          {!showAllImages &&
+            allAvailableImages.length > images.length &&
+            images.length >= 10 && (
+              <div className="flex justify-center">
+                <button
+                  onClick={handleShowMoreImages}
+                  className="px-6 py-3 bg-slate-600 hover:bg-slate-700 text-white rounded-xl shadow-lg font-medium transition-all duration-200 hover:shadow-xl hover:scale-105 flex items-center gap-2"
+                >
+                  <FiEye className="w-4 h-4" />
+                  Ver más imágenes ({allAvailableImages.length - 10} restantes)
+                </button>
+              </div>
+            )}
 
           {showAllImages && (
             <div className="flex justify-center">

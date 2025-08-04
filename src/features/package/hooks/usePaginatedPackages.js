@@ -14,8 +14,11 @@ export const usePaginatedPackages = (initialPage = 1, initialLimit = 10) => {
     try {
       setLoading(true);
       setError(null);
-      const response = await api.packages.getPaquetes(currentPage, currentLimit);
-      
+      const response = await api.packages.getPaquetes(
+        currentPage,
+        currentLimit,
+      );
+
       if (response.data) {
         // Nueva estructura de respuesta con paginación
         if (response.data.data && response.data.pagination) {
@@ -83,6 +86,6 @@ export const usePaginatedPackages = (initialPage = 1, initialLimit = 10) => {
     nextPage,
     prevPage,
     setItemsPerPage,
-    refetch: fetchPaquetes
+    refetch: fetchPaquetes,
   };
 };

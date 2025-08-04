@@ -165,7 +165,7 @@ const NewMayoristaPage = () => {
                 <span className="hidden sm:inline">Volver a Mayoristas</span>
                 <span className="sm:hidden">Volver</span>
               </button>
-              
+
               <div className="flex items-center gap-3">
                 <div className="bg-gradient-to-br from-purple-500 to-indigo-600 p-3 rounded-xl shadow-lg border border-white/20">
                   <FiUsers className="text-white text-xl sm:text-2xl" />
@@ -226,10 +226,10 @@ const NewMayoristaPage = () => {
                     value={formData.nombre}
                     onChange={handleInputChange}
                     className={`w-full px-4 py-3 sm:py-4 border-2 rounded-xl sm:rounded-2xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 text-sm sm:text-base font-medium placeholder-gray-400 ${
-                      errors.nombre 
-                        ? "border-red-300 bg-red-50" 
-                        : formData.nombre.trim() 
-                          ? "border-green-300 bg-green-50" 
+                      errors.nombre
+                        ? "border-red-300 bg-red-50"
+                        : formData.nombre.trim()
+                          ? "border-green-300 bg-green-50"
                           : "border-gray-200 bg-gray-50 hover:bg-white hover:border-gray-300"
                     }`}
                     placeholder="Ej: Agencia de Viajes Central"
@@ -273,10 +273,10 @@ const NewMayoristaPage = () => {
                     value={formData.tipo_producto}
                     onChange={handleInputChange}
                     className={`w-full px-4 py-3 sm:py-4 border-2 rounded-xl sm:rounded-2xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 text-sm sm:text-base font-medium appearance-none cursor-pointer ${
-                      errors.tipo_producto 
-                        ? "border-red-300 bg-red-50" 
-                        : formData.tipo_producto 
-                          ? "border-green-300 bg-green-50" 
+                      errors.tipo_producto
+                        ? "border-red-300 bg-red-50"
+                        : formData.tipo_producto
+                          ? "border-green-300 bg-green-50"
                           : "border-gray-200 bg-gray-50 hover:bg-white hover:border-gray-300"
                     }`}
                   >
@@ -288,8 +288,16 @@ const NewMayoristaPage = () => {
                     ))}
                   </select>
                   <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                    <svg className="w-5 h-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
-                      <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
+                    <svg
+                      className="w-5 h-5 text-gray-400"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                        clipRule="evenodd"
+                      />
                     </svg>
                   </div>
                   {formData.tipo_producto && !errors.tipo_producto && (
@@ -319,9 +327,11 @@ const NewMayoristaPage = () => {
                       📝 Información importante
                     </h4>
                     <p className="text-sm text-blue-800 leading-relaxed">
-                      La <span className="font-semibold">clave del mayorista</span> se generará automáticamente una vez
-                      guardado el registro. Esta clave será única y se utilizará
-                      para identificar al mayorista en el sistema.
+                      La{" "}
+                      <span className="font-semibold">clave del mayorista</span>{" "}
+                      se generará automáticamente una vez guardado el registro.
+                      Esta clave será única y se utilizará para identificar al
+                      mayorista en el sistema.
                     </p>
                   </div>
                 </div>
@@ -348,12 +358,16 @@ const NewMayoristaPage = () => {
                   {isLoading ? (
                     <>
                       <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                      <span>{isEditing ? "Actualizando..." : "Guardando..."}</span>
+                      <span>
+                        {isEditing ? "Actualizando..." : "Guardando..."}
+                      </span>
                     </>
                   ) : (
                     <>
                       <FiSave className="w-4 h-4 group-hover:scale-110 group-hover:rotate-12 transition-all duration-200" />
-                      <span>{isEditing ? "Actualizar Mayorista" : "Crear Mayorista"}</span>
+                      <span>
+                        {isEditing ? "Actualizar Mayorista" : "Crear Mayorista"}
+                      </span>
                     </>
                   )}
                 </button>

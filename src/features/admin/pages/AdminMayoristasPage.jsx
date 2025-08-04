@@ -169,7 +169,8 @@ const AdminMayoristasPage = () => {
                 Gestión de Mayoristas
               </h1>
               <p className="text-gray-600 mt-1 sm:mt-2 text-sm sm:text-base">
-                Administra todos tus mayoristas en un solo lugar ({mayoristas.length} total)
+                Administra todos tus mayoristas en un solo lugar (
+                {mayoristas.length} total)
               </p>
             </div>
 
@@ -282,7 +283,9 @@ const AdminMayoristasPage = () => {
                 <div className="flex gap-3">
                   <div className="bg-gradient-to-r from-purple-500 to-indigo-600 text-white py-2.5 px-4 rounded-xl font-medium text-sm flex items-center gap-2 shadow-md">
                     <div className="w-2 h-2 bg-white rounded-full"></div>
-                    <span className="font-bold">{filteredMayoristas.length}</span>
+                    <span className="font-bold">
+                      {filteredMayoristas.length}
+                    </span>
                     <span>mayoristas</span>
                   </div>
 
@@ -401,9 +404,17 @@ const AdminMayoristasPage = () => {
               {/* Botones de acción */}
               <div className="flex flex-col lg:flex-row justify-between items-center pt-4 lg:pt-6 gap-3 lg:gap-4 border-t border-gray-200 mt-4 lg:mt-6">
                 <div className="text-sm lg:text-base text-gray-600 order-2 lg:order-1 text-center lg:text-left">
-                  <span className="font-semibold text-blue-600">{filteredMayoristas.length}</span>
-                  <span> mayorista{filteredMayoristas.length !== 1 ? "s" : ""} encontrado{filteredMayoristas.length !== 1 ? "s" : ""}</span>
-                  <span className="text-gray-500 ml-2">de {mayoristas.length} total</span>
+                  <span className="font-semibold text-blue-600">
+                    {filteredMayoristas.length}
+                  </span>
+                  <span>
+                    {" "}
+                    mayorista{filteredMayoristas.length !== 1 ? "s" : ""}{" "}
+                    encontrado{filteredMayoristas.length !== 1 ? "s" : ""}
+                  </span>
+                  <span className="text-gray-500 ml-2">
+                    de {mayoristas.length} total
+                  </span>
                 </div>
                 <div className="flex gap-3 lg:gap-4 order-1 lg:order-2 w-full lg:w-auto">
                   <button
@@ -426,16 +437,28 @@ const AdminMayoristasPage = () => {
         </div>
 
         {/* Filtros Rápidos - Mejorado para móvil */}
-        <section className="bg-gradient-to-r from-white via-gray-50 to-white rounded-xl sm:rounded-2xl shadow-lg border border-gray-100 p-3 sm:p-4 lg:p-5 mb-4 sm:mb-6" aria-labelledby="filtros-rapidos-mayoristas">
+        <section
+          className="bg-gradient-to-r from-white via-gray-50 to-white rounded-xl sm:rounded-2xl shadow-lg border border-gray-100 p-3 sm:p-4 lg:p-5 mb-4 sm:mb-6"
+          aria-labelledby="filtros-rapidos-mayoristas"
+        >
           <div className="space-y-3 sm:space-y-4">
             {/* Header de filtros */}
             <div className="flex items-center gap-2 sm:gap-3">
               <div className="w-1 h-4 sm:h-6 bg-gradient-to-b from-purple-500 to-indigo-600 rounded-full"></div>
-              <h2 id="filtros-rapidos-mayoristas" className="text-xs sm:text-sm font-semibold text-gray-800">Filtros Rápidos</h2>
+              <h2
+                id="filtros-rapidos-mayoristas"
+                className="text-xs sm:text-sm font-semibold text-gray-800"
+              >
+                Filtros Rápidos
+              </h2>
             </div>
-            
+
             {/* Filtros principales */}
-            <div className="flex flex-col sm:flex-row flex-wrap gap-2 sm:gap-3" role="group" aria-labelledby="filtros-rapidos-mayoristas">
+            <div
+              className="flex flex-col sm:flex-row flex-wrap gap-2 sm:gap-3"
+              role="group"
+              aria-labelledby="filtros-rapidos-mayoristas"
+            >
               <button
                 onClick={() => {
                   setTipoFilter("");
@@ -462,11 +485,17 @@ const AdminMayoristasPage = () => {
               <div className="space-y-2 sm:space-y-3">
                 <div className="flex items-center gap-2">
                   <FiTag className="w-3 h-3 sm:w-4 sm:h-4 text-orange-500" />
-                  <span className="text-xs sm:text-sm font-medium text-gray-700">Filtrar por Tipo:</span>
+                  <span className="text-xs sm:text-sm font-medium text-gray-700">
+                    Filtrar por Tipo:
+                  </span>
                 </div>
-                
+
                 {/* Versión móvil - limitada */}
-                <div className="grid grid-cols-2 gap-2 lg:hidden" role="group" aria-label="Filtros por tipo de producto - versión móvil">
+                <div
+                  className="grid grid-cols-2 gap-2 lg:hidden"
+                  role="group"
+                  aria-label="Filtros por tipo de producto - versión móvil"
+                >
                   {tiposUnicos.slice(0, 3).map((tipo) => (
                     <button
                       key={tipo}
@@ -498,7 +527,11 @@ const AdminMayoristasPage = () => {
                 </div>
 
                 {/* Versión desktop - completa */}
-                <div className="hidden lg:grid lg:grid-cols-4 lg:gap-3" role="group" aria-label="Filtros por tipo de producto - versión desktop">
+                <div
+                  className="hidden lg:grid lg:grid-cols-4 lg:gap-3"
+                  role="group"
+                  aria-label="Filtros por tipo de producto - versión desktop"
+                >
                   {tiposUnicos.map((tipo) => (
                     <button
                       key={tipo}
@@ -515,9 +548,11 @@ const AdminMayoristasPage = () => {
                       }`}
                       title={tipo}
                     >
-                      <div className={`w-2 h-2 rounded-full ${
-                        tipoFilter === tipo ? "bg-white" : "bg-orange-500"
-                      }`}></div>
+                      <div
+                        className={`w-2 h-2 rounded-full ${
+                          tipoFilter === tipo ? "bg-white" : "bg-orange-500"
+                        }`}
+                      ></div>
                       <span className="truncate">{tipo}</span>
                     </button>
                   ))}
@@ -534,7 +569,9 @@ const AdminMayoristasPage = () => {
                   className="w-full px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg sm:rounded-xl text-xs sm:text-sm font-medium bg-gradient-to-r from-red-50 to-pink-50 text-red-600 hover:from-red-100 hover:to-pink-100 border border-red-200 hover:border-red-300 transition-all duration-200 flex items-center justify-center gap-2"
                 >
                   <FiX className="w-3 h-3 sm:w-4 sm:h-4" />
-                  <span className="hidden sm:inline">Limpiar todos los filtros</span>
+                  <span className="hidden sm:inline">
+                    Limpiar todos los filtros
+                  </span>
                   <span className="sm:hidden">Limpiar filtros</span>
                 </button>
               </div>
@@ -574,8 +611,11 @@ const AdminMayoristasPage = () => {
                   <div className="grid grid-cols-2 gap-2 mb-4">
                     <div className="bg-orange-50 hover:bg-orange-100 rounded-lg p-3 text-center transition-all duration-200 hover:shadow-md hover:scale-105 cursor-pointer">
                       <FiTag className="w-4 h-4 text-orange-500 mx-auto mb-1 transition-transform duration-200" />
-                      <div className="text-xs text-orange-700 font-medium truncate" title={mayorista.tipo_producto}>
-                        {mayorista.tipo_producto || 'Sin tipo'}
+                      <div
+                        className="text-xs text-orange-700 font-medium truncate"
+                        title={mayorista.tipo_producto}
+                      >
+                        {mayorista.tipo_producto || "Sin tipo"}
                       </div>
                     </div>
 
@@ -583,10 +623,13 @@ const AdminMayoristasPage = () => {
                       <FiCalendar className="w-4 h-4 text-blue-500 mx-auto mb-1 transition-transform duration-200" />
                       <div className="text-xs text-blue-700 font-medium">
                         {mayorista.created_at
-                          ? new Date(mayorista.created_at).toLocaleDateString("es-MX", {
-                              month: "short",
-                              day: "numeric",
-                            })
+                          ? new Date(mayorista.created_at).toLocaleDateString(
+                              "es-MX",
+                              {
+                                month: "short",
+                                day: "numeric",
+                              },
+                            )
                           : "N/A"}
                       </div>
                     </div>
@@ -595,19 +638,23 @@ const AdminMayoristasPage = () => {
                   {/* Información adicional */}
                   <div className="flex-1">
                     <div className="mb-4">
-                      <p className="text-xs text-gray-500 mb-2 font-medium">INFORMACIÓN</p>
+                      <p className="text-xs text-gray-500 mb-2 font-medium">
+                        INFORMACIÓN
+                      </p>
                       <div className="space-y-2">
                         <div className="flex items-center justify-between">
                           <span className="text-sm text-gray-600">Tipo:</span>
                           <span className="text-sm font-medium text-gray-900 truncate ml-2">
-                            {mayorista.tipo_producto || 'No especificado'}
+                            {mayorista.tipo_producto || "No especificado"}
                           </span>
                         </div>
                         <div className="flex items-center justify-between">
                           <span className="text-sm text-gray-600">Creado:</span>
                           <span className="text-sm font-medium text-gray-900">
                             {mayorista.created_at
-                              ? new Date(mayorista.created_at).toLocaleDateString("es-MX")
+                              ? new Date(
+                                  mayorista.created_at,
+                                ).toLocaleDateString("es-MX")
                               : "N/A"}
                           </span>
                         </div>
@@ -626,17 +673,23 @@ const AdminMayoristasPage = () => {
                         title="Editar mayorista"
                       >
                         <FiEdit2 className="w-4 h-4 grupo-hover/editar:scale-110 grupo-hover/editar:rotate-45 transition-all duration-300" />
-                        <span className="grupo-hover/editar:tracking-wide transition-all duration-200">Editar</span>
+                        <span className="grupo-hover/editar:tracking-wide transition-all duration-200">
+                          Editar
+                        </span>
                       </Link>
 
                       {/* Eliminar */}
                       <button
-                        onClick={() => handleDelete(mayorista.id, mayorista.nombre)}
+                        onClick={() =>
+                          handleDelete(mayorista.id, mayorista.nombre)
+                        }
                         className="grupo/eliminar flex items-center justify-center gap-2 bg-gradient-to-r from-red-500 to-pink-600 hover:from-red-600 hover:to-red-700 text-white font-semibold py-2.5 px-4 rounded-xl transition-all duration-300 text-sm shadow-sm hover:shadow-xl hover:scale-105 transform hover:-translate-y-1"
                         title="Eliminar mayorista"
                       >
                         <FiTrash2 className="w-4 h-4 grupo-hover/eliminar:scale-125 grupo-hover/eliminar:rotate-12 transition-all duration-300" />
-                        <span className="grupo-hover/eliminar:font-bold transition-all duration-200">Eliminar</span>
+                        <span className="grupo-hover/eliminar:font-bold transition-all duration-200">
+                          Eliminar
+                        </span>
                       </button>
                     </div>
                   </div>
@@ -652,11 +705,11 @@ const AdminMayoristasPage = () => {
                 <FiUsers className="w-10 h-10 sm:w-12 sm:h-12" />
                 <div className="absolute inset-0 rounded-full bg-gradient-to-br from-purple-500/20 to-indigo-500/20 animate-ping"></div>
               </div>
-              
+
               <h3 className="text-xl sm:text-2xl lg:text-3xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent mb-3 sm:mb-4">
                 No se encontraron mayoristas
               </h3>
-              
+
               <p className="text-gray-600 mb-6 sm:mb-8 leading-relaxed text-sm sm:text-base">
                 {searchTerm
                   ? `No hay resultados para "${searchTerm}".`
@@ -675,12 +728,15 @@ const AdminMayoristasPage = () => {
                   <div className="flex flex-wrap gap-1 sm:gap-2 justify-center">
                     {searchTerm && (
                       <span className="px-2 sm:px-3 py-1 sm:py-2 bg-gradient-to-r from-blue-500 to-indigo-600 text-white text-xs rounded-lg sm:rounded-xl font-medium shadow-md">
-                        <span className="hidden sm:inline">Búsqueda: "</span>{searchTerm}<span className="hidden sm:inline">"</span>
+                        <span className="hidden sm:inline">Búsqueda: "</span>
+                        {searchTerm}
+                        <span className="hidden sm:inline">"</span>
                       </span>
                     )}
                     {tipoFilter && (
                       <span className="px-2 sm:px-3 py-1 sm:py-2 bg-gradient-to-r from-orange-500 to-red-600 text-white text-xs rounded-lg sm:rounded-xl font-medium shadow-md">
-                        <span className="hidden sm:inline">Tipo: </span>{tipoFilter}
+                        <span className="hidden sm:inline">Tipo: </span>
+                        {tipoFilter}
                       </span>
                     )}
                   </div>
@@ -699,14 +755,16 @@ const AdminMayoristasPage = () => {
                     <span className="sm:hidden">Limpiar</span>
                   </span>
                 </button>
-                
+
                 <Link
                   to="/admin/mayoristas/nuevo"
                   className="group px-4 sm:px-6 py-2.5 sm:py-3 bg-gradient-to-r from-purple-600 to-indigo-700 hover:from-purple-700 hover:to-indigo-800 text-white font-semibold rounded-xl sm:rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 text-sm sm:text-base"
                 >
                   <span className="flex items-center justify-center gap-2">
                     <FiPlus className="w-4 h-4 group-hover:rotate-90 transition-transform duration-200" />
-                    <span className="hidden sm:inline">Crear nuevo mayorista</span>
+                    <span className="hidden sm:inline">
+                      Crear nuevo mayorista
+                    </span>
                     <span className="sm:hidden">Crear mayorista</span>
                   </span>
                 </Link>

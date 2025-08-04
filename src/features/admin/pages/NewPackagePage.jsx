@@ -77,29 +77,35 @@ const NuevoPaquete = () => {
 
     try {
       // Ejecutar en modo background para obtener la promesa
-      const result = await formSubmitHandler(e, (message, type) => {
-        if (type === 'error') {
-          notify.error(message, { title: "Error", persistent: true });
-        }
-      }, true); // backgroundMode = true
+      const result = await formSubmitHandler(
+        e,
+        (message, type) => {
+          if (type === "error") {
+            notify.error(message, { title: "Error", persistent: true });
+          }
+        },
+        true,
+      ); // backgroundMode = true
 
       if (result && result.operation) {
         // Mostrar notificación de progreso
         const progressId = notify.loading(
-          id ? `Actualizando "${result.packageTitle}"...` : `Creando "${result.packageTitle}"...`,
+          id
+            ? `Actualizando "${result.packageTitle}"...`
+            : `Creando "${result.packageTitle}"...`,
           {
             title: "Procesando en segundo plano",
-            persistent: true
-          }
+            persistent: true,
+          },
         );
 
         // Navegar inmediatamente
-        navigate("/admin/paquetes", { 
-          state: { 
+        navigate("/admin/paquetes", {
+          state: {
             backgroundOperation: true,
-            operationType: result.isEdit ? 'update' : 'create',
-            packageTitle: result.packageTitle
-          }
+            operationType: result.isEdit ? "update" : "create",
+            packageTitle: result.packageTitle,
+          },
         });
 
         // Continuar la operación en segundo plano
@@ -107,27 +113,28 @@ const NuevoPaquete = () => {
           .then((operationResult) => {
             // Remover notificación de progreso
             removeNotification(progressId);
-            
+
             // Mostrar notificación de éxito
-            const successMessage = result.isEdit ? 
-              `"${result.packageTitle}" actualizado exitosamente` : 
-              `"${result.packageTitle}" creado exitosamente`;
-            
+            const successMessage = result.isEdit
+              ? `"${result.packageTitle}" actualizado exitosamente`
+              : `"${result.packageTitle}" creado exitosamente`;
+
             notify.success(successMessage, {
               title: "Operación completada",
               persistent: true,
-              duration: 5000
+              duration: 5000,
             });
           })
           .catch((error) => {
             // Remover notificación de progreso
             removeNotification(progressId);
-            
+
             // Mostrar notificación de error
-            const errorMessage = error.response?.data?.message || "Ocurrió un error inesperado.";
+            const errorMessage =
+              error.response?.data?.message || "Ocurrió un error inesperado.";
             notify.error(`Error: ${errorMessage}`, {
               title: "Error en operación en segundo plano",
-              persistent: true
+              persistent: true,
             });
           });
       }
@@ -272,7 +279,9 @@ const NuevoPaquete = () => {
                           ? "s"
                           : ""}{" "}
                         pendiente
-                        {Object.keys(currentPatchPayload).length !== 1 ? "s" : ""}
+                        {Object.keys(currentPatchPayload).length !== 1
+                          ? "s"
+                          : ""}
                       </span>
                     </div>
                   )}
@@ -372,13 +381,13 @@ const NuevoPaquete = () => {
                     {getCurrentSectionIndex() + 1} de {sections.length}
                   </span>
                 </div>
-                
+
                 {/* Progreso con puntos */}
                 <div className="flex items-center justify-center gap-1 sm:gap-2">
                   {sections.map((section, index) => {
                     const isCompleted = index < getCurrentSectionIndex();
                     const isActive = activeSection === section.id;
-                    
+
                     return (
                       <button
                         key={section.id}

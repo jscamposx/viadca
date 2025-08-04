@@ -2,12 +2,12 @@ import apiClient from "./axiosConfig";
 
 export const getPaquetes = (page = 1, limit = 10) => {
   return apiClient.get("/admin/paquetes", {
-    params: { page, limit }
+    params: { page, limit },
   });
 };
 
 export const getAllPaquetes = () => {
-  return apiClient.get("/admin/paquetes?all=true");
+  return apiClient.get("/admin/paquetes");
 };
 
 export const getPaqueteById = (id) => {

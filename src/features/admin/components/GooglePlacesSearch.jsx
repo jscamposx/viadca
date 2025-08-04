@@ -91,42 +91,50 @@ const GooglePlacesSearch = ({
     );
 
     // Mejora para compatibilidad móvil - Forzar eventos táctiles
-    const pacContainer = document.querySelector('.pac-container');
+    const pacContainer = document.querySelector(".pac-container");
     if (pacContainer) {
-      pacContainer.style.touchAction = 'manipulation';
-      pacContainer.style.webkitTouchCallout = 'none';
-      pacContainer.style.webkitUserSelect = 'none';
-      pacContainer.style.webkitTapHighlightColor = 'transparent';
+      pacContainer.style.touchAction = "manipulation";
+      pacContainer.style.webkitTouchCallout = "none";
+      pacContainer.style.webkitUserSelect = "none";
+      pacContainer.style.webkitTapHighlightColor = "transparent";
     }
 
     // Observador para elementos dinámicos del dropdown
     const observer = new MutationObserver(() => {
-      const pacItems = document.querySelectorAll('.pac-item');
-      pacItems.forEach(item => {
+      const pacItems = document.querySelectorAll(".pac-item");
+      pacItems.forEach((item) => {
         if (!item.dataset.mobileFixed) {
-          item.style.touchAction = 'manipulation';
-          item.style.cursor = 'pointer';
-          item.dataset.mobileFixed = 'true';
-          
+          item.style.touchAction = "manipulation";
+          item.style.cursor = "pointer";
+          item.dataset.mobileFixed = "true";
+
           // Agregar eventos táctiles adicionales para móvil
-          item.addEventListener('touchstart', (e) => {
-            e.stopPropagation();
-            item.style.backgroundColor = '#f0f0f0';
-          }, { passive: true });
-          
-          item.addEventListener('touchend', (e) => {
-            e.stopPropagation();
-            item.style.backgroundColor = '';
-            // Simular un click después de un pequeño delay
-            setTimeout(() => {
-              const mouseEvent = new MouseEvent('mousedown', {
-                bubbles: true,
-                cancelable: true,
-                view: window
-              });
-              item.dispatchEvent(mouseEvent);
-            }, 10);
-          }, { passive: true });
+          item.addEventListener(
+            "touchstart",
+            (e) => {
+              e.stopPropagation();
+              item.style.backgroundColor = "#f0f0f0";
+            },
+            { passive: true },
+          );
+
+          item.addEventListener(
+            "touchend",
+            (e) => {
+              e.stopPropagation();
+              item.style.backgroundColor = "";
+              // Simular un click después de un pequeño delay
+              setTimeout(() => {
+                const mouseEvent = new MouseEvent("mousedown", {
+                  bubbles: true,
+                  cancelable: true,
+                  view: window,
+                });
+                item.dispatchEvent(mouseEvent);
+              }, 10);
+            },
+            { passive: true },
+          );
         }
       });
     });
@@ -134,7 +142,7 @@ const GooglePlacesSearch = ({
     // Iniciar observación del DOM
     observer.observe(document.body, {
       childList: true,
-      subtree: true
+      subtree: true,
     });
 
     console.warn = originalWarn;
@@ -171,9 +179,9 @@ const GooglePlacesSearch = ({
         placeholder={placeholder}
         className="w-full rounded bg-white p-3 pl-10 pr-10 border border-gray-300 text-base leading-6 touch-manipulation"
         style={{
-          fontSize: '16px', // Previene zoom en iOS
-          WebkitAppearance: 'none',
-          touchAction: 'manipulation'
+          fontSize: "16px", // Previene zoom en iOS
+          WebkitAppearance: "none",
+          touchAction: "manipulation",
         }}
         value={value || ""}
         onChange={(e) => onChange(e.target.value)}
@@ -188,7 +196,7 @@ const GooglePlacesSearch = ({
           type="button"
           onClick={handleClearInput}
           className="absolute right-3 p-1 touch-manipulation"
-          style={{ touchAction: 'manipulation' }}
+          style={{ touchAction: "manipulation" }}
         >
           <FiX className="h-5 w-5 text-gray-500 hover:text-gray-700" />
         </button>

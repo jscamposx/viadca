@@ -1,10 +1,5 @@
 import React from "react";
-import { 
-  FiSettings, 
-  FiCheck, 
-  FiX,
-  FiPackage
-} from "react-icons/fi";
+import { FiSettings, FiCheck, FiX, FiPackage } from "react-icons/fi";
 
 const ConfigurationForm = ({ formData, onFormChange, isEdit = false }) => {
   const handleToggleChange = (name, value) => {
@@ -36,19 +31,25 @@ const ConfigurationForm = ({ formData, onFormChange, isEdit = false }) => {
           </div>
           Estado del Paquete
         </h4>
-        
+
         <div className="flex items-center justify-between p-3 sm:p-4 bg-white rounded-lg sm:rounded-xl border border-slate-200 hover:border-slate-300 transition-all duration-200 shadow-sm">
           <div className="flex items-center gap-3 sm:gap-4 min-w-0 flex-1">
-            <div className={`p-2 sm:p-3 rounded-full transition-all duration-300 flex-shrink-0 ${
-              formData.activo 
-                ? 'bg-green-100 text-green-600' 
-                : 'bg-slate-100 text-slate-600'
-            }`}>
-              {formData.activo ? <FiCheck className="w-4 h-4 sm:w-5 sm:h-5" /> : <FiX className="w-4 h-4 sm:w-5 sm:h-5" />}
+            <div
+              className={`p-2 sm:p-3 rounded-full transition-all duration-300 flex-shrink-0 ${
+                formData.activo
+                  ? "bg-green-100 text-green-600"
+                  : "bg-slate-100 text-slate-600"
+              }`}
+            >
+              {formData.activo ? (
+                <FiCheck className="w-4 h-4 sm:w-5 sm:h-5" />
+              ) : (
+                <FiX className="w-4 h-4 sm:w-5 sm:h-5" />
+              )}
             </div>
             <div className="min-w-0 flex-1">
               <span className="text-sm sm:text-base font-medium text-slate-700 block">
-                Paquete {formData.activo ? 'activo' : 'inactivo'}
+                Paquete {formData.activo ? "activo" : "inactivo"}
               </span>
               <p className="text-xs sm:text-sm text-slate-500 mt-1 hidden sm:block">
                 {formData.activo
@@ -57,20 +58,22 @@ const ConfigurationForm = ({ formData, onFormChange, isEdit = false }) => {
               </p>
             </div>
           </div>
-          
+
           {/* Toggle switch personalizado */}
           <button
             type="button"
-            onClick={() => handleToggleChange('activo', !formData.activo)}
+            onClick={() => handleToggleChange("activo", !formData.activo)}
             className={`relative inline-flex h-6 w-11 sm:h-7 sm:w-12 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
-              formData.activo ? 'bg-green-500' : 'bg-slate-300'
+              formData.activo ? "bg-green-500" : "bg-slate-300"
             }`}
             role="switch"
             aria-checked={formData.activo}
           >
             <span
               className={`pointer-events-none inline-block h-5 w-5 sm:h-6 sm:w-6 transform rounded-full bg-white shadow-lg ring-0 transition duration-200 ease-in-out ${
-                formData.activo ? 'translate-x-5 sm:translate-x-5' : 'translate-x-0'
+                formData.activo
+                  ? "translate-x-5 sm:translate-x-5"
+                  : "translate-x-0"
               }`}
             />
           </button>
@@ -103,7 +106,9 @@ const ConfigurationForm = ({ formData, onFormChange, isEdit = false }) => {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 text-sm">
           <div>
             <span className="font-medium text-blue-700">Título:</span>
-            <p className="text-blue-600 break-words">{formData.titulo || "Sin título"}</p>
+            <p className="text-blue-600 break-words">
+              {formData.titulo || "Sin título"}
+            </p>
           </div>
           <div>
             <span className="font-medium text-blue-700">Precio:</span>
