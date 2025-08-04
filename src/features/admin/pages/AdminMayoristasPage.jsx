@@ -82,6 +82,12 @@ const AdminMayoristasPage = () => {
   };
 
   useEffect(() => {
+    // Asegurar que mayoristas sea un array antes de proceder
+    if (!Array.isArray(mayoristas)) {
+      setFilteredMayoristas([]);
+      return;
+    }
+
     let filtered = [...mayoristas];
 
     if (searchTerm) {
@@ -125,7 +131,7 @@ const AdminMayoristasPage = () => {
   }, [mayoristas, searchTerm, tipoFilter, sortConfig]);
 
   const tiposUnicos = [
-    ...new Set(mayoristas.map((m) => m.tipo_producto)),
+    ...new Set((mayoristas || []).map((m) => m.tipo_producto)),
   ].filter(Boolean);
 
   if (loading) {

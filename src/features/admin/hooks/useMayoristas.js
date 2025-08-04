@@ -16,7 +16,8 @@ export const useMayoristas = () => {
         count: response.data?.length || 0,
         mayoristas: response.data,
       });
-      setMayoristas(response.data);
+      // Asegurar que siempre sea un array
+      setMayoristas(Array.isArray(response.data) ? response.data : []);
     } catch (err) {
       console.error("❌ Error al cargar mayoristas:", err);
       setError("Error al cargar los mayoristas");
