@@ -23,12 +23,6 @@ export default defineConfig({
       deleteOriginFile: false,
     }),
   ],
-  // Variables de entorno para Cloudinary
-  define: {
-    "import.meta.env.VITE_CLOUDINARY_CLOUD_NAME": JSON.stringify(
-      process.env.VITE_CLOUDINARY_CLOUD_NAME || "dsh8njsiu",
-    ),
-  },
   build: {
     // Optimizaciones adicionales para el build
     rollupOptions: {

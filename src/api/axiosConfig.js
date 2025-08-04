@@ -1,7 +1,33 @@
 import axios from "axios";
 
+// Obtener la URL base con fallback
+const getBaseURL = () => {
+  const envURL = import.meta.env.VITE_API_BASE_URL;
+  console.log("🔧 Variables de entorno:", {
+    VITE_API_BASE_URL: envURL,
+    MODE: import.meta.env.MODE,
+    DEV: import.meta.env.DEV,
+    PROD: import.meta.env.PROD
+  });
+  
+  // Fallback basado en el entorno
+  if (envURL) {
+    return envURL;
+  }
+  
+  // Fallbacks por entorno
+  if (import.meta.env.DEV) {
+    return "http://localhost:3000";
+  } else {
+    return "https://viadca-back.onrender.com";
+  }
+};
+
+const baseURL = getBaseURL();
+console.log("🌐 URL base de API configurada:", baseURL);
+
 const apiClient = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL,
+  baseURL: baseURL,
   headers: {
     "Content-Type": "application/json",
   },

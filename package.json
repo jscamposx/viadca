@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "node env-check.js && vite build",
     "lint": "eslint .",
     "format": "prettier --write .",
     "preview": "vite preview",
@@ -14,7 +14,8 @@
     "commit-es": "aicommits --locale es",
     "build:analyze": "vite build && npx vite-bundle-analyzer",
     "build:gzip": "vite build && gzip-size-cli dist/**/*.{js,css}",
-    "serve:compressed": "vite preview --host"
+    "serve:compressed": "vite preview --host",
+    "env-check": "node env-check.js"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.1.11",
