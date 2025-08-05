@@ -13,6 +13,7 @@ import {
   FiSettings,
   FiLogOut,
   FiUsers,
+  FiTrash2,
 } from "react-icons/fi";
 import UserAvatar from "./UserAvatar";
 
@@ -34,7 +35,11 @@ const NavItem = ({ to, icon, label, isOpen, isMobile = false }) => {
       <NavLink
         to={to}
         end={to === "/admin"}
-        style={({ isActive }) => (isActive ? activeLinkStyle : undefined)}
+        style={({ isActive }) => 
+          isActive 
+            ? activeLinkStyle
+            : undefined
+        }
         className={({ isActive }) =>
           `${commonClasses} ${isMobile ? "" : desktopClasses} ${
             isActive
@@ -45,11 +50,10 @@ const NavItem = ({ to, icon, label, isOpen, isMobile = false }) => {
         title={!isOpen && !isMobile ? label : undefined}
       >
         <div
-          className={`transition-all duration-300 ${isOpen || isMobile ? "mr-3" : ""} flex items-center justify-center`}
+          className={`transition-all duration-300 ${isOpen || isMobile ? "mr-3" : ""} flex items-center justify-center relative`}
         >
           {React.cloneElement(icon, {
-            className:
-              "transition-all duration-300 group-hover:scale-110 group-hover:rotate-3",
+            className: "transition-all duration-300",
             size: 20,
           })}
         </div>
@@ -86,6 +90,11 @@ const AdminNav = ({ isOpen, setIsOpen }) => {
       to: "/admin/mayoristas",
       icon: <FiUsers size={20} />,
       label: "Mayoristas",
+    },
+    {
+      to: "/admin/papelera",
+      icon: <FiTrash2 size={20} />,
+      label: "Papelera",
     },
   ];
 

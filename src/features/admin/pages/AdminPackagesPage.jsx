@@ -258,11 +258,11 @@ const AdminPaquetes = () => {
           ? prevPaquetes.filter((p) => p.id !== confirmDialog.packageId)
           : [],
       );
-      addNotification("Paquete eliminado exitosamente.", "success");
+      addNotification("Paquete movido a la papelera. Puedes restaurarlo desde la sección de papelera.", "success");
     } catch (err) {
       console.error("Error al eliminar el paquete:", err);
       addNotification(
-        "No se pudo eliminar el paquete. Inténtalo de nuevo.",
+        "No se pudo mover el paquete a la papelera. Inténtalo de nuevo.",
         "error",
       );
     }
@@ -326,7 +326,7 @@ const AdminPaquetes = () => {
                 Gestión de Paquetes
               </h1>
               <p className="text-gray-600 mt-1 sm:mt-2 text-sm sm:text-base">
-                Administra todos tus paquetes turísticos en un solo lugar
+                Administra todos tus paquetes turísticos en un solo lugar ({totalItems} total)
               </p>
             </div>
 
@@ -1106,13 +1106,13 @@ const AdminPaquetes = () => {
                           <span className="sm:hidden">Excel</span>
                         </button>
 
-                        {/* Eliminar */}
+                        {/* Mover a papelera */}
                         <button
                           onClick={() =>
                             handleDelete(paquete.id, paquete.titulo)
                           }
-                          className="grupo/eliminar flex items-center justify-center gap-1 sm:gap-2 bg-gradient-to-r from-red-500 to-pink-600 hover:from-red-600 hover:to-red-700 text-white font-semibold py-2.5 sm:py-3 px-2 sm:px-4 rounded-lg sm:rounded-2xl transition-all duration-300 text-xs sm:text-sm shadow-sm hover:shadow-xl hover:scale-105 transform hover:-translate-y-1"
-                          title="Eliminar paquete"
+                          className="grupo/eliminar flex items-center justify-center gap-1 sm:gap-2 bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700 text-white font-semibold py-2.5 sm:py-3 px-2 sm:px-4 rounded-lg sm:rounded-2xl transition-all duration-300 text-xs sm:text-sm shadow-sm hover:shadow-xl hover:scale-105 transform hover:-translate-y-1"
+                          title="Mover a papelera"
                         >
                           <FiTrash2 className="w-3 h-3 sm:w-4 sm:h-4 grupo-hover/eliminar:scale-125 grupo-hover/eliminar:rotate-12 grupo-hover/eliminar:text-red-200 transition-all duration-300" />
                           <span className="hidden sm:inline grupo-hover/eliminar:font-bold grupo-hover/eliminar:text-red-100 transition-all duration-200">
@@ -1247,12 +1247,12 @@ const AdminPaquetes = () => {
         isOpen={confirmDialog.isOpen}
         onClose={closeConfirmDialog}
         onConfirm={confirmDelete}
-        title="Eliminar paquete"
-        message="¿Estás seguro de que quieres eliminar este paquete?"
+        title="Mover a papelera"
+        message="¿Estás seguro de que quieres mover este paquete a la papelera? Podrás restaurarlo desde la sección de papelera."
         itemName={confirmDialog.packageName}
-        confirmText="Eliminar paquete"
+        confirmText="Mover a papelera"
         cancelText="Cancelar"
-        type="danger"
+        type="warning"
       />
     </div>
   );

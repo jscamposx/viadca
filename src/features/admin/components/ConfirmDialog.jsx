@@ -8,7 +8,7 @@ const ConfirmDialog = ({
   message = "¿Estás seguro de que quieres eliminar este elemento?",
   confirmText = "Eliminar",
   cancelText = "Cancelar",
-  type = "danger", // danger, warning, info
+  type = "danger", // danger, warning, info, success
   itemName = "",
 }) => {
   if (!isOpen) return null;
@@ -43,9 +43,15 @@ const ConfirmDialog = ({
       confirmBtn: "bg-blue-600 hover:bg-blue-700 focus:ring-blue-500",
       border: "border-blue-200",
     },
+    success: {
+      icon: <FiCheck className="w-6 h-6 text-green-600" />,
+      iconBg: "bg-green-100",
+      confirmBtn: "bg-green-600 hover:bg-green-700 focus:ring-green-500",
+      border: "border-green-200",
+    },
   };
 
-  const currentStyle = typeStyles[type];
+  const currentStyle = typeStyles[type] || typeStyles.danger; // Fallback a danger si el tipo no existe
 
   return (
     <div

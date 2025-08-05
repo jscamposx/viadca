@@ -8,6 +8,7 @@ import NuevoPaquete from "./features/admin/pages/NewPackagePage";
 import AdminLayout from "./features/admin/pages/AdminLayout";
 import AdminMayoristasPage from "./features/admin/pages/AdminMayoristasPage";
 import NewMayoristaPage from "./features/admin/pages/NewMayoristaPage";
+import PapeleraPage from "./features/admin/pages/PapeleraPage";
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
         <Route path="mayoristas" element={<AdminMayoristasPage />} />
         <Route path="mayoristas/nuevo" element={<NewMayoristaPage />} />
         <Route path="mayoristas/editar/:id" element={<NewMayoristaPage />} />
+        <Route path="papelera" element={<PapeleraPage />} />
       </Route>
     </Routes>
   );

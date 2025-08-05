@@ -51,10 +51,10 @@ const AdminMayoristasPage = () => {
   const confirmDelete = async () => {
     try {
       await deleteMayorista(confirmDialog.mayoristaId);
-      addNotification("Mayorista eliminado correctamente", "success");
+      addNotification("Mayorista movido a la papelera. Puedes restaurarlo desde la sección de papelera.", "success");
     } catch (error) {
       console.error("Error al eliminar mayorista:", error);
-      addNotification("Error al eliminar el mayorista", "error");
+      addNotification("Error al mover el mayorista a la papelera", "error");
     }
   };
 
@@ -628,8 +628,8 @@ const AdminMayoristasPage = () => {
                     <div className="bg-blue-50 hover:bg-blue-100 rounded-lg p-3 text-center transition-all duration-200 hover:shadow-md hover:scale-105 cursor-pointer">
                       <FiCalendar className="w-4 h-4 text-blue-500 mx-auto mb-1 transition-transform duration-200" />
                       <div className="text-xs text-blue-700 font-medium">
-                        {mayorista.created_at
-                          ? new Date(mayorista.created_at).toLocaleDateString(
+                        {mayorista.creadoEn
+                          ? new Date(mayorista.creadoEn).toLocaleDateString(
                               "es-MX",
                               {
                                 month: "short",
@@ -657,9 +657,9 @@ const AdminMayoristasPage = () => {
                         <div className="flex items-center justify-between">
                           <span className="text-sm text-gray-600">Creado:</span>
                           <span className="text-sm font-medium text-gray-900">
-                            {mayorista.created_at
+                            {mayorista.creadoEn || mayorista.created_at
                               ? new Date(
-                                  mayorista.created_at,
+                                  mayorista.creadoEn || mayorista.created_at,
                                 ).toLocaleDateString("es-MX")
                               : "N/A"}
                           </span>
@@ -684,13 +684,13 @@ const AdminMayoristasPage = () => {
                         </span>
                       </Link>
 
-                      {/* Eliminar */}
+                      {/* Mover a papelera */}
                       <button
                         onClick={() =>
                           handleDelete(mayorista.id, mayorista.nombre)
                         }
-                        className="grupo/eliminar flex items-center justify-center gap-2 bg-gradient-to-r from-red-500 to-pink-600 hover:from-red-600 hover:to-red-700 text-white font-semibold py-2.5 px-4 rounded-xl transition-all duration-300 text-sm shadow-sm hover:shadow-xl hover:scale-105 transform hover:-translate-y-1"
-                        title="Eliminar mayorista"
+                        className="grupo/eliminar flex items-center justify-center gap-2 bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700 text-white font-semibold py-2.5 px-4 rounded-xl transition-all duration-300 text-sm shadow-sm hover:shadow-xl hover:scale-105 transform hover:-translate-y-1"
+                        title="Mover a papelera"
                       >
                         <FiTrash2 className="w-4 h-4 grupo-hover/eliminar:scale-125 grupo-hover/eliminar:rotate-12 transition-all duration-300" />
                         <span className="grupo-hover/eliminar:font-bold transition-all duration-200">
@@ -784,12 +784,12 @@ const AdminMayoristasPage = () => {
           isOpen={confirmDialog.isOpen}
           onClose={closeConfirmDialog}
           onConfirm={confirmDelete}
-          title="Eliminar mayorista"
-          message="¿Estás seguro de que quieres eliminar este mayorista?"
+          title="Mover a papelera"
+          message="¿Estás seguro de que quieres mover este mayorista a la papelera? Podrás restaurarlo desde la sección de papelera."
           itemName={confirmDialog.mayoristaName}
-          confirmText="Eliminar mayorista"
+          confirmText="Mover a papelera"
           cancelText="Cancelar"
-          type="danger"
+          type="warning"
         />
       </div>
     </div>
