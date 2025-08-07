@@ -6,6 +6,7 @@ export const usePapelera = () => {
   const [error, setError] = useState(null);
   const [paquetesEliminados, setPaquetesEliminados] = useState([]);
   const [mayoristasEliminados, setMayoristasEliminados] = useState([]);
+  const [usuariosEliminados, setUsuariosEliminados] = useState([]);
   const [lastUpdated, setLastUpdated] = useState(null);
 
   // Función para cargar datos eliminados
@@ -22,6 +23,10 @@ export const usePapelera = () => {
       const mayoristasResponse = await apiClient.get("/admin/mayoristas/deleted/list");
       setMayoristasEliminados(mayoristasResponse.data || []);
       
+      // Cargar usuarios eliminados
+      const usuariosResponse = await apiClient.get("/admin/usuarios/deleted/list");
+      setUsuariosEliminados(usuariosResponse.data || []);
+      
       setLastUpdated(new Date());
     } catch (err) {
       console.error("Error al cargar datos eliminados:", err);
@@ -29,6 +34,7 @@ export const usePapelera = () => {
       // Establecer valores por defecto en caso de error
       setPaquetesEliminados([]);
       setMayoristasEliminados([]);
+      setUsuariosEliminados([]);
     } finally {
       setLoading(false);
     }
@@ -44,15 +50,19 @@ export const usePapelera = () => {
     try {
       const endpoint = itemType === "paquete" 
         ? `/admin/paquetes/${itemId}/restore`
-        : `/admin/mayoristas/${itemId}/restore`;
+        : itemType === "mayorista"
+        ? `/admin/mayoristas/${itemId}/restore`
+        : `/admin/usuarios/${itemId}/restore`;
       
       await apiClient.patch(endpoint);
       
       // Actualizar el estado local
       if (itemType === "paquete") {
         setPaquetesEliminados(prev => prev.filter(p => p.id !== itemId));
-      } else {
+      } else if (itemType === "mayorista") {
         setMayoristasEliminados(prev => prev.filter(m => m.id !== itemId));
+      } else if (itemType === "usuario") {
+        setUsuariosEliminados(prev => prev.filter(u => u.id !== itemId));
       }
       
       setLastUpdated(new Date());
@@ -68,15 +78,19 @@ export const usePapelera = () => {
     try {
       const endpoint = itemType === "paquete" 
         ? `/admin/paquetes/${itemId}/hard`
-        : `/admin/mayoristas/${itemId}/hard`;
+        : itemType === "mayorista"
+        ? `/admin/mayoristas/${itemId}/hard`
+        : `/admin/usuarios/${itemId}/hard-delete`;
       
       await apiClient.delete(endpoint);
       
       // Actualizar el estado local
       if (itemType === "paquete") {
         setPaquetesEliminados(prev => prev.filter(p => p.id !== itemId));
-      } else {
+      } else if (itemType === "mayorista") {
         setMayoristasEliminados(prev => prev.filter(m => m.id !== itemId));
+      } else if (itemType === "usuario") {
+        setUsuariosEliminados(prev => prev.filter(u => u.id !== itemId));
       }
       
       setLastUpdated(new Date());
@@ -93,11 +107,13 @@ export const usePapelera = () => {
       // Obtener todos los elementos actuales
       const allPaquetes = [...paquetesEliminados];
       const allMayoristas = [...mayoristasEliminados];
+      const allUsuarios = [...usuariosEliminados];
       
       // Crear promesas para eliminar todos los elementos
       const deletePromises = [
         ...allPaquetes.map(p => apiClient.delete(`/admin/paquetes/${p.id}/hard`)),
-        ...allMayoristas.map(m => apiClient.delete(`/admin/mayoristas/${m.id}/hard`))
+        ...allMayoristas.map(m => apiClient.delete(`/admin/mayoristas/${m.id}/hard`)),
+        ...allUsuarios.map(u => apiClient.delete(`/admin/usuarios/${u.id}/hard-delete`))
       ];
       
       // Ejecutar todas las eliminaciones en paralelo
@@ -105,20 +121,22 @@ export const usePapelera = () => {
       
       setPaquetesEliminados([]);
       setMayoristasEliminados([]);
+      setUsuariosEliminados([]);
       setLastUpdated(new Date());
       return true;
     } catch (err) {
       console.error("Error al vaciar papelera:", err);
       return false;
     }
-  }, [paquetesEliminados, mayoristasEliminados]);
+  }, [paquetesEliminados, mayoristasEliminados, usuariosEliminados]);
 
   // Calcular estadísticas
   const stats = {
     totalPaquetes: paquetesEliminados?.length || 0,
     totalMayoristas: mayoristasEliminados?.length || 0,
-    total: (paquetesEliminados?.length || 0) + (mayoristasEliminados?.length || 0),
-    isEmpty: (paquetesEliminados?.length || 0) === 0 && (mayoristasEliminados?.length || 0) === 0,
+    totalUsuarios: usuariosEliminados?.length || 0,
+    total: (paquetesEliminados?.length || 0) + (mayoristasEliminados?.length || 0) + (usuariosEliminados?.length || 0),
+    isEmpty: (paquetesEliminados?.length || 0) === 0 && (mayoristasEliminados?.length || 0) === 0 && (usuariosEliminados?.length || 0) === 0,
   };
 
   // Obtener todos los elementos combinados
@@ -137,14 +155,22 @@ export const usePapelera = () => {
       eliminadoEn: m.eliminadoEn || m.eliminado_en,
     }));
     
-    return [...paquetes, ...mayoristas];
-  }, [paquetesEliminados, mayoristasEliminados]);
+    const usuarios = usuariosEliminados.map(u => ({
+      ...u,
+      type: "usuario",
+      name: u.usuario,
+      eliminadoEn: u.eliminadoEn || u.eliminado_en,
+    }));
+    
+    return [...paquetes, ...mayoristas, ...usuarios];
+  }, [paquetesEliminados, mayoristasEliminados, usuariosEliminados]);
 
   return {
     loading,
     error,
     paquetesEliminados,
     mayoristasEliminados,
+    usuariosEliminados,
     stats,
     lastUpdated,
     loadDeletedData,

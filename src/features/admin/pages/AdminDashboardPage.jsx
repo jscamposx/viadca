@@ -89,13 +89,13 @@ const AdminDashboard = () => {
                   </div>
                   <p className="text-blue-600 text-xs sm:text-sm font-semibold uppercase tracking-wide">Total Paquetes</p>
                 </div>
-                <p className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
+                <div className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
                   {loading ? (
                     <div className="w-12 h-8 bg-gray-200 rounded animate-pulse"></div>
                   ) : (
-                    totalPaquetes
+                    <span>{totalPaquetes}</span>
                   )}
-                </p>
+                </div>
                 <div className="flex items-center gap-1">
                   <FiTrendingUp className="w-3 h-3 sm:w-4 sm:h-4 text-green-500" />
                   <span className="text-xs sm:text-sm text-green-600 font-medium">
@@ -119,13 +119,13 @@ const AdminDashboard = () => {
                   </div>
                   <p className="text-green-600 text-xs sm:text-sm font-semibold uppercase tracking-wide">Total Mayoristas</p>
                 </div>
-                <p className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
+                <div className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
                   {loading ? (
                     <div className="w-12 h-8 bg-gray-200 rounded animate-pulse"></div>
                   ) : (
-                    totalMayoristas
+                    <span>{totalMayoristas}</span>
                   )}
-                </p>
+                </div>
                 <div className="flex items-center gap-1">
                   <FiTrendingUp className="w-3 h-3 sm:w-4 sm:h-4 text-green-500" />
                   <span className="text-xs sm:text-sm text-green-600 font-medium">
@@ -149,13 +149,13 @@ const AdminDashboard = () => {
                   </div>
                   <p className="text-purple-600 text-xs sm:text-sm font-semibold uppercase tracking-wide">Valor Total</p>
                 </div>
-                <p className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
+                <div className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
                   {loading ? (
                     <div className="w-16 h-8 bg-gray-200 rounded animate-pulse"></div>
                   ) : (
-                    `$${totalVentas.toLocaleString()}`
+                    <span>{`$${totalVentas.toLocaleString()}`}</span>
                   )}
-                </p>
+                </div>
                 <div className="flex items-center gap-1">
                   <FiTrendingUp className="w-3 h-3 sm:w-4 sm:h-4 text-green-500" />
                   <span className="text-xs sm:text-sm text-green-600 font-medium">
@@ -179,13 +179,13 @@ const AdminDashboard = () => {
                   </div>
                   <p className="text-orange-600 text-xs sm:text-sm font-semibold uppercase tracking-wide">Paquetes Activos</p>
                 </div>
-                <p className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
+                <div className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
                   {loading ? (
                     <div className="w-12 h-8 bg-gray-200 rounded animate-pulse"></div>
                   ) : (
-                    paquetesActivos
+                    <span>{paquetesActivos}</span>
                   )}
-                </p>
+                </div>
                 <div className="flex items-center gap-1">
                   <FiActivity className="w-3 h-3 sm:w-4 sm:h-4 text-orange-500" />
                   <span className="text-xs sm:text-sm text-gray-600 font-medium">

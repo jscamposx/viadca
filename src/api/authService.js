@@ -1,0 +1,81 @@
+import api from './axiosConfig';
+
+const authService = {
+  // Endpoints públicos
+  register: async (userData) => {
+    const response = await api.post('/usuarios/register', userData);
+    return response.data;
+  },
+
+  login: async (credentials) => {
+    const response = await api.post('/usuarios/login', credentials);
+    return response.data;
+  },
+
+  verifyEmail: async (token) => {
+    const response = await api.post('/usuarios/verify-email', { token });
+    return response.data;
+  },
+
+  forgotPassword: async (email) => {
+    const response = await api.post('/usuarios/forgot-password', { correo: email });
+    return response.data;
+  },
+
+  resetPassword: async (token, newPassword) => {
+    const response = await api.post('/usuarios/reset-password', {
+      token,
+      nuevaContrasena: newPassword
+    });
+    return response.data;
+  },
+
+  // Endpoints autenticados
+  getProfile: async () => {
+    const response = await api.get('/usuarios/profile');
+    return response.data;
+  },
+
+  // Endpoints de administración
+  getAllUsers: async (params = {}) => {
+    const response = await api.get('/admin/usuarios', { params });
+    return response.data;
+  },
+
+  getUserById: async (id) => {
+    const response = await api.get(`/admin/usuarios/${id}`);
+    return response.data;
+  },
+
+  getDeletedUsers: async () => {
+    const response = await api.get('/admin/usuarios/deleted/list');
+    return response.data;
+  },
+
+  getUserStats: async () => {
+    const response = await api.get('/admin/usuarios/stats/overview');
+    return response.data;
+  },
+
+  updateUserRole: async (id, role) => {
+    const response = await api.patch(`/admin/usuarios/${id}/role`, { rol: role });
+    return response.data;
+  },
+
+  softDeleteUser: async (id) => {
+    const response = await api.patch(`/admin/usuarios/${id}/soft-delete`);
+    return response.data;
+  },
+
+  restoreUser: async (id) => {
+    const response = await api.patch(`/admin/usuarios/${id}/restore`);
+    return response.data;
+  },
+
+  hardDeleteUser: async (id) => {
+    const response = await api.post(`/admin/usuarios/${id}/hard-delete`);
+    return response.data;
+  }
+};
+
+export default authService;

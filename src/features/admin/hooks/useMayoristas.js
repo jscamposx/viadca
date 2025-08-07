@@ -5,8 +5,14 @@ export const useMayoristas = () => {
   const [mayoristas, setMayoristas] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isInitialized, setIsInitialized] = useState(false);
 
-  const fetchMayoristas = useCallback(async () => {
+  const fetchMayoristas = useCallback(async (force = false) => {
+    // Evitar múltiples peticiones si ya se inicializó y no es forzado
+    if (isInitialized && !force) {
+      return;
+    }
+
     try {
       setLoading(true);
       setError(null);
@@ -17,11 +23,11 @@ export const useMayoristas = () => {
       if (import.meta.env.DEV) {
         console.log("✅ Mayoristas cargados:", {
           count: response.data?.length || 0,
-          mayoristas: response.data,
         });
       }
       // Asegurar que siempre sea un array
       setMayoristas(Array.isArray(response.data) ? response.data : []);
+      setIsInitialized(true);
     } catch (err) {
       if (import.meta.env.DEV) {
         console.error("❌ Error al cargar mayoristas:", err);
@@ -30,7 +36,7 @@ export const useMayoristas = () => {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [isInitialized]);
 
   const createMayorista = useCallback(async (mayoristaData) => {
     try {

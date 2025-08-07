@@ -168,10 +168,10 @@ const AdminMayoristasPage = () => {
   return (
     <div className="min-h-screen bg-gray-50 p-2 sm:p-4 lg:p-6">
       <div className="max-w-7xl mx-auto">
-        <div className="bg-white rounded-xl sm:rounded-2xl shadow-md p-4 sm:p-5 lg:p-6 mb-4 sm:mb-6">
+        <div className="bg-gradient-to-r from-white via-blue-50 to-purple-50 rounded-xl sm:rounded-2xl shadow-lg backdrop-blur-sm border border-white/20 p-4 sm:p-5 lg:p-6 mb-4 sm:mb-6">
           <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center gap-4">
             <div className="text-center sm:text-left lg:text-left">
-              <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-800">
+              <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
                 Gestión de Mayoristas
               </h1>
               <p className="text-gray-600 mt-1 sm:mt-2 text-sm sm:text-base">
@@ -182,7 +182,7 @@ const AdminMayoristasPage = () => {
 
             <Link
               to="/admin/mayoristas/nuevo"
-              className="w-full sm:w-auto lg:w-auto flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white font-semibold py-3 px-5 rounded-xl shadow-md transition-all duration-300 ease-in-out transform hover:-translate-y-0.5 hover:shadow-lg text-sm sm:text-base whitespace-nowrap"
+              className="w-full sm:w-auto lg:w-auto flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-purple-700 hover:from-blue-700 hover:to-purple-800 text-white font-semibold py-3 px-5 rounded-xl shadow-lg transition-all duration-300 ease-in-out transform hover:-translate-y-0.5 hover:shadow-xl text-sm sm:text-base whitespace-nowrap"
             >
               <FiPlus className="w-4 h-4 sm:w-5 sm:h-5" />
               <span>Nuevo Mayorista</span>
@@ -190,17 +190,17 @@ const AdminMayoristasPage = () => {
           </div>
         </div>
 
-        <div className="bg-white rounded-xl sm:rounded-2xl shadow-md p-3 sm:p-4 lg:p-6 mb-4 sm:mb-6">
+        <div className="bg-gradient-to-br from-white/95 via-purple-50/30 to-blue-50/30 backdrop-blur-sm border border-white/40 rounded-xl sm:rounded-2xl shadow-lg p-3 sm:p-4 lg:p-6 mb-4 sm:mb-6">
           <div className="space-y-3 sm:space-y-4">
             {/* Barra de búsqueda */}
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 sm:pl-4 flex items-center pointer-events-none">
-                <FiSearch className="text-gray-400 text-base sm:text-lg" />
+                <FiSearch className="text-purple-400 text-base sm:text-lg" />
               </div>
               <input
                 type="text"
                 placeholder="Buscar por nombre, clave o tipo de producto..."
-                className="w-full pl-10 sm:pl-12 pr-3 sm:pr-4 py-3 sm:py-4 rounded-lg sm:rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm bg-gray-50 font-medium"
+                className="w-full pl-10 sm:pl-12 pr-3 sm:pr-4 py-3 sm:py-4 rounded-lg sm:rounded-xl border border-purple-200 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-sm bg-purple-50/50 font-medium shadow-md focus:shadow-lg transition-all duration-200"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
@@ -372,7 +372,7 @@ const AdminMayoristasPage = () => {
           )}
 
           {isFiltersOpen && (
-            <div className="mt-3 sm:mt-4 p-3 sm:p-4 lg:p-6 bg-gray-50 rounded-lg sm:rounded-xl lg:rounded-2xl">
+            <div className="mt-3 sm:mt-4 p-3 sm:p-4 lg:p-6 bg-gradient-to-br from-white via-purple-50/40 to-blue-50/40 rounded-lg sm:rounded-xl lg:rounded-2xl ">
               <div className="flex justify-between items-center mb-3 sm:mb-4 lg:mb-6">
                 <h3 className="text-sm sm:text-base lg:text-xl font-semibold text-gray-800">
                   Filtros avanzados

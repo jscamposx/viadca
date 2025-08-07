@@ -54,13 +54,17 @@ const PapeleraItemCard = ({ item, onRestore, onHardDelete, formatDate, getDaysUn
             w-full h-full flex items-center justify-center
             ${item.type === "paquete" 
               ? "bg-gradient-to-br from-blue-100 to-indigo-200" 
-              : "bg-gradient-to-br from-green-100 to-emerald-200"
+              : item.type === "mayorista"
+              ? "bg-gradient-to-br from-green-100 to-emerald-200"
+              : "bg-gradient-to-br from-yellow-100 to-orange-200"
             }
           `}>
             {item.type === "paquete" ? (
               <FiPackage className="w-16 h-16 text-blue-400" />
-            ) : (
+            ) : item.type === "mayorista" ? (
               <FiUsers className="w-16 h-16 text-green-400" />
+            ) : (
+              <FiUsers className="w-16 h-16 text-yellow-400" />
             )}
           </div>
         )}
@@ -69,9 +73,11 @@ const PapeleraItemCard = ({ item, onRestore, onHardDelete, formatDate, getDaysUn
         <div className="absolute top-3 right-3">
           <span className={`
             px-2 py-1 text-xs font-semibold rounded-full text-white shadow-lg
-            ${item.type === "paquete" ? "bg-blue-500/80" : "bg-green-500/80"}
+            ${item.type === "paquete" ? "bg-blue-500/80" : 
+              item.type === "mayorista" ? "bg-green-500/80" : "bg-yellow-500/80"}
           `}>
-            {item.type === "paquete" ? "Paquete" : "Mayorista"}
+            {item.type === "paquete" ? "Paquete" : 
+             item.type === "mayorista" ? "Mayorista" : "Usuario"}
           </span>
         </div>
       </div>
@@ -100,7 +106,7 @@ const PapeleraItemCard = ({ item, onRestore, onHardDelete, formatDate, getDaysUn
               </div>
             )}
           </div>
-        ) : (
+        ) : item.type === "mayorista" ? (
           <div className="space-y-2 mb-4">
             {item.email && (
               <div className="text-sm text-gray-600">
@@ -110,6 +116,28 @@ const PapeleraItemCard = ({ item, onRestore, onHardDelete, formatDate, getDaysUn
             {item.telefono && (
               <div className="text-sm text-gray-600">
                 {item.telefono}
+              </div>
+            )}
+          </div>
+        ) : (
+          // Información para usuarios
+          <div className="space-y-2 mb-4">
+            {item.correo && (
+              <div className="text-sm text-gray-600">
+                {item.correo}
+              </div>
+            )}
+            {item.rol && (
+              <div className="text-sm text-gray-600">
+                <span className={`
+                  px-2 py-1 rounded-full text-xs font-medium
+                  ${item.rol === 'admin' ? 'bg-red-100 text-red-800' : 
+                    item.rol === 'pre-autorizado' ? 'bg-blue-100 text-blue-800' : 
+                    'bg-gray-100 text-gray-800'}
+                `}>
+                  {item.rol === 'admin' ? 'Administrador' : 
+                   item.rol === 'pre-autorizado' ? 'Pre-autorizado' : 'Usuario'}
+                </span>
               </div>
             )}
           </div>

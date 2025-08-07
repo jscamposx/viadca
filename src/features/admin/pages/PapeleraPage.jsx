@@ -50,7 +50,7 @@ const PapeleraPage = () => {
   
   // Estados de filtros y búsqueda
   const [searchTerm, setSearchTerm] = useState("");
-  const [typeFilter, setTypeFilter] = useState("todos"); // todos, paquetes, mayoristas
+  const [typeFilter, setTypeFilter] = useState("todos"); // todos, paquetes, mayoristas, usuarios
   const [sortConfig, setSortConfig] = useState({ key: "eliminadoEn", direction: "desc" });
   const [isFiltersOpen, setIsFiltersOpen] = useState(false);
   
@@ -64,7 +64,7 @@ const PapeleraPage = () => {
     type: "", // restore, hardDelete, emptyTrash
     itemId: null,
     itemName: "",
-    itemType: "", // paquete, mayorista
+    itemType: "", // paquete, mayorista, usuario
   });
 
   // Combinar y filtrar datos
@@ -73,7 +73,11 @@ const PapeleraPage = () => {
     
     // Filtrar por tipo
     if (typeFilter !== "todos") {
-      allItems = allItems.filter(item => item.type === typeFilter.slice(0, -1)); // remove 's' from 'paquetes'/'mayoristas'
+      const filterType = typeFilter === "paquetes" ? "paquete" 
+                       : typeFilter === "mayoristas" ? "mayorista"
+                       : typeFilter === "usuarios" ? "usuario"
+                       : typeFilter.slice(0, -1); // fallback
+      allItems = allItems.filter(item => item.type === filterType);
     }
     
     // Filtrar por búsqueda
@@ -115,13 +119,17 @@ const PapeleraPage = () => {
     const success = await restoreItem(item.id, item.type);
     
     if (success) {
+      const itemTypeText = item.type === "paquete" ? "Paquete" : 
+                          item.type === "mayorista" ? "Mayorista" : "Usuario";
       addNotification(
-        `${item.type === "paquete" ? "Paquete" : "Mayorista"} "${item.name}" restaurado correctamente`,
+        `${itemTypeText} "${item.name}" restaurado correctamente`,
         "success"
       );
     } else {
+      const itemTypeText = item.type === "paquete" ? "el paquete" : 
+                          item.type === "mayorista" ? "el mayorista" : "el usuario";
       addNotification(
-        `Error al restaurar ${item.type === "paquete" ? "el paquete" : "el mayorista"}`,
+        `Error al restaurar ${itemTypeText}`,
         "error"
       );
     }
@@ -133,13 +141,17 @@ const PapeleraPage = () => {
     const success = await hardDeleteItem(item.id, item.type);
     
     if (success) {
+      const itemTypeText = item.type === "paquete" ? "Paquete" : 
+                          item.type === "mayorista" ? "Mayorista" : "Usuario";
       addNotification(
-        `${item.type === "paquete" ? "Paquete" : "Mayorista"} "${item.name}" eliminado permanentemente`,
+        `${itemTypeText} "${item.name}" eliminado permanentemente`,
         "success"
       );
     } else {
+      const itemTypeText = item.type === "paquete" ? "el paquete" : 
+                          item.type === "mayorista" ? "el mayorista" : "el usuario";
       addNotification(
-        `Error al eliminar permanentemente ${item.type === "paquete" ? "el paquete" : "el mayorista"}`,
+        `Error al eliminar permanentemente ${itemTypeText}`,
         "error"
       );
     }
@@ -225,9 +237,9 @@ const PapeleraPage = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-4">
-        <div className="w-16 h-16 border-4 border-red-500 border-t-transparent rounded-full animate-spin"></div>
-        <p className="mt-4 text-gray-600 text-lg font-medium">
+      <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center p-4">
+        <div className="w-16 h-16 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
+        <p className="mt-4 text-slate-600 text-lg font-medium">
           Cargando papelera...
         </p>
       </div>
@@ -235,13 +247,13 @@ const PapeleraPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-2 sm:p-4 lg:p-6">
+    <div className="min-h-screen bg-slate-50 p-2 sm:p-4 lg:p-6">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="bg-white rounded-xl sm:rounded-2xl shadow-md p-4 sm:p-5 lg:p-6 mb-4 sm:mb-6">
+        <div className="bg-white border border-gray-200 rounded-xl sm:rounded-2xl shadow-sm p-4 sm:p-5 lg:p-6 mb-4 sm:mb-6">
           <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center gap-4">
             <div className="text-center sm:text-left lg:text-left">
-              <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-800">
+              <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900">
                 Papelera de Reciclaje
               </h1>
               <p className="text-gray-600 mt-1 sm:mt-2 text-sm sm:text-base">
@@ -261,7 +273,7 @@ const PapeleraPage = () => {
               <button
                 onClick={loadDeletedData}
                 disabled={loading}
-                className="w-full sm:w-auto flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white font-semibold py-3 px-5 rounded-xl shadow-md transition-all duration-300 ease-in-out transform hover:-translate-y-0.5 hover:shadow-lg text-sm sm:text-base whitespace-nowrap"
+                className="w-full sm:w-auto flex items-center justify-center gap-2 bg-gradient-to-r from-indigo-600 to-purple-700 hover:from-indigo-700 hover:to-purple-800 text-white font-semibold py-3 px-5 rounded-xl shadow-md transition-all duration-300 ease-in-out transform hover:-translate-y-0.5 hover:shadow-lg text-sm sm:text-base whitespace-nowrap"
               >
                 <FiRefreshCw className={`w-4 h-4 sm:w-5 sm:h-5 ${loading ? "animate-spin" : ""}`} />
                 Actualizar
@@ -286,28 +298,180 @@ const PapeleraPage = () => {
           </div>
         </div>
 
+        {/* Filtros Rápidos */}
+        {!stats.isEmpty && (
+          <section className="bg-white rounded-xl sm:rounded-2xl p-3 sm:p-4 lg:p-5 mb-4 sm:mb-6" aria-labelledby="filtros-rapidos">
+            <div className="space-y-3 sm:space-y-4">
+              <div className="flex items-center gap-2 sm:gap-3">
+                <div className="w-1 h-4 sm:h-6 bg-gradient-to-b from-red-500 to-rose-600 rounded-full"></div>
+                <h2 id="filtros-rapidos" className="text-xs sm:text-sm font-semibold text-gray-800">Filtros Rápidos</h2>
+              </div>
+              
+              <div className="flex flex-col sm:flex-row flex-wrap gap-2 sm:gap-3" role="group" aria-labelledby="filtros-rapidos">
+                <button
+                  onClick={() => setTypeFilter('paquetes')}
+                  aria-pressed={typeFilter === 'paquetes'}
+                  aria-label="Filtrar por paquetes eliminados"
+                  className={`group relative px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg sm:rounded-xl text-xs sm:text-sm font-medium transition-all duration-200 ${
+                    typeFilter === 'paquetes'
+                      ? 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-lg'
+                      : 'bg-white text-gray-600 hover:bg-blue-50 hover:text-blue-700 border border-gray-200 hover:border-blue-200'
+                  }`}
+                >
+                  <div className="flex items-center justify-center gap-2">
+                    <FiPackage className="w-3 h-3 sm:w-4 sm:h-4" />
+                    <span className="hidden sm:inline">Paquetes ({stats.totalPaquetes})</span>
+                    <span className="sm:hidden">Paquetes</span>
+                  </div>
+                </button>
+
+                <button
+                  onClick={() => setTypeFilter('mayoristas')}
+                  aria-pressed={typeFilter === 'mayoristas'}
+                  aria-label="Filtrar por mayoristas eliminados"
+                  className={`group relative px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg sm:rounded-xl text-xs sm:text-sm font-medium transition-all duration-200 ${
+                    typeFilter === 'mayoristas'
+                      ? 'bg-gradient-to-r from-green-500 to-emerald-600 text-white shadow-lg'
+                      : 'bg-white text-gray-600 hover:bg-green-50 hover:text-green-700 border border-gray-200 hover:border-green-200'
+                  }`}
+                >
+                  <div className="flex items-center justify-center gap-2">
+                    <FiUsers className="w-3 h-3 sm:w-4 sm:h-4" />
+                    <span className="hidden sm:inline">Mayoristas ({stats.totalMayoristas})</span>
+                    <span className="sm:hidden">Mayoristas</span>
+                  </div>
+                </button>
+
+                <button
+                  onClick={() => setTypeFilter('usuarios')}
+                  aria-pressed={typeFilter === 'usuarios'}
+                  aria-label="Filtrar por usuarios eliminados"
+                  className={`group relative px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg sm:rounded-xl text-xs sm:text-sm font-medium transition-all duration-200 ${
+                    typeFilter === 'usuarios'
+                      ? 'bg-gradient-to-r from-yellow-500 to-amber-600 text-white shadow-lg'
+                      : 'bg-white text-gray-600 hover:bg-yellow-50 hover:text-yellow-700 border border-gray-200 hover:border-yellow-200'
+                  }`}
+                >
+                  <div className="flex items-center justify-center gap-2">
+                    <FiUser className="w-3 h-3 sm:w-4 sm:h-4" />
+                    <span className="hidden sm:inline">Usuarios ({stats.totalUsuarios || 0})</span>
+                    <span className="sm:hidden">Usuarios</span>
+                  </div>
+                </button>
+
+                <button
+                  onClick={() => setTypeFilter('todos')}
+                  aria-pressed={typeFilter === 'todos'}
+                  aria-label="Mostrar todos los elementos eliminados"
+                  className={`group relative px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg sm:rounded-xl text-xs sm:text-sm font-medium transition-all duration-200 ${
+                    typeFilter === 'todos'
+                      ? 'bg-gradient-to-r from-red-500 to-rose-600 text-white shadow-lg'
+                      : 'bg-white text-gray-600 hover:bg-red-50 hover:text-red-700 border border-gray-200 hover:border-red-200'
+                  }`}
+                >
+                  <div className="flex items-center justify-center gap-2">
+                    <FiTrash2 className="w-3 h-3 sm:w-4 sm:h-4" />
+                    <span className="hidden sm:inline">Todos los Elementos ({stats.total})</span>
+                    <span className="sm:hidden">Todos</span>
+                  </div>
+                </button>
+              </div>
+
+              {/* Filtros adicionales por urgencia */}
+              <div className="space-y-2 sm:space-y-3">
+                <div className="flex items-center gap-2">
+                  <FiClock className="w-3 h-3 sm:w-4 sm:h-4 text-orange-500" />
+                  <span className="text-xs sm:text-sm font-medium text-gray-700">Ordenar por:</span>
+                </div>
+                
+                <div className="flex flex-wrap gap-2">
+                  <button
+                    onClick={() => handleSort('eliminadoEn')}
+                    className={`px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg sm:rounded-xl text-xs sm:text-sm font-medium transition-all duration-200 flex items-center gap-2 ${
+                      sortConfig.key === 'eliminadoEn'
+                        ? 'bg-orange-100 text-orange-700 border border-orange-200'
+                        : 'bg-white text-gray-600 hover:bg-orange-50 hover:text-orange-700 border border-gray-200 hover:border-orange-200'
+                    } hover:shadow-md`}
+                    title="Ordenar por fecha de eliminación"
+                  >
+                    <FiCalendar className="w-3 h-3 sm:w-4 sm:h-4" />
+                    <span>Fecha Eliminación</span>
+                    {sortConfig.key === 'eliminadoEn' && (
+                      sortConfig.direction === 'asc' ? <FiArrowUp className="w-3 h-3" /> : <FiArrowDown className="w-3 h-3" />
+                    )}
+                  </button>
+
+                  <button
+                    onClick={() => handleSort('name')}
+                    className={`px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg sm:rounded-xl text-xs sm:text-sm font-medium transition-all duration-200 flex items-center gap-2 ${
+                      sortConfig.key === 'name'
+                        ? 'bg-purple-100 text-purple-700 border border-purple-200'
+                        : 'bg-white text-gray-600 hover:bg-purple-50 hover:text-purple-700 border border-gray-200 hover:border-purple-200'
+                    } hover:shadow-md`}
+                    title="Ordenar por nombre"
+                  >
+                    <div className="w-2 h-2 rounded-full bg-purple-500"></div>
+                    <span>Nombre A-Z</span>
+                    {sortConfig.key === 'name' && (
+                      sortConfig.direction === 'asc' ? <FiArrowUp className="w-3 h-3" /> : <FiArrowDown className="w-3 h-3" />
+                    )}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </section>
+        )}
+
         {/* Estadísticas y controles */}
         {!stats.isEmpty && (
-          <div className="bg-white rounded-xl sm:rounded-2xl shadow-md p-3 sm:p-4 lg:p-6 mb-4 sm:mb-6">
+          <div className="bg-white rounded-xl sm:rounded-2xl shadow-sm p-3 sm:p-4 lg:p-6 mb-4 sm:mb-6">
             {/* Estadísticas compactas */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 mb-4 sm:mb-6">
-              <div className="bg-red-50 border border-red-200 rounded-lg p-3 sm:p-4 text-center">
-                <div className="text-red-600 text-xs sm:text-sm font-medium mb-1">Total</div>
-                <div className="text-red-700 text-lg sm:text-xl font-bold">{stats.total}</div>
-              </div>
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 sm:p-4 text-center">
-                <div className="text-blue-600 text-xs sm:text-sm font-medium mb-1">Paquetes</div>
-                <div className="text-blue-700 text-lg sm:text-xl font-bold">{stats.totalPaquetes}</div>
-              </div>
-              <div className="bg-green-50 border border-green-200 rounded-lg p-3 sm:p-4 text-center">
-                <div className="text-green-600 text-xs sm:text-sm font-medium mb-1">Mayoristas</div>
-                <div className="text-green-700 text-lg sm:text-xl font-bold">{stats.totalMayoristas}</div>
-              </div>
-              <div className="bg-purple-50 border border-purple-200 rounded-lg p-3 sm:p-4 text-center">
-                <div className="text-purple-600 text-xs sm:text-sm font-medium mb-1">Actualizado</div>
-                <div className="text-purple-700 text-xs sm:text-sm font-semibold">
-                  {lastUpdated ? new Date(lastUpdated).toLocaleDateString("es-ES") : "Cargando..."}
+              <div className="bg-gradient-to-br from-rose-50 via-red-50 to-rose-100 border border-red-200 rounded-xl p-3 sm:p-4 text-center hover:shadow-md transition-all duration-200">
+                <div className="flex items-center justify-center mb-2">
+                  <div className="bg-gradient-to-r from-red-500 to-rose-600 p-1.5 rounded-lg">
+                    <FiTrash2 className="w-4 h-4 text-white" />
+                  </div>
                 </div>
+                <div className="text-red-700 text-xs sm:text-sm font-semibold mb-1 uppercase tracking-wide">Total</div>
+                <div className="text-slate-800 text-lg sm:text-xl font-bold">{stats.total}</div>
+              </div>
+              <div className="bg-gradient-to-br from-slate-50 via-indigo-50 to-slate-100 border border-indigo-200 rounded-xl p-3 sm:p-4 text-center hover:shadow-md transition-all duration-200">
+                <div className="flex items-center justify-center mb-2">
+                  <div className="bg-gradient-to-r from-indigo-500 to-blue-600 p-1.5 rounded-lg">
+                    <FiPackage className="w-4 h-4 text-white" />
+                  </div>
+                </div>
+                <div className="text-indigo-700 text-xs sm:text-sm font-semibold mb-1 uppercase tracking-wide">Paquetes</div>
+                <div className="text-slate-800 text-lg sm:text-xl font-bold">{stats.totalPaquetes}</div>
+              </div>
+              <div className="bg-gradient-to-br from-emerald-50 via-green-50 to-emerald-100 border border-green-200 rounded-xl p-3 sm:p-4 text-center hover:shadow-md transition-all duration-200">
+                <div className="flex items-center justify-center mb-2">
+                  <div className="bg-gradient-to-r from-green-500 to-emerald-600 p-1.5 rounded-lg">
+                    <FiUsers className="w-4 h-4 text-white" />
+                  </div>
+                </div>
+                <div className="text-green-700 text-xs sm:text-sm font-semibold mb-1 uppercase tracking-wide">Mayoristas</div>
+                <div className="text-slate-800 text-lg sm:text-xl font-bold">{stats.totalMayoristas}</div>
+              </div>
+              <div className="bg-gradient-to-br from-amber-50 via-yellow-50 to-amber-100 border border-yellow-200 rounded-xl p-3 sm:p-4 text-center hover:shadow-md transition-all duration-200">
+                <div className="flex items-center justify-center mb-2">
+                  <div className="bg-gradient-to-r from-yellow-500 to-amber-600 p-1.5 rounded-lg">
+                    <FiUser className="w-4 h-4 text-white" />
+                  </div>
+                </div>
+                <div className="text-yellow-700 text-xs sm:text-sm font-semibold mb-1 uppercase tracking-wide">Usuarios</div>
+                <div className="text-slate-800 text-lg sm:text-xl font-bold">{stats.totalUsuarios || 0}</div>
+              </div>
+            </div>
+            
+            {/* Información de actualización */}
+            <div className="bg-gradient-to-r from-purple-50 to-indigo-50 border border-purple-200 rounded-xl p-3 sm:p-4 mb-4">
+              <div className="flex items-center gap-2 text-purple-700">
+                <FiClock className="w-4 h-4" />
+                <span className="text-xs sm:text-sm font-medium">
+                  Última actualización: {lastUpdated ? new Date(lastUpdated).toLocaleDateString("es-ES") : "Cargando..."}
+                </span>
               </div>
             </div>
             
@@ -322,7 +486,7 @@ const PapeleraPage = () => {
                   placeholder="Buscar por nombre o destino..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 sm:pl-12 pr-3 sm:pr-4 py-2.5 sm:py-3 text-sm sm:text-base border-2 border-gray-300 rounded-lg sm:rounded-xl focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all"
+                  className="w-full pl-10 sm:pl-12 pr-3 sm:pr-4 py-2.5 sm:py-3 text-sm sm:text-base border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all bg-white"
                 />
               </div>
 
@@ -330,19 +494,20 @@ const PapeleraPage = () => {
                 <select
                   value={typeFilter}
                   onChange={(e) => setTypeFilter(e.target.value)}
-                  className="flex-1 px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base border-2 border-gray-300 rounded-lg sm:rounded-xl focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all"
+                  className="flex-1 px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all bg-white"
                 >
                   <option value="todos">Todos los elementos</option>
                   <option value="paquetes">Solo paquetes</option>
                   <option value="mayoristas">Solo mayoristas</option>
+                  <option value="usuarios">Solo usuarios</option>
                 </select>
                 
                 <button
                   onClick={() => setIsFiltersOpen(!isFiltersOpen)}
-                  className={`flex items-center justify-center gap-2 px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base rounded-lg sm:rounded-xl font-medium transition-all ${
+                  className={`flex items-center justify-center gap-2 px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base rounded-xl font-medium transition-all border ${
                     isFiltersOpen 
-                      ? "bg-red-100 text-red-700 border-2 border-red-300" 
-                      : "bg-gray-100 text-gray-700 hover:bg-gray-200 border-2 border-gray-300"
+                      ? "bg-blue-100 text-blue-700 border-blue-300" 
+                      : "bg-white text-gray-700 hover:bg-gray-50 border-gray-200"
                   }`}
                 >
                   <FiFilter className="w-4 h-4" />
@@ -358,7 +523,7 @@ const PapeleraPage = () => {
                     <button
                       onClick={() => handleSort("eliminadoEn")}
                       className={`flex items-center gap-2 px-3 py-2 text-sm rounded-lg font-medium transition-all ${
-                        sortConfig.key === "eliminadoEn" ? "bg-red-100 text-red-700" : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                        sortConfig.key === "eliminadoEn" ? "bg-blue-100 text-blue-700" : "bg-gray-100 text-gray-700 hover:bg-gray-200"
                       }`}
                     >
                       <FiCalendar className="w-4 h-4" />
@@ -371,7 +536,7 @@ const PapeleraPage = () => {
                     <button
                       onClick={() => handleSort("name")}
                       className={`flex items-center gap-2 px-3 py-2 text-sm rounded-lg font-medium transition-all ${
-                        sortConfig.key === "name" ? "bg-red-100 text-red-700" : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                        sortConfig.key === "name" ? "bg-blue-100 text-blue-700" : "bg-gray-100 text-gray-700 hover:bg-gray-200"
                       }`}
                     >
                       Nombre
@@ -383,7 +548,7 @@ const PapeleraPage = () => {
                     <button
                       onClick={() => handleSort("type")}
                       className={`flex items-center gap-2 px-3 py-2 text-sm rounded-lg font-medium transition-all ${
-                        sortConfig.key === "type" ? "bg-red-100 text-red-700" : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                        sortConfig.key === "type" ? "bg-blue-100 text-blue-700" : "bg-gray-100 text-gray-700 hover:bg-gray-200"
                       }`}
                     >
                       Tipo
@@ -413,7 +578,7 @@ const PapeleraPage = () => {
               </h3>
 
               <p className="text-gray-600 mb-6 sm:mb-8 leading-relaxed text-sm sm:text-base">
-                No hay elementos en la papelera. Todos los paquetes y mayoristas están en su lugar correcto.
+                No hay elementos en la papelera. Todos los paquetes, mayoristas y usuarios están en su lugar correcto.
               </p>
 
               {/* Botón de acción */}
@@ -473,7 +638,9 @@ const PapeleraPage = () => {
                     {typeFilter !== "todos" && (
                       <span className="px-2 sm:px-3 py-1 sm:py-2 bg-gradient-to-r from-purple-500 to-indigo-600 text-white text-xs rounded-lg sm:rounded-xl font-medium shadow-md">
                         <span className="hidden sm:inline">Tipo: </span>
-                        {typeFilter === "paquetes" ? "Paquetes" : "Mayoristas"}
+                        {typeFilter === "paquetes" ? "Paquetes" : 
+                         typeFilter === "mayoristas" ? "Mayoristas" : 
+                         typeFilter === "usuarios" ? "Usuarios" : "Todos"}
                       </span>
                     )}
                   </div>
@@ -558,10 +725,16 @@ const PapeleraPage = () => {
         }
         message={
           confirmDialog.type === "restore"
-            ? `¿Estás seguro de que quieres restaurar ${confirmDialog.itemType === "paquete" ? "el paquete" : "el mayorista"} "${confirmDialog.itemName}"?`
+            ? `¿Estás seguro de que quieres restaurar ${
+                confirmDialog.itemType === "paquete" ? "el paquete" : 
+                confirmDialog.itemType === "mayorista" ? "el mayorista" : "el usuario"
+              } "${confirmDialog.itemName}"?`
             : confirmDialog.type === "emptyTrash"
             ? `¿Estás seguro de que quieres vaciar TODA la papelera? Se eliminarán permanentemente ${stats.total} elementos. Esta acción no se puede deshacer.`
-            : `¿Estás seguro de que quieres eliminar PERMANENTEMENTE ${confirmDialog.itemType === "paquete" ? "el paquete" : "el mayorista"} "${confirmDialog.itemName}"? Esta acción no se puede deshacer.`
+            : `¿Estás seguro de que quieres eliminar PERMANENTEMENTE ${
+                confirmDialog.itemType === "paquete" ? "el paquete" : 
+                confirmDialog.itemType === "mayorista" ? "el mayorista" : "el usuario"
+              } "${confirmDialog.itemName}"? Esta acción no se puede deshacer.`
         }
         itemName={confirmDialog.type === "emptyTrash" ? "Papelera completa" : confirmDialog.itemName}
         confirmText={

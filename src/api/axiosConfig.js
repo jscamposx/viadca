@@ -80,7 +80,12 @@ apiClient.interceptors.response.use(
   },
   (error) => {
     if (import.meta.env.DEV) {
-      console.error("❌ API Response Error:", {
+      // No mostrar errores 401 como críticos, son esperados cuando no hay autenticación
+      const isAuthError = error.response?.status === 401;
+      const logLevel = isAuthError ? "log" : "error";
+      const emoji = isAuthError ? "🔒" : "❌";
+      
+      console[logLevel](`${emoji} API Response ${isAuthError ? "(Auth required)" : "Error"}:`, {
         message: error.message,
         status: error.response?.status,
         statusText: error.response?.statusText,

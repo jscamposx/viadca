@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { NavLink, useLocation } from "react-router-dom";
+import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import React from "react";
 import {
   FiChevronLeft,
@@ -16,8 +16,9 @@ import {
   FiTrash2,
 } from "react-icons/fi";
 import UserAvatar from "./UserAvatar";
+import { useAuth } from "../../../contexts/AuthContext";
 
-const NavItem = ({ to, icon, label, isOpen, isMobile = false }) => {
+const NavItem = ({ to, onClick, icon, label, isOpen, isMobile = false, isButton = false }) => {
   const activeLinkStyle = {
     background:
       "linear-gradient(135deg, #3b82f6 0%, #6366f1 50%, #8b5cf6 100%)",
@@ -30,50 +31,66 @@ const NavItem = ({ to, icon, label, isOpen, isMobile = false }) => {
     "flex items-center p-3 rounded-xl relative overflow-hidden hover:bg-gradient-to-r hover:from-gray-50 hover:to-blue-50 transition-all duration-300 group border border-transparent hover:border-blue-100 hover:shadow-sm";
   const desktopClasses = `${isOpen ? "pl-4" : "justify-center"}`;
 
+  const content = (
+    <>
+      <div
+        className={`transition-all duration-300 ${isOpen || isMobile ? "mr-3" : ""} flex items-center justify-center relative`}
+      >
+        {React.cloneElement(icon, {
+          className: "transition-all duration-300",
+          size: 20,
+        })}
+      </div>
+      <span
+        className={`font-medium overflow-hidden transition-all duration-300 text-sm
+                    ${
+                      !(isOpen || isMobile)
+                        ? "w-0 opacity-0"
+                        : "w-full opacity-100"
+                    }`}
+      >
+        {label}
+      </span>
+      {!isOpen && !isMobile && (
+        <div className="absolute left-full top-1/2 transform -translate-y-1/2 ml-4 bg-gray-800 text-white px-3 py-2 rounded-lg shadow-xl font-medium text-sm whitespace-nowrap z-50 opacity-0 group-hover:opacity-100 transition-all duration-300 scale-95 group-hover:scale-100">
+          {label}
+          <div className="absolute right-full top-1/2 transform -translate-y-1/2 border-4 border-transparent border-r-gray-800"></div>
+        </div>
+      )}
+    </>
+  );
+
   return (
     <li>
-      <NavLink
-        to={to}
-        end={to === "/admin"}
-        style={({ isActive }) => 
-          isActive 
-            ? activeLinkStyle
-            : undefined
-        }
-        className={({ isActive }) =>
-          `${commonClasses} ${isMobile ? "" : desktopClasses} ${
-            isActive
-              ? "text-white font-semibold shadow-lg"
-              : "text-gray-700 hover:text-blue-600"
-          }`
-        }
-        title={!isOpen && !isMobile ? label : undefined}
-      >
-        <div
-          className={`transition-all duration-300 ${isOpen || isMobile ? "mr-3" : ""} flex items-center justify-center relative`}
+      {isButton ? (
+        <button
+          onClick={onClick}
+          className={`${commonClasses} ${isMobile ? "" : desktopClasses} text-gray-700 hover:text-red-600 w-full text-left`}
+          title={!isOpen && !isMobile ? label : undefined}
         >
-          {React.cloneElement(icon, {
-            className: "transition-all duration-300",
-            size: 20,
-          })}
-        </div>
-        <span
-          className={`font-medium overflow-hidden transition-all duration-300 text-sm
-                      ${
-                        !(isOpen || isMobile)
-                          ? "w-0 opacity-0"
-                          : "w-full opacity-100"
-                      }`}
+          {content}
+        </button>
+      ) : (
+        <NavLink
+          to={to}
+          end={to === "/admin"}
+          style={({ isActive }) => 
+            isActive 
+              ? activeLinkStyle
+              : undefined
+          }
+          className={({ isActive }) =>
+            `${commonClasses} ${isMobile ? "" : desktopClasses} ${
+              isActive
+                ? "text-white font-semibold shadow-lg"
+                : "text-gray-700 hover:text-blue-600"
+            }`
+          }
+          title={!isOpen && !isMobile ? label : undefined}
         >
-          {label}
-        </span>
-        {!isOpen && !isMobile && (
-          <div className="absolute left-full top-1/2 transform -translate-y-1/2 ml-4 bg-gray-800 text-white px-3 py-2 rounded-lg shadow-xl font-medium text-sm whitespace-nowrap z-50 opacity-0 group-hover:opacity-100 transition-all duration-300 scale-95 group-hover:scale-100">
-            {label}
-            <div className="absolute right-full top-1/2 transform -translate-y-1/2 border-4 border-transparent border-r-gray-800"></div>
-          </div>
-        )}
-      </NavLink>
+          {content}
+        </NavLink>
+      )}
     </li>
   );
 };
@@ -82,6 +99,8 @@ const AdminNav = ({ isOpen, setIsOpen }) => {
   const [isMobile, setIsMobile] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
+  const { logout, user } = useAuth();
 
   const navLinks = [
     { to: "/admin", icon: <FiHome size={20} />, label: "Dashboard" },
@@ -92,11 +111,21 @@ const AdminNav = ({ isOpen, setIsOpen }) => {
       label: "Mayoristas",
     },
     {
+      to: "/admin/usuarios",
+      icon: <FiUser size={20} />,
+      label: "Usuarios",
+    },
+    {
       to: "/admin/papelera",
       icon: <FiTrash2 size={20} />,
       label: "Papelera",
     },
   ];
+
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
 
   const userLinks = [
     { to: "/admin/perfil", icon: <FiUser size={20} />, label: "Perfil" },
@@ -105,7 +134,12 @@ const AdminNav = ({ isOpen, setIsOpen }) => {
       icon: <FiSettings size={20} />,
       label: "Configuración",
     },
-    { to: "/logout", icon: <FiLogOut size={20} />, label: "Cerrar sesión" },
+    { 
+      onClick: handleLogout, 
+      icon: <FiLogOut size={20} />, 
+      label: "Cerrar sesión",
+      isButton: true
+    },
   ];
 
   useEffect(() => {
@@ -190,8 +224,8 @@ const AdminNav = ({ isOpen, setIsOpen }) => {
                 Cuenta
               </h3>
               <ul className="flex flex-col gap-1">
-                {userLinks.map((link) => (
-                  <NavItem key={link.to} {...link} isMobile={true} />
+                {userLinks.map((link, index) => (
+                  <NavItem key={link.to || index} {...link} isMobile={true} />
                 ))}
               </ul>
             </div>
@@ -311,8 +345,8 @@ const AdminNav = ({ isOpen, setIsOpen }) => {
         </div>
 
         <ul className="flex flex-col gap-1">
-          {userLinks.map((link) => (
-            <NavItem key={link.to} {...link} isOpen={isOpen} />
+          {userLinks.map((link, index) => (
+            <NavItem key={link.to || index} {...link} isOpen={isOpen} />
           ))}
         </ul>
       </div>
