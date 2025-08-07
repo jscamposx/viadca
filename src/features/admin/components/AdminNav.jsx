@@ -206,8 +206,6 @@ const AdminNav = ({ isOpen, setIsOpen }) => {
           <nav className="bg-white text-gray-700 shadow-xl border-t border-gray-100">
             <div className="p-4 border-b border-gray-100 bg-gradient-to-r from-gray-50 to-blue-50">
               <UserAvatar
-                name="Administrador"
-                email="admin@viadca.com"
                 size="md"
                 showInfo={true}
               />
@@ -329,15 +327,11 @@ const AdminNav = ({ isOpen, setIsOpen }) => {
         >
           {isOpen ? (
             <UserAvatar
-              name="Administrador"
-              email="admin@viadca.com"
               size="md"
               showInfo={true}
             />
           ) : (
             <UserAvatar
-              name="Administrador"
-              email="admin@viadca.com"
               size="md"
               showInfo={false}
             />

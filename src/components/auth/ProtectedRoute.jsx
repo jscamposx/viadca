@@ -1,9 +1,10 @@
-import { Navigate, useLocation } from 'react-router-dom';
+import { Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 
 const ProtectedRoute = ({ children, requiredRole = null }) => {
   const { user, loading, isAuthenticated } = useAuth();
   const location = useLocation();
+  const navigate = useNavigate();
 
   if (loading) {
     return (
@@ -23,7 +24,7 @@ const ProtectedRoute = ({ children, requiredRole = null }) => {
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
-  // Verificar si el usuario está pre-autorizado (excepto para ciertas rutas)
+  // Verificar si el usuario está pre-autorizado - redirigir a página de espera
   if (user?.rol === 'pre-autorizado' && location.pathname !== '/pending-approval') {
     return <Navigate to="/pending-approval" replace />;
   }
@@ -45,10 +46,10 @@ const ProtectedRoute = ({ children, requiredRole = null }) => {
             No tienes permisos para acceder a esta página.
           </p>
           <button
-            onClick={() => window.history.back()}
+            onClick={() => navigate('/')}
             className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition-colors"
           >
-            Volver
+            Volver a Homepage
           </button>
         </div>
       </div>

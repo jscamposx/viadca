@@ -47,6 +47,18 @@ const UserCard = ({
     }
   };
 
+  // Función para obtener la fecha de registro
+  const getRegistrationDate = (user) => {
+    const dateField = user.creadoEn || user.createdAt || user.created_at || 
+                     user.fechaCreacion || user.fecha_creacion || user.fechaRegistro;
+    return formatDate(dateField);
+  };
+
+  // Función para verificar estado de email
+  const isEmailVerified = (user) => {
+    return user.email_verificado || user.emailVerificado || user.verificado;
+  };
+
   // Fondo degradado unificado para todas las tarjetas
   const getUnifiedGradient = () => {
     return 'from-purple-50 via-indigo-50 to-blue-50';
@@ -174,16 +186,16 @@ const UserCard = ({
             </div>
           </div>
 
-          <div className={`${(user.email_verificado || user.emailVerificado || user.email_verificado || user.verificado) ? 'bg-white/80 hover:bg-white/90 border-green-200' : 'bg-white/80 hover:bg-white/90 border-yellow-200'} rounded-lg p-3 text-center transition-all duration-200 hover:shadow-md hover:scale-105 cursor-pointer border flex flex-col items-center justify-center`}>
-            <div className={`${(user.email_verificado || user.emailVerificado || user.email_verificado || user.verificado) ? 'bg-green-500' : 'bg-yellow-500'} p-2 rounded-lg mb-1`}>
-              {(user.email_verificado || user.emailVerificado || user.email_verificado || user.verificado) ? (
+          <div className={`${isEmailVerified(user) ? 'bg-white/80 hover:bg-white/90 border-green-200' : 'bg-white/80 hover:bg-white/90 border-yellow-200'} rounded-lg p-3 text-center transition-all duration-200 hover:shadow-md hover:scale-105 cursor-pointer border flex flex-col items-center justify-center`}>
+            <div className={`${isEmailVerified(user) ? 'bg-green-500' : 'bg-yellow-500'} p-2 rounded-lg mb-1`}>
+              {isEmailVerified(user) ? (
                 <FiCheckCircle className="w-3 h-3 text-white transition-transform duration-200" />
               ) : (
                 <FiClock className="w-3 h-3 text-white transition-transform duration-200" />
               )}
             </div>
-            <div className={`text-xs font-medium ${(user.email_verificado || user.emailVerificado || user.email_verificado || user.verificado) ? 'text-green-700' : 'text-yellow-700'}`}>
-              {(user.email_verificado || user.emailVerificado || user.email_verificado || user.verificado) ? 'Verificado' : 'Pendiente'}
+            <div className={`text-xs font-medium ${isEmailVerified(user) ? 'text-green-700' : 'text-yellow-700'}`}>
+              {isEmailVerified(user) ? 'Verificado' : 'Pendiente'}
             </div>
           </div>
         </div>
@@ -197,26 +209,14 @@ const UserCard = ({
             <div className="space-y-2 bg-white/60 p-3 rounded-lg border border-white/50">
               <div className="flex items-center justify-between">
                 <span className="text-sm text-gray-700">Email:</span>
-                <span className="text-sm font-medium text-gray-900 truncate ml-2" title={user.correo}>
-                  {user.correo}
+                <span className="text-sm font-medium text-gray-900 truncate ml-2" title={user.correo || user.email}>
+                  {user.correo || user.email}
                 </span>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-sm text-gray-700">Registro:</span>
                 <span className="text-sm font-medium text-gray-900">
-                  {formatDate(
-                    user.creadoEn ||
-                    user.fechaCreacion || 
-                    user.fecha_creacion || 
-                    user.createdAt || 
-                    user.created_at || 
-                    user.fechaRegistro || 
-                    user.fecha_registro || 
-                    user.registeredAt || 
-                    user.registered_at ||
-                    user.updatedAt ||
-                    user.updated_at
-                  )}
+                  {getRegistrationDate(user)}
                 </span>
               </div>
             </div>

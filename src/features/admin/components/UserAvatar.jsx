@@ -1,13 +1,20 @@
 import React from "react";
 import { FiUser } from "react-icons/fi";
+import { useAuth } from "../../../contexts/AuthContext";
 
 const UserAvatar = ({
-  name = "Administrador",
-  email = "admin@viadca.com",
+  name = null,
+  email = null,
   avatarUrl = null,
   size = "md",
   showInfo = true,
 }) => {
+  const { user } = useAuth();
+
+  // Usar datos del usuario autenticado si no se pasan props específicos
+  const displayName = name || user?.nombre || user?.usuario || "Usuario";
+  const displayEmail = email || user?.correo || user?.email || "No especificado";
+
   const sizeClasses = {
     sm: "w-8 h-8 text-sm",
     md: "w-10 h-10 text-base",
@@ -15,12 +22,20 @@ const UserAvatar = ({
   };
 
   const getInitials = (name) => {
-    return name
-      .split(" ")
+    if (!name) return "U";
+    
+    // Si es un solo nombre o palabra, tomar primera letra
+    const words = name.trim().split(" ");
+    if (words.length === 1) {
+      return words[0].charAt(0).toUpperCase();
+    }
+    
+    // Si son múltiples palabras, tomar primeras letras de las primeras dos palabras
+    return words
+      .slice(0, 2)
       .map((word) => word.charAt(0))
       .join("")
-      .toUpperCase()
-      .slice(0, 2);
+      .toUpperCase();
   };
 
   return (
@@ -31,12 +46,12 @@ const UserAvatar = ({
         {avatarUrl ? (
           <img
             src={avatarUrl}
-            alt={name}
+            alt={displayName}
             className="w-full h-full object-cover"
           />
         ) : (
           <div className="w-full h-full bg-gradient-to-br from-blue-500 via-indigo-600 to-purple-700 flex items-center justify-center text-white font-semibold shadow-md">
-            {name ? getInitials(name) : <FiUser className="w-1/2 h-1/2" />}
+            {displayName ? getInitials(displayName) : <FiUser className="w-1/2 h-1/2" />}
           </div>
         )}
 
@@ -46,8 +61,8 @@ const UserAvatar = ({
 
       {showInfo && (
         <div className="min-w-0 flex-1">
-          <p className="font-semibold text-gray-800 truncate">{name}</p>
-          <p className="text-xs text-gray-500 truncate">{email}</p>
+          <p className="font-semibold text-gray-800 truncate">{displayName}</p>
+          <p className="text-xs text-gray-500 truncate">{displayEmail}</p>
         </div>
       )}
     </div>

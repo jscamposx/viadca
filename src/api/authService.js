@@ -36,6 +36,11 @@ const authService = {
     return response.data;
   },
 
+  updateProfile: async (userData) => {
+    const response = await api.patch('/usuarios/profile', userData);
+    return response.data;
+  },
+
   // Endpoints de administración
   getAllUsers: async (params = {}) => {
     const response = await api.get('/admin/usuarios', { params });

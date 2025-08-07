@@ -12,7 +12,11 @@ export const useAuth = () => {
 };
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState(() => {
+    // Cargar usuario desde localStorage al inicializar
+    const savedUser = localStorage.getItem('auth_user');
+    return savedUser ? JSON.parse(savedUser) : null;
+  });
   const [loading, setLoading] = useState(true);
   const [token, setToken] = useState(localStorage.getItem('auth_token'));
 
@@ -31,6 +35,7 @@ export const AuthProvider = ({ children }) => {
     setUser(null);
     setToken(null);
     localStorage.removeItem('auth_token');
+    localStorage.removeItem('auth_user');
     localStorage.removeItem('mock_user_role'); // Limpiar rol simulado
     // Limpiar header de autorización
     import('../api/axiosConfig').then(({ default: api }) => {
@@ -38,10 +43,22 @@ export const AuthProvider = ({ children }) => {
     });
   };
 
+  // Función para guardar usuario en localStorage
+  const saveUserToStorage = (userData) => {
+    localStorage.setItem('auth_user', JSON.stringify(userData));
+    setUser(userData);
+  };
+
   // Cargar usuario al inicializar
   useEffect(() => {
     const initializeAuth = async () => {
-      // Solo intentar cargar perfil si hay token y no hay usuario ya cargado
+      // Si ya hay usuario cargado desde localStorage y token válido, no necesitamos hacer nada más
+      if (user && token) {
+        setLoading(false);
+        return;
+      }
+
+      // Solo intentar cargar perfil si hay token pero no hay usuario
       if (token && !user) {
         try {
           // En desarrollo, permitir tokens simulados
@@ -53,27 +70,34 @@ export const AuthProvider = ({ children }) => {
                 usuario: 'admin_test',
                 correo: 'admin@test.com',
                 rol: 'admin',
-                verificado: true
+                nombre_completo: 'Jesus Campos',
+                email_verificado: true,
+                creadoEn: '2024-01-15T10:30:00Z'
               },
               'pre-autorizado': {
                 id: 2,
                 usuario: 'pending_user',
                 correo: 'pending@test.com',
                 rol: 'pre-autorizado',
-                verificado: true
+                nombre_completo: 'Usuario Pendiente',
+                email_verificado: true,
+                creadoEn: '2024-02-20T14:45:00Z'
               },
               usuario: {
                 id: 3,
                 usuario: 'regular_user',
                 correo: 'user@test.com',
                 rol: 'usuario',
-                verificado: true
+                nombre_completo: 'Usuario Regular',
+                email_verificado: true,
+                creadoEn: '2024-03-10T09:15:00Z'
               }
             };
-            setUser(mockUsers[mockRole] || mockUsers.admin);
+            const mockUser = mockUsers[mockRole] || mockUsers.admin;
+            saveUserToStorage(mockUser);
           } else {
             const userData = await authService.getProfile();
-            setUser(userData);
+            saveUserToStorage(userData);
           }
         } catch (error) {
           // Token inválido o expirado, limpiar silenciosamente
@@ -109,9 +133,9 @@ export const AuthProvider = ({ children }) => {
       // Guardar token en localStorage
       localStorage.setItem('auth_token', newToken);
       
-      // Establecer token y usuario en el estado
+      // Establecer token y usuario en el estado y localStorage
       setToken(newToken);
-      setUser(usuario);
+      saveUserToStorage(usuario);
       
       return response;
     } catch (error) {
@@ -162,7 +186,7 @@ export const AuthProvider = ({ children }) => {
   const updateProfile = async () => {
     try {
       const userData = await authService.getProfile();
-      setUser(userData);
+      saveUserToStorage(userData);
       return userData;
     } catch (error) {
       throw error;

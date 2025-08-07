@@ -105,6 +105,12 @@ const AdminUsersPage = () => {
     pendientes: users.filter(user => !isUserVerified(user)).length
   };
 
+  // Calcular contadores específicos para garantizar que siempre tengan valores
+  const adminCount = users.filter(user => user.rol === 'admin').length;
+  const preAuthCount = users.filter(user => user.rol === 'pre-autorizado').length;
+  const userCount = users.filter(user => user.rol === 'usuario').length;
+  const verifiedCount = users.filter(user => isUserVerified(user)).length;
+
   // Filtrar usuarios
   const filteredUsers = users.filter(user => {
     const matchesSearch = searchTerm === '' || 
@@ -244,8 +250,8 @@ const AdminUsersPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-2 sm:p-4 lg:p-6">
-      <div className="max-w-7xl mx-auto">
+    <div className="min-h-screen bg-gray-50 p-2 sm:p-4 md:p-5 lg:p-6 xl:p-8">
+      <div className="max-w-7xl mx-auto">{/* ... (existing code) */}
         {/* Header */}
         <div className="bg-white rounded-xl sm:rounded-2xl shadow-md p-4 sm:p-5 lg:p-6 mb-4 sm:mb-6">
           <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center gap-4">
@@ -291,7 +297,7 @@ const AdminUsersPage = () => {
 
             <div className="flex flex-col gap-3">
               {/* Controles móviles */}
-              <div className="grid grid-cols-2 gap-2 lg:hidden">
+              <div className="grid grid-cols-2 gap-2 md:hidden">
                 <button 
                   onClick={() => setIsFiltersOpen(!isFiltersOpen)}
                   className={`flex items-center justify-center gap-2 font-medium py-3 px-3 rounded-lg transition text-xs ${
@@ -321,70 +327,89 @@ const AdminUsersPage = () => {
               </div>
 
               {/* Estadísticas móviles */}
-              <div className="grid grid-cols-3 gap-2 lg:hidden">
-                <div className="bg-gradient-to-r from-red-500 to-red-600 text-white py-2 px-3 rounded-lg font-medium text-xs flex items-center justify-center gap-1 shadow-md">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 md:hidden">
+                <div className="bg-gradient-to-r from-red-500 to-red-600 text-white py-2 px-2 sm:px-3 rounded-lg font-medium text-xs flex items-center justify-center gap-1 shadow-md">
                   <div className="w-2 h-2 bg-white rounded-full"></div>
-                  <span className="font-bold">{effectiveStats.porRol?.admin || 0}</span>
-                  <span>adm.</span>
+                  <span className="font-bold">{adminCount}</span>
+                  <span className="hidden sm:inline">adm.</span>
+                  <span className="sm:hidden">a</span>
                 </div>
-                <div className="bg-gradient-to-r from-orange-500 to-amber-600 text-white py-2 px-3 rounded-lg font-medium text-xs flex items-center justify-center gap-1 shadow-md">
+                <div className="bg-gradient-to-r from-orange-500 to-amber-600 text-white py-2 px-2 sm:px-3 rounded-lg font-medium text-xs flex items-center justify-center gap-1 shadow-md">
                   <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
-                  <span className="font-bold">{effectiveStats.porRol?.['pre-autorizado'] || 0}</span>
-                  <span>pre</span>
+                  <span className="font-bold">{preAuthCount}</span>
+                  <span className="hidden sm:inline">pre</span>
+                  <span className="sm:hidden">p</span>
                 </div>
-                <div className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white py-2 px-3 rounded-lg font-medium text-xs flex items-center justify-center gap-1 shadow-md">
+                <div className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white py-2 px-2 sm:px-3 rounded-lg font-medium text-xs flex items-center justify-center gap-1 shadow-md">
                   <div className="w-2 h-2 bg-white rounded-full"></div>
-                  <span className="font-bold">{effectiveStats.porRol?.usuario || 0}</span>
-                  <span>usr</span>
+                  <span className="font-bold">{userCount}</span>
+                  <span className="hidden sm:inline">usr</span>
+                  <span className="sm:hidden">u</span>
+                </div>
+                <div className="bg-gradient-to-r from-green-500 to-emerald-600 text-white py-2 px-2 sm:px-3 rounded-lg font-medium text-xs flex items-center justify-center gap-1 shadow-md">
+                  <div className="w-2 h-2 bg-white rounded-full"></div>
+                  <span className="font-bold">{verifiedCount}</span>
+                  <span className="hidden sm:inline">ver.</span>
+                  <span className="sm:hidden">v</span>
                 </div>
               </div>
 
               {/* Controles desktop */}
-              <div className="hidden lg:flex lg:items-center lg:justify-between">
-                <div className="grid grid-cols-2 gap-2">
+              <div className="hidden md:flex md:items-center md:justify-between md:flex-col lg:flex-row gap-3 lg:gap-0">
+                <div className="grid grid-cols-2 gap-2 w-full lg:w-auto">
                   <button 
                     onClick={() => setIsFiltersOpen(!isFiltersOpen)}
-                    className={`flex items-center justify-center gap-2 font-medium py-3 px-4 rounded-xl transition text-sm ${
+                    className={`flex items-center justify-center gap-2 font-medium py-3 px-3 lg:px-4 rounded-xl transition text-xs lg:text-sm ${
                       isFiltersOpen
                         ? 'bg-blue-100 text-blue-700 border border-blue-200'
                         : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
                     }`}
                   >
-                    <FiFilter className="w-4 h-4" />
-                    <span>Filtros avanzados</span>
+                    <FiFilter className="w-3 h-3 lg:w-4 lg:h-4" />
+                    <span className="hidden lg:inline">Filtros avanzados</span>
+                    <span className="lg:hidden">Filtros</span>
                   </button>
                   <button 
                     onClick={() => setIsSortMenuOpen(!isSortMenuOpen)}
-                    className={`flex items-center justify-center gap-2 py-3 px-4 rounded-xl font-medium transition text-sm ${
+                    className={`flex items-center justify-center gap-2 py-3 px-3 lg:px-4 rounded-xl font-medium transition text-xs lg:text-sm ${
                       isSortMenuOpen
                         ? 'bg-blue-100 text-blue-700 border border-blue-200'
                         : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                     }`}
                   >
                     {sortConfig.direction === 'asc' ? (
-                      <FiArrowUp className="w-4 h-4" />
+                      <FiArrowUp className="w-3 h-3 lg:w-4 lg:h-4" />
                     ) : (
-                      <FiArrowDown className="w-4 h-4" />
+                      <FiArrowDown className="w-3 h-3 lg:w-4 lg:h-4" />
                     )}
                     <span>Ordenar</span>
                   </button>
                 </div>
 
-                <div className="flex gap-3">
-                  <div className="bg-gradient-to-r from-red-500 to-red-600 text-white py-2.5 px-4 rounded-xl font-medium text-sm flex items-center gap-2 shadow-md">
-                    <FiShield className="w-4 h-4" />
-                    <span className="font-bold">{effectiveStats.porRol?.admin || 0}</span>
-                    <span>administradores</span>
+                <div className="flex flex-wrap gap-2 lg:gap-3">
+                  <div className="bg-gradient-to-r from-red-500 to-red-600 text-white py-2.5 px-3 lg:px-4 rounded-xl font-medium text-xs lg:text-sm flex items-center gap-2 shadow-md">
+                    <FiShield className="w-3 h-3 lg:w-4 lg:h-4" />
+                    <span className="font-bold">{adminCount}</span>
+                    <span className="hidden sm:inline">administradores</span>
+                    <span className="sm:hidden">admin</span>
                   </div>
-                  <div className="bg-gradient-to-r from-orange-500 to-amber-600 text-white py-2.5 px-4 rounded-xl font-medium text-sm flex items-center gap-2 shadow-md">
+                  <div className="bg-gradient-to-r from-orange-500 to-amber-600 text-white py-2.5 px-3 lg:px-4 rounded-xl font-medium text-xs lg:text-sm flex items-center gap-2 shadow-md">
                     <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
-                    <span className="font-bold">{effectiveStats.porRol?.['pre-autorizado'] || 0}</span>
-                    <span>pre-autorizados</span>
+                    <span className="font-bold">{preAuthCount}</span>
+                    <span className="hidden sm:inline">pre-autorizados</span>
+                    <span className="sm:hidden">pre-auth</span>
                   </div>
-                  <div className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white py-2.5 px-4 rounded-xl font-medium text-sm flex items-center gap-2 shadow-md">
-                    <FiCheckCircle className="w-4 h-4" />
-                    <span className="font-bold">{effectiveStats.porRol?.usuario || 0}</span>
-                    <span>usuarios</span>
+                  <div className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white py-2.5 px-3 lg:px-4 rounded-xl font-medium text-xs lg:text-sm flex items-center gap-2 shadow-md">
+                    <FiCheckCircle className="w-3 h-3 lg:w-4 lg:h-4" />
+                    <span className="font-bold">{userCount}</span>
+                    <span className="hidden sm:inline">usuarios</span>
+                    <span className="sm:hidden">users</span>
+                  </div>
+                  <div className="bg-gradient-to-r from-green-500 to-emerald-600 text-white py-2.5 px-3 lg:px-4 rounded-xl font-medium text-xs lg:text-sm flex items-center gap-2 shadow-md">
+                    <FiCheckCircle className="w-3 h-3 lg:w-4 lg:h-4" />
+                    <span className="font-bold">{verifiedCount}</span>
+                    <span className="hidden sm:inline">verificados</span>
+                    <span className="sm:hidden">verified</span>
                   </div>
                 </div>
               </div>
@@ -632,9 +657,6 @@ const AdminUsersPage = () => {
                   <FiShield className="w-3 h-3 sm:w-4 sm:h-4" />
                   <span className="hidden sm:inline">Administradores</span>
                   <span className="sm:hidden">Admin</span>
-                  <span className="ml-1 px-1.5 py-0.5 text-xs bg-white/20 rounded-full">
-                    {effectiveStats.porRol?.admin || 0}
-                  </span>
                 </div>
               </button>
 
@@ -656,9 +678,6 @@ const AdminUsersPage = () => {
                   <FiClock className="w-3 h-3 sm:w-4 sm:h-4" />
                   <span className="hidden sm:inline">Pre-autorizados</span>
                   <span className="sm:hidden">Pre-auth</span>
-                  <span className="ml-1 px-1.5 py-0.5 text-xs bg-white/20 rounded-full">
-                    {effectiveStats.porRol?.['pre-autorizado'] || 0}
-                  </span>
                 </div>
               </button>
 
@@ -680,9 +699,6 @@ const AdminUsersPage = () => {
                   <FiUser className="w-3 h-3 sm:w-4 sm:h-4" />
                   <span className="hidden sm:inline">Usuarios</span>
                   <span className="sm:hidden">User</span>
-                  <span className="ml-1 px-1.5 py-0.5 text-xs bg-white/20 rounded-full">
-                    {effectiveStats.porRol?.usuario || 0}
-                  </span>
                 </div>
               </button>
             </div>
@@ -740,7 +756,7 @@ const AdminUsersPage = () => {
         </section>
 
         {/* Lista de usuarios */}
-        <div className="bg-white rounded-xl sm:rounded-2xl p-4 sm:p-6">
+        <div className="rounded-xl sm:rounded-2xl  ">
           {filteredUsers.length === 0 ? (
             <div className="bg-gradient-to-br from-white via-gray-50 to-white rounded-2xl sm:rounded-3xl shadow-xl p-6 sm:p-8 lg:p-12 text-center border border-gray-200">
               <div className="max-w-md mx-auto">
@@ -829,7 +845,7 @@ const AdminUsersPage = () => {
               </div>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4 sm:gap-5 lg:gap-6">{/* ... (existing code) */}
               {filteredUsers.map((user) => (
                 <UserCard
                   key={user.id}

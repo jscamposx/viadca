@@ -48,7 +48,7 @@ function App() {
         <Route 
           path="/admin" 
           element={
-            <ProtectedRoute>
+            <ProtectedRoute requiredRole="admin">
               <AdminLayout />
             </ProtectedRoute>
           }
@@ -60,11 +60,7 @@ function App() {
           <Route path="mayoristas" element={<AdminMayoristasPage />} />
           <Route path="mayoristas/nuevo" element={<NewMayoristaPage />} />
           <Route path="mayoristas/editar/:id" element={<NewMayoristaPage />} />
-          <Route path="usuarios" element={
-            <ProtectedRoute requiredRole="admin">
-              <AdminUsersPage />
-            </ProtectedRoute>
-          } />
+          <Route path="usuarios" element={<AdminUsersPage />} />
           <Route path="papelera" element={<PapeleraPage />} />
           <Route path="perfil" element={<AdminProfilePage />} />
           <Route path="configuracion" element={<AdminConfigPage />} />
