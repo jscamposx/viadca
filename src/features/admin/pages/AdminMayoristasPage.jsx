@@ -247,7 +247,7 @@ const AdminMayoristasPage = () => {
                   <span>may.</span>
                 </div>
 
-                <div className="bg-gradient-to-r from-orange-500 to-red-600 text-white py-2 px-3 rounded-lg font-medium text-xs flex items-center justify-center gap-1 shadow-md">
+                <div className="bg-gradient-to-r from-teal-500 to-cyan-600 text-white py-2 px-3 rounded-lg font-medium text-xs flex items-center justify-center gap-1 shadow-md">
                   <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
                   <span className="font-bold">{tiposUnicos.length}</span>
                   <span>tipos</span>
@@ -295,24 +295,13 @@ const AdminMayoristasPage = () => {
                     <span>mayoristas</span>
                   </div>
 
-                  <div className="bg-gradient-to-r from-orange-500 to-red-600 text-white py-2.5 px-4 rounded-xl font-medium text-sm flex items-center gap-2 shadow-md">
+                  <div className="bg-gradient-to-r from-teal-500 to-cyan-600 text-white py-2.5 px-4 rounded-xl font-medium text-sm flex items-center gap-2 shadow-md">
                     <FiTag className="w-4 h-4" />
                     <span className="font-bold">{tiposUnicos.length}</span>
                     <span>tipos</span>
                   </div>
                 </div>
               </div>
-
-              {/* Botón limpiar filtros */}
-              {(searchTerm || tipoFilter) && (
-                <button
-                  onClick={clearFilters}
-                  className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-red-50 to-pink-50 hover:from-red-100 hover:to-pink-100 text-red-600 font-medium py-2.5 px-4 rounded-lg sm:rounded-xl transition-all duration-200 text-sm border border-red-200 hover:border-red-300 shadow-sm hover:shadow-md"
-                >
-                  <FiX className="w-4 h-4" />
-                  <span>Limpiar filtros</span>
-                </button>
-              )}
             </div>
           </div>
 
@@ -490,7 +479,7 @@ const AdminMayoristasPage = () => {
             {tiposUnicos && tiposUnicos.length > 0 && (
               <div className="space-y-2 sm:space-y-3">
                 <div className="flex items-center gap-2">
-                  <FiTag className="w-3 h-3 sm:w-4 sm:h-4 text-orange-500" />
+                  <FiTag className="w-3 h-3 sm:w-4 sm:h-4 text-teal-500" />
                   <span className="text-xs sm:text-sm font-medium text-gray-700">
                     Filtrar por Tipo:
                   </span>
@@ -513,8 +502,8 @@ const AdminMayoristasPage = () => {
                       aria-label={`Filtrar por tipo: ${tipo}`}
                       className={`px-2 py-1.5 rounded-lg text-xs font-medium transition-all duration-200 truncate ${
                         tipoFilter === tipo
-                          ? "bg-orange-500 text-white shadow-md"
-                          : "bg-white text-gray-600 hover:bg-orange-50 hover:text-orange-700 border border-gray-200 hover:border-orange-200"
+                          ? "bg-teal-500 text-white shadow-md"
+                          : "bg-white text-gray-600 hover:bg-teal-50 hover:text-teal-700 border border-gray-200 hover:border-teal-200"
                       }`}
                       title={tipo}
                     >
@@ -549,14 +538,14 @@ const AdminMayoristasPage = () => {
                       aria-label={`Filtrar por tipo: ${tipo}`}
                       className={`px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 flex items-center gap-2 ${
                         tipoFilter === tipo
-                          ? "bg-orange-500 text-white shadow-lg transform scale-105"
-                          : "bg-white text-gray-600 hover:bg-orange-50 hover:text-orange-700 border border-gray-200 hover:border-orange-200 hover:shadow-md"
+                          ? "bg-teal-500 text-white shadow-lg transform scale-105"
+                          : "bg-white text-gray-600 hover:bg-teal-50 hover:text-teal-700 border border-gray-200 hover:border-teal-200 hover:shadow-md"
                       }`}
                       title={tipo}
                     >
                       <div
                         className={`w-2 h-2 rounded-full ${
-                          tipoFilter === tipo ? "bg-white" : "bg-orange-500"
+                          tipoFilter === tipo ? "bg-white" : "bg-teal-500"
                         }`}
                       ></div>
                       <span className="truncate">{tipo}</span>
@@ -615,10 +604,10 @@ const AdminMayoristasPage = () => {
                 <div className="p-4 sm:p-5 lg:p-6 flex-1 flex flex-col">
                   {/* Información en cards pequeñas */}
                   <div className="grid grid-cols-2 gap-2 mb-4">
-                    <div className="bg-orange-50 hover:bg-orange-100 rounded-lg p-3 text-center transition-all duration-200 hover:shadow-md hover:scale-105 cursor-pointer">
-                      <FiTag className="w-4 h-4 text-orange-500 mx-auto mb-1 transition-transform duration-200" />
+                    <div className="bg-teal-50 hover:bg-teal-100 rounded-lg p-3 text-center transition-all duration-200 hover:shadow-md hover:scale-105 cursor-pointer">
+                      <FiTag className="w-4 h-4 text-teal-500 mx-auto mb-1 transition-transform duration-200" />
                       <div
-                        className="text-xs text-orange-700 font-medium truncate"
+                        className="text-xs text-teal-700 font-medium truncate"
                         title={mayorista.tipo_producto}
                       >
                         {mayorista.tipo_producto || "Sin tipo"}
@@ -740,7 +729,7 @@ const AdminMayoristasPage = () => {
                       </span>
                     )}
                     {tipoFilter && (
-                      <span className="px-2 sm:px-3 py-1 sm:py-2 bg-gradient-to-r from-orange-500 to-red-600 text-white text-xs rounded-lg sm:rounded-xl font-medium shadow-md">
+                      <span className="px-2 sm:px-3 py-1 sm:py-2 bg-gradient-to-r from-teal-500 to-cyan-600 text-white text-xs rounded-lg sm:rounded-xl font-medium shadow-md">
                         <span className="hidden sm:inline">Tipo: </span>
                         {tipoFilter}
                       </span>

@@ -304,8 +304,8 @@ const NewMayoristaPage = () => {
                     className="block text-sm font-bold text-gray-700 mb-3"
                   >
                     <div className="flex items-center gap-3">
-                      <div className="bg-orange-100 p-2 rounded-lg">
-                        <FiTag className="w-4 h-4 text-orange-600" />
+                      <div className="bg-teal-100 p-2 rounded-lg">
+                        <FiTag className="w-4 h-4 text-teal-600" />
                       </div>
                       <span>Tipo de Producto</span>
                     </div>

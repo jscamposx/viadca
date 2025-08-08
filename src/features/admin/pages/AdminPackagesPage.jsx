@@ -20,6 +20,7 @@ import {
   FiCalendar,
   FiDollarSign,
   FiActivity,
+  FiPackage,
 } from "react-icons/fi";
 import api from "../../../api";
 import { useNotification } from "./AdminLayout";
@@ -474,22 +475,6 @@ const AdminPaquetes = () => {
                   )}
                 </div>
               </div>
-
-              {/* Botón limpiar filtros */}
-              {(searchTerm ||
-                priceFilter.min ||
-                priceFilter.max ||
-                mayoristaFilter ||
-                statusFilter ||
-                tipoProductoFilter) && (
-                <button
-                  onClick={clearFilters}
-                  className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-red-50 to-pink-50 hover:from-red-100 hover:to-pink-100 text-red-600 font-medium py-2.5 px-4 rounded-lg sm:rounded-xl transition-all duration-200 text-sm border border-red-200 hover:border-red-300 shadow-sm hover:shadow-md"
-                >
-                  <FiX className="w-4 h-4" />
-                  <span>Limpiar filtros</span>
-                </button>
-              )}
             </div>
           </div>
 
@@ -1002,9 +987,9 @@ const AdminPaquetes = () => {
                           )}
 
                         {paquete.destinos && paquete.destinos.length > 0 && (
-                          <div className="bg-orange-50 hover:bg-orange-100 rounded-lg sm:rounded-xl p-2 sm:p-3 text-center transition-all duration-200 hover:shadow-md hover:scale-105 cursor-pointer">
-                            <FiMapPin className="w-3 h-3 sm:w-4 sm:h-4 text-orange-500 mx-auto mb-1 transition-transform duration-200" />
-                            <div className="text-xs text-orange-700 font-medium">
+                          <div className="bg-teal-50 hover:bg-teal-100 rounded-lg sm:rounded-xl p-2 sm:p-3 text-center transition-all duration-200 hover:shadow-md hover:scale-105 cursor-pointer">
+                            <FiMapPin className="w-3 h-3 sm:w-4 sm:h-4 text-teal-500 mx-auto mb-1 transition-transform duration-200" />
+                            <div className="text-xs text-teal-700 font-medium">
                               {paquete.destinos.length}{" "}
                               <span className="hidden sm:inline">dest.</span>
                             </div>
@@ -1132,7 +1117,7 @@ const AdminPaquetes = () => {
             <div className="max-w-md mx-auto">
               {/* Icono central con animación */}
               <div className="relative inline-flex items-center justify-center w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-gradient-to-br from-blue-100 to-indigo-100 text-blue-500 mb-4 sm:mb-6">
-                <FiSearch className="w-10 h-10 sm:w-12 sm:h-12" />
+                <FiPackage className="w-10 h-10 sm:w-12 sm:h-12" />
                 <div className="absolute inset-0 rounded-full bg-gradient-to-br from-blue-500/20 to-indigo-500/20 animate-ping"></div>
               </div>
 
@@ -1186,7 +1171,7 @@ const AdminPaquetes = () => {
                       </span>
                     )}
                     {tipoProductoFilter && (
-                      <span className="px-2 sm:px-3 py-1 sm:py-2 bg-gradient-to-r from-orange-500 to-red-600 text-white text-xs rounded-lg sm:rounded-xl font-medium shadow-md">
+                      <span className="px-2 sm:px-3 py-1 sm:py-2 bg-gradient-to-r from-teal-500 to-cyan-600 text-white text-xs rounded-lg sm:rounded-xl font-medium shadow-md">
                         <span className="hidden sm:inline">Tipo: </span>
                         {tipoProductoFilter}
                       </span>
