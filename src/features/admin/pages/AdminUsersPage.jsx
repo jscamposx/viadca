@@ -78,19 +78,48 @@ const AdminUsersPage = () => {
     setIsSortMenuOpen(false); // Cerrar el menú después de seleccionar
   };
 
-  // Función para verificar si el usuario está verificado
+  // Función para verificar si el usuario está verificado (unificada y robusta)
   const isUserVerified = (user) => {
-    // Revisa diferentes campos posibles para verificación de email
-    return user.emailVerified || 
-           user.email_verified || 
-           user.verificado || 
-           user.isVerified ||
-           user.verified ||
-           (user.fecha_verificacion && user.fecha_verificacion !== null) ||
-           (user.fechaVerificacion && user.fechaVerificacion !== null) ||
-           (user.email_verified_at && user.email_verified_at !== null) ||
-           user.activo === true ||
-           false; // Por defecto no verificado
+    if (!user || typeof user !== 'object') return false;
+
+    const truthy = (val) => [true, 'true', 1, '1'].includes(val);
+    const falsy = (val) => [false, 'false', 0, '0', null, undefined, ''].includes(val);
+
+    // Campos booleanos / flags posibles
+    const booleanFlags = [
+      user.email_verificado,       // variante español snake
+      user.emailVerificado,        // camel español
+      user.email_verified,         // english snake
+      user.emailVerified,          // english camel
+      user.verificado,             // genérico
+      user.isVerified,
+      user.verified
+    ];
+
+    for (const flag of booleanFlags) {
+      if (truthy(flag)) return true;
+      if (falsy(flag)) continue; // ignora explícitos false para seguir buscando otra evidencia
+    }
+
+    // Campos fecha/timestamp de verificación
+    const dateCandidates = [
+      user.email_verified_at,
+      user.emailVerificadoEn,
+      user.email_verificado_en,
+      user.fecha_verificacion,
+      user.fechaVerificacion
+    ];
+    for (const val of dateCandidates) {
+      if (!val) continue;
+      if (val instanceof Date && !isNaN(val.getTime())) return true;
+      if (typeof val === 'number' && val > 0) return true;
+      if (typeof val === 'string') {
+        const d = new Date(val);
+        if (!isNaN(d.getTime())) return true;
+      }
+    }
+
+    return false; // por defecto no verificado
   };
 
   // Estadísticas efectivas con datos calculados localmente si no hay stats del backend
@@ -413,17 +442,6 @@ const AdminUsersPage = () => {
                   </div>
                 </div>
               </div>
-
-              {/* Botón limpiar filtros */}
-              {(searchTerm || roleFilter !== 'todos' || verificationFilter !== 'todos') && (
-                <button
-                  onClick={clearFilters}
-                  className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-red-50 to-pink-50 hover:from-red-100 hover:to-pink-100 text-red-600 font-medium py-2.5 px-4 rounded-lg sm:rounded-xl transition-all duration-200 text-sm border border-red-200 hover:border-red-300 shadow-sm hover:shadow-md"
-                >
-                  <FiX className="w-4 h-4" />
-                  <span>Limpiar filtros</span>
-                </button>
-              )}
             </div>
           </div>
 
@@ -530,7 +548,7 @@ const AdminUsersPage = () => {
                   >
                     <option value="todos">Todos los estados</option>
                     <option value="verificado">Email verificado</option>
-                    <option value="pendiente">Pendiente verificación</option>
+                    <option value="pendiente">No verificados</option>
                   </select>
                 </div>
 
@@ -602,14 +620,16 @@ const AdminUsersPage = () => {
         >
           <div className="space-y-3 sm:space-y-4">
             {/* Header de filtros */}
-            <div className="flex items-center gap-2 sm:gap-3">
-              <div className="w-1 h-4 sm:h-6 bg-gradient-to-b from-purple-500 to-indigo-600 rounded-full"></div>
-              <h2
-                id="filtros-rapidos-usuarios"
-                className="text-xs sm:text-sm font-semibold text-gray-800"
-              >
-                Filtros Rápidos
-              </h2>
+            <div className="flex items-center justify-between gap-2 sm:gap-3 flex-wrap">
+              <div className="flex items-center gap-2 sm:gap-3">
+                <div className="w-1 h-4 sm:h-6 bg-gradient-to-b from-purple-500 to-indigo-600 rounded-full"></div>
+                <h2
+                  id="filtros-rapidos-usuarios"
+                  className="text-xs sm:text-sm font-semibold text-gray-800"
+                >
+                  Filtros Rápidos
+                </h2>
+              </div>
             </div>
 
             {/* Filtros principales */}
@@ -738,7 +758,7 @@ const AdminUsersPage = () => {
                     setIsFiltersOpen(false);
                   }}
                   aria-pressed={verificationFilter === 'pendiente'}
-                  aria-label="Mostrar solo usuarios pendientes de verificación"
+                  aria-label="Mostrar solo usuarios no verificados"
                   className={`px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg sm:rounded-xl text-xs sm:text-sm font-medium transition-all duration-200 ${
                     verificationFilter === 'pendiente'
                       ? "bg-gradient-to-r from-yellow-500 to-orange-600 text-white shadow-lg"
@@ -747,11 +767,26 @@ const AdminUsersPage = () => {
                 >
                   <div className="flex items-center justify-center gap-2">
                     <FiClock className="w-3 h-3 sm:w-4 sm:h-4" />
-                    <span>Pendientes</span>
+                    <span>No verificados</span>
                   </div>
                 </button>
               </div>
             </div>
+
+            {/* Botón Limpiar filtros al fondo de la sección */}
+            {(searchTerm || roleFilter !== 'todos' || verificationFilter !== 'todos') && (
+              <div className="pt-2 sm:pt-2 border-t border-gray-200">
+                <button
+                  onClick={clearFilters}
+                  aria-label="Limpiar todos los filtros aplicados"
+                  className="w-full px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg sm:rounded-xl text-xs sm:text-sm font-medium bg-gradient-to-r from-red-50 to-pink-50 text-red-600 hover:from-red-100 hover:to-pink-100 border border-red-200 hover:border-red-300 transition-all duration-200 flex items-center justify-center gap-2"
+                >
+                  <FiX className="w-3 h-3 sm:w-4 sm:h-4" />
+                  <span className="hidden sm:inline">Limpiar filtros</span>
+                  <span className="sm:hidden">Limpiar</span>
+                </button>
+              </div>
+            )}
           </div>
         </section>
 
@@ -776,7 +811,7 @@ const AdminUsersPage = () => {
                     : roleFilter !== 'todos'
                       ? `No hay usuarios con el rol "${roleFilter}".`
                       : verificationFilter !== 'todos'
-                        ? `No hay usuarios ${verificationFilter === 'verificado' ? 'verificados' : 'pendientes de verificación'}.`
+                        ? `No hay usuarios ${verificationFilter === 'verificado' ? 'verificados' : 'no verificados'}.`
                         : "Parece que no hay usuarios disponibles."}{" "}
                   Intenta ajustar los filtros de búsqueda o verifica que haya usuarios registrados.
                 </p>
@@ -802,9 +837,9 @@ const AdminUsersPage = () => {
                         </span>
                       )}
                       {verificationFilter !== 'todos' && (
-                        <span className="px-2 sm:px-3 py-1 sm:py-2 bg-gradient-to-r from-green-500 to-emerald-600 text-white text-xs rounded-lg sm:rounded-xl font-medium shadow-md">
+                        <span className={`px-2 sm:px-3 py-1 sm:py-2 bg-gradient-to-r ${verificationFilter === 'pendiente' ? 'from-yellow-500 to-orange-600' : 'from-green-500 to-emerald-600'} text-white text-xs rounded-lg sm:rounded-xl font-medium shadow-md`}>
                           <span className="hidden sm:inline">Estado: </span>
-                          {verificationFilter}
+                          {verificationFilter === 'pendiente' ? 'no verificados' : verificationFilter}
                         </span>
                       )}
                     </div>

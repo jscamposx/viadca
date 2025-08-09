@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { FiUser, FiMail, FiCalendar, FiShield, FiEdit, FiSave, FiX, FiCheckCircle, FiClock, FiKey } from 'react-icons/fi';
+import { FiUser, FiMail, FiCalendar, FiShield, FiEdit, FiSave, FiX, FiCheckCircle, FiClock, FiKey, FiLock } from 'react-icons/fi';
 import { useAuth } from '../../../contexts/AuthContext';
 import authService from '../../../api/authService';
 
@@ -230,11 +230,12 @@ const AdminProfilePage = () => {
             {isEditing ? (
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {/* Nombre */}
+                  {/* Nombre (editable) */}
                   <div className="space-y-2">
                     <label htmlFor="nombre" className="text-sm font-medium text-gray-700 flex items-center gap-1">
                       <FiUser className="w-4 h-4" />
                       <span>Nombre completo</span>
+                      <span className="ml-2 text-[10px] font-semibold uppercase tracking-wide text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded">Editable</span>
                     </label>
                     <div className="relative">
                       <input
@@ -243,18 +244,19 @@ const AdminProfilePage = () => {
                         name="nombre"
                         value={formData.nombre}
                         onChange={handleInputChange}
-                        className="w-full p-3.5 pl-12 bg-gray-50 rounded-xl border border-gray-200 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition-all duration-300"
+                        className="w-full p-3.5 pl-12 bg-white rounded-xl border border-indigo-200 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition-all duration-300 shadow-sm"
                         placeholder="Ingresa tu nombre completo"
                       />
-                      <FiUser className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-500" />
+                      <FiUser className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-indigo-500" />
                     </div>
                   </div>
 
-                  {/* Email */}
+                  {/* Email (editable) */}
                   <div className="space-y-2">
                     <label htmlFor="correo" className="text-sm font-medium text-gray-700 flex items-center gap-1">
                       <FiMail className="w-4 h-4" />
                       <span>Correo electrónico</span>
+                      <span className="ml-2 text-[10px] font-semibold uppercase tracking-wide text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded">Editable</span>
                     </label>
                     <div className="relative">
                       <input
@@ -263,38 +265,64 @@ const AdminProfilePage = () => {
                         name="correo"
                         value={formData.correo}
                         onChange={handleInputChange}
-                        className="w-full p-3.5 pl-12 bg-gray-50 rounded-xl border border-gray-200 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition-all duration-300"
+                        className="w-full p-3.5 pl-12 bg-white rounded-xl border border-indigo-200 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition-all duration-300 shadow-sm"
                         placeholder="Ingresa tu correo electrónico"
                       />
-                      <FiMail className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-500" />
+                      <FiMail className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-indigo-500" />
                     </div>
                   </div>
 
-                  {/* Rol */}
+                  {/* Rol (solo lectura) */}
                   <div className="space-y-2">
                     <label className="text-sm font-medium text-gray-700 flex items-center gap-1">
                       <FiShield className="w-4 h-4" />
                       <span>Rol</span>
+                      <span className="ml-2 text-[10px] font-semibold uppercase tracking-wide text-gray-500 bg-gray-100 px-2 py-0.5 rounded flex items-center gap-1"><FiLock className="w-3 h-3" /> No editable</span>
                     </label>
-                    <div className="p-3.5 bg-gray-50 rounded-xl border border-gray-200 flex items-center gap-3">
+                    <div className="relative p-3.5 bg-gray-100 rounded-xl border border-gray-200 flex items-center gap-3 cursor-not-allowed select-none" aria-readonly="true">
                       <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${getRoleColor(user.rol)}`}>
                         <FiShield className="w-5 h-5 text-white" />
                       </div>
-                      <span className="font-medium text-gray-900">{getRoleLabel(user.rol)}</span>
+                      <span className="font-medium text-gray-700">{getRoleLabel(user.rol)}</span>
+                      <FiLock className="absolute top-2 right-2 w-4 h-4 text-gray-400" />
                     </div>
                   </div>
 
-                  {/* Usuario */}
+                  {/* Usuario (solo lectura) */}
                   <div className="space-y-2">
                     <label className="text-sm font-medium text-gray-700 flex items-center gap-1">
                       <FiKey className="w-4 h-4" />
                       <span>Nombre de usuario</span>
+                      <span className="ml-2 text-[10px] font-semibold uppercase tracking-wide text-gray-500 bg-gray-100 px-2 py-0.5 rounded flex items-center gap-1"><FiLock className="w-3 h-3" /> No editable</span>
                     </label>
-                    <div className="p-3.5 bg-gray-50 rounded-xl border border-gray-200 flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-lg bg-gray-200 flex items-center justify-center">
-                        <FiUser className="w-5 h-5 text-gray-700" />
+                    <div className="relative p-3.5 bg-gray-100 rounded-xl border border-gray-200 flex items-center gap-3 cursor-not-allowed select-none" aria-readonly="true">
+                      <div className="w-10 h-10 rounded-lg bg-gray-300 flex items-center justify-center">
+                        <FiUser className="w-5 h-5 text-gray-600" />
                       </div>
-                      <span className="font-medium text-gray-900">{user.usuario}</span>
+                      <span className="font-medium text-gray-700">{user.usuario}</span>
+                      <FiLock className="absolute top-2 right-2 w-4 h-4 text-gray-400" />
+                    </div>
+                  </div>
+
+                  {/* Miembro desde (solo lectura) */}
+                  <div className="space-y-2 md:col-span-2">
+                    <label className="text-sm font-medium text-gray-700 flex items-center gap-1">
+                      <FiCalendar className="w-4 h-4" />
+                      <span>Miembro desde</span>
+                      <span className="ml-2 text-[10px] font-semibold uppercase tracking-wide text-gray-500 bg-gray-100 px-2 py-0.5 rounded flex items-center gap-1"><FiLock className="w-3 h-3" /> No editable</span>
+                    </label>
+                    <div className="relative p-4 bg-gray-100 rounded-xl border border-gray-200 flex items-center gap-3 cursor-not-allowed select-none" aria-readonly="true">
+                      <div className="w-12 h-12 rounded-xl bg-purple-200 flex items-center justify-center">
+                        <FiCalendar className="w-6 h-6 text-purple-600" />
+                      </div>
+                      <div>
+                        <p className="text-sm font-semibold text-gray-800">{formatDate(
+                          user.creadoEn || user.createdAt || user.created_at || 
+                          user.fechaCreacion || user.fecha_creacion || user.fechaRegistro
+                        )}</p>
+                        <p className="text-xs text-gray-500">Fecha de registro (no editable)</p>
+                      </div>
+                      <FiLock className="absolute top-2 right-2 w-4 h-4 text-gray-400" />
                     </div>
                   </div>
                 </div>

@@ -1,248 +1,254 @@
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   FiUser,
-  FiMail,
-  FiCalendar,
   FiMoreVertical,
   FiShield,
   FiClock,
   FiTrash2,
   FiCheckCircle,
-  FiEdit2,
-  FiUserCheck,
-  FiActivity
+  FiCalendar
 } from 'react-icons/fi';
 
 const UserCard = ({ 
   user, 
   currentUser, 
-  showActionMenu, 
-  setShowActionMenu, 
   handleRoleChange, 
   setConfirmDialog, 
   getRoleColor, 
   getRoleIcon, 
   loading 
 }) => {
-  const formatDate = (dateString) => {
-    if (!dateString) {
-      return 'No disponible';
+  // Referencias (menú eliminado)
+  const menuRef = useRef(null);
+  const menuBtnRef = useRef(null);
+  const [roleMenuOpen, setRoleMenuOpen] = useState(false);
+  
+  // Estado para animación de entrada
+  const [isVisible, setIsVisible] = useState(false);
+  
+  // Helpers UI
+  const getInitials = (name) => {
+    if (!name) return 'U';
+    const parts = String(name).trim().split(' ').filter(Boolean);
+    if (parts.length === 1) return parts[0].charAt(0).toUpperCase();
+    return (parts[0].charAt(0) + (parts[1] ? parts[1].charAt(0) : '')).toUpperCase();
+  };
+
+  const getRoleLabel = (role) => {
+    switch (role) {
+      case 'admin': return 'Administrador';
+      case 'pre-autorizado': return 'Pre-autorizado';
+      default: return 'Usuario';
     }
+  };
+
+  const formatDate = (dateString) => {
+    if (!dateString) return 'No disponible';
     
     try {
       const date = new Date(dateString);
-      
-      if (isNaN(date.getTime())) {
-        return 'Fecha inválida';
-      }
+      if (isNaN(date.getTime())) return 'Fecha inválida';
       
       return date.toLocaleDateString('es-ES', {
         day: '2-digit',
-        month: '2-digit',
+        month: 'short',
         year: 'numeric'
       });
     } catch (error) {
-      console.error('Error al formatear fecha:', error);
       return 'Error en fecha';
     }
   };
 
-  // Función para obtener la fecha de registro
   const getRegistrationDate = (user) => {
     const dateField = user.creadoEn || user.createdAt || user.created_at || 
-                     user.fechaCreacion || user.fecha_creacion || user.fechaRegistro;
+                    user.fechaCreacion || user.fecha_creacion || user.fechaRegistro;
     return formatDate(dateField);
   };
 
-  // Función para verificar estado de email
   const isEmailVerified = (user) => {
     return user.email_verificado || user.emailVerificado || user.verificado;
   };
 
-  // Fondo degradado unificado para todas las tarjetas
-  const getUnifiedGradient = () => {
-    return 'from-purple-50 via-indigo-50 to-blue-50';
-  };
+  // Animación entrada
+  useEffect(() => {
+    setIsVisible(true);
+  }, []);
+  // Cerrar menú 3 puntos
+  useEffect(()=>{
+    if(!roleMenuOpen) return;
+    const onDown = (e)=>{ if(menuRef.current && !menuRef.current.contains(e.target) && !menuBtnRef.current.contains(e.target)) setRoleMenuOpen(false); };
+    const onKey = (e)=>{ if(e.key==='Escape') setRoleMenuOpen(false); };
+    document.addEventListener('mousedown', onDown);
+    document.addEventListener('keydown', onKey);
+    return ()=>{ document.removeEventListener('mousedown', onDown); document.removeEventListener('keydown', onKey); };
+  },[roleMenuOpen]);
 
   // Color del fondo del icono según el rol
   const getRoleIconBg = (role) => {
     switch (role) {
-      case 'admin':
-        return 'bg-red-500';
-      case 'pre-autorizado':
-        return 'bg-orange-500';
-      default: // usuario
-        return 'bg-blue-500';
+      case 'admin': return 'bg-gradient-to-br from-red-500 to-red-600';
+      case 'pre-autorizado': return 'bg-gradient-to-br from-orange-500 to-orange-600';
+      default: return 'bg-gradient-to-br from-blue-500 to-blue-600';
     }
   };
 
-  const getRoleColorBg = (role) => {
-    switch (role) {
-      case 'admin':
-        return 'bg-red-50 hover:bg-red-100 border-red-200';
-      case 'pre-autorizado':
-        return 'bg-orange-50 hover:bg-orange-100 border-orange-200';
-      default:
-        return 'bg-blue-50 hover:bg-blue-100 border-blue-200';
-    }
-  };
+  // Truncado elegante de username
+  const rawUsername = user.usuario || '';
+  const MAX_NAME_LEN = 22;
+  const isUsernameTruncated = rawUsername.length > MAX_NAME_LEN;
+  const displayUsername = isUsernameTruncated ? rawUsername.slice(0, MAX_NAME_LEN) + '…' : rawUsername;
 
   return (
-    <div className={`grupo bg-gradient-to-br ${getUnifiedGradient()} rounded-xl sm:rounded-2xl shadow-lg border border-gray-200 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 hover:border-purple-300 overflow-hidden flex flex-col h-full`}>
-      {/* Header con avatar e información */}
-      <div className="bg-white/60 backdrop-blur-sm p-4 sm:p-5 lg:p-6 border-b border-white/30">
-        <div className="flex items-start justify-between">
-          <div className="flex items-center">
-            <div className={`${getRoleIconBg(user.rol)} p-3 rounded-xl mr-4 shadow-lg`}>
-              <FiUser className="w-6 h-6 text-white" />
+    <div 
+      className={`transform transition-all duration-500 ease-out ${
+        isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
+      }`}
+    >
+      <div className="group bg-white rounded-2xl sm:rounded-3xl shadow-lg overflow-visible border border-gray-100 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 flex flex-col h-full">
+        {/* Header gradiente */}
+        <div className="relative p-4 sm:p-5 lg:p-6 bg-gradient-to-br from-purple-50 via-indigo-50 to-blue-50">
+          {/* Botón 3 puntos */}
+          {user.id !== currentUser?.id && (
+            <button
+              ref={menuBtnRef}
+              onClick={()=> setRoleMenuOpen(o=>!o)}
+              className="absolute top-3 right-3 p-2 rounded-lg text-gray-500 hover:text-indigo-600 hover:bg-white/70 backdrop-blur shadow-sm border border-white/60 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-400"
+              aria-haspopup="true"
+              aria-expanded={roleMenuOpen}
+              title="Opciones de rol"
+            >
+              <FiMoreVertical className="w-4 h-4" />
+            </button>
+          )}
+          <div className="flex items-center gap-4">
+            {/* Avatar / Ícono */}
+            <div className={`${getRoleIconBg(user.rol)} p-3 sm:p-4 rounded-xl shadow-md transition-all duration-300 flex items-center justify-center`}> 
+              <FiUser className="text-white w-6 h-6 sm:w-7 sm:h-7" />
             </div>
             <div className="flex-1 min-w-0">
-              <h3 className="text-lg sm:text-xl font-bold text-gray-800 truncate group-hover:text-gray-900 transition-colors duration-200">
-                {user.usuario}
-              </h3>
-              <div className="flex items-center gap-2 mt-1">
-                {user.id === currentUser?.id && (
-                  <span className="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-medium bg-blue-100 text-blue-700 shadow-sm">
-                    Tú
+              {/* Ajuste de truncado: estructura flex con min-w-0 para evitar encimado */}
+              <h3 className="text-lg sm:text-xl font-bold text-gray-900 group-hover:text-purple-600 transition-colors duration-200">
+                <div className="flex items-center gap-2 min-w-0">
+                  <span className="relative flex-1 min-w-0" title={rawUsername}>
+                    <span className="block truncate pr-4">{displayUsername}</span>
+                    {isUsernameTruncated && (
+                      <span className="pointer-events-none absolute inset-y-0 right-0 w-6 bg-gradient-to-l from-purple-50 via-purple-50/80 to-transparent"></span>
+                    )}
                   </span>
-                )}
+                  {user.id === currentUser?.id && (
+                    <span className="shrink-0 inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-semibold bg-white/70 text-blue-700 shadow-sm border border-blue-200 backdrop-blur">
+                      Tú
+                    </span>
+                  )}
+                </div>
+              </h3>
+              <div className="flex items-center gap-2 mt-1 flex-wrap">
+                <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] sm:text-xs font-medium bg-white/80 shadow-sm ${
+                  user.rol === 'admin' ? 'text-red-700' : user.rol === 'pre-autorizado' ? 'text-orange-700' : 'text-blue-700'
+                }`}>
+                  {/* Ícono unificado */}
+                  <FiUser className="w-3.5 h-3.5" />
+                  {getRoleLabel(user.rol)}
+                </span>
+                <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] sm:text-xs font-medium bg-white/80 shadow-sm ${isEmailVerified(user) ? 'text-green-700' : 'text-yellow-700'}`}>
+                  {isEmailVerified(user) ? <FiCheckCircle className="w-3 h-3" /> : <FiClock className="w-3 h-3" />}
+                  {isEmailVerified(user) ? 'Verificado' : 'Pendiente'}
+                </span>
               </div>
             </div>
           </div>
-          
-          {/* Menú de acciones */}
-          <div className="relative">
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                setShowActionMenu(showActionMenu === user.id ? null : user.id);
-              }}
-              className="p-2 hover:bg-gray-100 rounded-lg transition-colors duration-200 text-gray-600 hover:text-gray-800"
-              disabled={loading}
-            >
-              <FiMoreVertical className="w-5 h-5" />
-            </button>
-            
-            {showActionMenu === user.id && (
-              <div className="absolute right-0 top-full mt-2 w-56 bg-white border border-gray-200 rounded-xl shadow-lg z-20 overflow-hidden">
-                {/* Cambiar rol */}
-                {user.id !== currentUser?.id && (
-                  <div className="p-3 border-b border-gray-100 bg-gray-50">
-                    <p className="text-xs text-gray-600 font-semibold mb-2 uppercase tracking-wide">Cambiar rol:</p>
-                    <div className="space-y-1">
-                      {['usuario', 'pre-autorizado', 'admin'].map(role => (
-                        <button
-                          key={role}
-                          onClick={() => handleRoleChange(user, role)}
-                          className={`w-full text-left px-3 py-2 text-sm rounded-lg hover:bg-white transition-colors duration-200 font-medium ${
-                            user.rol === role 
-                              ? 'bg-blue-100 text-blue-700 border border-blue-200' 
-                              : 'text-gray-700 hover:text-gray-900'
-                          }`}
-                          disabled={user.rol === role}
-                        >
-                          <div className="flex items-center gap-2">
-                            {role === 'admin' && <FiShield className="w-3 h-3" />}
-                            {role === 'pre-autorizado' && <FiClock className="w-3 h-3" />}
-                            {role === 'usuario' && <FiUser className="w-3 h-3" />}
-                            {role}
-                          </div>
-                        </button>
-                      ))}
-                    </div>
+          {roleMenuOpen && (
+            <div ref={menuRef} className="absolute z-50 mt-2 right-3 top-12 w-60">
+              <div className="p-0.5 rounded-2xl bg-gradient-to-br from-blue-500 via-indigo-500 to-purple-600 shadow-xl">
+                <div className="rounded-2xl bg-white/90 backdrop-blur-xl border border-white/50 overflow-hidden">
+                  <div className="px-3 py-2 border-b border-indigo-100/60 flex items-center justify-between">
+                    <span className="text-[11px] font-semibold tracking-wide text-indigo-600">Cambiar rol</span>
+                    <button onClick={()=>setRoleMenuOpen(false)} className="p-1 rounded-md hover:bg-indigo-50 text-indigo-500">
+                      <span className="sr-only">Cerrar</span>
+                      ✕
+                    </button>
                   </div>
-                )}
-                
-                {/* Eliminar */}
-                {user.id !== currentUser?.id && (
-                  <button
-                    onClick={() => setConfirmDialog({
-                      isOpen: true,
-                      type: 'delete',
-                      user
-                    })}
-                    className="w-full text-left px-4 py-3 text-sm text-red-600 hover:bg-red-50 transition-colors duration-200 flex items-center gap-2 font-medium"
-                  >
-                    <FiTrash2 className="w-4 h-4" />
-                    Eliminar
-                  </button>
-                )}
+                  <ul className="py-1">
+                    {/*
+                      { value:'usuario', icon:<FiUser className='w-4 h-4' />, desc:'Acceso básico' },
+                      { value:'pre-autorizado', icon:<FiClock className='w-4 h-4' />, desc:'Pendiente revisión' },
+                      { value:'admin', icon:<FiShield className='w-4 h-4' />, desc:'Control total' }
+                    */}
+                    {['usuario', 'pre-autorizado', 'admin'].map(role => (
+                      <li key={role}>
+                        <button
+                          onClick={()=> { if(user.rol!==role){ handleRoleChange(user, role); } setRoleMenuOpen(false); }}
+                          disabled={user.rol===role}
+                          className={`w-full flex items-start gap-3 px-3 py-2 text-left text-xs sm:text-sm transition-all group ${user.rol===role ? 'bg-indigo-50/70 text-indigo-700 cursor-default' : 'hover:bg-indigo-50 text-gray-700'}`}
+                        >
+                          <span className={`mt-0.5 ${user.rol===role ? 'text-indigo-600' : 'text-indigo-500 group-hover:scale-110 transition-transform'}`}>
+                            {role === 'admin' ? <FiShield className='w-4 h-4' /> : role === 'pre-autorizado' ? <FiClock className='w-4 h-4' /> : <FiUser className='w-4 h-4' />}
+                          </span>
+                          <span className="flex-1 min-w-0">
+                            <span className="font-medium block leading-tight">{getRoleLabel(role)}</span>
+                            <span className={`text-[10px] leading-tight opacity-80 ${user.rol===role ? 'text-indigo-600' : 'text-gray-500'}`}>{role === 'admin' ? 'Control total' : role === 'pre-autorizado' ? 'Pendiente revisión' : 'Acceso básico'}</span>
+                          </span>
+                          {user.rol===role && <FiCheckCircle className="w-4 h-4 text-green-500 shrink-0" />}
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
               </div>
-            )}
-          </div>
-        </div>
-      </div>
-
-      {/* Contenido de la tarjeta */}
-      <div className="p-4 sm:p-5 lg:p-6 flex-1 flex flex-col bg-white/40 backdrop-blur-sm">
-        {/* Información en cards pequeñas */}
-        <div className="grid grid-cols-2 gap-2 mb-4">
-          <div className="bg-white/80 hover:bg-white/90 border-gray-200 rounded-lg p-3 text-center transition-all duration-200 hover:shadow-md hover:scale-105 cursor-pointer border flex flex-col items-center justify-center">
-            <div className={`${getRoleIconBg(user.rol)} p-2 rounded-lg mb-1`}>
-              {getRoleIcon(user.rol)}
             </div>
-            <div className="text-xs font-medium truncate" style={{color: user.rol === 'admin' ? '#dc2626' : user.rol === 'pre-autorizado' ? '#ea580c' : '#2563eb'}}>
-              {user.rol}
-            </div>
-          </div>
-
-          <div className={`${isEmailVerified(user) ? 'bg-white/80 hover:bg-white/90 border-green-200' : 'bg-white/80 hover:bg-white/90 border-yellow-200'} rounded-lg p-3 text-center transition-all duration-200 hover:shadow-md hover:scale-105 cursor-pointer border flex flex-col items-center justify-center`}>
-            <div className={`${isEmailVerified(user) ? 'bg-green-500' : 'bg-yellow-500'} p-2 rounded-lg mb-1`}>
-              {isEmailVerified(user) ? (
-                <FiCheckCircle className="w-3 h-3 text-white transition-transform duration-200" />
-              ) : (
-                <FiClock className="w-3 h-3 text-white transition-transform duration-200" />
-              )}
-            </div>
-            <div className={`text-xs font-medium ${isEmailVerified(user) ? 'text-green-700' : 'text-yellow-700'}`}>
-              {isEmailVerified(user) ? 'Verificado' : 'Pendiente'}
-            </div>
-          </div>
+          )}
         </div>
 
-        {/* Información adicional */}
-        <div className="flex-1">
-          <div className="mb-4">
-            <p className="text-xs text-gray-600 mb-2 font-medium">
-              INFORMACIÓN
-            </p>
-            <div className="space-y-2 bg-white/60 p-3 rounded-lg border border-white/50">
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-700">Email:</span>
-                <span className="text-sm font-medium text-gray-900 truncate ml-2" title={user.correo || user.email}>
-                  {user.correo || user.email}
-                </span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-700">Registro:</span>
-                <span className="text-sm font-medium text-gray-900">
+        {/* Cuerpo */}
+        <div className="p-4 sm:p-5 lg:p-6 flex-1 flex flex-col">
+          {/* Grid resumen */}
+            <div className="grid grid-cols-2 gap-2 mb-4">
+              <div className="bg-blue-50 hover:bg-blue-100 rounded-lg p-3 text-center transition-all duration-200 hover:shadow-md hover:scale-105 cursor-default">
+                <FiCalendar className="w-4 h-4 mx-auto mb-1 text-blue-500" />
+                <div className="text-[11px] text-blue-700 font-medium truncate" title={getRegistrationDate(user)}>
                   {getRegistrationDate(user)}
-                </span>
+                </div>
+              </div>
+              <div className={`rounded-lg p-3 text-center transition-all duration-200 hover:shadow-md hover:scale-105 cursor-default ${isEmailVerified(user) ? 'bg-green-50 hover:bg-green-100' : 'bg-yellow-50 hover:bg-yellow-100'}`}> 
+                {isEmailVerified(user) ? <FiCheckCircle className="w-4 h-4 mx-auto mb-1 text-green-600" /> : <FiClock className="w-4 h-4 mx-auto mb-1 text-yellow-600" />}
+                <div className={`text-[11px] font-medium truncate ${isEmailVerified(user) ? 'text-green-700' : 'text-yellow-700'}`}>
+                  {isEmailVerified(user) ? 'Email OK' : 'Sin verificar'}
+                </div>
+              </div>
+            </div>
+
+          {/* Información detallada */}
+          <div className="flex-1 w-full">
+            <div className="mb-5">
+              <p className="text-xs text-gray-500 mb-2 font-semibold tracking-wide">INFORMACIÓN</p>
+              <div className="space-y-2">
+                <div className="flex items-center justify-between gap-4">
+                  <span className="text-sm text-gray-600">Email</span>
+                  <span className="text-sm font-medium text-gray-900 truncate max-w-[55%]" title={user.correo || user.email}>{user.correo || user.email || '—'}</span>
+                </div>
+                <div className="flex items-center justify-between gap-4">
+                  <span className="text-sm text-gray-600">Rol</span>
+                  <span className="text-sm font-medium text-gray-900 truncate max-w-[55%]">{getRoleLabel(user.rol)}</span>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 
-        {/* Botones de acción - Solo para otros usuarios */}
-        {user.id !== currentUser?.id && (
-          <div className="space-y-2">
-            {/* Botón de eliminar */}
-            <button
-              onClick={() => setConfirmDialog({
-                isOpen: true,
-                type: 'delete',
-                user
-              })}
-              className="grupo/eliminar w-full flex items-center justify-center gap-2 bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700 text-white font-semibold py-2.5 px-4 rounded-xl transition-all duration-300 text-sm shadow-sm hover:shadow-xl hover:scale-105 transform hover:-translate-y-1"
-              title="Eliminar"
-            >
-              <FiTrash2 className="w-4 h-4 grupo-hover/eliminar:scale-125 grupo-hover/eliminar:rotate-12 transition-all duration-300" />
-              <span className="grupo-hover/eliminar:font-bold transition-all duration-200">
-                Eliminar
-              </span>
-            </button>
-          </div>
-        )}
+          {/* Acciones */}
+          {user.id !== currentUser?.id && (
+            <div className="mt-auto">
+              {/* Solo botón eliminar */}
+              <button
+                onClick={() => setConfirmDialog({ isOpen: true, type: 'delete', user })}
+                className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700 text-white font-semibold py-2.5 px-4 rounded-xl transition-all duration-300 text-sm shadow-sm hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-red-400"
+                title="Eliminar usuario"
+              >
+                <FiTrash2 className="w-4 h-4" />
+                <span>Eliminar</span>
+              </button>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
