@@ -282,7 +282,7 @@ const AdminUsersPage = () => {
     <div className="min-h-screen bg-gray-50 p-2 sm:p-4 md:p-5 lg:p-6 xl:p-8">
       <div className="max-w-7xl mx-auto">{/* ... (existing code) */}
         {/* Header */}
-        <div className="bg-white rounded-xl sm:rounded-2xl shadow-md p-4 sm:p-5 lg:p-6 mb-4 sm:mb-6">
+        <div className="bg-gradient-to-r from-white via-blue-50 to-purple-50 rounded-xl sm:rounded-2xl shadow-lg backdrop-blur-sm border border-white/20 p-4 sm:p-5 lg:p-6 mb-4 sm:mb-6">
           <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center gap-4">
             <div className="text-center sm:text-left lg:text-left">
               <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
@@ -355,31 +355,35 @@ const AdminUsersPage = () => {
                 </button>
               </div>
 
-              {/* Estadísticas móviles */}
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 md:hidden">
-                <div className="bg-gradient-to-r from-red-500 to-red-600 text-white py-2 px-2 sm:px-3 rounded-lg font-medium text-xs flex items-center justify-center gap-1 shadow-md">
-                  <div className="w-2 h-2 bg-white rounded-full"></div>
-                  <span className="font-bold">{adminCount}</span>
-                  <span className="hidden sm:inline">adm.</span>
-                  <span className="sm:hidden">a</span>
+              {/* Estadísticas móviles (mejoradas) */}
+              <div className="grid grid-cols-2 gap-3 md:hidden">
+                <div className="rounded-xl p-3 bg-gradient-to-r from-red-500 to-red-600 text-white shadow-md" aria-label="Administradores">
+                  <div className="flex items-center gap-2">
+                    <FiShield className="w-4 h-4 opacity-95" />
+                    <span className="text-xs font-medium">Administradores</span>
+                  </div>
+                  <div className="mt-1 text-2xl font-extrabold leading-none">{adminCount}</div>
                 </div>
-                <div className="bg-gradient-to-r from-orange-500 to-amber-600 text-white py-2 px-2 sm:px-3 rounded-lg font-medium text-xs flex items-center justify-center gap-1 shadow-md">
-                  <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
-                  <span className="font-bold">{preAuthCount}</span>
-                  <span className="hidden sm:inline">pre</span>
-                  <span className="sm:hidden">p</span>
+                <div className="rounded-xl p-3 bg-gradient-to-r from-orange-500 to-amber-600 text-white shadow-md" aria-label="Pre-autorizados">
+                  <div className="flex items-center gap-2">
+                    <FiClock className="w-4 h-4 opacity-95 animate-pulse" />
+                    <span className="text-xs font-medium">Pre-autorizados</span>
+                  </div>
+                  <div className="mt-1 text-2xl font-extrabold leading-none">{preAuthCount}</div>
                 </div>
-                <div className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white py-2 px-2 sm:px-3 rounded-lg font-medium text-xs flex items-center justify-center gap-1 shadow-md">
-                  <div className="w-2 h-2 bg-white rounded-full"></div>
-                  <span className="font-bold">{userCount}</span>
-                  <span className="hidden sm:inline">usr</span>
-                  <span className="sm:hidden">u</span>
+                <div className="rounded-xl p-3 bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-md" aria-label="Usuarios">
+                  <div className="flex items-center gap-2">
+                    <FiUsers className="w-4 h-4 opacity-95" />
+                    <span className="text-xs font-medium">Usuarios</span>
+                  </div>
+                  <div className="mt-1 text-2xl font-extrabold leading-none">{userCount}</div>
                 </div>
-                <div className="bg-gradient-to-r from-green-500 to-emerald-600 text-white py-2 px-2 sm:px-3 rounded-lg font-medium text-xs flex items-center justify-center gap-1 shadow-md">
-                  <div className="w-2 h-2 bg-white rounded-full"></div>
-                  <span className="font-bold">{verifiedCount}</span>
-                  <span className="hidden sm:inline">ver.</span>
-                  <span className="sm:hidden">v</span>
+                <div className="rounded-xl p-3 bg-gradient-to-r from-green-500 to-emerald-600 text-white shadow-md" aria-label="Verificados">
+                  <div className="flex items-center gap-2">
+                    <FiCheckCircle className="w-4 h-4 opacity-95" />
+                    <span className="text-xs font-medium">Verificados</span>
+                  </div>
+                  <div className="mt-1 text-2xl font-extrabold leading-none">{verifiedCount}</div>
                 </div>
               </div>
 

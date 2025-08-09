@@ -239,18 +239,22 @@ const AdminMayoristasPage = () => {
                 </button>
               </div>
 
-              {/* Estadísticas - Solo en móvil */}
-              <div className="grid grid-cols-2 gap-2 lg:hidden">
-                <div className="bg-gradient-to-r from-purple-500 to-indigo-600 text-white py-2 px-3 rounded-lg font-medium text-xs flex items-center justify-center gap-1 shadow-md">
-                  <div className="w-2 h-2 bg-white rounded-full"></div>
-                  <span className="font-bold">{filteredMayoristas.length}</span>
-                  <span>may.</span>
+              {/* Estadísticas - Solo en móvil (mejoradas) */}
+              <div className="grid grid-cols-2 gap-3 lg:hidden">
+                <div className="rounded-xl p-3 bg-gradient-to-r from-purple-500 to-indigo-600 text-white shadow-md" aria-label="Mayoristas">
+                  <div className="flex items-center gap-2">
+                    <FiUsers className="w-4 h-4 opacity-95" />
+                    <span className="text-xs font-medium">Mayoristas</span>
+                  </div>
+                  <div className="mt-1 text-2xl font-extrabold leading-none">{filteredMayoristas.length}</div>
                 </div>
 
-                <div className="bg-gradient-to-r from-teal-500 to-cyan-600 text-white py-2 px-3 rounded-lg font-medium text-xs flex items-center justify-center gap-1 shadow-md">
-                  <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
-                  <span className="font-bold">{tiposUnicos.length}</span>
-                  <span>tipos</span>
+                <div className="rounded-xl p-3 bg-gradient-to-r from-teal-500 to-cyan-600 text-white shadow-md" aria-label="Tipos de producto">
+                  <div className="flex items-center gap-2">
+                    <FiTag className="w-4 h-4 opacity-95" />
+                    <span className="text-xs font-medium">Tipos de producto</span>
+                  </div>
+                  <div className="mt-1 text-2xl font-extrabold leading-none">{tiposUnicos.length}</div>
                 </div>
               </div>
 

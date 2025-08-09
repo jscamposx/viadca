@@ -226,6 +226,16 @@ const PapeleraPage = () => {
     });
   };
 
+  // Nuevo: formato con coma entre fecha y hora, como en el diseño provisto
+  const formatDateTime = (dateString) => {
+    if (!dateString) return "—";
+    const d = new Date(dateString);
+    if (isNaN(d.getTime())) return "—";
+    const fecha = d.toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' });
+    const hora = d.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+    return `${fecha}, ${hora}`;
+  };
+
   const getDaysUntilPermanentDelete = (dateString) => {
     if (!dateString) return null;
     const deleteDate = new Date(dateString);
@@ -273,7 +283,7 @@ const PapeleraPage = () => {
               <button
                 onClick={loadDeletedData}
                 disabled={loading}
-                className="w-full sm:w-auto flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white font-semibold py-3 px-5 rounded-xl shadow-md transition-all duration-300 ease-in-out transform hover:-translate-y-0.5 hover:shadow-lg text-sm sm:text-base whitespace-nowrap"
+                className="w-full sm:w-auto lg:w-auto flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-purple-700 hover:from-blue-700 hover:to-purple-800 text-white font-semibold py-3 px-5 rounded-xl shadow-lg transition-all duration-300 ease-in-out transform hover:-translate-y-0.5 hover:shadow-xl text-sm sm:text-base whitespace-nowrap"
               >
                 <FiRefreshCw className={`w-4 h-4 sm:w-5 sm:h-5 ${loading ? "animate-spin" : ""}`} />
                 Actualizar
@@ -298,6 +308,206 @@ const PapeleraPage = () => {
           </div>
         </div>
 
+        {/* Sección principal: estadísticas (chips) + búsqueda/controles */}
+        {!stats.isEmpty && (
+          <div className="bg-gradient-to-br from-white/95 via-purple-50/30 to-blue-50/30 backdrop-blur-sm border border-white/40 rounded-xl sm:rounded-2xl shadow-lg p-3 sm:p-4 lg:p-6 mb-4 sm:mb-6">
+
+            {/* Búsqueda y controles rápidos */}
+            <div className="space-y-3 sm:space-y-4">
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 sm:pl-4 flex items-center pointer-events-none">
+                  <FiSearch className="text-purple-400 text-base sm:text-lg" />
+                </div>
+                <input
+                  placeholder="Buscar por nombre o destino..."
+                  className="w-full pl-10 sm:pl-12 pr-3 sm:pr-4 py-3 sm:py-4 rounded-lg sm:rounded-xl border border-purple-200 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-sm bg-purple-50/50 font-medium shadow-md focus:shadow-lg transition-all duration-200"
+                  type="text"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+              </div>
+
+              <div className="flex flex-col gap-3">
+                {/* Controles móviles */}
+                <div className="md:hidden">
+                  <button 
+                    onClick={() => setIsFiltersOpen(!isFiltersOpen)}
+                    className={`w-full flex items-center justify-center gap-2 font-medium py-3 px-3 rounded-lg transition text-xs ${
+                      isFiltersOpen
+                        ? 'bg-blue-100 text-blue-700 border border-blue-200'
+                        : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
+                    }`}
+                  >
+                    <FiFilter className="w-4 h-4" />
+                    <span>Filtros</span>
+                  </button>
+                </div>
+
+                {/* Estadísticas móviles (chips) */}
+                <div className="grid grid-cols-2 gap-3 md:hidden">
+                  <div className="rounded-xl p-3 bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-md" aria-label="Paquetes">
+                    <div className="flex items-center gap-2">
+                      <FiPackage className="w-4 h-4 opacity-95" />
+                      <span className="text-xs font-medium">Paquetes</span>
+                    </div>
+                    <div className="mt-1 text-2xl font-extrabold leading-none">{stats.totalPaquetes || 0}</div>
+                  </div>
+                  <div className="rounded-xl p-3 bg-gradient-to-r from-green-500 to-emerald-600 text-white shadow-md" aria-label="Mayoristas">
+                    <div className="flex items-center gap-2">
+                      <FiUsers className="w-4 h-4 opacity-95" />
+                      <span className="text-xs font-medium">Mayoristas</span>
+                    </div>
+                    <div className="mt-1 text-2xl font-extrabold leading-none">{stats.totalMayoristas || 0}</div>
+                  </div>
+                  <div className="rounded-xl p-3 bg-gradient-to-r from-yellow-500 to-orange-600 text-white shadow-md" aria-label="Usuarios">
+                    <div className="flex items-center gap-2">
+                      <FiUser className="w-4 h-4 opacity-95" />
+                      <span className="text-xs font-medium">Usuarios</span>
+                    </div>
+                    <div className="mt-1 text-2xl font-extrabold leading-none">{stats.totalUsuarios || 0}</div>
+                  </div>
+                </div>
+
+                {/* Controles desktop */}
+                <div className="hidden md:flex md:items-center md:justify-between md:flex-col lg:flex-row gap-3 lg:gap-0">
+                  <div className="w-full lg:w-auto">
+                    <button 
+                      onClick={() => setIsFiltersOpen(!isFiltersOpen)}
+                      className={`flex items-center justify-center gap-2 font-medium py-3 px-3 lg:px-4 rounded-xl transition text-xs lg:text-sm ${
+                        isFiltersOpen
+                          ? 'bg-blue-100 text-blue-700 border border-blue-200'
+                          : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
+                      }`}
+                    >
+                      <FiFilter className="w-3 h-3 lg:w-4 lg:h-4" />
+                      <span className="hidden lg:inline">Filtros avanzados</span>
+                      <span className="lg:hidden">Filtros</span>
+                    </button>
+                  </div>
+
+                  <div className="flex flex-wrap gap-2 lg:gap-3">
+                    <div className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white py-2.5 px-3 lg:px-4 rounded-xl font-medium text-xs lg:text-sm flex items-center gap-2 shadow-md">
+                      <FiPackage className="w-3 h-3 lg:w-4 lg:h-4" />
+                      <span className="font-bold">{stats.totalPaquetes || 0}</span>
+                      <span className="hidden sm:inline">paquetes</span>
+                      <span className="sm:hidden">pack</span>
+                    </div>
+                    <div className="bg-gradient-to-r from-green-500 to-emerald-600 text-white py-2.5 px-3 lg:px-4 rounded-xl font-medium text-xs lg:text-sm flex items-center gap-2 shadow-md">
+                      <FiUsers className="w-3 h-3 lg:w-4 lg:h-4" />
+                      <span className="font-bold">{stats.totalMayoristas || 0}</span>
+                      <span className="hidden sm:inline">mayoristas</span>
+                      <span className="sm:hidden">mayor</span>
+                    </div>
+                    <div className="bg-gradient-to-r from-yellow-500 to-orange-600 text-white py-2.5 px-3 lg:px-4 rounded-xl font-medium text-xs lg:text-sm flex items-center gap-2 shadow-md">
+                      <FiUser className="w-3 h-3 lg:w-4 lg:h-4" />
+                      <span className="font-bold">{stats.totalUsuarios || 0}</span>
+                      <span className="hidden sm:inline">usuarios</span>
+                      <span className="sm:hidden">users</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Filtros avanzados */}
+            {isFiltersOpen && (
+              <div className="mt-3 sm:mt-4 p-3 sm:p-4 lg:p-6 bg-gradient-to-br from-white via-purple-50/40 to-blue-50/40 rounded-lg sm:rounded-xl lg:rounded-2xl ">
+                <div className="flex justify-between items-center mb-3 sm:mb-4 lg:mb-6">
+                  <h3 className="text-sm sm:text-base lg:text-xl font-semibold text-gray-800">
+                    Filtros avanzados
+                  </h3>
+                  <button
+                    onClick={() => setIsFiltersOpen(false)}
+                    className="p-2 rounded-full hover:bg-gray-200 transition"
+                  >
+                    <FiX className="w-4 h-4 sm:w-5 sm:h-5 text-gray-500" />
+                  </button>
+                </div>
+
+                <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-5 lg:gap-6">
+                  {/* Filtro por tipo */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2 lg:mb-3">
+                      <FiTrash2 className="inline w-4 h-4 mr-1" />
+                      Tipo de Elemento
+                    </label>
+                    <select
+                      value={typeFilter}
+                      onChange={(e) => setTypeFilter(e.target.value)}
+                      className="w-full px-3 py-2.5 lg:py-3 rounded-lg lg:rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm lg:text-base"
+                    >
+                      <option value="todos">Todos los elementos</option>
+                      <option value="paquetes">Solo paquetes</option>
+                      <option value="mayoristas">Solo mayoristas</option>
+                      <option value="usuarios">Solo usuarios</option>
+                    </select>
+                  </div>
+
+                  {/* Filtro por ordenamiento */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2 lg:mb-3">
+                      <FiArrowUp className="inline w-4 h-4 mr-1" />
+                      Ordenar por
+                    </label>
+                    <select
+                      value={`${sortConfig.key}-${sortConfig.direction}`}
+                      onChange={(e) => {
+                        const [key, direction] = e.target.value.split('-');
+                        setSortConfig({ key, direction });
+                      }}
+                      className="w-full px-3 py-2.5 lg:py-3 rounded-lg lg:rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm lg:text-base"
+                    >
+                      <option value="eliminadoEn-desc">Más recientes</option>
+                      <option value="eliminadoEn-asc">Más antiguos</option>
+                      <option value="name-asc">Nombre (A-Z)</option>
+                      <option value="name-desc">Nombre (Z-A)</option>
+                      <option value="type-asc">Tipo (A-Z)</option>
+                      <option value="type-desc">Tipo (Z-A)</option>
+                    </select>
+                  </div>
+                </div>
+
+                {/* Botones de acción de filtros */}
+                <div className="flex flex-col lg:flex-row justify-between items-center pt-4 lg:pt-6 gap-3 lg:gap-4 border-t border-gray-200 mt-4 lg:mt-6">
+                  <div className="text-sm lg:text-base text-gray-600 order-2 lg:order-1 text-center lg:text-left">
+                    <span className="font-semibold text-blue-600">
+                      {getFilteredItems().length}
+                    </span>
+                    <span>
+                      {" "}
+                      elemento{getFilteredItems().length !== 1 ? "s" : ""}{" "}
+                      encontrado{getFilteredItems().length !== 1 ? "s" : ""}
+                    </span>
+                    <span className="text-gray-500 ml-2">
+                      de {getAllItems().length} total
+                    </span>
+                  </div>
+                  <div className="flex gap-3 lg:gap-4 order-1 lg:order-2 w-full lg:w-auto">
+                    <button
+                      onClick={() => {
+                        setSearchTerm('');
+                        setTypeFilter('todos');
+                        setSortConfig({ key: 'eliminadoEn', direction: 'desc' });
+                        setIsFiltersOpen(false);
+                      }}
+                      className="flex-1 lg:flex-none px-4 lg:px-6 py-2.5 lg:py-3 bg-gradient-to-r from-gray-100 to-gray-200 hover:from-gray-200 hover:to-gray-300 text-gray-700 font-medium rounded-lg lg:rounded-xl transition-all duration-200 text-sm lg:text-base shadow-sm hover:shadow-md"
+                    >
+                      Limpiar todo
+                    </button>
+                    <button
+                      onClick={() => setIsFiltersOpen(false)}
+                      className="flex-1 lg:flex-none px-4 lg:px-6 py-2.5 lg:py-3 bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white font-medium rounded-lg lg:rounded-xl transition-all duration-200 text-sm lg:text-base flex items-center justify-center gap-2 shadow-lg hover:shadow-xl"
+                    >
+                      <FiFilter className="w-4 h-4" />
+                      Aplicar filtros
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
         {/* Filtros Rápidos */}
         {!stats.isEmpty && (
           <section className="bg-gradient-to-r from-white via-gray-50 to-white rounded-xl sm:rounded-2xl shadow-lg border border-gray-100 p-3 sm:p-4 lg:p-5 mb-4 sm:mb-6" aria-labelledby="filtros-rapidos">
@@ -308,57 +518,7 @@ const PapeleraPage = () => {
               </div>
               
               <div className="flex flex-col sm:flex-row flex-wrap gap-2 sm:gap-3" role="group" aria-labelledby="filtros-rapidos">
-                <button
-                  onClick={() => setTypeFilter('paquetes')}
-                  aria-pressed={typeFilter === 'paquetes'}
-                  aria-label="Filtrar por paquetes eliminados"
-                  className={`group relative px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg sm:rounded-xl text-xs sm:text-sm font-medium transition-all duration-200 ${
-                    typeFilter === 'paquetes'
-                      ? 'bg-gradient-to-r from-teal-500 to-cyan-600 text-white shadow-lg'
-                      : 'bg-white text-gray-600 hover:bg-teal-50 hover:text-teal-700 border border-gray-200 hover:border-teal-200'
-                  }`}
-                >
-                  <div className="flex items-center justify-center gap-2">
-                    <FiPackage className="w-3 h-3 sm:w-4 sm:h-4" />
-                    <span className="hidden sm:inline">Paquetes ({stats.totalPaquetes})</span>
-                    <span className="sm:hidden">Paquetes</span>
-                  </div>
-                </button>
-
-                <button
-                  onClick={() => setTypeFilter('mayoristas')}
-                  aria-pressed={typeFilter === 'mayoristas'}
-                  aria-label="Filtrar por mayoristas eliminados"
-                  className={`group relative px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg sm:rounded-xl text-xs sm:text-sm font-medium transition-all duration-200 ${
-                    typeFilter === 'mayoristas'
-                      ? 'bg-gradient-to-r from-teal-500 to-cyan-600 text-white shadow-lg'
-                      : 'bg-white text-gray-600 hover:bg-teal-50 hover:text-teal-700 border border-gray-200 hover:border-teal-200'
-                  }`}
-                >
-                  <div className="flex items-center justify-center gap-2">
-                    <FiUsers className="w-3 h-3 sm:w-4 sm:h-4" />
-                    <span className="hidden sm:inline">Mayoristas ({stats.totalMayoristas})</span>
-                    <span className="sm:hidden">Mayoristas</span>
-                  </div>
-                </button>
-
-                <button
-                  onClick={() => setTypeFilter('usuarios')}
-                  aria-pressed={typeFilter === 'usuarios'}
-                  aria-label="Filtrar por usuarios eliminados"
-                  className={`group relative px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg sm:rounded-xl text-xs sm:text-sm font-medium transition-all duration-200 ${
-                    typeFilter === 'usuarios'
-                      ? 'bg-gradient-to-r from-teal-500 to-cyan-600 text-white shadow-lg'
-                      : 'bg-white text-gray-600 hover:bg-teal-50 hover:text-teal-700 border border-gray-200 hover:border-teal-200'
-                  }`}
-                >
-                  <div className="flex items-center justify-center gap-2">
-                    <FiUser className="w-3 h-3 sm:w-4 sm:h-4" />
-                    <span className="hidden sm:inline">Usuarios ({stats.totalUsuarios || 0})</span>
-                    <span className="sm:hidden">Usuarios</span>
-                  </div>
-                </button>
-
+                {/* Primer chip a la izquierda con contador (Total) */}
                 <button
                   onClick={() => setTypeFilter('todos')}
                   aria-pressed={typeFilter === 'todos'}
@@ -371,196 +531,62 @@ const PapeleraPage = () => {
                 >
                   <div className="flex items-center justify-center gap-2">
                     <FiTrash2 className="w-3 h-3 sm:w-4 sm:h-4" />
-                    <span className="hidden sm:inline">Todos los Elementos ({stats.total})</span>
+                    <span className="hidden sm:inline">Todos los Elementos</span>
                     <span className="sm:hidden">Todos</span>
                   </div>
                 </button>
-              </div>
 
-              {/* Filtros adicionales por orden */}
-              <div className="space-y-2 sm:space-y-3">
-                <div className="flex items-center gap-2">
-                  <FiClock className="w-3 h-3 sm:w-4 sm:h-4 text-blue-500" />
-                  <span className="text-xs sm:text-sm font-medium text-gray-700">Ordenar por:</span>
-                </div>
-                
-                <div className="flex flex-wrap gap-2">
-                  <button
-                    onClick={() => handleSort('eliminadoEn')}
-                    className={`px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg sm:rounded-xl text-xs sm:text-sm font-medium transition-all duration-200 flex items-center gap-2 ${
-                      sortConfig.key === 'eliminadoEn'
-                        ? 'bg-blue-100 text-blue-700 border border-blue-200'
-                        : 'bg-white text-gray-600 hover:bg-blue-50 hover:text-blue-700 border border-gray-200 hover:border-blue-200'
-                    } hover:shadow-md`}
-                    title="Ordenar por fecha de eliminación"
-                  >
-                    <FiCalendar className="w-3 h-3 sm:w-4 sm:h-4" />
-                    <span>Fecha Eliminación</span>
-                    {sortConfig.key === 'eliminadoEn' && (
-                      sortConfig.direction === 'asc' ? <FiArrowUp className="w-3 h-3" /> : <FiArrowDown className="w-3 h-3" />
-                    )}
-                  </button>
+                {/* Resto de chips sin contador */}
+                <button
+                  onClick={() => setTypeFilter('paquetes')}
+                  aria-pressed={typeFilter === 'paquetes'}
+                  aria-label="Filtrar por paquetes eliminados"
+                  className={`group relative px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg sm:rounded-xl text-xs sm:text-sm font-medium transition-all duration-200 ${
+                    typeFilter === 'paquetes'
+                      ? 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-lg'
+                      : 'bg-white text-gray-600 hover:bg-blue-50 hover:text-blue-700 border border-gray-200 hover:border-blue-200'
+                  }`}
+                >
+                  <div className="flex items-center justify-center gap-2">
+                    <FiPackage className="w-3 h-3 sm:w-4 sm:h-4" />
+                    <span>Paquetes</span>
+                  </div>
+                </button>
 
-                  <button
-                    onClick={() => handleSort('name')}
-                    className={`px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg sm:rounded-xl text-xs sm:text-sm font-medium transition-all duration-200 flex items-center gap-2 ${
-                      sortConfig.key === 'name'
-                        ? 'bg-purple-100 text-purple-700 border border-purple-200'
-                        : 'bg-white text-gray-600 hover:bg-purple-50 hover:text-purple-700 border border-gray-200 hover:border-purple-200'
-                    } hover:shadow-md`}
-                    title="Ordenar por nombre"
-                  >
-                    <div className="w-2 h-2 rounded-full bg-purple-500"></div>
-                    <span>Nombre A-Z</span>
-                    {sortConfig.key === 'name' && (
-                      sortConfig.direction === 'asc' ? <FiArrowUp className="w-3 h-3" /> : <FiArrowDown className="w-3 h-3" />
-                    )}
-                  </button>
-                </div>
+                <button
+                  onClick={() => setTypeFilter('mayoristas')}
+                  aria-pressed={typeFilter === 'mayoristas'}
+                  aria-label="Filtrar por mayoristas eliminados"
+                  className={`group relative px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg sm:rounded-xl text-xs sm:text-sm font-medium transition-all duration-200 ${
+                    typeFilter === 'mayoristas'
+                      ? 'bg-gradient-to-r from-green-500 to-emerald-600 text-white shadow-lg'
+                      : 'bg-white text-gray-600 hover:bg-green-50 hover:text-green-700 border border-gray-200 hover:border-green-200'
+                  }`}
+                >
+                  <div className="flex items-center justify-center gap-2">
+                    <FiUsers className="w-3 h-3 sm:w-4 sm:h-4" />
+                    <span>Mayoristas</span>
+                  </div>
+                </button>
+
+                <button
+                  onClick={() => setTypeFilter('usuarios')}
+                  aria-pressed={typeFilter === 'usuarios'}
+                  aria-label="Filtrar por usuarios eliminados"
+                  className={`group relative px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg sm:rounded-xl text-xs sm:text-sm font-medium transition-all duration-200 ${
+                    typeFilter === 'usuarios'
+                      ? 'bg-gradient-to-r from-yellow-500 to-orange-600 text-white shadow-lg'
+                      : 'bg-white text-gray-600 hover:bg-yellow-50 hover:text-yellow-700 border border-gray-200 hover:border-yellow-200'
+                  }`}
+                >
+                  <div className="flex items-center justify-center gap-2">
+                    <FiUser className="w-3 h-3 sm:w-4 sm:h-4" />
+                    <span>Usuarios</span>
+                  </div>
+                </button>
               </div>
             </div>
           </section>
-        )}
-
-        {/* Estadísticas y controles */}
-        {!stats.isEmpty && (
-          <div className="bg-gradient-to-br from-white/95 via-purple-50/30 to-blue-50/30 backdrop-blur-sm border border-white/40 rounded-xl sm:rounded-2xl shadow-lg p-3 sm:p-4 lg:p-6 mb-4 sm:mb-6">
-            {/* Estadísticas compactas */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 mb-4 sm:mb-6">
-              <div className="bg-gradient-to-br from-blue-50 via-indigo-50 to-blue-100 border border-indigo-200 rounded-xl p-3 sm:p-4 text-center hover:shadow-md transition-all duration-200">
-                <div className="flex items-center justify-center mb-2">
-                  <div className="bg-gradient-to-r from-blue-500 to-indigo-600 p-1.5 rounded-lg">
-                    <FiTrash2 className="w-4 h-4 text-white" />
-                  </div>
-                </div>
-                <div className="text-indigo-700 text-xs sm:text-sm font-semibold mb-1 uppercase tracking-wide">Total</div>
-                <div className="text-slate-800 text-lg sm:text-xl font-bold">{stats.total}</div>
-              </div>
-              <div className="bg-gradient-to-br from-teal-50 via-cyan-50 to-teal-100 border border-teal-200 rounded-xl p-3 sm:p-4 text-center hover:shadow-md transition-all duration-200">
-                <div className="flex items-center justify-center mb-2">
-                  <div className="bg-gradient-to-r from-teal-500 to-cyan-600 p-1.5 rounded-lg">
-                    <FiPackage className="w-4 h-4 text-white" />
-                  </div>
-                </div>
-                <div className="text-teal-700 text-xs sm:text-sm font-semibold mb-1 uppercase tracking-wide">Paquetes</div>
-                <div className="text-slate-800 text-lg sm:text-xl font-bold">{stats.totalPaquetes}</div>
-              </div>
-              <div className="bg-gradient-to-br from-teal-50 via-cyan-50 to-teal-100 border border-teal-200 rounded-xl p-3 sm:p-4 text-center hover:shadow-md transition-all duration-200">
-                <div className="flex items-center justify-center mb-2">
-                  <div className="bg-gradient-to-r from-teal-500 to-cyan-600 p-1.5 rounded-lg">
-                    <FiUsers className="w-4 h-4 text-white" />
-                  </div>
-                </div>
-                <div className="text-teal-700 text-xs sm:text-sm font-semibold mb-1 uppercase tracking-wide">Mayoristas</div>
-                <div className="text-slate-800 text-lg sm:text-xl font-bold">{stats.totalMayoristas}</div>
-              </div>
-              <div className="bg-gradient-to-br from-teal-50 via-cyan-50 to-teal-100 border border-teal-200 rounded-xl p-3 sm:p-4 text-center hover:shadow-md transition-all duration-200">
-                <div className="flex items-center justify-center mb-2">
-                  <div className="bg-gradient-to-r from-teal-500 to-cyan-600 p-1.5 rounded-lg">
-                    <FiUser className="w-4 h-4 text-white" />
-                  </div>
-                </div>
-                <div className="text-teal-700 text-xs sm:text-sm font-semibold mb-1 uppercase tracking-wide">Usuarios</div>
-                <div className="text-slate-800 text-lg sm:text-xl font-bold">{stats.totalUsuarios || 0}</div>
-              </div>
-            </div>
-            
-            {/* Información de actualización */}
-            <div className="bg-gradient-to-r from-purple-50 to-indigo-50 border border-purple-200 rounded-xl p-3 sm:p-4 mb-4">
-              <div className="flex items-center gap-2 text-purple-700">
-                <FiClock className="w-4 h-4" />
-                <span className="text-xs sm:text-sm font-medium">
-                  Última actualización: {lastUpdated ? new Date(lastUpdated).toLocaleDateString("es-ES") : "Cargando..."}
-                </span>
-              </div>
-            </div>
-            
-            {/* Búsqueda y filtros */}
-            <div className="space-y-3 sm:space-y-4">
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 sm:pl-4 flex items-center pointer-events-none">
-                  <FiSearch className="text-purple-400 text-base sm:text-lg" />
-                </div>
-                <input
-                  type="text"
-                  placeholder="Buscar por nombre o destino..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 sm:pl-12 pr-3 sm:pr-4 py-3 sm:py-4 rounded-lg sm:rounded-xl border border-purple-200 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-sm bg-purple-50/50 font-medium shadow-md focus:shadow-lg transition-all duration-200"
-                />
-              </div>
-
-              <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
-                <select
-                  value={typeFilter}
-                  onChange={(e) => setTypeFilter(e.target.value)}
-                  className="flex-1 px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all bg-white"
-                >
-                  <option value="todos">Todos los elementos</option>
-                  <option value="paquetes">Solo paquetes</option>
-                  <option value="mayoristas">Solo mayoristas</option>
-                  <option value="usuarios">Solo usuarios</option>
-                </select>
-                
-                <button
-                  onClick={() => setIsFiltersOpen(!isFiltersOpen)}
-                  className={`flex items-center justify-center gap-2 px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base rounded-xl font-medium transition-all border ${
-                    isFiltersOpen 
-                      ? "bg-blue-100 text-blue-700 border-blue-300" 
-                      : "bg-white text-gray-700 hover:bg-gray-50 border-gray-200"
-                  }`}
-                >
-                  <FiFilter className="w-4 h-4" />
-                  <span className="hidden sm:inline">Ordenar</span>
-                  {sortConfig.direction === "asc" ? <FiArrowUp className="w-3 h-3" /> : <FiArrowDown className="w-3 h-3" />}
-                </button>
-              </div>
-
-              {/* Panel de ordenamiento */}
-              {isFiltersOpen && (
-                <div className="pt-3 sm:pt-4 border-t border-gray-200">
-                  <div className="flex flex-wrap gap-2">
-                    <button
-                      onClick={() => handleSort("eliminadoEn")}
-                      className={`flex items-center gap-2 px-3 py-2 text-sm rounded-lg font-medium transition-all ${
-                        sortConfig.key === "eliminadoEn" ? "bg-blue-100 text-blue-700" : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-                      }`}
-                    >
-                      <FiCalendar className="w-4 h-4" />
-                      Fecha eliminación
-                      {sortConfig.key === "eliminadoEn" && (
-                        sortConfig.direction === "asc" ? <FiArrowUp className="w-3 h-3" /> : <FiArrowDown className="w-3 h-3" />
-                      )}
-                    </button>
-                    
-                    <button
-                      onClick={() => handleSort("name")}
-                      className={`flex items-center gap-2 px-3 py-2 text-sm rounded-lg font-medium transition-all ${
-                        sortConfig.key === "name" ? "bg-blue-100 text-blue-700" : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-                      }`}
-                    >
-                      Nombre
-                      {sortConfig.key === "name" && (
-                        sortConfig.direction === "asc" ? <FiArrowUp className="w-3 h-3" /> : <FiArrowDown className="w-3 h-3" />
-                      )}
-                    </button>
-                    
-                    <button
-                      onClick={() => handleSort("type")}
-                      className={`flex items-center gap-2 px-3 py-2 text-sm rounded-lg font-medium transition-all ${
-                        sortConfig.key === "type" ? "bg-blue-100 text-blue-700" : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-                      }`}
-                    >
-                      Tipo
-                      {sortConfig.key === "type" && (
-                        sortConfig.direction === "asc" ? <FiArrowUp className="w-3 h-3" /> : <FiArrowDown className="w-3 h-3" />
-                      )}
-                    </button>
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
         )}
 
         {/* Estado vacío */}

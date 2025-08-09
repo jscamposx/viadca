@@ -23,9 +23,6 @@ const UserCard = ({
   const menuBtnRef = useRef(null);
   const [roleMenuOpen, setRoleMenuOpen] = useState(false);
   
-  // Estado para animación de entrada
-  const [isVisible, setIsVisible] = useState(false);
-  
   // Helpers UI
   const getInitials = (name) => {
     if (!name) return 'U';
@@ -69,10 +66,6 @@ const UserCard = ({
     return user.email_verificado || user.emailVerificado || user.verificado;
   };
 
-  // Animación entrada
-  useEffect(() => {
-    setIsVisible(true);
-  }, []);
   // Cerrar menú 3 puntos
   useEffect(()=>{
     if(!roleMenuOpen) return;
@@ -99,25 +92,22 @@ const UserCard = ({
   const displayUsername = isUsernameTruncated ? rawUsername.slice(0, MAX_NAME_LEN) + '…' : rawUsername;
 
   return (
-    <div 
-      className={`transform transition-all duration-500 ease-out ${
-        isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
-      }`}
-    >
+    <div>
       <div className="group bg-white rounded-2xl sm:rounded-3xl shadow-lg overflow-visible border border-gray-100 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 flex flex-col h-full">
         {/* Header gradiente */}
-        <div className="relative p-4 sm:p-5 lg:p-6 bg-gradient-to-br from-purple-50 via-indigo-50 to-blue-50">
+        <div className="relative p-4 sm:p-5 lg:p-6 pr-14 sm:pr-16 lg:pr-20 bg-gradient-to-br from-purple-50 via-indigo-50 to-blue-50">
           {/* Botón 3 puntos */}
           {user.id !== currentUser?.id && (
             <button
               ref={menuBtnRef}
               onClick={()=> setRoleMenuOpen(o=>!o)}
-              className="absolute top-3 right-3 p-2 rounded-lg text-gray-500 hover:text-indigo-600 hover:bg-white/70 backdrop-blur shadow-sm border border-white/60 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-400"
+              className="absolute top-2 right-2 sm:top-3 sm:right-3 z-20 w-10 h-10 sm:w-10 sm:h-10 rounded-xl text-gray-600 hover:text-indigo-600 hover:bg-white/80 backdrop-blur flex items-center justify-center shadow-sm border border-white/60 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 touch-manipulation"
               aria-haspopup="true"
               aria-expanded={roleMenuOpen}
+              aria-label="Abrir opciones de rol"
               title="Opciones de rol"
             >
-              <FiMoreVertical className="w-4 h-4" />
+              <FiMoreVertical className="w-5 h-5" />
             </button>
           )}
           <div className="flex items-center gap-4">
@@ -130,7 +120,7 @@ const UserCard = ({
               <h3 className="text-lg sm:text-xl font-bold text-gray-900 group-hover:text-purple-600 transition-colors duration-200">
                 <div className="flex items-center gap-2 min-w-0">
                   <span className="relative flex-1 min-w-0" title={rawUsername}>
-                    <span className="block truncate pr-4">{displayUsername}</span>
+                    <span className="block truncate pr-2 sm:pr-4">{displayUsername}</span>
                     {isUsernameTruncated && (
                       <span className="pointer-events-none absolute inset-y-0 right-0 w-6 bg-gradient-to-l from-purple-50 via-purple-50/80 to-transparent"></span>
                     )}

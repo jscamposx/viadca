@@ -21,6 +21,7 @@ import {
   FiDollarSign,
   FiActivity,
   FiPackage,
+  FiCheckCircle
 } from "react-icons/fi";
 import api from "../../../api";
 import { useNotification } from "./AdminLayout";
@@ -390,21 +391,23 @@ const AdminPaquetes = () => {
                 </button>
               </div>
 
-              {/* Estadísticas - Solo en móvil, en desktop van arriba */}
-              <div className="grid grid-cols-2 gap-2 lg:hidden">
-                <div className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white py-2 px-3 rounded-lg font-medium text-xs flex items-center justify-center gap-1 shadow-md">
-                  <div className="w-2 h-2 bg-white rounded-full"></div>
-                  <span className="font-bold">{filteredPaquetes.length}</span>
-                  <span>paq.</span>
+              {/* Estadísticas - Solo en móvil, mejoradas */}
+              <div className="grid grid-cols-2 gap-3 lg:hidden">
+                <div className="rounded-xl p-3 bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-md" aria-label="Paquetes filtrados">
+                  <div className="flex items-center gap-2">
+                    <FiPackage className="w-4 h-4 opacity-95" />
+                    <span className="text-xs font-medium">Paquetes</span>
+                  </div>
+                  <div className="mt-1 text-2xl font-extrabold leading-none">{filteredPaquetes.length}</div>
                 </div>
 
                 {paquetes && Array.isArray(paquetes) && (
-                  <div className="bg-gradient-to-r from-emerald-500 to-green-600 text-white py-2 px-3 rounded-lg font-medium text-xs flex items-center justify-center gap-1 shadow-md">
-                    <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
-                    <span className="font-bold">
-                      {paquetes.filter((p) => p.activo).length}
-                    </span>
-                    <span>✓</span>
+                  <div className="rounded-xl p-3 bg-gradient-to-r from-emerald-500 to-green-600 text-white shadow-md" aria-label="Activos">
+                    <div className="flex items-center gap-2">
+                      <FiCheckCircle className="w-4 h-4 opacity-95" />
+                      <span className="text-xs font-medium">Activos</span>
+                    </div>
+                    <div className="mt-1 text-2xl font-extrabold leading-none">{paquetes.filter((p) => p.activo).length}</div>
                   </div>
                 )}
               </div>

@@ -124,7 +124,7 @@ const AdminProfilePage = () => {
 
   if (!user) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50">
+      <div className="flex items-center justify-center min-h-screen bg-white">
         <div className="text-center">
           <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
           <p className="text-gray-600 font-medium">Cargando perfil...</p>
@@ -134,7 +134,7 @@ const AdminProfilePage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 p-4 sm:p-6 lg:p-8">
+    <div className="min-h-screen bg-white p-4 sm:p-6 lg:p-8">
       <div className="max-w-4xl mx-auto">
         
         {/* Header con avatar */}
@@ -189,16 +189,16 @@ const AdminProfilePage = () => {
         {/* Panel principal */}
         <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
           {/* Encabezado del panel */}
-          <div className="bg-gradient-to-r from-indigo-50 to-blue-50 border-b border-indigo-100 p-5 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <div className="bg-gradient-to-r from-white via-blue-50 to-purple-50 border-b border-indigo-100/50 p-4 sm:p-5 lg:p-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div>
-              <h2 className="text-xl font-bold text-gray-900">Información del perfil</h2>
-              <p className="text-gray-600">Gestiona tu información personal</p>
+              <h2 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">Información del perfil</h2>
+              <p className="text-gray-600 mt-1 sm:mt-2 text-sm sm:text-base">Gestiona tu información personal</p>
             </div>
             
             {!isEditing ? (
               <button 
                 onClick={() => setIsEditing(true)}
-                className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-indigo-600 to-blue-600 text-white rounded-xl hover:shadow-lg transition-all duration-300 hover:scale-[1.02]"
+                className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-blue-600 to-purple-700 hover:from-blue-700 hover:to-purple-800 text-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-0.5"
               >
                 <FiEdit className="w-4 h-4" />
                 <span>Editar perfil</span>
@@ -412,19 +412,19 @@ const AdminProfilePage = () => {
                 ? 'bg-gradient-to-r from-green-50 to-green-100 border-green-200'
                 : 'bg-gradient-to-r from-amber-50 to-amber-100 border-amber-200'
             }`}>
-              <div className="flex items-start gap-3">
-                <div className={`mt-1 w-8 h-8 rounded-full flex items-center justify-center ${
+              <div className="flex items-center sm:items-start gap-3">
+                <div className={`w-9 h-9 sm:w-8 sm:h-8 rounded-full flex items-center justify-center shrink-0 shadow ${
                   isVerified && formData.correo === (user.correo || user.email)
                     ? 'bg-green-500'
                     : 'bg-amber-500'
                 }`}>
                   {isVerified && formData.correo === (user.correo || user.email) ? (
-                    <FiCheckCircle className="w-5 h-5 text-white" />
+                    <FiCheckCircle className="w-5 h-5 sm:w-4 sm:h-4 text-white" />
                   ) : (
-                    <FiClock className="w-5 h-5 text-white" />
+                    <FiClock className="w-5 h-5 sm:w-4 sm:h-4 text-white" />
                   )}
                 </div>
-                <div>
+                <div className="min-w-0">
                   <h3 className={`font-bold ${
                     isVerified && formData.correo === (user.correo || user.email)
                       ? 'text-green-800'
