@@ -27,6 +27,14 @@ const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [message, setMessage] = useState('');
   const [loginSuccess, setLoginSuccess] = useState(false);
+  const [cooldown, setCooldown] = useState(0); // segundos restantes en cooldown
+
+  // Contador de cooldown
+  useEffect(() => {
+    if (cooldown <= 0) return;
+    const id = setInterval(() => setCooldown((s) => (s > 0 ? s - 1 : 0)), 1000);
+    return () => clearInterval(id);
+  }, [cooldown]);
 
   // Verificar si hay mensaje de éxito (ej: verificación de email)
   useEffect(() => {
@@ -42,10 +50,8 @@ const LoginPage = () => {
       
       if (user.rol === 'admin') {
         navigate('/admin', { replace: true });
-      } else if (user.rol === 'pre-autorizado') {
-        navigate('/pending-approval', { replace: true });
       } else {
-        navigate('/admin', { replace: true });
+        navigate('/', { replace: true, state: { message: '¡Bienvenido!' } });
       }
     }
   }, [user, loginSuccess, navigate]);
@@ -99,8 +105,18 @@ const LoginPage = () => {
       
     } catch (error) {
       console.error('Error de login:', error);
-      
-      if (error.response?.data?.message) {
+
+      const rawMsg = String(error?.response?.data?.message || '');
+      const isTooMany = error?.response?.status === 429 || /too many requests|throttlerexception/i.test(rawMsg);
+
+      if (isTooMany) {
+        // Usar Retry-After si está presente, de lo contrario 30s
+        const retryHeader = error?.response?.headers?.['retry-after'];
+        let retryAfter = parseInt(retryHeader, 10);
+        if (Number.isNaN(retryAfter) || retryAfter <= 0) retryAfter = 30;
+        setCooldown(retryAfter);
+        setMessage(`Has realizado demasiados intentos. Por tu seguridad, espera ${retryAfter}s e inténtalo más tarde.`);
+      } else if (error.response?.data?.message) {
         setMessage(error.response.data.message);
       } else if (error.response?.status === 401) {
         setMessage('Credenciales incorrectas');
@@ -113,6 +129,13 @@ const LoginPage = () => {
       setIsLoading(false);
     }
   };
+
+  const displayMessage = cooldown > 0
+    ? `Has realizado demasiados intentos. Por tu seguridad, espera ${cooldown}s e inténtalo más tarde.`
+    : message;
+
+  const isSuccessMessage = displayMessage.includes('verificación') || displayMessage.includes('éxito');
+  const isDisabled = isLoading || cooldown > 0;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 flex items-center justify-center p-4">
@@ -131,19 +154,19 @@ const LoginPage = () => {
         </div>
 
         {/* Mensaje de estado */}
-        {message && (
+        {displayMessage && (
           <div className={`p-4 rounded-xl mb-6 ${
-            message.includes('verificación') || message.includes('éxito')
+            isSuccessMessage
               ? 'bg-green-50 border border-green-200 text-green-700'
               : 'bg-red-50 border border-red-200 text-red-700'
           }`}>
             <div className="flex items-center gap-3">
-              {message.includes('verificación') || message.includes('éxito') ? (
+              {isSuccessMessage ? (
                 <FiCheckCircle className="w-5 h-5" />
               ) : (
                 <FiAlertCircle className="w-5 h-5" />
               )}
-              <span className="text-sm font-medium">{message}</span>
+              <span className="text-sm font-medium">{displayMessage}</span>
             </div>
           </div>
         )}
@@ -172,7 +195,7 @@ const LoginPage = () => {
                       : 'border-gray-200 bg-gray-50 hover:bg-white hover:border-gray-300'
                   }`}
                   placeholder="Ingresa tu usuario"
-                  disabled={isLoading}
+                  disabled={isDisabled}
                 />
               </div>
               {errors.usuario && (
@@ -204,13 +227,13 @@ const LoginPage = () => {
                       : 'border-gray-200 bg-gray-50 hover:bg-white hover:border-gray-300'
                   }`}
                   placeholder="Ingresa tu contraseña"
-                  disabled={isLoading}
+                  disabled={isDisabled}
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
-                  disabled={isLoading}
+                  disabled={isDisabled}
                 >
                   {showPassword ? <FiEyeOff className="w-5 h-5" /> : <FiEye className="w-5 h-5" />}
                 </button>
@@ -226,13 +249,18 @@ const LoginPage = () => {
             {/* Botón Submit */}
             <button
               type="submit"
-              disabled={isLoading}
+              disabled={isDisabled}
               className="w-full bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white font-semibold py-3 px-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
             >
               {isLoading ? (
                 <div className="flex items-center justify-center gap-2">
                   <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                   <span>Iniciando sesión...</span>
+                </div>
+              ) : cooldown > 0 ? (
+                <div className="flex items-center justify-center gap-2">
+                  <FiAlertCircle className="w-5 h-5" />
+                  <span>Espera {cooldown}s</span>
                 </div>
               ) : (
                 <div className="flex items-center justify-center gap-2">

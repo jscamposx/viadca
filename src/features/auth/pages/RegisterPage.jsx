@@ -14,11 +14,14 @@ import {
 
 const RegisterPage = () => {
   const navigate = useNavigate();
-  const { register } = useAuth();
+  const { register, login } = useAuth();
   
   const [formData, setFormData] = useState({
     usuario: '',
     correo: '',
+    // Campos opcionales soportados por backend
+    nombre: '',
+    nombre_completo: '',
     contrasena: '',
     confirmarContrasena: ''
   });
@@ -93,19 +96,32 @@ const RegisterPage = () => {
     setMessage('');
 
     try {
-      const { confirmarContrasena, ...dataToSend } = formData;
+      // Construir payload: incluir solo presentes y priorizar nombre_completo sobre nombre
+      const { confirmarContrasena, nombre, nombre_completo, usuario, correo, contrasena } = formData;
+      const dataToSend = { usuario, correo, contrasena };
+      if (nombre_completo && String(nombre_completo).trim() !== '') {
+        dataToSend.nombre_completo = String(nombre_completo).trim();
+      } else if (nombre && String(nombre).trim() !== '') {
+        dataToSend.nombre = String(nombre).trim();
+      }
+
       await register(dataToSend);
       
-      setMessage('Registro exitoso. Revisa tu email para verificar tu cuenta.');
+      setMessage('Registro exitoso. Intentando iniciar sesión...');
       
-      // Redirigir después de un momento
-      setTimeout(() => {
-        navigate('/login', {
-          state: {
-            message: 'Cuenta creada exitosamente. Verifica tu email antes de iniciar sesión.'
-          }
-        });
-      }, 3000);
+      // Intentar auto-login
+      try {
+        const resp = await login({ usuario: formData.usuario, contrasena: formData.contrasena });
+        const rol = resp?.usuario?.rol;
+        if (rol === 'admin') {
+          navigate('/admin', { replace: true });
+        } else {
+          navigate('/', { replace: true, state: { message: '¡Bienvenido! Tu cuenta fue creada.' } });
+        }
+      } catch (loginErr) {
+        // Si no se puede iniciar sesión (p.ej., debe verificar email), enviar a Home con mensaje
+        navigate('/', { replace: true, state: { message: 'Cuenta creada. Verifica tu email antes de iniciar sesión.' } });
+      }
       
     } catch (error) {
       console.error('Error de registro:', error);
@@ -141,12 +157,12 @@ const RegisterPage = () => {
         {/* Mensaje de estado */}
         {message && (
           <div className={`p-4 rounded-xl mb-6 ${
-            message.includes('exitoso') || message.includes('Verifica')
+            message.includes('exitoso') || message.includes('Verifica') || message.includes('Verifica tu email')
               ? 'bg-green-50 border border-green-200 text-green-700'
               : 'bg-red-50 border border-red-200 text-red-700'
           }`}>
             <div className="flex items-center gap-3">
-              {message.includes('exitoso') || message.includes('Verifica') ? (
+              {message.includes('exitoso') || message.includes('Verifica') || message.includes('Verifica tu email') ? (
                 <FiCheckCircle className="w-5 h-5" />
               ) : (
                 <FiAlertCircle className="w-5 h-5" />
@@ -217,6 +233,48 @@ const RegisterPage = () => {
                   {errors.correo}
                 </p>
               )}
+            </div>
+
+            {/* Campo Nombre (opcional) */}
+            <div>
+              <label htmlFor="nombre" className="block text-sm font-semibold text-gray-700 mb-2">
+                <div className="flex items-center gap-2">
+                  <FiUser className="w-4 h-4 text-green-600" />
+                  <span>Nombre (opcional)</span>
+                </div>
+              </label>
+              <input
+                type="text"
+                id="nombre"
+                name="nombre"
+                value={formData.nombre}
+                onChange={handleInputChange}
+                className="w-full px-4 py-3 border-2 rounded-xl focus:ring-4 focus:ring-green-500/30 focus:border-green-500 transition-all duration-300 border-gray-200 bg-gray-50 hover:bg-white hover:border-gray-300"
+                placeholder="Ej: Juan"
+                disabled={isLoading}
+              />
+              <p className="text-xs text-gray-500 mt-1">Puedes dejarlo vacío o usar "Nombre completo" abajo.</p>
+            </div>
+
+            {/* Campo Nombre completo (alternativa) */}
+            <div>
+              <label htmlFor="nombre_completo" className="block text-sm font-semibold text-gray-700 mb-2">
+                <div className="flex items-center gap-2">
+                  <FiUser className="w-4 h-4 text-green-600" />
+                  <span>Nombre completo (alternativa)</span>
+                </div>
+              </label>
+              <input
+                type="text"
+                id="nombre_completo"
+                name="nombre_completo"
+                value={formData.nombre_completo}
+                onChange={handleInputChange}
+                className="w-full px-4 py-3 border-2 rounded-xl focus:ring-4 focus:ring-green-500/30 focus:border-green-500 transition-all duration-300 border-gray-200 bg-gray-50 hover:bg-white hover:border-gray-300"
+                placeholder="Ej: Juan Pérez"
+                disabled={isLoading}
+              />
+              <p className="text-xs text-gray-500 mt-1">Alternativa al campo Nombre. Opcional.</p>
             </div>
 
             {/* Campo Contraseña */}

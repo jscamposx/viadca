@@ -321,7 +321,7 @@ const AdminPaquetes = () => {
   return (
     <div className="min-h-screen bg-gray-50 p-2 sm:p-4 lg:p-6">
       <div className="max-w-7xl mx-auto">
-        <div className="bg-gradient-to-r from-white via-blue-50 to-purple-50 rounded-xl sm:rounded-2xl shadow-lg backdrop-blur-sm border border-white/20 p-4 sm:p-5 lg:p-6 mb-4 sm:mb-6">
+        <div className="bg-white rounded-xl sm:rounded-2xl shadow-md border border-gray-100 p-3 sm:p-4 lg:p-6 mb-4 sm:mb-6">
           <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center gap-4">
             <div className="text-center sm:text-left lg:text-left">
               <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">

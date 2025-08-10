@@ -76,13 +76,19 @@ export const usePapelera = () => {
   // Función para eliminar definitivamente un elemento
   const hardDeleteItem = useCallback(async (itemId, itemType) => {
     try {
-      const endpoint = itemType === "paquete" 
-        ? `/admin/paquetes/${itemId}/hard`
-        : itemType === "mayorista"
-        ? `/admin/mayoristas/${itemId}/hard`
-        : `/admin/usuarios/${itemId}/hard-delete`;
-      
-      await apiClient.delete(endpoint);
+      // Endpoints según backend actual:
+      // - Paquetes: DELETE /admin/paquetes/:id/hard
+      // - Mayoristas: DELETE /admin/mayoristas/:id/hard
+      // - Usuarios:  POST   /admin/usuarios/:id/hard-delete
+      if (itemType === "usuario") {
+        await apiClient.post(`/admin/usuarios/${itemId}/hard-delete`);
+      } else if (itemType === "paquete") {
+        await apiClient.delete(`/admin/paquetes/${itemId}/hard`);
+      } else if (itemType === "mayorista") {
+        await apiClient.delete(`/admin/mayoristas/${itemId}/hard`);
+      } else {
+        throw new Error(`Tipo de elemento desconocido: ${itemType}`);
+      }
       
       // Actualizar el estado local
       if (itemType === "paquete") {
@@ -104,21 +110,11 @@ export const usePapelera = () => {
   // Función para vaciar toda la papelera
   const emptyTrash = useCallback(async () => {
     try {
-      // Obtener todos los elementos actuales
-      const allPaquetes = [...paquetesEliminados];
-      const allMayoristas = [...mayoristasEliminados];
-      const allUsuarios = [...usuariosEliminados];
+      // Endpoint de limpieza masiva del backend:
+      // POST /admin/cleanup/hard-delete
+      await apiClient.post('/admin/cleanup/hard-delete');
       
-      // Crear promesas para eliminar todos los elementos
-      const deletePromises = [
-        ...allPaquetes.map(p => apiClient.delete(`/admin/paquetes/${p.id}/hard`)),
-        ...allMayoristas.map(m => apiClient.delete(`/admin/mayoristas/${m.id}/hard`)),
-        ...allUsuarios.map(u => apiClient.delete(`/admin/usuarios/${u.id}/hard-delete`))
-      ];
-      
-      // Ejecutar todas las eliminaciones en paralelo
-      await Promise.all(deletePromises);
-      
+      // Limpiar estado local tras éxito
       setPaquetesEliminados([]);
       setMayoristasEliminados([]);
       setUsuariosEliminados([]);
@@ -128,7 +124,7 @@ export const usePapelera = () => {
       console.error("Error al vaciar papelera:", err);
       return false;
     }
-  }, [paquetesEliminados, mayoristasEliminados, usuariosEliminados]);
+  }, []);
 
   // Calcular estadísticas
   const stats = {

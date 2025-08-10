@@ -280,9 +280,9 @@ const AdminUsersPage = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 p-2 sm:p-4 md:p-5 lg:p-6 xl:p-8">
-      <div className="max-w-7xl mx-auto">{/* ... (existing code) */}
+      <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="bg-gradient-to-r from-white via-blue-50 to-purple-50 rounded-xl sm:rounded-2xl shadow-lg backdrop-blur-sm border border-white/20 p-4 sm:p-5 lg:p-6 mb-4 sm:mb-6">
+        <div className="bg-white rounded-xl sm:rounded-2xl shadow-md border border-gray-100 p-3 sm:p-4 lg:p-6 mb-4 sm:mb-6">
           <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center gap-4">
             <div className="text-center sm:text-left lg:text-left">
               <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
@@ -301,7 +301,7 @@ const AdminUsersPage = () => {
               className="w-full sm:w-auto lg:w-auto flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-purple-700 hover:from-blue-700 hover:to-purple-800 text-white font-semibold py-3 px-5 rounded-xl shadow-lg transition-all duration-300 ease-in-out transform hover:-translate-y-0.5 hover:shadow-xl text-sm sm:text-base whitespace-nowrap"
               disabled={loading}
             >
-              <FiRefreshCw className={`w-4 h-4 sm:w-5 sm:h-5 ${loading ? 'animate-spin' : ''}`} />
+              <FiRefreshCw className={`${loading ? 'animate-spin' : ''} w-4 h-4 sm:w-5 sm:h-5`} />
               <span>Actualizar</span>
             </button>
           </div>
@@ -884,7 +884,7 @@ const AdminUsersPage = () => {
               </div>
             </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4 sm:gap-5 lg:gap-6">{/* ... (existing code) */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4 sm:gap-5 lg:gap-6">
               {filteredUsers.map((user) => (
                 <UserCard
                   key={user.id}

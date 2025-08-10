@@ -8,7 +8,14 @@ const authService = {
   },
 
   login: async (credentials) => {
+    // El backend setea cookie HttpOnly access_token; no guardamos el token
     const response = await api.post('/usuarios/login', credentials);
+    return response.data;
+  },
+
+  logout: async () => {
+    // Limpia la cookie HttpOnly en el backend
+    const response = await api.post('/usuarios/logout');
     return response.data;
   },
 
@@ -30,15 +37,15 @@ const authService = {
     return response.data;
   },
 
-  // Endpoints autenticados
+  // Endpoints autenticados (definitivo: /usuarios/profile)
   getProfile: async () => {
-    const response = await api.get('/usuarios/profile');
-    return response.data;
+    const res = await api.get('/usuarios/profile');
+    return res.data;
   },
 
   updateProfile: async (userData) => {
-    const response = await api.patch('/usuarios/profile', userData);
-    return response.data;
+    const res = await api.patch('/usuarios/profile', userData);
+    return res.data;
   },
 
   // Endpoints de administración

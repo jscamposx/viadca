@@ -166,6 +166,42 @@ function NotFoundMessage() {
   );
 }
 
+function InactivePackageMessage() {
+  return (
+    <div
+      role="alert"
+      className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-amber-50 to-yellow-50 p-4 sm:p-6 relative overflow-hidden"
+    >
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-amber-400/10 to-yellow-400/10 rounded-full blur-3xl"></div>
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-br from-yellow-400/10 to-orange-400/10 rounded-full blur-3xl"></div>
+      </div>
+
+      <div className="max-w-lg w-full bg-white/85 backdrop-blur-xl rounded-2xl shadow-xl p-8 text-center border border-white/30 relative z-10">
+        <div className="relative w-20 h-20 bg-gradient-to-br from-amber-100 to-yellow-100 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg">
+          <FiInfo className="h-10 w-10 text-amber-600 relative z-10" aria-hidden="true" />
+        </div>
+
+        <h3 className="text-2xl font-bold text-gray-900 mb-4">
+          Paquete no disponible públicamente
+        </h3>
+
+        <p className="text-gray-600 mb-8 leading-relaxed text-base">
+          Este paquete fue desactivado por el administrador y no está visible en la vista pública.
+        </p>
+
+        <button
+          onClick={() => (window.location.href = "/")}
+          className="w-full py-3 px-6 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all duration-300"
+          aria-label="Volver al inicio"
+        >
+          Volver al inicio
+        </button>
+      </div>
+    </div>
+  );
+}
+
 function Badge({ children, variant = "default", icon: Icon }) {
   const variants = {
     default: "bg-gray-100/80 text-gray-700 border-gray-200/50",
@@ -243,6 +279,7 @@ function PackageViewPage() {
       <ErrorMessage message={error} onRetry={() => window.location.reload()} />
     );
   if (!paquete) return <NotFoundMessage />;
+  if (paquete.activo === false) return <InactivePackageMessage />;
 
   return (
     <div className="bg-gradient-to-br from-slate-50 via-white to-blue-50 min-h-screen">
@@ -534,7 +571,7 @@ function PackageViewPage() {
 
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 {paquete.notas && (
-                  <section className="group bg-white/80 backdrop-blur-xl rounded-3xl shadow-xl p-6 border border-white/20 hover:shadow-2xl transition-all duration-500">
+                  <section className="group bg-white/80 backdrop-blur-xl rounded-3xl shadow- xl p-6 border border-white/20 hover:shadow-2xl transition-all duration-500">
                     <div className="flex items-center gap-4 mb-6">
                       <div className="w-12 h-12 bg-gradient-to-br from-amber-400 to-orange-400 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
                         <FiInfo className="w-6 h-6 text-white" />

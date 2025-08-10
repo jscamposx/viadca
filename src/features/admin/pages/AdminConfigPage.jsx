@@ -1,229 +1,218 @@
-import React, { useState } from 'react';
-import { FiSettings, FiGlobe, FiBell, FiShield, FiSave, FiMoon, FiSun } from 'react-icons/fi';
+import React, { useEffect, useMemo, useState } from 'react';
+import { FiSave, FiRefreshCw, FiTrash2, FiEdit2, FiDatabase, FiPhone, FiMail, FiMapPin, FiClock, FiInstagram, FiFacebook, FiYoutube } from 'react-icons/fi';
+import contactService from '../../../api/contactService';
+
+const EMPTY = {
+  telefono: '',
+  email: '',
+  whatsapp: '',
+  direccion: '',
+  horario: '',
+  facebook: '',
+  instagram: '',
+  tiktok: '',
+  youtube: '',
+};
+
+const fieldMeta = [
+  { key: 'telefono', label: 'Teléfono', icon: FiPhone, type: 'tel', placeholder: '+51 999 999 999' },
+  { key: 'email', label: 'Email', icon: FiMail, type: 'email', placeholder: 'contacto@viadca.app' },
+  { key: 'whatsapp', label: 'WhatsApp', icon: FiPhone, type: 'tel', placeholder: '+51 999 999 999' },
+  { key: 'direccion', label: 'Dirección', icon: FiMapPin, type: 'text', placeholder: 'Av. Principal 123' },
+  { key: 'horario', label: 'Horario', icon: FiClock, type: 'text', placeholder: 'L-V 9:00-18:00' },
+  { key: 'facebook', label: 'Facebook', icon: FiFacebook, type: 'url', placeholder: 'https://facebook.com/viadca' },
+  { key: 'instagram', label: 'Instagram', icon: FiInstagram, type: 'url', placeholder: 'https://instagram.com/viadca' },
+  { key: 'tiktok', label: 'TikTok', icon: FiEdit2, type: 'url', placeholder: 'https://tiktok.com/@viadca' },
+  { key: 'youtube', label: 'YouTube', icon: FiYoutube, type: 'url', placeholder: 'https://youtube.com/@viadca' },
+];
 
 const AdminConfigPage = () => {
-  const [settings, setSettings] = useState({
-    theme: 'light',
-    language: 'es',
-    notifications: {
-      email: true,
-      push: false,
-      sms: false
-    },
-    privacy: {
-      profileVisible: true,
-      dataCollection: false
-    },
-    security: {
-      twoFactor: false,
-      sessionTimeout: 60
+  const [data, setData] = useState(EMPTY);
+  const [initial, setInitial] = useState(EMPTY);
+  const [loading, setLoading] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [message, setMessage] = useState('');
+
+  const dirty = useMemo(() => JSON.stringify(data) !== JSON.stringify(initial), [data, initial]);
+
+  const fetchData = async () => {
+    setLoading(true);
+    setMessage('');
+    try {
+      const res = await contactService.getContacto();
+      const normalized = Object.fromEntries(Object.entries(res).map(([k, v]) => [k, v ?? '']));
+      setData({ ...EMPTY, ...normalized });
+      setInitial({ ...EMPTY, ...normalized });
+    } catch (e) {
+      setMessage('No se pudo cargar el contacto');
+      console.error(e);
+    } finally {
+      setLoading(false);
     }
-  });
-
-  const [saved, setSaved] = useState(false);
-
-  const handleSave = () => {
-    // Aquí iría la lógica para guardar las configuraciones
-    setSaved(true);
-    setTimeout(() => setSaved(false), 2000);
   };
 
-  const updateSetting = (category, key, value) => {
-    setSettings(prev => ({
-      ...prev,
-      [category]: {
-        ...prev[category],
-        [key]: value
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const handleChange = (key, value) => {
+    setData((prev) => ({ ...prev, [key]: value }));
+  };
+
+  // Calcula el diff respecto al estado inicial (ignora cambios solo de espacios)
+  const getDiff = (next, prev) => {
+    const diff = {};
+    Object.keys(next).forEach((k) => {
+      const a = (prev[k] ?? '').trim();
+      const b = (next[k] ?? '').trim();
+      if (a !== b) diff[k] = next[k];
+    });
+    return diff;
+  };
+
+  const handleSave = async () => {
+    setSaving(true);
+    setMessage('');
+    try {
+      // Crear o reemplazar si nunca hubo datos (todas las cadenas vacías) o hacer PATCH si hay datos previos
+      const hasAny = Object.values(initial).some((v) => (v ?? '') !== '');
+      if (!hasAny) {
+        const res = await contactService.createOrReplaceContacto(data);
+        const normalized = Object.fromEntries(Object.entries(res).map(([k, v]) => [k, v ?? '']));
+        setInitial({ ...EMPTY, ...normalized });
+        setData({ ...EMPTY, ...normalized });
+        setMessage('Contacto creado / reemplazado');
+      } else {
+        const partial = getDiff(data, initial);
+        const res = await contactService.updateContacto(partial);
+        const normalized = Object.fromEntries(Object.entries(res).map(([k, v]) => [k, v ?? '']));
+        setInitial({ ...EMPTY, ...normalized });
+        setData({ ...EMPTY, ...normalized });
+        setMessage('Contacto actualizado');
       }
-    }));
+    } catch (e) {
+      setMessage('Error al guardar');
+      console.error(e);
+    } finally {
+      setSaving(false);
+    }
   };
 
-  const updateDirectSetting = (key, value) => {
-    setSettings(prev => ({
-      ...prev,
-      [key]: value
-    }));
+  const handleClear = async () => {
+    if (!confirm('¿Limpiar todos los campos del contacto?')) return;
+    setSaving(true);
+    setMessage('');
+    try {
+      const res = await contactService.clearContacto();
+      const normalized = Object.fromEntries(Object.entries(res).map(([k, v]) => [k, v ?? '']));
+      setInitial({ ...EMPTY, ...normalized });
+      setData({ ...EMPTY, ...normalized });
+      setMessage('Campos limpiados');
+    } catch (e) {
+      setMessage('Error al limpiar');
+      console.error(e);
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 p-4 sm:p-6 lg:p-8">
-      <div className="max-w-4xl mx-auto">
+    <div className="min-h-screen bg-gray-50 p-4 sm:p-6 lg:p-8">
+      <div className="max-w-3xl mx-auto">
         {/* Header */}
-        <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-6 mb-6">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-blue-600 rounded-full flex items-center justify-center">
-                <FiSettings className="w-8 h-8 text-white" />
+        <div className="bg-white rounded-2xl shadow-md border border-gray-100 p-5 sm:p-6 mb-6">
+          <div className="flex items-start justify-between gap-4">
+            <div className="flex items-start gap-3">
+              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-600 to-purple-600 text-white flex items-center justify-center shadow">
+                <FiDatabase className="w-6 h-6" />
               </div>
               <div>
-                <h1 className="text-2xl font-bold text-gray-900">Configuración</h1>
-                <p className="text-gray-600">Personaliza tu experiencia en el panel</p>
+                <h1 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">Ajustes · Contacto</h1>
+                <p className="text-gray-600 text-sm">Gestiona la información pública de contacto</p>
+                <div className="mt-2">
+                  <span
+                    className={
+                      'inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium ' +
+                      ((loading || saving)
+                        ? 'bg-blue-100 text-blue-800'
+                        : dirty
+                        ? 'bg-yellow-100 text-yellow-800'
+                        : 'bg-green-100 text-green-800')
+                    }
+                  >
+                    {loading || saving ? (
+                      <FiRefreshCw className="w-3.5 h-3.5 animate-spin" />
+                    ) : dirty ? (
+                      <FiEdit2 className="w-3.5 h-3.5" />
+                    ) : (
+                      <FiSave className="w-3.5 h-3.5" />
+                    )}
+                    {loading || saving ? 'Procesando…' : dirty ? 'Cambios sin guardar' : 'Todo guardado'}
+                  </span>
+                </div>
               </div>
             </div>
-            <button
-              onClick={handleSave}
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${
-                saved 
-                  ? 'bg-green-600 text-white' 
-                  : 'bg-blue-600 text-white hover:bg-blue-700'
-              }`}
-            >
-              <FiSave className="w-4 h-4" />
-              {saved ? 'Guardado' : 'Guardar'}
-            </button>
+            <div className="flex flex-wrap gap-2">
+              <button
+                onClick={fetchData}
+                disabled={loading || saving}
+                className="flex items-center gap-2 px-3 py-2 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-800 disabled:opacity-50 disabled:cursor-not-allowed"
+                title="Recargar datos"
+              >
+                <FiRefreshCw className={loading ? 'animate-spin' : ''} />
+                Recargar
+              </button>
+              <button
+                onClick={handleClear}
+                disabled={saving || loading}
+                className="flex items-center gap-2 px-3 py-2 rounded-lg bg-amber-100 hover:bg-amber-200 text-amber-900 disabled:opacity-50 disabled:cursor-not-allowed"
+                title="Limpiar todos los campos"
+              >
+                <FiTrash2 />
+                Limpiar
+              </button>
+              {/* Eliminado botón de "Eliminar fila" */}
+              <button
+                onClick={handleSave}
+                disabled={!dirty || saving || loading}
+                className="flex items-center gap-2 px-3 py-2 rounded-lg bg-gradient-to-r from-blue-600 to-purple-700 hover:from-blue-700 hover:to-purple-800 text-white disabled:opacity-50 disabled:cursor-not-allowed"
+                title="Guardar cambios"
+              >
+                <FiSave className={saving ? 'animate-pulse' : ''} />
+                Guardar
+              </button>
+            </div>
           </div>
+          {message && (
+            <div className="mt-3 text-sm text-gray-700" aria-live="polite">{message}</div>
+          )}
         </div>
 
-        <div className="space-y-6">
-          {/* Apariencia */}
-          <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-6">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                {settings.theme === 'light' ? (
-                  <FiSun className="w-5 h-5 text-blue-600" />
-                ) : (
-                  <FiMoon className="w-5 h-5 text-blue-600" />
-                )}
-              </div>
-              <h2 className="text-lg font-semibold text-gray-900">Apariencia</h2>
-            </div>
-
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Tema</label>
-                <div className="flex gap-3">
-                  <button
-                    onClick={() => updateDirectSetting('theme', 'light')}
-                    className={`flex items-center gap-2 px-4 py-2 rounded-lg border ${
-                      settings.theme === 'light'
-                        ? 'bg-blue-50 border-blue-300 text-blue-700'
-                        : 'bg-white border-gray-300 text-gray-700 hover:bg-gray-50'
-                    }`}
-                  >
-                    <FiSun className="w-4 h-4" />
-                    Claro
-                  </button>
-                  <button
-                    onClick={() => updateDirectSetting('theme', 'dark')}
-                    className={`flex items-center gap-2 px-4 py-2 rounded-lg border ${
-                      settings.theme === 'dark'
-                        ? 'bg-blue-50 border-blue-300 text-blue-700'
-                        : 'bg-white border-gray-300 text-gray-700 hover:bg-gray-50'
-                    }`}
-                  >
-                    <FiMoon className="w-4 h-4" />
-                    Oscuro
-                  </button>
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Idioma</label>
-                <select
-                  value={settings.language}
-                  onChange={(e) => updateDirectSetting('language', e.target.value)}
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                >
-                  <option value="es">Español</option>
-                  <option value="en">English</option>
-                  <option value="pt">Português</option>
-                </select>
-              </div>
-            </div>
-          </div>
-
-          {/* Notificaciones */}
-          <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-6">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 bg-yellow-100 rounded-lg flex items-center justify-center">
-                <FiBell className="w-5 h-5 text-yellow-600" />
-              </div>
-              <h2 className="text-lg font-semibold text-gray-900">Notificaciones</h2>
-            </div>
-
-            <div className="space-y-4">
-              {Object.entries(settings.notifications).map(([key, value]) => (
-                <div key={key} className="flex items-center justify-between">
-                  <div>
-                    <label className="text-sm font-medium text-gray-700">
-                      {key === 'email' && 'Notificaciones por email'}
-                      {key === 'push' && 'Notificaciones push'}
-                      {key === 'sms' && 'Notificaciones por SMS'}
-                    </label>
-                    <p className="text-xs text-gray-500">
-                      {key === 'email' && 'Recibir actualizaciones por correo electrónico'}
-                      {key === 'push' && 'Notificaciones en tiempo real en el navegador'}
-                      {key === 'sms' && 'Mensajes de texto para alertas importantes'}
-                    </p>
+        {/* Form */}
+        <div className="bg-white rounded-2xl shadow-md border border-gray-100 p-5 sm:p-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {fieldMeta.map(({ key, label, icon: Icon, type, placeholder }) => (
+              <div key={key} className="space-y-1">
+                <label htmlFor={key} className="block text-sm font-medium text-gray-700">{label}</label>
+                <div className="relative">
+                  <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
+                    <Icon className="w-4 h-4" />
                   </div>
-                  <button
-                    onClick={() => updateSetting('notifications', key, !value)}
-                    className={`w-12 h-6 rounded-full transition-colors relative ${
-                      value ? 'bg-blue-600' : 'bg-gray-300'
-                    }`}
-                  >
-                    <div
-                      className={`w-4 h-4 bg-white rounded-full transition-transform absolute top-1 ${
-                        value ? 'translate-x-7' : 'translate-x-1'
-                      }`}
-                    />
-                  </button>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Seguridad */}
-          <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-6">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center">
-                <FiShield className="w-5 h-5 text-red-600" />
-              </div>
-              <h2 className="text-lg font-semibold text-gray-900">Seguridad</h2>
-            </div>
-
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <label className="text-sm font-medium text-gray-700">
-                    Autenticación de dos factores
-                  </label>
-                  <p className="text-xs text-gray-500">
-                    Agrega una capa extra de seguridad a tu cuenta
-                  </p>
-                </div>
-                <button
-                  onClick={() => updateSetting('security', 'twoFactor', !settings.security.twoFactor)}
-                  className={`w-12 h-6 rounded-full transition-colors relative ${
-                    settings.security.twoFactor ? 'bg-blue-600' : 'bg-gray-300'
-                  }`}
-                >
-                  <div
-                    className={`w-4 h-4 bg-white rounded-full transition-transform absolute top-1 ${
-                      settings.security.twoFactor ? 'translate-x-7' : 'translate-x-1'
-                    }`}
+                  <input
+                    id={key}
+                    name={key}
+                    type={type}
+                    value={data[key]}
+                    onChange={(e) => handleChange(key, e.target.value)}
+                    placeholder={placeholder}
+                    disabled={loading || saving}
+                    className="w-full pl-9 pr-3 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 bg-gray-50 hover:bg-white disabled:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-70"
                   />
-                </button>
+                </div>
               </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Tiempo de sesión (minutos)
-                </label>
-                <select
-                  value={settings.security.sessionTimeout}
-                  onChange={(e) => updateSetting('security', 'sessionTimeout', Number(e.target.value))}
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                >
-                  <option value={30}>30 minutos</option>
-                  <option value={60}>1 hora</option>
-                  <option value={120}>2 horas</option>
-                  <option value={480}>8 horas</option>
-                  <option value={0}>Sin límite</option>
-                </select>
-              </div>
-            </div>
+            ))}
           </div>
+          <p className="text-xs text-gray-500 mt-4">Todos los campos son opcionales. Los cambios se aplican al guardar.</p>
         </div>
       </div>
     </div>

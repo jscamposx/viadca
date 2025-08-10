@@ -40,6 +40,8 @@ const apiClient = axios.create({
     "Content-Type": "application/json",
   },
   timeout: 30000, // 30 segundos de timeout
+  // Enviar y recibir cookies (credenciales) con CORS
+  withCredentials: true,
 });
 
 // Interceptor para logs de request (solo en desarrollo)
@@ -52,7 +54,8 @@ apiClient.interceptors.request.use(
         baseURL: config.baseURL,
         fullURL: `${config.baseURL}${config.url}`,
         data: config.data,
-        headers: config.headers
+        headers: config.headers,
+        withCredentials: config.withCredentials,
       });
     }
     return config;

@@ -22,14 +22,25 @@ import {
   FiClock,
   FiMenu,
   FiX,
+  FiUser,
+  FiLogOut,
+  FiChevronDown,
 } from "react-icons/fi";
 import { useAllPackages } from "../../package/hooks/useAllPackages";
 import OptimizedImage from "../../../components/ui/OptimizedImage";
+import { useAuth } from "../../../contexts/AuthContext";
+import { useLocation } from "react-router-dom";
 
 const Home = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
   const { paquetes, loading } = useAllPackages();
+  const { user, logout, isAuthenticated, isAdmin } = useAuth();
+  const location = useLocation();
+
+  const authed = isAuthenticated?.() || false;
+  const admin = isAdmin?.() || false;
 
   useEffect(() => {
     const handleScroll = () => {
@@ -40,6 +51,9 @@ const Home = () => {
   }, []);
 
   const featuredPackages = paquetes.filter(p => p.activo).slice(0, 6);
+
+  // Mensaje que puede venir desde login/registro
+  const feedbackMsg = location.state?.message;
 
   return (
     <div className="min-h-screen bg-white text-gray-800">
@@ -88,13 +102,64 @@ const Home = () => {
               </a>
             </nav>
 
-            {/* Botón login y menu móvil */}
-            <div className="flex items-center space-x-4">
-              <button className="hidden sm:flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-medium rounded-lg shadow-md transition-all transform hover:-translate-y-0.5">
-                <FiLock className="w-4 h-4" />
-                Iniciar sesión
-              </button>
-              
+            {/* Botón login / Perfil y menu móvil */}
+            <div className="relative flex items-center space-x-4">
+              {!authed ? (
+                <Link to="/login" className="hidden sm:flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-medium rounded-lg shadow-md transition-all transform hover:-translate-y-0.5">
+                  <FiLock className="w-4 h-4" />
+                  Iniciar sesión
+                </Link>
+              ) : (
+                <div className="hidden sm:flex items-center">
+                  <button
+                    onClick={() => setIsProfileOpen(v => !v)}
+                    className="flex items-center gap-3 px-3 py-2 bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow transition-all"
+                    aria-haspopup="menu"
+                    aria-expanded={isProfileOpen}
+                  >
+                    <div className="w-8 h-8 rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white flex items-center justify-center font-bold">
+                      {(user?.nombre_completo || user?.usuario || 'U').slice(0,1).toUpperCase()}
+                    </div>
+                    <div className="text-left">
+                      <div className="text-sm font-semibold text-gray-800 leading-tight truncate max-w-[140px]">
+                        {user?.nombre_completo || user?.usuario}
+                      </div>
+                      <div className="text-[11px] text-gray-500">
+                        {user?.rol}
+                      </div>
+                    </div>
+                    <FiChevronDown className={`w-4 h-4 text-gray-500 transition-transform ${isProfileOpen ? 'rotate-180' : ''}`} />
+                  </button>
+
+                  {isProfileOpen && (
+                    <div className="absolute right-0 top-12 w-64 bg-white border border-gray-200 rounded-xl shadow-xl overflow-hidden z-50">
+                      <div className="p-4 border-b border-gray-100">
+                        <div className="font-semibold text-gray-800 truncate">
+                          {user?.nombre_completo || user?.usuario}
+                        </div>
+                        <div className="text-xs text-gray-500 truncate">{user?.correo}</div>
+                        <div className="mt-2 inline-flex items-center gap-2 px-2 py-1 rounded-full text-xs bg-gray-100 text-gray-700">
+                          <FiShield className="w-3 h-3" /> {user?.rol}
+                        </div>
+                      </div>
+                      <div className="p-2">
+                        {admin && (
+                          <Link to="/admin" className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-50 text-gray-700 transition-colors">
+                            <FiLock className="w-4 h-4" /> Ir al Dashboard
+                          </Link>
+                        )}
+                        <button
+                          onClick={() => { setIsProfileOpen(false); logout(); }}
+                          className="w-full flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-50 text-gray-700 transition-colors"
+                        >
+                          <FiLogOut className="w-4 h-4" /> Cerrar sesión
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+
               {/* Menu móvil toggle */}
               <button 
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -108,7 +173,7 @@ const Home = () => {
           {/* Menu móvil */}
           {isMenuOpen && (
             <div className="lg:hidden bg-white border-t border-gray-100 py-4">
-              <div className="flex flex-col space-y-4">
+              <div className="flex flex-col space-y-2">
                 <a href="#inicio" className="text-gray-600 hover:text-blue-600 transition-colors font-medium px-4 py-2">
                   Inicio
                 </a>
@@ -124,10 +189,23 @@ const Home = () => {
                 <a href="#contacto" className="text-gray-600 hover:text-blue-600 transition-colors font-medium px-4 py-2">
                   Contacto
                 </a>
-                <button className="mx-4 mt-2 flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-medium rounded-lg shadow-md transition-all">
-                  <FiLock className="w-4 h-4" />
-                  Iniciar sesión
-                </button>
+                {!authed ? (
+                  <Link to="/login" className="mx-4 mt-2 flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-medium rounded-lg shadow-md transition-all">
+                    <FiLock className="w-4 h-4" />
+                    Iniciar sesión
+                  </Link>
+                ) : (
+                  <div className="mx-4 mt-2 border-t border-gray-100 pt-3">
+                    {admin && (
+                      <Link to="/admin" className="flex items-center gap-2 px-4 py-2 rounded-lg bg-gray-50 hover:bg-gray-100 text-gray-700 transition-colors mb-2">
+                        <FiLock className="w-4 h-4" /> Ir al Dashboard
+                      </Link>
+                    )}
+                    <button onClick={() => logout()} className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 font-medium rounded-lg shadow-sm transition-all">
+                      <FiLogOut className="w-4 h-4" /> Cerrar sesión
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
           )}
@@ -138,12 +216,21 @@ const Home = () => {
       <section id="inicio" className="relative min-h-screen flex items-center justify-center overflow-hidden">
         {/* Background con gradiente animado */}
         <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50"></div>
-        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxwYXRoIGQ9Ik02MCAwSDB2NjBoNjBWMHoiIGZpbGw9IiNmZmYiLz48cGF0aCBkPSJNNjAgMEgwdjYwaDYwVjB6IiBmaWxsPSJub25lIiBzdHJva2U9IiNmMWYxZjEiLz48L2c+PC9zdmc+')] opacity-30"></div>
+        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxwYXRoIGQ9Ik02MCAwSDB2NjBoNjBWMHoiIGZpbGw9IiNmZmYiLz48cGF0aCBkPSJNNjAgMEgwdjYwaDYwVjB6IiBpbGw9Im5vbmUiIHN0cm9rZT0iI2YxZjFmMSIvPjwvZz48L3N2Zz4=')] opacity-30"></div>
         
         {/* Elementos decorativos flotantes */}
         <div className="absolute top-20 left-10 w-32 h-32 bg-gradient-to-br from-blue-200 to-indigo-300 rounded-full opacity-20 animate-pulse"></div>
         <div className="absolute bottom-20 right-10 w-24 h-24 bg-gradient-to-br from-purple-200 to-pink-300 rounded-full opacity-20 animate-pulse delay-75"></div>
         <div className="absolute top-1/2 left-20 w-16 h-16 bg-gradient-to-br from-yellow-200 to-orange-300 rounded-full opacity-20 animate-pulse delay-150"></div>
+
+        {/* Mensaje de feedback (post-login/registro) */}
+        {feedbackMsg && (
+          <div className="absolute top-24 left-1/2 -translate-x-1/2 z-20">
+            <div className="px-4 py-2 bg-white/90 backdrop-blur border border-green-200 text-green-700 rounded-full shadow">
+              {feedbackMsg}
+            </div>
+          </div>
+        )}
 
         <div className="relative z-10 text-center px-4 py-20 max-w-6xl mx-auto">
           <div className="inline-flex items-center px-4 py-2 rounded-full bg-white/80 backdrop-blur-sm border border-blue-100 mb-8 shadow-lg">
@@ -181,13 +268,8 @@ const Home = () => {
               <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
             </a>
 
-            <Link
-              to="/admin"
-              className="group relative w-full sm:w-auto bg-white border-2 border-gray-200 hover:border-blue-500 text-gray-800 font-bold py-4 px-8 rounded-xl shadow-lg transform hover:scale-105 transition-all duration-300 ease-in-out flex items-center justify-center"
-            >
-              <FiLock className="mr-2 text-gray-600 group-hover:text-blue-600 transition-colors" />
-              <span>Acceso Admin</span>
-            </Link>
+            {/* Se oculta el acceso admin en la UI pública */}
+            {/* Antes había un Link a "/admin" aquí, se eliminó para cumplir el requerimiento */}
           </div>
 
           {/* Stats rápidas */}
