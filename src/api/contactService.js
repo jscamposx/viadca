@@ -42,7 +42,8 @@ const toNullIfEmpty = (v) => {
 
 const contactService = {
   async getContacto() {
-    const res = await api.get('/contacto', { headers: { 'Cache-Control': 'no-cache' } });
+    // Evitar headers no permitidos por CORS; usar query anti-cache
+    const res = await api.get('/contacto', { params: { _ts: Date.now() } });
     return normalize(res.data);
   },
 
