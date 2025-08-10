@@ -59,6 +59,9 @@ const AdminUsersPage = () => {
     fetchStats();
   }, []);
 
+  // Estado de carga inicial para evitar bloquear el layout (mejora LCP)
+  const isInitialLoading = loading && users.length === 0;
+
   // Función para limpiar todos los filtros
   const clearFilters = () => {
     setSearchTerm('');
@@ -265,18 +268,28 @@ const AdminUsersPage = () => {
     }
   };
 
-  if (loading && users.length === 0) {
-    return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-16 h-16 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-slate-600 text-lg font-medium">
-            Cargando usuarios...
-          </p>
+  // Skeleton de tarjetas de usuario para carga inicial (evitar pantalla en blanco y CLS)
+  const renderSkeletonCards = (count = 8) => (
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4 sm:gap-5 lg:gap-6">
+      {Array.from({ length: count }).map((_, idx) => (
+        <div key={idx} className="rounded-2xl border border-gray-200 bg-white shadow-sm p-4 sm:p-5 animate-pulse min-h-[220px]">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="w-12 h-12 rounded-full bg-gray-200" />
+            <div className="flex-1">
+              <div className="h-4 bg-gray-200 rounded w-2/3 mb-2" />
+              <div className="h-3 bg-gray-200 rounded w-1/2" />
+            </div>
+          </div>
+          <div className="h-3 bg-gray-200 rounded w-full mb-2" />
+          <div className="h-3 bg-gray-200 rounded w-5/6 mb-4" />
+          <div className="flex gap-2 mt-auto">
+            <div className="h-9 bg-gray-200 rounded-xl w-20" />
+            <div className="h-9 bg-gray-200 rounded-xl w-24" />
+          </div>
         </div>
-      </div>
-    );
-  }
+      ))}
+    </div>
+  );
 
   return (
     <div className="min-h-screen bg-gray-50 p-2 sm:p-4 md:p-5 lg:p-6 xl:p-8">
@@ -288,9 +301,14 @@ const AdminUsersPage = () => {
               <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
                 Gestión de Usuarios
               </h1>
-              <p className="text-gray-600 mt-1 sm:mt-2 text-sm sm:text-base">
-                Administra todos los usuarios del sistema ({effectiveStats?.total || 0} total)
-              </p>
+              {/* Texto de soporte con skeleton para carga inicial */}
+              {isInitialLoading ? (
+                <div className="mt-2 h-4 sm:h-5 w-48 sm:w-64 bg-gray-200 rounded animate-pulse mx-auto sm:mx-0" />
+              ) : (
+                <p className="text-gray-600 mt-1 sm:mt-2 text-sm sm:text-base">
+                  Administra todos los usuarios del sistema ({effectiveStats?.total || 0} total)
+                </p>
+              )}
             </div>
 
             <button
@@ -362,28 +380,52 @@ const AdminUsersPage = () => {
                     <FiShield className="w-4 h-4 opacity-95" />
                     <span className="text-xs font-medium">Administradores</span>
                   </div>
-                  <div className="mt-1 text-2xl font-extrabold leading-none">{adminCount}</div>
+                  <div className="mt-1 text-2xl font-extrabold leading-none tabular-nums">
+                    {isInitialLoading ? (
+                      <div className="h-7 w-8 bg-white/30 rounded animate-pulse" />
+                    ) : (
+                      <span className="inline-block w-8 text-center">{adminCount}</span>
+                    )}
+                  </div>
                 </div>
                 <div className="rounded-xl p-3 bg-gradient-to-r from-orange-500 to-amber-600 text-white shadow-md" aria-label="Pre-autorizados">
                   <div className="flex items-center gap-2">
                     <FiClock className="w-4 h-4 opacity-95 animate-pulse" />
                     <span className="text-xs font-medium">Pre-autorizados</span>
                   </div>
-                  <div className="mt-1 text-2xl font-extrabold leading-none">{preAuthCount}</div>
+                  <div className="mt-1 text-2xl font-extrabold leading-none tabular-nums">
+                    {isInitialLoading ? (
+                      <div className="h-7 w-8 bg-white/30 rounded animate-pulse" />
+                    ) : (
+                      <span className="inline-block w-8 text-center">{preAuthCount}</span>
+                    )}
+                  </div>
                 </div>
                 <div className="rounded-xl p-3 bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-md" aria-label="Usuarios">
                   <div className="flex items-center gap-2">
                     <FiUsers className="w-4 h-4 opacity-95" />
                     <span className="text-xs font-medium">Usuarios</span>
                   </div>
-                  <div className="mt-1 text-2xl font-extrabold leading-none">{userCount}</div>
+                  <div className="mt-1 text-2xl font-extrabold leading-none tabular-nums">
+                    {isInitialLoading ? (
+                      <div className="h-7 w-8 bg-white/30 rounded animate-pulse" />
+                    ) : (
+                      <span className="inline-block w-8 text-center">{userCount}</span>
+                    )}
+                  </div>
                 </div>
                 <div className="rounded-xl p-3 bg-gradient-to-r from-green-500 to-emerald-600 text-white shadow-md" aria-label="Verificados">
                   <div className="flex items-center gap-2">
                     <FiCheckCircle className="w-4 h-4 opacity-95" />
                     <span className="text-xs font-medium">Verificados</span>
                   </div>
-                  <div className="mt-1 text-2xl font-extrabold leading-none">{verifiedCount}</div>
+                  <div className="mt-1 text-2xl font-extrabold leading-none tabular-nums">
+                    {isInitialLoading ? (
+                      <div className="h-7 w-8 bg-white/30 rounded animate-pulse" />
+                    ) : (
+                      <span className="inline-block w-8 text-center">{verifiedCount}</span>
+                    )}
+                  </div>
                 </div>
               </div>
 
@@ -422,25 +464,41 @@ const AdminUsersPage = () => {
                 <div className="flex flex-wrap gap-2 lg:gap-3">
                   <div className="bg-gradient-to-r from-red-500 to-red-600 text-white py-2.5 px-3 lg:px-4 rounded-xl font-medium text-xs lg:text-sm flex items-center gap-2 shadow-md">
                     <FiShield className="w-3 h-3 lg:w-4 lg:h-4" />
-                    <span className="font-bold">{adminCount}</span>
+                    {isInitialLoading ? (
+                      <div className="h-5 w-6 bg-white/30 rounded animate-pulse" />
+                    ) : (
+                      <span className="font-bold tabular-nums inline-block w-6 text-center">{adminCount}</span>
+                    )}
                     <span className="hidden sm:inline">administradores</span>
                     <span className="sm:hidden">admin</span>
                   </div>
                   <div className="bg-gradient-to-r from-orange-500 to-amber-600 text-white py-2.5 px-3 lg:px-4 rounded-xl font-medium text-xs lg:text-sm flex items-center gap-2 shadow-md">
                     <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
-                    <span className="font-bold">{preAuthCount}</span>
+                    {isInitialLoading ? (
+                      <div className="h-5 w-6 bg-white/30 rounded animate-pulse" />
+                    ) : (
+                      <span className="font-bold tabular-nums inline-block w-6 text-center">{preAuthCount}</span>
+                    )}
                     <span className="hidden sm:inline">pre-autorizados</span>
                     <span className="sm:hidden">pre-auth</span>
                   </div>
                   <div className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white py-2.5 px-3 lg:px-4 rounded-xl font-medium text-xs lg:text-sm flex items-center gap-2 shadow-md">
                     <FiCheckCircle className="w-3 h-3 lg:w-4 lg:h-4" />
-                    <span className="font-bold">{userCount}</span>
+                    {isInitialLoading ? (
+                      <div className="h-5 w-6 bg-white/30 rounded animate-pulse" />
+                    ) : (
+                      <span className="font-bold tabular-nums inline-block w-6 text-center">{userCount}</span>
+                    )}
                     <span className="hidden sm:inline">usuarios</span>
                     <span className="sm:hidden">users</span>
                   </div>
                   <div className="bg-gradient-to-r from-green-500 to-emerald-600 text-white py-2.5 px-3 lg:px-4 rounded-xl font-medium text-xs lg:text-sm flex items-center gap-2 shadow-md">
                     <FiCheckCircle className="w-3 h-3 lg:w-4 lg:h-4" />
-                    <span className="font-bold">{verifiedCount}</span>
+                    {isInitialLoading ? (
+                      <div className="h-5 w-6 bg-white/30 rounded animate-pulse" />
+                    ) : (
+                      <span className="font-bold tabular-nums inline-block w-6 text-center">{verifiedCount}</span>
+                    )}
                     <span className="hidden sm:inline">verificados</span>
                     <span className="sm:hidden">verified</span>
                   </div>
@@ -796,7 +854,26 @@ const AdminUsersPage = () => {
 
         {/* Lista de usuarios */}
         <div className="rounded-xl sm:rounded-2xl  ">
-          {filteredUsers.length === 0 ? (
+          {isInitialLoading ? (
+            renderSkeletonCards(10)
+          ) : filteredUsers.length > 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4 sm:gap-5 lg:gap-6">
+              {filteredUsers.map((user) => (
+                <UserCard
+                  key={user.id}
+                  user={user}
+                  currentUser={currentUser}
+                  showActionMenu={showActionMenu}
+                  setShowActionMenu={setShowActionMenu}
+                  handleRoleChange={handleRoleChange}
+                  setConfirmDialog={setConfirmDialog}
+                  getRoleColor={getRoleColor}
+                  getRoleIcon={getRoleIcon}
+                  loading={loading}
+                />
+              ))}
+            </div>
+          ) : (
             <div className="bg-gradient-to-br from-white via-gray-50 to-white rounded-2xl sm:rounded-3xl shadow-xl p-6 sm:p-8 lg:p-12 text-center border border-gray-200">
               <div className="max-w-md mx-auto">
                 {/* Icono central con animación */}
@@ -882,23 +959,6 @@ const AdminUsersPage = () => {
                   </button>
                 </div>
               </div>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4 sm:gap-5 lg:gap-6">
-              {filteredUsers.map((user) => (
-                <UserCard
-                  key={user.id}
-                  user={user}
-                  currentUser={currentUser}
-                  showActionMenu={showActionMenu}
-                  setShowActionMenu={setShowActionMenu}
-                  handleRoleChange={handleRoleChange}
-                  setConfirmDialog={setConfirmDialog}
-                  getRoleColor={getRoleColor}
-                  getRoleIcon={getRoleIcon}
-                  loading={loading}
-                />
-              ))}
             </div>
           )}
         </div>
