@@ -318,32 +318,32 @@ const Home = () => {
                 icon: <FiSearch className="text-3xl text-blue-600" />,
                 title: "Búsqueda inteligente",
                 desc: "Encuentra tu destino ideal con nuestra búsqueda avanzada y recomendaciones personalizadas",
-                color: "blue"
+                bg: "from-blue-50 to-blue-100",
               },
               {
                 icon: <FiMapPin className="text-3xl text-indigo-600" />,
                 title: "Destinos únicos",
                 desc: "Accede a lugares exclusivos y experiencias auténticas que no encontrarás en otros lados",
-                color: "indigo"
+                bg: "from-indigo-50 to-indigo-100",
               },
               {
                 icon: <FiCalendar className="text-3xl text-purple-600" />,
                 title: "Reservas flexibles",
                 desc: "Programa tu viaje con total flexibilidad y modificaciones sin penalizaciones",
-                color: "purple"
+                bg: "from-purple-50 to-purple-100",
               },
               {
                 icon: <FiShield className="text-3xl text-green-600" />,
                 title: "Viaja seguro",
                 desc: "Soporte 24/7 y seguro de viaje incluido para que disfrutes sin preocupaciones",
-                color: "green"
+                bg: "from-green-50 to-green-100",
               },
             ].map((feature, index) => (
               <div
                 key={index}
                 className="group bg-white rounded-2xl shadow-lg border border-gray-100 p-8 hover:shadow-xl transition-all duration-300 hover:-translate-y-2"
               >
-                <div className={`w-16 h-16 rounded-xl bg-gradient-to-br from-${feature.color}-50 to-${feature.color}-100 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300`}>
+                <div className={`w-16 h-16 rounded-xl bg-gradient-to-br ${feature.bg} flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300`}>
                   {feature.icon}
                 </div>
                 <h3 className="text-xl font-bold text-gray-900 mb-4">
@@ -489,6 +489,82 @@ const Home = () => {
         </div>
       </section>
 
+      {/* Sección de paquetes completos */}
+      <section id="paquetes" className="py-20 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-6 mb-10">
+            <div>
+              <h2 className="text-3xl md:text-4xl font-bold text-gray-900">Todos los paquetes</h2>
+              <p className="text-gray-600 mt-2">Explora más opciones para tu siguiente viaje</p>
+            </div>
+            <a href="#contacto" className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-medium shadow hover:from-blue-700 hover:to-indigo-700 transition-all">
+              <FiMail className="w-4 h-4" /> Solicitar asesoría
+            </a>
+          </div>
+
+          {loading ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {[...Array(6)].map((_, index) => (
+                <div key={index} className="bg-white rounded-2xl shadow-lg overflow-hidden animate-pulse">
+                  <div className="h-56 bg-gray-200"></div>
+                  <div className="p-6">
+                    <div className="h-4 bg-gray-200 rounded mb-4"></div>
+                    <div className="h-4 bg-gray-200 rounded w-2/3 mb-4"></div>
+                    <div className="h-6 bg-gray-200 rounded w-1/3"></div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {paquetes.filter(p => p.activo).slice(0, 9).map((paquete) => (
+                <div key={paquete.id} className="bg-white rounded-2xl shadow hover:shadow-xl transition overflow-hidden">
+                  <div className="relative h-56">
+                    {paquete.primera_imagen ? (
+                      <OptimizedImage
+                        src={paquete.primera_imagen}
+                        alt={paquete.titulo}
+                        width={400}
+                        height={224}
+                        quality="auto"
+                        format="webp"
+                        crop="fill"
+                        className="w-full h-full object-cover"
+                        lazy={true}
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-gradient-to-br from-blue-100 via-indigo-50 to-purple-100 flex items-center justify-center text-gray-500">
+                        <FiMapPin className="w-10 h-10" />
+                      </div>
+                    )}
+                    <div className="absolute top-3 right-3 text-sm bg-white/90 px-3 py-1 rounded-full shadow font-semibold">
+                      {parseFloat(paquete.precio_total).toLocaleString("es-MX", { style: "currency", currency: "MXN", minimumFractionDigits: 0 })}
+                    </div>
+                  </div>
+                  <div className="p-6">
+                    <h3 className="text-lg font-bold text-gray-900 mb-1 line-clamp-1">{paquete.titulo}</h3>
+                    {paquete.destinos && paquete.destinos.length > 0 && (
+                      <p className="text-sm text-gray-600 mb-4 line-clamp-1">
+                        <FiMapPin className="inline w-4 h-4 mr-1 text-blue-500" />
+                        {paquete.destinos.map(d => d.destino).join(" • ")}
+                      </p>
+                    )}
+                    <div className="flex items-center justify-between">
+                      <Link to={`/paquetes/${paquete.url}`} className="inline-flex items-center gap-1 text-blue-600 hover:text-blue-700 font-medium">
+                        Ver más <FiChevronRight className="w-4 h-4" />
+                      </Link>
+                      <div className="text-sm text-gray-500 flex items-center gap-1">
+                        <FiClock className="w-4 h-4" /> {paquete.duracion_dias} días
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </section>
+
       {/* Sección de estadísticas */}
       <section className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -543,6 +619,70 @@ const Home = () => {
                 <div className="text-gray-600 font-medium">{stat.title}</div>
               </div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Sección de experiencias (testimonios) */}
+      <section id="experiencias" className="py-20 bg-gradient-to-br from-indigo-50 via-white to-blue-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-14">
+            <div className="inline-flex items-center px-4 py-2 rounded-full bg-indigo-100 text-indigo-700 font-medium mb-6">
+              Experiencias reales
+            </div>
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900">
+              Lo que dicen nuestros viajeros
+            </h2>
+            <p className="text-gray-600 mt-3 max-w-2xl mx-auto">
+              Historias inspiradoras de quienes ya vivieron la experiencia
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {[
+              {
+                name: "María Gómez",
+                role: "Durango, MX",
+                text: "El viaje estuvo perfectamente organizado. Cada detalle fue cuidado y el servicio fue excepcional.",
+                rating: 5,
+              },
+              {
+                name: "Carlos Hernández",
+                role: "CDMX, MX",
+                text: "Recomendadísimo. Me ayudaron a personalizar mi itinerario y todo salió increíble.",
+                rating: 5,
+              },
+              {
+                name: "Ana López",
+                role: "Monterrey, MX",
+                text: "La mejor agencia con la que he viajado. Sin duda volveré a reservar con ellos.",
+                rating: 5,
+              },
+            ].map((t, i) => (
+              <div key={i} className="bg-white rounded-2xl shadow border border-gray-100 p-6">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-10 h-10 rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white flex items-center justify-center font-bold">
+                    {t.name[0]}
+                  </div>
+                  <div>
+                    <div className="font-semibold text-gray-900">{t.name}</div>
+                    <div className="text-xs text-gray-500">{t.role}</div>
+                  </div>
+                </div>
+                <p className="text-gray-700 mb-4">“{t.text}”</p>
+                <div className="flex items-center text-yellow-500">
+                  {[...Array(t.rating)].map((_, k) => (
+                    <FiStar key={k} className="w-4 h-4 fill-current" />
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="text-center mt-12">
+            <a href="#contacto" className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold shadow hover:from-blue-700 hover:to-indigo-700 transition">
+              <FiPhone className="w-4 h-4" /> Hablemos de tu viaje
+            </a>
           </div>
         </div>
       </section>
