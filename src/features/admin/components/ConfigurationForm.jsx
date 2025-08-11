@@ -1,5 +1,6 @@
 import React from "react";
 import { FiSettings, FiCheck, FiX, FiPackage } from "react-icons/fi";
+import { formatPrecio, sanitizeMoneda } from "../../../utils/priceUtils";
 
 const ConfigurationForm = ({ formData, onFormChange, isEdit = false }) => {
   const handleToggleChange = (name, value) => {
@@ -7,6 +8,9 @@ const ConfigurationForm = ({ formData, onFormChange, isEdit = false }) => {
       target: { name, value },
     });
   };
+
+  // Moneda normalizada para el paquete
+  const moneda = sanitizeMoneda(formData?.moneda);
 
   return (
     <div className="space-y-6 sm:space-y-8">
@@ -113,14 +117,10 @@ const ConfigurationForm = ({ formData, onFormChange, isEdit = false }) => {
           <div>
             <span className="font-medium text-blue-700">Precio:</span>
             <p className="text-blue-600">
-              $
-              {formData.precio_total
-                ? parseFloat(formData.precio_total).toLocaleString("es-MX")
-                : "0"}
-              {formData.descuento && (
+              {formatPrecio(formData?.precio_total, moneda) || formatPrecio(0, moneda)}
+              {formData?.descuento && (
                 <span className="text-green-600 block sm:inline sm:ml-2">
-                  (Descuento: $
-                  {parseFloat(formData.descuento).toLocaleString("es-MX")})
+                  (Descuento: {formatPrecio(formData?.descuento, moneda) || formatPrecio(0, moneda)})
                 </span>
               )}
             </p>

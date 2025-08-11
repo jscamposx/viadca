@@ -1,5 +1,6 @@
 import React, { useState, useMemo, useEffect } from "react";
 import { FiDollarSign, FiTag, FiX, FiPercent } from "react-icons/fi";
+import { formatPrecio, sanitizeMoneda } from "../../../utils/priceUtils";
 
 const PricingForm = ({ formData, onFormChange }) => {
   const [showDiscount, setShowDiscount] = useState(!!formData.descuento);
@@ -9,6 +10,10 @@ const PricingForm = ({ formData, onFormChange }) => {
   const [precioConDescuento, setPrecioConDescuento] = useState(
     formData.precio_total || "",
   );
+
+  // Moneda
+  const MONEDAS = ["MXN", "USD"];
+  const moneda = sanitizeMoneda(formData.moneda || "MXN");
 
   useEffect(() => {
     if (
@@ -40,13 +45,9 @@ const PricingForm = ({ formData, onFormChange }) => {
   };
 
   const formatCurrency = (value) => {
-    if (!value || isNaN(value)) return "$0";
-    return parseFloat(value).toLocaleString("es-MX", {
-      style: "currency",
-      currency: "MXN",
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    });
+    // Reemplaza lógica fija por utilidad con moneda actual
+    if (!value || isNaN(value)) return formatPrecio(0, moneda);
+    return formatPrecio(value, moneda);
   };
 
   const calculations = useMemo(() => {
@@ -143,8 +144,32 @@ const PricingForm = ({ formData, onFormChange }) => {
     setShowDiscount(!showDiscount);
   };
 
+  const handleMonedaChange = (e) => {
+    const value = sanitizeMoneda(e.target.value);
+    onFormChange({ target: { name: "moneda", value } });
+  };
+
   return (
     <div className="space-y-4 sm:space-y-6">
+      {/* Selector de moneda */}
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1 sm:mb-2">
+          Moneda
+        </label>
+        <select
+          name="moneda"
+          value={moneda}
+          onChange={handleMonedaChange}
+          className="w-full p-2.5 sm:p-3 border border-gray-300 rounded-lg sm:rounded-md focus:ring-2 focus:ring-blue-500 text-sm sm:text-base"
+        >
+          {MONEDAS.map((m) => (
+            <option key={m} value={m}>
+              {m}
+            </option>
+          ))}
+        </select>
+      </div>
+
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1 sm:mb-2">

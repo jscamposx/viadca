@@ -13,6 +13,7 @@ import {
 } from "react-icons/fi";
 import OptimizedImage from "../../../components/ui/OptimizedImage";
 import { getImageUrl } from "../../../utils/imageUtils";
+import { formatPrecio, sanitizeMoneda } from "../../../utils/priceUtils";
 
 const PapeleraItemCard = ({ item, onRestore, onHardDelete, formatDate, getDaysUntilPermanentDelete }) => {
   const daysLeft = getDaysUntilPermanentDelete(item.eliminadoEn);
@@ -26,6 +27,9 @@ const PapeleraItemCard = ({ item, onRestore, onHardDelete, formatDate, getDaysUn
     usuario: { bg: "from-amber-50 to-amber-100", text: "text-amber-600", border: "border-amber-200", badge: "bg-amber-500/90" }
   };
   const colors = typeColors[item.type] || typeColors.usuario;
+
+  // Moneda normalizada para mostrar precios
+  const moneda = sanitizeMoneda(item?.moneda);
 
   return (
     <div className={`
@@ -113,9 +117,9 @@ const PapeleraItemCard = ({ item, onRestore, onHardDelete, formatDate, getDaysUn
                     </span>
                   </div>
                 )}
-                {item.precio_base && (
+                {item.precio_base !== null && item.precio_base !== undefined && item.precio_base !== "" && (
                   <div className="text-lg sm:text-xl font-bold text-blue-600">
-                    ${item.precio_base.toLocaleString()}
+                    {formatPrecio(item.precio_base, moneda)}
                   </div>
                 )}
               </>

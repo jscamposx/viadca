@@ -15,6 +15,7 @@ import {
   logPatchOperation,
   createPatchSummary,
 } from "../../../utils/patchLogger";
+import { sanitizeMoneda } from "../../../utils/priceUtils";
 
 const isUUID = (str) =>
   /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$/i.test(
@@ -60,6 +61,8 @@ export const usePackageForm = (initialPackageData = null) => {
     hotel: null,
     mayoristas: [],
     mayoristasIds: [],
+    // Soporte de moneda
+    moneda: "MXN",
   });
 
   useEffect(() => {
@@ -184,6 +187,7 @@ export const usePackageForm = (initialPackageData = null) => {
         hotel: initialPackageData.hotel || null,
         mayoristas: initialPackageData.mayoristas || [],
         mayoristasIds: mayoristasIds,
+        moneda: sanitizeMoneda(initialPackageData.moneda),
       });
     }
   }, [initialPackageData]);
@@ -560,6 +564,8 @@ export const usePackageForm = (initialPackageData = null) => {
           ? formData.requisitos
           : null,
       precio_total: parseFloat(formData.precio_total),
+      // Enviar moneda normalizada
+      moneda: sanitizeMoneda(formData.moneda),
       descuento:
         formData.descuento && formData.descuento !== ""
           ? parseFloat(formData.descuento)

@@ -470,6 +470,7 @@ const NuevoPaquete = () => {
                         destination={destination}
                         onImagesChange={handleImagesChange}
                         initialImages={formData.imagenes}
+                        isEdit={!!id} // Nuevo prop para mostrar mensaje en edición
                       />
                     )}
 

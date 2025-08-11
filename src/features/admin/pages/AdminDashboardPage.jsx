@@ -2,31 +2,27 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useAllPackages } from "../../package/hooks/useAllPackages";
 import { useMayoristas } from "../hooks/useMayoristas";
-import { useNotifications } from "../hooks/useNotifications";
-import { getImageUrl } from "../../../utils/imageUtils";
-import OptimizedImage from "../../../components/ui/OptimizedImage";
 import {
   FiPackage,
   FiUsers,
   FiDollarSign,
   FiTrendingUp,
-  FiCalendar,
   FiEye,
   FiArrowRight,
   FiActivity,
   FiStar,
-  FiMapPin,
-  FiClock,
   FiBarChart,
-  FiPieChart,
   FiRefreshCw,
   FiPlus,
-  FiEdit,
   FiTrash2,
+  FiCheckCircle,
+  FiPauseCircle
 } from "react-icons/fi";
+import OptimizedImage from "../../../components/ui/OptimizedImage";
+import { getImageUrl } from "../../../utils/imageUtils";
+import { formatPrecio, sanitizeMoneda } from "../../../utils/priceUtils";
 
 const AdminDashboard = () => {
-  const { notify } = useNotifications();
   const [timeFilter, setTimeFilter] = useState("monthly");
   const { paquetes, loading: paquetesLoading, error: paquetesError } = useAllPackages();
   const { mayoristas, loading: mayoristasLoading, error: mayoristasError } = useMayoristas();
@@ -37,12 +33,12 @@ const AdminDashboard = () => {
   const totalPaquetes = paquetes?.length || 0;
   const totalMayoristas = mayoristas?.length || 0;
   const paquetesActivos = paquetes?.filter((p) => p.activo).length || 0;
-  const totalVentas = paquetes?.reduce((sum, p) => sum + (p.precio_total || 0), 0) || 0;
+  const totalVentas = paquetes?.reduce((sum, p) => sum + (parseFloat(p.precio_total) || 0), 0) || 0;
 
   // Obtener los paquetes más destacados
   const topPaquetes = paquetes
     ?.filter((p) => p.activo)
-    ?.sort((a, b) => (b.precio_total || 0) - (a.precio_total || 0))
+    ?.sort((a, b) => (parseFloat(b.precio_total) || 0) - (parseFloat(a.precio_total) || 0))
     ?.slice(0, 4) || [];
 
   // Calcular estadísticas adicionales
@@ -54,26 +50,47 @@ const AdminDashboard = () => {
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="bg-white rounded-xl sm:rounded-2xl shadow-md p-4 sm:p-5 lg:p-6 mb-4 sm:mb-6">
-          <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center gap-4">
-            <div className="text-center sm:text-left lg:text-left">
-              <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-800">
+          <div className="flex flex-col lg:flex-row lg:items-center gap-4">
+            <div className="text-center sm:text-left">
+              <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
                 Dashboard Administrativo
               </h1>
               <p className="text-gray-600 mt-1 sm:mt-2 text-sm sm:text-base">
                 Gestiona tu plataforma con herramientas avanzadas y visualización en tiempo real
               </p>
             </div>
-            
-            <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
+
+            {/* Métricas + CTA en escritorio */}
+            <div className="hidden lg:flex items-center gap-3 lg:ml-auto">
+              <div className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white py-2.5 px-4 rounded-xl font-medium text-sm flex items-center gap-2 shadow-md">
+                <FiPackage className="w-4 h-4" />
+                <span className="font-bold">{totalPaquetes}</span>
+                <span>paquetes</span>
+              </div>
+              <div className="bg-gradient-to-r from-emerald-500 to-teal-600 text-white py-2.5 px-4 rounded-xl font-medium text-sm flex items-center gap-2 shadow-md">
+                <FiUsers className="w-4 h-4" />
+                <span className="font-bold">{totalMayoristas}</span>
+                <span>mayoristas</span>
+              </div>
               <button
                 onClick={() => window.location.reload()}
                 disabled={loading}
-                className="w-full sm:w-auto flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white font-semibold py-3 px-5 rounded-xl shadow-md transition-all duration-300 ease-in-out transform hover:-translate-y-0.5 hover:shadow-lg text-sm sm:text-base whitespace-nowrap"
+                className="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white font-semibold py-3 px-5 rounded-xl shadow-md transition-all duration-300 ease-in-out transform hover:-translate-y-0.5 hover:shadow-lg text-sm whitespace-nowrap"
               >
-                <FiRefreshCw className={`w-4 h-4 sm:w-5 sm:h-5 ${loading ? "animate-spin" : ""}`} />
+                <FiRefreshCw className={`w-4 h-4 ${loading ? "animate-spin" : ""}`} />
                 Actualizar
               </button>
             </div>
+
+            {/* CTA en móvil/tablet */}
+            <button
+              onClick={() => window.location.reload()}
+              disabled={loading}
+              className="w-full sm:w-auto lg:hidden flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white font-semibold py-3 px-5 rounded-xl shadow-md transition-all duration-300 ease-in-out transform hover:-translate-y-0.5 hover:shadow-lg text-sm sm:text-base whitespace-nowrap"
+            >
+              <FiRefreshCw className={`w-4 h-4 sm:w-5 sm:h-5 ${loading ? "animate-spin" : ""}`} />
+              Actualizar
+            </button>
           </div>
         </div>
 
@@ -153,7 +170,7 @@ const AdminDashboard = () => {
                   {loading ? (
                     <div className="w-16 h-8 bg-gray-200 rounded animate-pulse"></div>
                   ) : (
-                    <span>{`$${totalVentas.toLocaleString()}`}</span>
+                    <span>{formatPrecio(totalVentas, "MXN")}</span>
                   )}
                 </div>
                 <div className="flex items-center gap-1">
@@ -348,7 +365,7 @@ const AdminDashboard = () => {
                   className="text-lg font-bold text-gray-900"
                   id="recent-activity-title"
                 >
-                  🕒 Actividad Reciente
+                  Actividad Reciente
                 </h3>
                 <p className="text-sm text-gray-600">
                   Últimas acciones en el sistema
@@ -431,7 +448,7 @@ const AdminDashboard = () => {
                   </div>
                   <div>
                     <h2 className="text-xl font-bold text-gray-900">
-                      🌟 Paquetes Destacados
+                      Paquetes Destacados
                     </h2>
                     <p className="text-sm text-gray-600">
                       Los paquetes con mayor valor
@@ -503,16 +520,26 @@ const AdminDashboard = () => {
                         </h3>
                         <div className="flex justify-between items-center">
                           <span className="font-bold text-lg text-gray-900">
-                            ${paquete.precio_total?.toLocaleString() || 0}
+                            {formatPrecio(paquete?.precio_total, sanitizeMoneda(paquete?.moneda))}
                           </span>
                           <span
-                            className={`text-xs px-3 py-1 rounded-full font-medium shadow-sm ${
+                            className={`text-xs px-3 py-1 rounded-full font-medium shadow-sm flex items-center gap-1 ${
                               paquete.activo
                                 ? "bg-green-100 text-green-800 border border-green-200"
                                 : "bg-gray-100 text-gray-800 border border-gray-200"
                             }`}
                           >
-                            {paquete.activo ? "✓ Activo" : "⏸ Inactivo"}
+                            {paquete.activo ? (
+                              <>
+                                <FiCheckCircle className="w-3.5 h-3.5" />
+                                <span>Activo</span>
+                              </>
+                            ) : (
+                              <>
+                                <FiPauseCircle className="w-3.5 h-3.5" />
+                                <span>Inactivo</span>
+                              </>
+                            )}
                           </span>
                         </div>
                       </div>
@@ -531,7 +558,7 @@ const AdminDashboard = () => {
               </div>
               <div>
                 <h2 className="text-xl font-bold text-gray-900">
-                  ⚡ Acciones Rápidas
+                  Acciones Rápidas
                 </h2>
                 <p className="text-sm text-gray-600">
                   Gestiona tu plataforma fácilmente
@@ -622,7 +649,7 @@ const AdminDashboard = () => {
               </div>
               <div>
                 <h2 className="text-xl font-bold text-gray-900">
-                  📈 Resumen de Actividad
+                  Resumen de Actividad
                 </h2>
                 <p className="text-sm text-gray-600">
                   Métricas clave del sistema en tiempo real
@@ -676,7 +703,7 @@ const AdminDashboard = () => {
                 <div>
                   <p className="text-sm text-purple-600 font-semibold uppercase tracking-wide mb-1">Precio Promedio</p>
                   <p className="text-2xl font-bold text-purple-900">
-                    ${Math.round(promedioPrecios).toLocaleString()}
+                    {formatPrecio(Math.round(promedioPrecios), "MXN")}
                   </p>
                   <div className="flex items-center gap-1 mt-2">
                     <div className="w-3 h-3 bg-purple-500 rounded-full"></div>

@@ -10,6 +10,7 @@ import {
   FiX,
   FiUsers,
   FiTag,
+  FiRefreshCw,
 } from "react-icons/fi";
 // import ConfirmDialog from "../components/ConfirmDialog";
 const ConfirmDialog = lazy(() => import("../components/ConfirmDialog"));
@@ -17,7 +18,7 @@ const MayoristaCard = lazy(() => import("../components/MayoristaCard"));
 import { useNotification } from "./AdminLayout";
 
 const AdminMayoristasPage = () => {
-  const { mayoristas, /* setMayoristas, */ loading, error, deleteMayorista } =
+  const { mayoristas, /* setMayoristas, */ loading, error, deleteMayorista, refetch } =
     useMayoristas();
   const [searchTerm, setSearchTerm] = useState("");
   const deferredSearchTerm = useDeferredValue(searchTerm);
@@ -35,6 +36,7 @@ const AdminMayoristasPage = () => {
     mayoristaName: "",
   });
   const { addNotification } = useNotification();
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
   // Indica si es la primera carga (para no bloquear el layout y mejorar LCP)
   const isInitialLoading = loading && (!Array.isArray(mayoristas) || mayoristas.length === 0);
@@ -78,6 +80,18 @@ const AdminMayoristasPage = () => {
     setSearchTerm("");
     setTipoFilter("");
     setSortConfig({ key: "nombre", direction: "asc" });
+  };
+
+  const handleRefresh = async () => {
+    try {
+      setIsRefreshing(true);
+      await refetch(true);
+      addNotification("Lista de mayoristas actualizada", "success");
+    } catch (e) {
+      addNotification("No se pudo actualizar la lista", "error");
+    } finally {
+      setIsRefreshing(false);
+    }
   };
 
   // useEffect reemplazado por useMemo para evitar un render extra al derivar estado
@@ -194,13 +208,32 @@ const AdminMayoristasPage = () => {
               )}
             </div>
 
-            <Link
-              to="/admin/mayoristas/nuevo"
-              className="w-full sm:w-auto lg:w-auto flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-purple-700 hover:from-blue-700 hover:to-purple-800 text-white font-semibold py-3 px-5 rounded-xl shadow-lg transition-all duration-300 ease-in-out transform hover:-translate-y-0.5 hover:shadow-xl text-sm sm:text-base whitespace-nowrap"
-            >
-              <FiPlus className="w-4 h-4 sm:w-5 sm:h-5" />
-              <span>Nuevo Mayorista</span>
-            </Link>
+            {/* Acciones: Actualizar + Nuevo Mayorista */}
+            <div className="w-full sm:w-auto lg:w-auto flex items-center justify-center lg:justify-end gap-2">
+              <button
+                type="button"
+                onClick={handleRefresh}
+                disabled={isRefreshing || loading}
+                className={`flex items-center justify-center gap-2 border font-semibold py-3 px-4 rounded-xl shadow-sm transition-all duration-300 text-sm sm:text-base whitespace-nowrap ${
+                  isRefreshing || loading
+                    ? "bg-gray-100 text-gray-400 border-gray-200"
+                    : "bg-white hover:bg-gray-50 text-gray-700 border-gray-200"
+                }`}
+                aria-label="Actualizar lista de mayoristas"
+                title="Actualizar"
+              >
+                <FiRefreshCw className={`w-4 h-4 sm:w-5 sm:h-5 ${isRefreshing ? "animate-spin" : ""}`} />
+                <span>Actualizar</span>
+              </button>
+
+              <Link
+                to="/admin/mayoristas/nuevo"
+                className="w-full sm:w-auto lg:w-auto flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-purple-700 hover:from-blue-700 hover:to-purple-800 text-white font-semibold py-3 px-5 rounded-xl shadow-lg transition-all duration-300 ease-in-out transform hover:-translate-y-0.5 hover:shadow-xl text-sm sm:text-base whitespace-nowrap"
+              >
+                <FiPlus className="w-4 h-4 sm:w-5 sm:h-5" />
+                <span>Nuevo Mayorista</span>
+              </Link>
+            </div>
           </div>
         </div>
 
@@ -214,7 +247,7 @@ const AdminMayoristasPage = () => {
               <input
                 type="text"
                 placeholder="Buscar por nombre, clave o tipo de producto..."
-                className="w-full pl-10 sm:pl-12 pr-3 sm:pr-4 py-3 sm:py-4 rounded-lg sm:rounded-xl border border-purple-200 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-sm bg-purple-50/50 font-medium shadow-md focus:shadow-lg transition-all duration-200"
+                className="w-full pl-10 sm:pl-12 pr-3 sm:pr-4 py-3 sm:py-4 rounded-lg sm:rounded-xl border border-purple-200 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-sm bg-purple-50/50 font-medium shadow-md focus:shadow-lg transition-all duración-200"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 disabled={loading}

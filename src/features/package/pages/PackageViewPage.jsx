@@ -31,6 +31,7 @@ import {
   FiShield,
   FiAward,
 } from "react-icons/fi";
+import { formatPrecio, sanitizeMoneda } from "../../../utils/priceUtils";
 
 function LoadingSpinner() {
   return (
@@ -281,6 +282,15 @@ function PackageViewPage() {
   if (!paquete) return <NotFoundMessage />;
   if (paquete.activo === false) return <InactivePackageMessage />;
 
+  // Moneda normalizada para mostrar en toda la vista
+  const moneda = sanitizeMoneda(paquete.moneda);
+  // Valores formateados con manejo de nulos/NaN
+  const precioTotalFormatted = formatPrecio(paquete?.precio_total, moneda);
+  const precioOriginalFormatted = formatPrecio(
+    (parseFloat(paquete?.precio_total) || 0) + (parseFloat(paquete?.descuento) || 0),
+    moneda
+  );
+
   return (
     <div className="bg-gradient-to-br from-slate-50 via-white to-blue-50 min-h-screen">
       <div
@@ -390,10 +400,8 @@ function PackageViewPage() {
                 </Badge>
                 {paquete.precio_total && (
                   <Badge variant="gradient" icon={FiDollarSign}>
-                    {parseFloat(paquete.precio_total).toLocaleString("es-MX", {
-                      style: "currency",
-                      currency: "MXN",
-                    })}
+                    {formatPrecio(paquete.precio_total, moneda)}
+                    <span className="ml-2 text-xs opacity-90 font-semibold tracking-wide">({moneda})</span>
                   </Badge>
                 )}
                 {paquete.hotel && (
@@ -672,25 +680,19 @@ function PackageViewPage() {
                       <div className="space-y-4">
                         <div className="relative">
                           <span className="text-2xl font-bold text-gray-400 line-through">
-                            {(
-                              parseFloat(paquete.precio_total) +
-                              parseFloat(paquete.descuento)
-                            ).toLocaleString("es-MX", {
-                              style: "currency",
-                              currency: "MXN",
-                            })}
+                            {precioOriginalFormatted}
+                            {precioOriginalFormatted && (
+                              <span className="ml-2 text-xs text-gray-500 font-medium">({moneda})</span>
+                            )}
                           </span>
                           <div className="absolute -top-2 -right-2 w-4 h-4 bg-red-500 rounded-full animate-pulse"></div>
                         </div>
 
                         <div className="relative">
                           <span className="text-4xl lg:text-5xl font-bold bg-gradient-to-r from-emerald-600 to-green-600 bg-clip-text text-transparent">
-                            {parseFloat(paquete.precio_total).toLocaleString(
-                              "es-MX",
-                              {
-                                style: "currency",
-                                currency: "MXN",
-                              },
+                            {precioTotalFormatted}
+                            {precioTotalFormatted && (
+                              <span className="ml-2 text-sm text-emerald-700 font-semibold">{moneda}</span>
                             )}
                           </span>
                           <span className="block text-gray-500 font-medium mt-2">
@@ -701,25 +703,19 @@ function PackageViewPage() {
                         <div className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-red-500 to-pink-500 text-white rounded-full text-sm font-bold shadow-lg">
                           <FiAward className="w-4 h-4 mr-2" />
                           ¡Ahorras{" "}
-                          {parseFloat(paquete.descuento).toLocaleString(
-                            "es-MX",
-                            {
-                              style: "currency",
-                              currency: "MXN",
-                            },
+                          {formatPrecio(
+                            paquete.descuento,
+                            moneda
                           )}
-                          !
+                          <span className="ml-1">({moneda})</span>!
                         </div>
                       </div>
                     ) : (
                       <div className="space-y-4">
                         <span className="text-4xl lg:text-5xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                          {parseFloat(paquete.precio_total).toLocaleString(
-                            "es-MX",
-                            {
-                              style: "currency",
-                              currency: "MXN",
-                            },
+                          {precioTotalFormatted}
+                          {precioTotalFormatted && (
+                            <span className="ml-2 text-sm text-blue-700 font-semibold">{moneda}</span>
                           )}
                         </span>
                         <span className="block text-gray-500 font-medium">
@@ -744,10 +740,11 @@ function PackageViewPage() {
                         </h3>
                       </div>
                       <p className="text-3xl font-bold text-blue-700 mb-2">
-                        {parseFloat(paquete.anticipo).toLocaleString("es-MX", {
-                          style: "currency",
-                          currency: "MXN",
-                        })}
+                        {formatPrecio(
+                          paquete.anticipo,
+                          moneda
+                        )}
+                        <span className="ml-2 text-sm text-blue-700 font-semibold">{moneda}</span>
                       </p>
                       <p className="text-blue-600 text-sm">
                         Para asegurar tu reservación

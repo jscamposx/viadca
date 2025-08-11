@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { FiInfo, FiCheck, FiX, FiEye } from "react-icons/fi";
+import { formatPrecio, sanitizeMoneda } from "../../../utils/priceUtils";
 
 const PatchPreview = ({ patchPayload, onToggle }) => {
   const [isVisible, setIsVisible] = useState(false);
@@ -9,6 +10,11 @@ const PatchPreview = ({ patchPayload, onToggle }) => {
   if (changeCount === 0) {
     return null;
   }
+
+  // Determinar moneda a usar: si el patch incluye cambio de moneda, usarlo; si no, intentar mantener la actual
+  const monedaPatch = sanitizeMoneda(
+    patchPayload?.moneda || patchPayload?.currency || "MXN"
+  );
 
   const getFieldLabel = (fieldName) => {
     const labels = {
@@ -31,6 +37,7 @@ const PatchPreview = ({ patchPayload, onToggle }) => {
       mayoristasIds: "Mayoristas",
       imagenes: "Imágenes",
       hotel: "Hotel",
+      moneda: "Moneda",
     };
 
     return labels[fieldName] || fieldName;
@@ -61,16 +68,19 @@ const PatchPreview = ({ patchPayload, onToggle }) => {
       return `${value.length} mayorista${value.length !== 1 ? "s" : ""}`;
     }
 
+    if (fieldName === "moneda") {
+      return sanitizeMoneda(value);
+    }
+
     if (
       fieldName.includes("precio") ||
       fieldName === "anticipo" ||
       fieldName === "descuento"
     ) {
-      if (value === null || value === undefined) return "Sin especificar";
-      return new Intl.NumberFormat("es-MX", {
-        style: "currency",
-        currency: "MXN",
-      }).format(value);
+      if (value === null || value === undefined || value === "")
+        return "Sin especificar";
+      const formatted = formatPrecio(value, monedaPatch);
+      return formatted || "Sin especificar";
     }
 
     if (typeof value === "string" && value.length > 50) {

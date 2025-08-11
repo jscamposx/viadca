@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { FiTag, FiX, FiPercent, FiDollarSign, FiUsers } from "react-icons/fi";
 import { useMayoristas } from "../hooks/useMayoristas";
+import { sanitizeMoneda } from "../../../utils/priceUtils";
 
 const PackageForm = ({ formData, onFormChange }) => {
   const [showDiscount, setShowDiscount] = useState(!!formData.descuento);
@@ -15,6 +16,10 @@ const PackageForm = ({ formData, onFormChange }) => {
       formData: formData,
     });
   }, [mayoristas, mayoristasLoading, formData.mayoristasIds]);
+
+  // Moneda
+  const MONEDAS = ["MXN", "USD"];
+  const moneda = sanitizeMoneda(formData?.moneda || "MXN");
 
   const formatNumber = (value) => {
     if (!value) return "";
@@ -48,6 +53,11 @@ const PackageForm = ({ formData, onFormChange }) => {
     });
 
     onFormChange({ target: { name: "mayoristasIds", value: newIds } });
+  };
+
+  const handleMonedaChange = (e) => {
+    const value = sanitizeMoneda(e.target.value);
+    onFormChange({ target: { name: "moneda", value } });
   };
 
   return (
@@ -93,6 +103,25 @@ const PackageForm = ({ formData, onFormChange }) => {
             className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
             required
           />
+        </div>
+
+        {/* Selector de moneda */}
+        <div className="md:col-span-2">
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Moneda
+          </label>
+          <select
+            name="moneda"
+            value={moneda}
+            onChange={handleMonedaChange}
+            className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+          >
+            {MONEDAS.map((m) => (
+              <option key={m} value={m}>
+                {m}
+              </option>
+            ))}
+          </select>
         </div>
 
         <div>

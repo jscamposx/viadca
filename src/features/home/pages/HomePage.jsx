@@ -30,6 +30,7 @@ import { useAllPackages } from "../../package/hooks/useAllPackages";
 import OptimizedImage from "../../../components/ui/OptimizedImage";
 import { useAuth } from "../../../contexts/AuthContext";
 import { useLocation } from "react-router-dom";
+import { formatPrecio, sanitizeMoneda } from "../../../utils/priceUtils";
 
 const Home = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -415,11 +416,7 @@ const Home = () => {
                     {/* Badge de precio */}
                     <div className="absolute top-4 right-4">
                       <div className="bg-white/90 backdrop-blur-sm text-gray-800 font-bold px-3 py-2 rounded-xl shadow-lg">
-                        {parseFloat(paquete.precio_total).toLocaleString("es-MX", {
-                          style: "currency",
-                          currency: "MXN",
-                          minimumFractionDigits: 0,
-                        })}
+                        {formatPrecio(paquete.precio_total, sanitizeMoneda(paquete.moneda))}
                       </div>
                     </div>
 
@@ -538,7 +535,7 @@ const Home = () => {
                       </div>
                     )}
                     <div className="absolute top-3 right-3 text-sm bg-white/90 px-3 py-1 rounded-full shadow font-semibold">
-                      {parseFloat(paquete.precio_total).toLocaleString("es-MX", { style: "currency", currency: "MXN", minimumFractionDigits: 0 })}
+                      {formatPrecio(paquete.precio_total, sanitizeMoneda(paquete.moneda))}
                     </div>
                   </div>
                   <div className="p-6">

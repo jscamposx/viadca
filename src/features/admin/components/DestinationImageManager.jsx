@@ -8,12 +8,110 @@ import {
   FiStar,
   FiEye,
   FiEyeOff,
+  FiInfo,
 } from "react-icons/fi";
 import axios from "axios";
 import { fileToBase64 } from "../../../utils/imageUtils";
 import { cloudinaryService } from "../../../services/cloudinaryService";
 import CloudinaryImageUploader from "../../../components/ui/CloudinaryImageUploader";
 import OptimizedImage from "../../../components/ui/OptimizedImage";
+
+// Helper para extraer componentes de dirección de Google y construir jerarquía
+const extractLocationComponents = (addressComponents = []) => {
+  const get = (type) => {
+    const comp = addressComponents.find((c) => c.types?.includes(type));
+    return comp?.long_name || comp?.short_name || null;
+  };
+  // En MX a veces municipio puede venir como administrative_area_level_3 o level_2
+  const locality = get("locality") || get("sublocality") || null; // ciudad
+  const municipality = get("administrative_area_level_2") || get("administrative_area_level_3") || null; // municipio
+  const state = get("administrative_area_level_1") || null; // estado
+  const country = get("country") || null; // país
+
+  return { city: locality, municipality, state, country };
+};
+
+const buildPreciseQueries = ({ city, municipality, state, country }) => {
+  const queries = new Set();
+  const norm = (s) => (s || "").trim();
+  const isMX = /mexico|méxico/i.test(country || "");
+
+  const add = (q) => {
+    if (q && q.length > 0) queries.add(q);
+  };
+
+  // Variantes base más específicas primero
+  if (city && state && country) add(`${city}, ${state}, ${country}`);
+  if (city && municipality && state && country)
+    add(`${city}, ${municipality}, ${state}, ${country}`);
+  if (municipality && state && country) add(`${municipality}, ${state}, ${country}`);
+  if (city && state) add(`${city}, ${state}`);
+  if (city && country) add(`${city}, ${country}`);
+  if (state && country) add(`${state}, ${country}`);
+
+  // En México, agregar variantes explícitas con acento/sin acento
+  if (isMX) {
+    const mx = "México";
+    if (city && state) add(`${city}, ${state}, ${mx}`);
+    if (municipality && state) add(`${municipality}, ${state}, ${mx}`);
+    if (state) add(`${state}, ${mx}`);
+  }
+
+  // Palabras clave temáticas para turismo
+  const topics = [
+    "turismo",
+    "atracciones",
+    "lugares turísticos",
+    "paisajes",
+    "monumentos",
+    "arquitectura",
+    "centro histórico",
+    "vista panorámica",
+  ];
+
+  // Expandir combinando con tópicos
+  const expanded = new Set();
+  for (const base of queries) {
+    expanded.add(base); // incluir sin tópico
+    for (const t of topics) {
+      expanded.add(`${base} ${t}`);
+    }
+  }
+
+  // Filtrar nulos y normalizar
+  return Array.from(expanded)
+    .map((q) => norm(q))
+    .filter((q) => q.length > 0);
+};
+
+// Cache simple para resultados de geocodificación por lat,lng
+const geocodeCache = new Map();
+
+const geocodeLatLngToComponents = async (lat, lng) => {
+  const key = `${lat},${lng}`;
+  if (geocodeCache.has(key)) return geocodeCache.get(key);
+
+  if (!window.google?.maps?.Geocoder) return null;
+
+  const geocoder = new window.google.maps.Geocoder();
+  const result = await new Promise((resolve) => {
+    geocoder.geocode(
+      { location: { lat: Number(lat), lng: Number(lng) }, language: "es" },
+      (results, status) => {
+        if (status === "OK" && results && results.length > 0) {
+          resolve(results[0]);
+        } else {
+          resolve(null);
+        }
+      },
+    );
+  });
+
+  if (result) {
+    geocodeCache.set(key, result);
+  }
+  return result;
+};
 
 const Spinner = () => (
   <div className="flex flex-col items-center justify-center py-12 px-4">
@@ -90,6 +188,7 @@ const ImageTile = ({
 
     <div className="absolute top-3 right-3 z-20 opacity-0 group-hover:opacity-100 transition-all duration-200 transform scale-75 group-hover:scale-100">
       <button
+        type="button" // Evita submit accidental del formulario
         onClick={(e) => {
           e.stopPropagation();
           onRemove(image.id);
@@ -141,6 +240,7 @@ const DestinationImageManager = ({
   destination,
   onImagesChange,
   initialImages = [],
+  isEdit = false, // Nuevo prop para indicar modo edición
 }) => {
   const [images, setImages] = useState([]);
   const [status, setStatus] = useState("idle");
@@ -148,7 +248,6 @@ const DestinationImageManager = ({
   const [isDragging, setIsDragging] = useState(false);
   const [draggedIndex, setDraggedIndex] = useState(null);
   const [dragOverIndex, setDragOverIndex] = useState(null);
-  const [showAllImages, setShowAllImages] = useState(false);
   const [allAvailableImages, setAllAvailableImages] = useState([]);
   const [isInitialized, setIsInitialized] = useState(false);
 
@@ -173,12 +272,14 @@ const DestinationImageManager = ({
     return url;
   };
 
-  const fetchImagesFromPexels = useCallback(async (destinationName) => {
-    if (!destinationName) {
+  const fetchImagesFromPexels = useCallback(async (destinationInput) => {
+    const hasCoords = destinationInput && destinationInput.lat && destinationInput.lng;
+    const destinationName = typeof destinationInput === "string" ? destinationInput : destinationInput?.name;
+
+    if (!destinationName && !hasCoords) {
       setImages([]);
       setAllAvailableImages([]);
       setStatus("idle");
-      setShowAllImages(false);
       return;
     }
 
@@ -193,39 +294,66 @@ const DestinationImageManager = ({
     }
 
     try {
-      const searchQueries = [
-        `${destinationName} turismo lugares`,
-        `${destinationName} monumentos`,
-        `${destinationName} arquitectura`,
-        `${destinationName} paisajes`,
-        `${destinationName} atracciones turisticas`,
-      ];
+      // 1) Obtener componentes de ubicación con mayor precisión
+      let components = null;
+      if (hasCoords) {
+        const geoResult = await geocodeLatLngToComponents(
+          destinationInput.lat,
+          destinationInput.lng,
+        );
+        if (geoResult?.address_components) {
+          components = extractLocationComponents(geoResult.address_components);
+        }
+      }
 
-      const searchPromises = searchQueries.map((query) =>
+      // 2) Fallback: intentar parsear del nombre "Ciudad, Estado"
+      if (!components) {
+        const parts = (destinationName || "")
+          .split(",")
+          .map((p) => p.trim())
+          .filter(Boolean);
+        const city = parts[0] || null;
+        const state = parts[1] || null;
+        components = { city, state, municipality: null, country: null };
+      }
+
+      // 3) Construir queries precisas
+      const preciseQueries = buildPreciseQueries(components);
+
+      // Agregar algunos refuerzos simples basados en destinationName
+      const reinforcement = destinationName
+        ? [
+            `${destinationName} turismo`,
+            `${destinationName} atracciones`,
+          ]
+        : [];
+
+      const allQueries = Array.from(new Set([...preciseQueries, ...reinforcement]));
+
+      // 4) Ejecutar llamadas a Pexels con límite y orientación
+      const axiosCalls = allQueries.map((query) =>
         axios.get(`https://api.pexels.com/v1/search`, {
-          headers: {
-            Authorization: PEXELS_API_KEY,
-          },
+          headers: { Authorization: PEXELS_API_KEY },
           params: {
-            query: query,
+            query,
             per_page: 6,
             orientation: "landscape",
+            locale: "es-ES",
           },
         }),
       );
 
-      const responses = await Promise.all(searchPromises);
+      const responses = await Promise.allSettled(axiosCalls);
 
       const allPhotos = [];
-      responses.forEach((response) => {
-        if (response.data.photos) {
-          allPhotos.push(...response.data.photos);
+      responses.forEach((res) => {
+        if (res.status === "fulfilled" && res.value?.data?.photos) {
+          allPhotos.push(...res.value.data.photos);
         }
       });
 
       const uniquePhotos = allPhotos.filter(
-        (photo, index, self) =>
-          index === self.findIndex((p) => p.id === photo.id),
+        (photo, index, self) => index === self.findIndex((p) => p.id === photo.id),
       );
 
       if (uniquePhotos.length > 0) {
@@ -233,14 +361,13 @@ const DestinationImageManager = ({
           id: `pexels-${photo.id}`,
           url: optimizePexelsUrl(photo.src.large),
           isUploaded: false,
-          tipo: "url", // Marcar explícitamente como URL externa
-          source: "pexels", // Identificar la fuente para evitar subir a Cloudinary
+          tipo: "url",
+          source: "pexels",
         }));
 
         if (isInitialized && images.length > 0) {
           const newUniquePhotos = photoData.filter(
-            (newPhoto) =>
-              !images.some((existingImg) => existingImg.url === newPhoto.url),
+            (newPhoto) => !images.some((existingImg) => existingImg.url === newPhoto.url),
           );
 
           setAllAvailableImages((prev) => [...prev, ...newUniquePhotos]);
@@ -263,7 +390,7 @@ const DestinationImageManager = ({
       setError("Error al buscar imágenes en Pexels.");
       setStatus("error");
     }
-  }, []);
+  }, [images.length, isInitialized]);
 
   useEffect(() => {
     if (
@@ -271,7 +398,7 @@ const DestinationImageManager = ({
       (!initialImages || initialImages.length === 0) &&
       !isInitialized
     ) {
-      fetchImagesFromPexels(destination.name);
+      fetchImagesFromPexels(destination);
     } else if (
       !destination?.name &&
       (!initialImages || initialImages.length === 0)
@@ -279,9 +406,8 @@ const DestinationImageManager = ({
       setImages([]);
       setAllAvailableImages([]);
       setStatus("idle");
-      setShowAllImages(false);
     }
-  }, [destination?.name, initialImages?.length, isInitialized]);
+  }, [destination?.name, initialImages?.length, isInitialized, fetchImagesFromPexels, destination?.lat, destination?.lng]);
 
   const prevImagesRef = useRef();
   useEffect(() => {
@@ -359,14 +485,12 @@ const DestinationImageManager = ({
 
   const handleRemoveImage = (id) => {
     const newImages = images.filter((img) => img.id !== id);
-    const newAllImages = allAvailableImages.filter((img) => img.id !== id);
-
+    // No eliminamos de allAvailableImages para que no reaparezca al agregar más
+    // Solo quitamos de la vista actual. Si queremos también removerlo de la lista total:
+    // Mantendremos la decisión de removerlo también del catálogo para que no vuelva a aparecer.
+    const newAll = allAvailableImages.filter((img) => img.id !== id);
     setImages(newImages);
-    setAllAvailableImages(newAllImages);
-
-    if (showAllImages && newAllImages.length <= 10) {
-      setShowAllImages(false);
-    }
+    setAllAvailableImages(newAll);
   };
 
   const handleDragStart = (e, index) => {
@@ -456,16 +580,14 @@ const DestinationImageManager = ({
     }
   };
 
-  const handleShowMoreImages = () => {
-    if (allAvailableImages.length > images.length) {
-      setImages(allAvailableImages);
-      setShowAllImages(true);
-    }
-  };
-
-  const handleShowLessImages = () => {
-    setImages(allAvailableImages.slice(0, 10));
-    setShowAllImages(false);
+  // Reemplazo de lógica de "ver más" por carga incremental
+  const handleAddMoreImages = () => {
+    const remaining = allAvailableImages.filter(
+      (candidate) => !images.some((shown) => shown.id === candidate.id),
+    );
+    if (remaining.length === 0) return;
+    const batch = remaining.slice(0, 10);
+    setImages((prev) => [...prev, ...batch]);
   };
 
   return (
@@ -493,7 +615,7 @@ const DestinationImageManager = ({
           </div>
         </div>
       )}
-      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-2 sm:mb-4">
         <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
           <label className="group relative bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-xl shadow-lg cursor-pointer transition-all duration-200 hover:shadow-xl hover:scale-105 flex items-center justify-center gap-2 w-full sm:w-auto">
             <FiUpload className="w-4 h-4" />
@@ -510,7 +632,8 @@ const DestinationImageManager = ({
           {/* Botón para buscar imágenes de Pexels cuando hay imágenes iniciales */}
           {isInitialized && destination?.name && (
             <button
-              onClick={() => fetchImagesFromPexels(destination.name)}
+              type="button" // Evita submit accidental
+              onClick={() => fetchImagesFromPexels(destination)}
               className="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-3 px-6 rounded-xl shadow-lg transition-all duration-200 hover:shadow-xl hover:scale-105 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 w-full sm:w-auto"
               disabled={status === "loading"}
             >
@@ -646,31 +769,38 @@ const DestinationImageManager = ({
             ))}
           </div>
 
-          {!showAllImages &&
-            allAvailableImages.length > images.length &&
-            images.length >= 10 && (
-              <div className="flex justify-center">
-                <button
-                  onClick={handleShowMoreImages}
-                  className="px-6 py-3 bg-slate-600 hover:bg-slate-700 text-white rounded-xl shadow-lg font-medium transition-all duration-200 hover:shadow-xl hover:scale-105 flex items-center gap-2"
-                >
-                  <FiEye className="w-4 h-4" />
-                  Ver más imágenes ({allAvailableImages.length - 10} restantes)
-                </button>
-              </div>
-            )}
+          {/* Botón incremental */}
+          {(() => {
+            const remainingCount = allAvailableImages.filter(
+              (candidate) => !images.some((shown) => shown.id === candidate.id),
+            ).length;
+            if (remainingCount > 0) {
+              const nextBatch = remainingCount >= 10 ? 10 : remainingCount;
+              return (
+                <div className="flex justify-center">
+                  <button
+                    type="button" // Evita submit al agregar imágenes
+                    onClick={handleAddMoreImages}
+                    className="px-6 py-3 bg-slate-600 hover:bg-slate-700 text-white rounded-xl shadow-lg font-medium transition-all duration-200 hover:shadow-xl hover:scale-105 flex items-center gap-2"
+                  >
+                    <FiEye className="w-4 h-4" />
+                    Agregar {nextBatch} imagen{nextBatch !== 1 ? "es" : ""} más ({remainingCount} restante{remainingCount !== 1 ? "s" : ""})
+                  </button>
+                </div>
+              );
+            }
+            return null;
+          })()}
+        </div>
+      )}
 
-          {showAllImages && (
-            <div className="flex justify-center">
-              <button
-                onClick={handleShowLessImages}
-                className="px-6 py-3 bg-slate-300 hover:bg-slate-400 text-slate-800 rounded-xl shadow-lg font-medium transition-all duration-200 hover:shadow-xl hover:scale-105 flex items-center gap-2"
-              >
-                <FiEyeOff className="w-4 h-4" />
-                Mostrar menos imágenes
-              </button>
-            </div>
-          )}
+      {/* Mensaje informativo en modo edición */}
+      {isEdit && (
+        <div className="mb-4 -mt-1 text-xs sm:text-sm flex items-start gap-2 bg-amber-50 border border-amber-200 text-amber-700 px-3 py-2 rounded-lg">
+          <FiInfo className="w-4 h-4 mt-0.5 flex-shrink-0" />
+          <span>
+            Puedes generar o subir más imágenes. Los cambios solo se guardarán al pulsar <strong>Actualizar Paquete</strong>.
+          </span>
         </div>
       )}
     </div>

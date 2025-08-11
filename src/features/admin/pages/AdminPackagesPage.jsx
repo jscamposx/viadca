@@ -21,7 +21,8 @@ import {
   FiDollarSign,
   FiActivity,
   FiPackage,
-  FiCheckCircle
+  FiCheckCircle,
+  FiRefreshCw
 } from "react-icons/fi";
 import api from "../../../api";
 import { useNotification } from "./AdminLayout";
@@ -29,6 +30,7 @@ import Pagination from "../../../components/ui/Pagination";
 import OptimizedImage from "../../../components/ui/OptimizedImage";
 import { getImageUrl } from "../../../utils/imageUtils";
 import ConfirmDialog from "../components/ConfirmDialog";
+import { formatPrecio, sanitizeMoneda } from "../../../utils/priceUtils";
 
 const AdminPaquetes = () => {
   const location = useLocation();
@@ -68,6 +70,7 @@ const AdminPaquetes = () => {
     packageName: "",
   });
   const { addNotification } = useNotification();
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
   // Nuevo: bandera de carga y valores seguros para evitar saltos de layout y LCP tardío
   const isLoading = loading;
@@ -144,6 +147,18 @@ const AdminPaquetes = () => {
     } catch (error) {
       console.error("Error al exportar a Excel:", error);
       addNotification("No ha sido posible exportar el archivo.", "error");
+    }
+  };
+
+  const handleRefresh = async () => {
+    try {
+      setIsRefreshing(true);
+      await refetch();
+      addNotification("Lista de paquetes actualizada", "success");
+    } catch (e) {
+      addNotification("No se pudo actualizar la lista", "error");
+    } finally {
+      setIsRefreshing(false);
     }
   };
 
@@ -328,13 +343,32 @@ const AdminPaquetes = () => {
               )}
             </div>
 
-            <Link
-              to="/admin/paquetes/nuevo"
-              className="w-full sm:w-auto lg:w-auto flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-purple-700 hover:from-blue-700 hover:to-purple-800 text-white font-semibold py-3 px-5 rounded-xl shadow-lg transition-all duration-300 ease-in-out transform hover:-translate-y-0.5 hover:shadow-xl text-sm sm:text-base whitespace-nowrap"
-            >
-              <FiPlus className="w-4 h-4 sm:w-5 sm:h-5" />
-              <span>Nuevo Paquete</span>
-            </Link>
+            {/* Acciones: Actualizar + Nuevo Paquete */}
+            <div className="w-full sm:w-auto lg:w-auto flex items-center justify-center lg:justify-end gap-2">
+              <button
+                type="button"
+                onClick={handleRefresh}
+                disabled={isRefreshing || isLoading}
+                className={`flex items-center justify-center gap-2 border font-semibold py-3 px-4 rounded-xl shadow-sm transition-all duration-300 text-sm sm:text-base whitespace-nowrap ${
+                  isRefreshing || isLoading
+                    ? "bg-gray-100 text-gray-400 border-gray-200"
+                    : "bg-white hover:bg-gray-50 text-gray-700 border-gray-200"
+                }`}
+                aria-label="Actualizar lista de paquetes"
+                title="Actualizar"
+             >
+                <FiRefreshCw className={`w-4 h-4 sm:w-5 sm:h-5 ${isRefreshing ? "animate-spin" : ""}`} />
+                <span>Actualizar</span>
+              </button>
+
+              <Link
+                to="/admin/paquetes/nuevo"
+                className="w-full sm:w-auto lg:w-auto flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-purple-700 hover:from-blue-700 hover:to-purple-800 text-white font-semibold py-3 px-5 rounded-xl shadow-lg transition-all duration-300 ease-in-out transform hover:-translate-y-0.5 hover:shadow-xl text-sm sm:text-base whitespace-nowrap"
+              >
+                <FiPlus className="w-4 h-4 sm:w-5 sm:h-5" />
+                <span>Nuevo Paquete</span>
+              </Link>
+            </div>
           </div>
         </div>
 
@@ -959,14 +993,7 @@ const AdminPaquetes = () => {
                     {/* Badge de precio */}
                     <div className="absolute top-2 sm:top-4 right-2 sm:right-4">
                       <div className="bg-gradient-to-r from-blue-600 to-indigo-700 text-white text-xs sm:text-sm font-bold px-2 sm:px-4 py-1 sm:py-2 rounded-lg sm:rounded-2xl shadow-xl backdrop-blur-sm border border-white/20">
-                        {parseFloat(paquete.precio_total).toLocaleString(
-                          "es-MX",
-                          {
-                            style: "currency",
-                            currency: "MXN",
-                            minimumFractionDigits: 0,
-                          },
-                        )}
+                        {formatPrecio(paquete?.precio_total, sanitizeMoneda(paquete?.moneda))}
                       </div>
                     </div>
 

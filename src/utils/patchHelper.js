@@ -1,4 +1,5 @@
 import { normalizeImageUrl, isNewImage } from "./imageUtils.js";
+import { sanitizeMoneda } from "./priceUtils";
 
 export const getDifferences = (original, current, excludeFields = []) => {
   const differences = {};
@@ -129,6 +130,8 @@ const normalizePackageData = (data) => {
     notas: data.notas || null,
     activo: Boolean(data.activo),
     itinerario_texto: itinerarioTexto,
+    // Nuevo: normalizar moneda
+    moneda: sanitizeMoneda(data.moneda),
 
     origen: data.origen || "",
     origen_lat: parseFloat(data.origen_lat) || null,

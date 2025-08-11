@@ -5,6 +5,7 @@ import {
   FiCalendar,
   FiTrendingUp,
 } from "react-icons/fi";
+import { formatPrecio, sanitizeMoneda } from "../../../utils/priceUtils";
 
 const InfoCard = ({
   icon,
@@ -64,13 +65,7 @@ const StatBadge = ({ icon, value, label }) => (
 );
 
 const PackageInfo = ({ paquete }) => {
-  const formatPrice = (price) => {
-    return parseFloat(price).toLocaleString("es-MX", {
-      style: "currency",
-      currency: "MXN",
-      minimumFractionDigits: 0,
-    });
-  };
+  const moneda = sanitizeMoneda(paquete.moneda);
 
   const formatDate = (dateString) => {
     return new Date(dateString).toLocaleDateString("es-MX", {
@@ -80,7 +75,11 @@ const PackageInfo = ({ paquete }) => {
     });
   };
 
-  const pricePerDay = formatPrice(paquete.precio_total / paquete.duracion_dias);
+  const pricePerDay = formatPrecio(
+    (paquete.precio_total || 0) / (paquete.duracion_dias || 1),
+    moneda
+  );
+  const precioTotalFormatted = formatPrecio(paquete?.precio_total, moneda);
 
   return (
     <div className="space-y-8">
@@ -98,7 +97,7 @@ const PackageInfo = ({ paquete }) => {
           icon={<FiCalendar className="w-7 h-7" />}
           title="Duración Total"
           value={`${paquete.duracion_dias} días`}
-          subtitle={`${paquete.duracion_dias - 1} noches de aventura`}
+          subtitle={`${(paquete.duracion_dias || 1) - 1} noches de aventura`}
           colorClass="hover:bg-blue-50/30"
           gradientClass="bg-gradient-to-br from-blue-500 to-cyan-600"
           index={0}
@@ -107,8 +106,27 @@ const PackageInfo = ({ paquete }) => {
         <InfoCard
           icon={<FiDollarSign className="w-7 h-7" />}
           title="Precio Total"
-          value={formatPrice(paquete.precio_total)}
-          subtitle={`${pricePerDay} por día`}
+          value={
+            <>
+              <span>{precioTotalFormatted}</span>
+              {precioTotalFormatted && (
+                <span className="ml-2 text-xs text-amber-700 font-semibold">
+                  ({moneda})
+                </span>
+              )}
+            </>
+          }
+          subtitle={
+            <>
+              <span>{pricePerDay}</span>
+              {pricePerDay && (
+                <span className="ml-1 text-xs text-amber-700/80 font-semibold">
+                  ({moneda})
+                </span>
+              )}
+              <span className="ml-1">por día</span>
+            </>
+          }
           colorClass="hover:bg-amber-50/30"
           gradientClass="bg-gradient-to-br from-amber-500 to-orange-600"
           index={1}
