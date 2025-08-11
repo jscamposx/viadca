@@ -63,6 +63,8 @@ const PapeleraPage = () => {
   const [typeFilter, setTypeFilter] = useState("todos"); // todos, paquetes, mayoristas, usuarios
   const [sortConfig, setSortConfig] = useState({ key: "eliminadoEn", direction: "desc" });
   const [isFiltersOpen, setIsFiltersOpen] = useState(false);
+  // Nuevo: control de menú de orden
+  const [isSortMenuOpen, setIsSortMenuOpen] = useState(false);
   
   // Estados de paginación
   const [currentPage, setCurrentPage] = useState(1);
@@ -328,10 +330,11 @@ const PapeleraPage = () => {
 
               <div className="flex flex-col gap-3">
                 {/* Controles móviles */}
-                <div className="md:hidden">
+                {/* Igual que en AdminMayoristasPage: Filtros y Ordenar */}
+                <div className="grid grid-cols-2 gap-2 lg:hidden">
                   <button 
                     onClick={() => setIsFiltersOpen(!isFiltersOpen)}
-                    className={`w-full flex items-center justify-center gap-2 font-medium py-3 px-3 rounded-lg transition text-xs ${
+                    className={`flex items-center justify-center gap-2 font-medium py-3 px-3 rounded-lg transition text-xs ${
                       isFiltersOpen
                         ? 'bg-blue-100 text-blue-700 border border-blue-200'
                         : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
@@ -341,10 +344,26 @@ const PapeleraPage = () => {
                     <FiFilter className="w-4 h-4" />
                     <span>Filtros</span>
                   </button>
+
+                  <button
+                    onClick={() => setIsSortMenuOpen(!isSortMenuOpen)}
+                    className={`flex items-center justify-center gap-2 py-3 px-3 rounded-lg font-medium transition text-xs ${
+                      isSortMenuOpen
+                        ? 'bg-blue-100 text-blue-700 border border-blue-200'
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    }`}
+                  >
+                    {sortConfig.direction === 'asc' ? (
+                      <FiArrowUp className="w-4 h-4" />
+                    ) : (
+                      <FiArrowDown className="w-4 h-4" />
+                    )}
+                    <span>Ordenar</span>
+                  </button>
                 </div>
 
                 {/* Estadísticas móviles (chips) */}
-                <div className="grid grid-cols-2 gap-3 md:hidden">
+                <div className="grid grid-cols-2 gap-3 lg:hidden">
                   <div className="rounded-xl p-3 bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-md" aria-label="Paquetes">
                     <div className="flex items-center gap-2">
                       <FiPackage className="w-4 h-4 opacity-95" />
@@ -380,46 +399,131 @@ const PapeleraPage = () => {
                   </div>
                 </div>
 
-                {/* Controles desktop */}
-                <div className="hidden md:flex md:items-center md:justify-between md:flex-col lg:flex-row gap-3 lg:gap-0">
-                  <div className="w-full lg:w-auto">
+                {/* Controles desktop + chips alineados como en AdminMayoristasPage */}
+                <div className="hidden lg:flex lg:items-center lg:justify-between">
+                  <div className="grid grid-cols-2 gap-2">
                     <button 
                       onClick={() => setIsFiltersOpen(!isFiltersOpen)}
-                      className={`flex items-center justify-center gap-2 font-medium py-3 px-3 lg:px-4 rounded-xl transition text-xs lg:text-sm ${
+                      className={`flex items-center justify-center gap-2 font-medium py-3 px-4 rounded-xl transition text-sm ${
                         isFiltersOpen
                           ? 'bg-blue-100 text-blue-700 border border-blue-200'
                           : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
                       }`}
                       disabled={isLoading}
                     >
-                      <FiFilter className="w-3 h-3 lg:w-4 lg:h-4" />
-                      <span className="hidden lg:inline">Filtros avanzados</span>
-                      <span className="lg:hidden">Filtros</span>
+                      <FiFilter className="w-4 h-4" />
+                      <span>Filtros avanzados</span>
+                    </button>
+
+                    <button
+                      onClick={() => setIsSortMenuOpen(!isSortMenuOpen)}
+                      className={`flex items-center justify-center gap-2 py-3 px-4 rounded-xl font-medium transition text-sm ${
+                        isSortMenuOpen
+                          ? 'bg-blue-100 text-blue-700 border border-blue-200'
+                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                      }`}
+                    >
+                      {sortConfig.direction === 'asc' ? (
+                        <FiArrowUp className="w-4 h-4" />
+                      ) : (
+                        <FiArrowDown className="w-4 h-4" />
+                      )}
+                      <span>Ordenar</span>
                     </button>
                   </div>
 
-                  <div className="grid grid-cols-3 gap-2 lg:gap-3">
-                    <div className="px-3 lg:px-4 py-2.5 bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-xl shadow-md text-center">
-                      <p className="text-[10px] lg:text-xs opacity-90">Paquetes</p>
-                      <p className="text-base lg:text-lg font-bold tabular-nums">
-                        {isLoading ? <span className="inline-block h-4 w-8 bg-white/40 rounded animate-pulse" /> : safeStats.totalPaquetes}
-                      </p>
+                  <div className="flex gap-3">
+                    <div className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white py-2.5 px-4 rounded-xl font-medium text-sm flex items-center gap-2 shadow-md">
+                      <FiPackage className="w-4 h-4" />
+                      <span className="font-bold">
+                        {isLoading ? (
+                          <span className="inline-block h-4 w-6 bg-white/40 rounded animate-pulse" />
+                        ) : (
+                          safeStats.totalPaquetes
+                        )}
+                      </span>
+                      <span>paquetes</span>
                     </div>
-                    <div className="px-3 lg:px-4 py-2.5 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-xl shadow-md text-center">
-                      <p className="text-[10px] lg:text-xs opacity-90">Mayoristas</p>
-                      <p className="text-base lg:text-lg font-bold tabular-nums">
-                        {isLoading ? <span className="inline-block h-4 w-8 bg-white/40 rounded animate-pulse" /> : safeStats.totalMayoristas}
-                      </p>
+
+                    <div className="bg-gradient-to-r from-green-500 to-emerald-600 text-white py-2.5 px-4 rounded-xl font-medium text-sm flex items-center gap-2 shadow-md">
+                      <FiUsers className="w-4 h-4" />
+                      <span className="font-bold">
+                        {isLoading ? (
+                          <span className="inline-block h-4 w-6 bg-white/40 rounded animate-pulse" />
+                        ) : (
+                          safeStats.totalMayoristas
+                        )}
+                      </span>
+                      <span>mayoristas</span>
                     </div>
-                    <div className="px-3 lg:px-4 py-2.5 bg-gradient-to-r from-yellow-500 to-orange-600 text-white rounded-xl shadow-md text-center">
-                      <p className="text-[10px] lg:text-xs opacity-90">Usuarios</p>
-                      <p className="text-base lg:text-lg font-bold tabular-nums">
-                        {isLoading ? <span className="inline-block h-4 w-8 bg-white/40 rounded animate-pulse" /> : safeStats.totalUsuarios}
-                      </p>
+
+                    <div className="bg-gradient-to-r from-yellow-500 to-orange-600 text-white py-2.5 px-4 rounded-xl font-medium text-sm flex items-center gap-2 shadow-md">
+                      <FiUser className="w-4 h-4" />
+                      <span className="font-bold">
+                        {isLoading ? (
+                          <span className="inline-block h-4 w-6 bg-white/40 rounded animate-pulse" />
+                        ) : (
+                          safeStats.totalUsuarios
+                        )}
+                      </span>
+                      <span>usuarios</span>
                     </div>
                   </div>
                 </div>
               </div>
+
+              {/* Menú de ordenamiento (como en AdminMayoristasPage) */}
+              {isSortMenuOpen && (
+                <div className="mt-3 sm:mt-4 p-3 sm:p-4 bg-gray-50 rounded-lg sm:rounded-xl">
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                    <button
+                      className={`px-3 py-2.5 rounded-lg font-medium transition flex items-center justify-center gap-2 text-sm ${
+                        sortConfig.key === 'eliminadoEn'
+                          ? 'bg-blue-100 text-blue-700'
+                          : 'bg-white text-gray-700 hover:bg-gray-100'
+                      }`}
+                      onClick={() => handleSort('eliminadoEn')}
+                    >
+                      <span>Fecha de eliminación</span>
+                      {sortConfig.key === 'eliminadoEn' && (sortConfig.direction === 'asc' ? (
+                        <FiArrowUp className="w-3 h-3" />
+                      ) : (
+                        <FiArrowDown className="w-3 h-3" />
+                      ))}
+                    </button>
+                    <button
+                      className={`px-3 py-2.5 rounded-lg font-medium transition flex items-center justify-center gap-2 text-sm ${
+                        sortConfig.key === 'name'
+                          ? 'bg-blue-100 text-blue-700'
+                          : 'bg-white text-gray-700 hover:bg-gray-100'
+                      }`}
+                      onClick={() => handleSort('name')}
+                    >
+                      <span>Nombre</span>
+                      {sortConfig.key === 'name' && (sortConfig.direction === 'asc' ? (
+                        <FiArrowUp className="w-3 h-3" />
+                      ) : (
+                        <FiArrowDown className="w-3 h-3" />
+                      ))}
+                    </button>
+                    <button
+                      className={`px-3 py-2.5 rounded-lg font-medium transition flex items-center justify-center gap-2 text-sm ${
+                        sortConfig.key === 'type'
+                          ? 'bg-blue-100 text-blue-700'
+                          : 'bg-white text-gray-700 hover:bg-gray-100'
+                      }`}
+                      onClick={() => handleSort('type')}
+                    >
+                      <span>Tipo</span>
+                      {sortConfig.key === 'type' && (sortConfig.direction === 'asc' ? (
+                        <FiArrowUp className="w-3 h-3" />
+                      ) : (
+                        <FiArrowDown className="w-3 h-3" />
+                      ))}
+                    </button>
+                  </div>
+                </div>
+              )}
 
               {/* Filtros (panel desplegable) */}
               {isFiltersOpen && (
@@ -487,12 +591,12 @@ const PapeleraPage = () => {
                       ) : (
                         <>
                           <span className="font-semibold text-blue-600">
-                            {getFilteredItems().length}
+                            {filteredItems.length}
                           </span>
                           <span>
                             {" "}
-                            elemento{getFilteredItems().length !== 1 ? "s" : ""}{" "}
-                            encontrado{getFilteredItems().length !== 1 ? "s" : ""}
+                            elemento{filteredItems.length !== 1 ? "s" : ""}{" "}
+                            encontrado{filteredItems.length !== 1 ? "s" : ""}
                           </span>
                           <span className="text-gray-500 ml-2">
                             de {getAllItems().length} total

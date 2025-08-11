@@ -344,6 +344,8 @@ const AdminMayoristasPage = () => {
                 </div>
               </div>
             </div>
+
+            {/* Filtros Rápidos (se removió de aquí para respetar la sección separada) */}
           </div>
 
           {isSortMenuOpen && (
@@ -471,6 +473,66 @@ const AdminMayoristasPage = () => {
             </div>
           )}
         </div>
+
+        {/* Filtros Rápidos - sección separada, como en el diseño de ejemplo */}
+        <section
+          className="bg-gradient-to-r from-white via-gray-50 to-white rounded-xl sm:rounded-2xl shadow-lg border border-gray-100 p-3 sm:p-4 lg:p-5 mb-4 sm:mb-6"
+          aria-labelledby="filtros-rapidos-mayoristas"
+        >
+          <div className="space-y-3 sm:space-y-4">
+            <div className="flex items-center justify-between gap-2 sm:gap-3 flex-wrap">
+              <div className="flex items-center gap-2 sm:gap-3">
+                <div className="w-1 h-4 sm:h-6 bg-gradient-to-b from-purple-500 to-indigo-600 rounded-full"></div>
+                <h2 id="filtros-rapidos-mayoristas" className="text-xs sm:text-sm font-semibold text-gray-800">
+                  Filtros Rápidos
+                </h2>
+              </div>
+            </div>
+
+            <div
+              className="flex flex-col sm:flex-row flex-wrap gap-2 sm:gap-3"
+              role="group"
+              aria-labelledby="filtros-rapidos-mayoristas"
+            >
+              <button
+                aria-pressed={tipoFilter === ""}
+                aria-label="Mostrar todos los mayoristas sin filtros"
+                onClick={() => setTipoFilter("")}
+                className={`group relative px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg sm:rounded-xl text-xs sm:text-sm font-medium transition-all duration-200 ${
+                  tipoFilter === ""
+                    ? "bg-gradient-to-r from-purple-500 to-indigo-600 text-white shadow-lg"
+                    : "bg-white text-gray-600 hover:bg-gray-50 border border-gray-200"
+                }`}
+              >
+                <div className="flex items-center justify-center gap-2">
+                  <FiUsers className="w-3 h-3 sm:w-4 sm:h-4" />
+                  <span className="hidden sm:inline">Todos los Mayoristas</span>
+                  <span className="sm:hidden">Todos</span>
+                </div>
+              </button>
+
+              {tiposUnicos.map((tipo) => (
+                <button
+                  key={tipo}
+                  aria-pressed={tipoFilter === tipo}
+                  aria-label={`Mostrar solo ${tipo}`}
+                  onClick={() => setTipoFilter(tipo)}
+                  className={`group relative px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg sm:rounded-xl text-xs sm:text-sm font-medium transition-all duration-200 ${
+                    tipoFilter === tipo
+                      ? "bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-lg"
+                      : "bg-white text-gray-600 hover:bg-blue-50 hover:text-blue-700 border border-gray-200 hover:border-blue-200"
+                  }`}
+                >
+                  <div className="flex items-center justify-center gap-2">
+                    <FiTag className="w-3 h-3 sm:w-4 sm:h-4" />
+                    <span className="hidden sm:inline">{tipo}</span>
+                    <span className="sm:hidden truncate max-w-[70px]">{tipo}</span>
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
+        </section>
 
         {/* Lista / Skeleton / Vacío */}
         {isInitialLoading ? (

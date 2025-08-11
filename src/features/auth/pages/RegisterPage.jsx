@@ -21,7 +21,7 @@ const RegisterPage = () => {
     correo: '',
     // Campos opcionales soportados por backend
     nombre: '',
-    nombre_completo: '',
+    // eliminado nombre_completo
     contrasena: '',
     confirmarContrasena: ''
   });
@@ -96,12 +96,10 @@ const RegisterPage = () => {
     setMessage('');
 
     try {
-      // Construir payload: incluir solo presentes y priorizar nombre_completo sobre nombre
-      const { confirmarContrasena, nombre, nombre_completo, usuario, correo, contrasena } = formData;
+      // Construir payload: incluir solo presentes (nombre opcional)
+      const { confirmarContrasena, nombre, usuario, correo, contrasena } = formData;
       const dataToSend = { usuario, correo, contrasena };
-      if (nombre_completo && String(nombre_completo).trim() !== '') {
-        dataToSend.nombre_completo = String(nombre_completo).trim();
-      } else if (nombre && String(nombre).trim() !== '') {
+      if (nombre && String(nombre).trim() !== '') {
         dataToSend.nombre = String(nombre).trim();
       }
 
@@ -250,31 +248,10 @@ const RegisterPage = () => {
                 value={formData.nombre}
                 onChange={handleInputChange}
                 className="w-full px-4 py-3 border-2 rounded-xl focus:ring-4 focus:ring-green-500/30 focus:border-green-500 transition-all duration-300 border-gray-200 bg-gray-50 hover:bg-white hover:border-gray-300"
-                placeholder="Ej: Juan"
-                disabled={isLoading}
-              />
-              <p className="text-xs text-gray-500 mt-1">Puedes dejarlo vacío o usar "Nombre completo" abajo.</p>
-            </div>
-
-            {/* Campo Nombre completo (alternativa) */}
-            <div>
-              <label htmlFor="nombre_completo" className="block text-sm font-semibold text-gray-700 mb-2">
-                <div className="flex items-center gap-2">
-                  <FiUser className="w-4 h-4 text-green-600" />
-                  <span>Nombre completo (alternativa)</span>
-                </div>
-              </label>
-              <input
-                type="text"
-                id="nombre_completo"
-                name="nombre_completo"
-                value={formData.nombre_completo}
-                onChange={handleInputChange}
-                className="w-full px-4 py-3 border-2 rounded-xl focus:ring-4 focus:ring-green-500/30 focus:border-green-500 transition-all duration-300 border-gray-200 bg-gray-50 hover:bg-white hover:border-gray-300"
                 placeholder="Ej: Juan Pérez"
                 disabled={isLoading}
               />
-              <p className="text-xs text-gray-500 mt-1">Alternativa al campo Nombre. Opcional.</p>
+              <p className="text-xs text-gray-500 mt-1">Este campo es opcional.</p>
             </div>
 
             {/* Campo Contraseña */}
