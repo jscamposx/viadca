@@ -992,8 +992,11 @@ const AdminPaquetes = () => {
 
                     {/* Badge de precio */}
                     <div className="absolute top-2 sm:top-4 right-2 sm:right-4">
-                      <div className="bg-gradient-to-r from-blue-600 to-indigo-700 text-white text-xs sm:text-sm font-bold px-2 sm:px-4 py-1 sm:py-2 rounded-lg sm:rounded-2xl shadow-xl backdrop-blur-sm border border-white/20">
-                        {formatPrecio(paquete?.precio_total, sanitizeMoneda(paquete?.moneda))}
+                      <div className="bg-gradient-to-r from-blue-600 to-indigo-700 text-white text-xs sm:text-sm font-bold px-2 sm:px-4 py-1 sm:py-2 rounded-lg sm:rounded-2xl shadow-xl backdrop-blur-sm border border-white/20 flex items-center gap-1" title={`Moneda: ${sanitizeMoneda(paquete?.moneda)}`}>
+                        <span>{formatPrecio(paquete?.precio_total, sanitizeMoneda(paquete?.moneda))}</span>
+                        <span className="ml-0.5 text-[9px] sm:text-[10px] leading-none tracking-wide bg-white/15 px-1 py-0.5 rounded uppercase">
+                          {sanitizeMoneda(paquete?.moneda)}
+                        </span>
                       </div>
                     </div>
 
@@ -1038,7 +1041,7 @@ const AdminPaquetes = () => {
                     {/* Contenido variable que puede crecer */}
                     <div className="flex-1">
                       {/* Información en cards pequeñas */}
-                      <div className="grid grid-cols-3 gap-1.5 sm:gap-2 mb-3 sm:mb-4">
+                      <div className="grid grid-cols-3 sm:grid-cols-4 gap-1.5 sm:gap-2 mb-3 sm:mb-4">
                         {paquete.fecha_inicio && (
                           <div className="bg-blue-50 hover:bg-blue-100 rounded-lg sm:rounded-xl p-2 sm:p-3 text-center transition-all duration-200 hover:shadow-md hover:scale-105 cursor-pointer">
                             <FiCalendar className="w-3 h-3 sm:w-4 sm:h-4 text-blue-500 mx-auto mb-1 transition-transform duration-200" />
@@ -1073,6 +1076,14 @@ const AdminPaquetes = () => {
                             </div>
                           </div>
                         )}
+
+                        {/* Moneda */}
+                        <div className="bg-amber-50 hover:bg-amber-100 rounded-lg sm:rounded-xl p-2 sm:p-3 text-center transition-all duration-200 hover:shadow-md hover:scale-105 cursor-pointer" title={`Moneda: ${sanitizeMoneda(paquete?.moneda)}`}>
+                          <FiDollarSign className="w-3 h-3 sm:w-4 sm:h-4 text-amber-600 mx-auto mb-1 transition-transform duration-200" />
+                          <div className="text-xs text-amber-700 font-medium uppercase tracking-wide">
+                            {sanitizeMoneda(paquete?.moneda)}
+                          </div>
+                        </div>
                       </div>
 
                       {/* Mayoristas - Completo para desktop, simplificado para móvil */}
@@ -1177,8 +1188,8 @@ const AdminPaquetes = () => {
                           className="grupo/eliminar flex items-center justify-center gap-1 sm:gap-2 bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700 text-white font-semibold py-2.5 sm:py-3 px-2 sm:px-4 rounded-lg sm:rounded-2xl transition-all duration-300 text-xs sm:text-sm shadow-sm hover:shadow-xl hover:scale-105 transform hover:-translate-y-1"
                           title="Mover a papelera"
                         >
-                          <FiTrash2 className="w-3 h-3 sm:w-4 sm:h-4 grupo-hover/eliminar:scale-125 grupo-hover/eliminar:rotate-12 grupo-hover/eliminar:text-red-200 transition-all duration-300" />
-                          <span className="hidden sm:inline grupo-hover/eliminar:font-bold grupo-hover/eliminar:text-red-100 transition-all duration-200">
+                          <FiTrash2 className="w-3 h-3 sm:w-4 sm:h-4 grupo-hover/eliminar:scale-125 grupo-hover/eliminar:-rotate-12 grupo-hover/eliminar:text-yellow-200 transition-all duration-300" />
+                          <span className="hidden sm:inline grupo-hover/eliminar:font-bold transition-all duration-200">
                             Eliminar
                           </span>
                           <span className="sm:hidden">Eliminar</span>
