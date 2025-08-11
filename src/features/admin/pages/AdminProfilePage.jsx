@@ -22,6 +22,8 @@ const AdminProfilePage = () => {
     }
   }, [user]);
 
+  const isInitialLoading = !user; // Mejora LCP: no bloquear layout
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({
@@ -32,15 +34,16 @@ const AdminProfilePage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (isInitialLoading) return; // Evitar enviar si aún no hay usuario
     setLoading(true);
     setMessage(null);
 
     try {
       const updateData = {};
-      if (formData.nombre !== (user.nombre || user.nombre_completo || '')) {
+      if (formData.nombre !== (user?.nombre || user?.nombre_completo || '')) {
         updateData.nombre = formData.nombre;
       }
-      if (formData.correo !== (user.correo || user.email || '')) {
+      if (formData.correo !== (user?.correo || user?.email || '')) {
         updateData.email = formData.correo;
       }
 
@@ -67,23 +70,23 @@ const AdminProfilePage = () => {
 
   const handleCancel = () => {
     setFormData({
-      nombre: user.nombre || user.nombre_completo || '',
-      correo: user.correo || user.email || ''
+      nombre: user?.nombre || user?.nombre_completo || '',
+      correo: user?.correo || user?.email || ''
     });
     setIsEditing(false);
     setMessage(null);
   };
 
   const getInitials = (name) => {
-    if (!name) return "U";
-    const words = name.trim().split(" ");
+    if (!name) return 'U';
+    const words = name.trim().split(' ');
     if (words.length === 1) {
       return words[0].charAt(0).toUpperCase();
     }
     return words
       .slice(0, 2)
       .map((word) => word.charAt(0))
-      .join("")
+      .join('')
       .toUpperCase();
   };
 
@@ -105,11 +108,9 @@ const AdminProfilePage = () => {
 
   const formatDate = (dateString) => {
     if (!dateString) return 'No disponible';
-    
     try {
       const date = new Date(dateString);
       if (isNaN(date.getTime())) return 'Fecha inválida';
-      
       return date.toLocaleDateString('es-ES', {
         year: 'numeric',
         month: 'long',
@@ -120,52 +121,85 @@ const AdminProfilePage = () => {
     }
   };
 
-  const isVerified = user.email_verificado || user.emailVerificado || user.verificado;
-
-  if (!user) {
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-white">
-        <div className="text-center">
-          <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-600 font-medium">Cargando perfil...</p>
-        </div>
-      </div>
-    );
-  }
+  const isVerified = Boolean(user?.email_verificado || user?.emailVerificado || user?.verificado);
 
   return (
     <div className="min-h-screen bg-white p-4 sm:p-6 lg:p-8">
       <div className="max-w-4xl mx-auto">
-        
-        {/* Header con avatar */}
+        {/* Header con avatar - siempre visible, usa skeletons en carga */}
         <div className="bg-white rounded-2xl shadow-xl border border-gray-100 p-6 mb-6 flex flex-col sm:flex-row items-center gap-6">
           <div className="relative">
             <div className="w-24 h-24 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg">
-              <span className="text-white font-bold text-3xl">
-                {getInitials(user.nombre || user.nombre_completo || user.usuario)}
-              </span>
+              {isInitialLoading ? (
+                <div className="w-12 h-12 bg-white/30 rounded-xl animate-pulse" />
+              ) : (
+                <span className="text-white font-bold text-3xl">
+                  {getInitials(user?.nombre || user?.nombre_completo || user?.usuario)}
+                </span>
+              )}
             </div>
-            <div className={`absolute -bottom-2 -right-2 w-10 h-10 rounded-full flex items-center justify-center shadow-lg ${getRoleColor(user.rol)}`}>
+            <div className={`absolute -bottom-2 -right-2 w-10 h-10 rounded-full flex items-center justify-center shadow-lg ${getRoleColor(user?.rol)}`}>
               <FiShield className="w-5 h-5 text-white" />
             </div>
           </div>
-          
-          <div className="text-center sm:text-left">
-            <h1 className="text-3xl font-bold text-gray-900 mb-1">
-              {user.nombre || user.nombre_completo || user.usuario}
-            </h1>
-            <div className="flex flex-wrap justify-center sm:justify-start gap-2 mt-2">
-              <span className={`px-3 py-1 rounded-full text-sm font-medium ${getRoleColor(user.rol)} text-white shadow-sm`}>
-                {getRoleLabel(user.rol)}
-              </span>
-              <span className={`px-3 py-1 rounded-full text-sm font-medium ${
-                isVerified ? 'bg-gradient-to-br from-green-500 to-green-600' : 'bg-gradient-to-br from-amber-500 to-amber-600'
-              } text-white shadow-sm flex items-center gap-1`}>
-                {isVerified ? <FiCheckCircle className="w-4 h-4" /> : <FiClock className="w-4 h-4" />}
-                {isVerified ? 'Verificado' : 'Pendiente'}
-              </span>
+          <div className="text-center sm:text-left flex-1">
+            {isInitialLoading ? (
+              <div className="h-7 w-48 bg-gray-200 rounded animate-pulse mx-auto sm:mx-0 mb-2" />
+            ) : (
+              <h1 className="text-3xl font-bold text-gray-900 mb-1">
+                {user?.nombre || user?.nombre_completo || user?.usuario}
+              </h1>
+            )}
+            <div className="flex flex-wrap justify-center sm:justify-start gap-2 mt-2 min-h-[36px]">
+              {isInitialLoading ? (
+                <>
+                  <div className="h-8 w-32 bg-gray-200 rounded-full animate-pulse" />
+                  <div className="h-8 w-28 bg-gray-200 rounded-full animate-pulse" />
+                </>
+              ) : (
+                <>
+                  <span className={`px-3 py-1 rounded-full text-sm font-medium ${getRoleColor(user?.rol)} text-white shadow-sm`}>
+                    {getRoleLabel(user?.rol)}
+                  </span>
+                  <span className={`px-3 py-1 rounded-full text-sm font-medium ${
+                    isVerified ? 'bg-gradient-to-br from-green-500 to-green-600' : 'bg-gradient-to-br from-amber-500 to-amber-600'
+                  } text-white shadow-sm flex items-center gap-1`}>
+                    {isVerified ? <FiCheckCircle className="w-4 h-4" /> : <FiClock className="w-4 h-4" />}
+                    {isVerified ? 'Verificado' : 'Pendiente'}
+                  </span>
+                </>
+              )}
             </div>
           </div>
+          {!isEditing ? (
+            <button 
+              onClick={() => !isInitialLoading && setIsEditing(true)}
+              className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-blue-600 to-purple-700 hover:from-blue-700 hover:to-purple-800 text-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-0.5 disabled:opacity-60 disabled:cursor-not-allowed"
+              disabled={isInitialLoading}
+            >
+              <FiEdit className="w-4 h-4" />
+              <span>Editar perfil</span>
+            </button>
+          ) : (
+            <div className="flex gap-2">
+              <button 
+                onClick={handleCancel}
+                className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-gray-600 to-gray-700 text-white rounded-xl hover:shadow-lg transition-all duration-300 disabled:opacity-60 disabled:cursor-not-allowed"
+                disabled={loading}
+              >
+                <FiX className="w-4 h-4" />
+                <span>Cancelar</span>
+              </button>
+              <button 
+                onClick={handleSubmit}
+                className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-xl hover:shadow-lg transition-all duration-300 hover:scale-[1.02] disabled:opacity-60 disabled:cursor-not-allowed"
+                disabled={loading || isInitialLoading}
+              >
+                <FiSave className="w-4 h-4" />
+                <span>{loading ? 'Guardando...' : 'Guardar cambios'}</span>
+              </button>
+            </div>
+          )}
         </div>
 
         {/* Mensaje de estado */}
@@ -194,37 +228,8 @@ const AdminProfilePage = () => {
               <h2 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">Información del perfil</h2>
               <p className="text-gray-600 mt-1 sm:mt-2 text-sm sm:text-base">Gestiona tu información personal</p>
             </div>
-            
-            {!isEditing ? (
-              <button 
-                onClick={() => setIsEditing(true)}
-                className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-blue-600 to-purple-700 hover:from-blue-700 hover:to-purple-800 text-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-0.5"
-              >
-                <FiEdit className="w-4 h-4" />
-                <span>Editar perfil</span>
-              </button>
-            ) : (
-              <div className="flex gap-2">
-                <button 
-                  onClick={handleCancel}
-                  className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-gray-600 to-gray-700 text-white rounded-xl hover:shadow-lg transition-all duration-300"
-                  disabled={loading}
-                >
-                  <FiX className="w-4 h-4" />
-                  <span>Cancelar</span>
-                </button>
-                <button 
-                  onClick={handleSubmit}
-                  className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-xl hover:shadow-lg transition-all duration-300 hover:scale-[1.02]"
-                  disabled={loading}
-                >
-                  <FiSave className="w-4 h-4" />
-                  <span>{loading ? 'Guardando...' : 'Guardar cambios'}</span>
-                </button>
-              </div>
-            )}
+            {/* Botones de acción ya están en el header superior */}
           </div>
-          
           {/* Contenido */}
           <div className="p-5">
             {isEditing ? (
@@ -244,8 +249,9 @@ const AdminProfilePage = () => {
                         name="nombre"
                         value={formData.nombre}
                         onChange={handleInputChange}
-                        className="w-full p-3.5 pl-12 bg-white rounded-xl border border-indigo-200 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition-all duration-300 shadow-sm"
+                        className="w-full p-3.5 pl-12 bg-white rounded-xl border border-indigo-200 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition-all duration-300 shadow-sm disabled:opacity-60"
                         placeholder="Ingresa tu nombre completo"
+                        disabled={isInitialLoading || loading}
                       />
                       <FiUser className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-indigo-500" />
                     </div>
@@ -265,8 +271,9 @@ const AdminProfilePage = () => {
                         name="correo"
                         value={formData.correo}
                         onChange={handleInputChange}
-                        className="w-full p-3.5 pl-12 bg-white rounded-xl border border-indigo-200 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition-all duration-300 shadow-sm"
+                        className="w-full p-3.5 pl-12 bg-white rounded-xl border border-indigo-200 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition-all duration-300 shadow-sm disabled:opacity-60"
                         placeholder="Ingresa tu correo electrónico"
+                        disabled={isInitialLoading || loading}
                       />
                       <FiMail className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-indigo-500" />
                     </div>
@@ -280,10 +287,10 @@ const AdminProfilePage = () => {
                       <span className="ml-2 text-[10px] font-semibold uppercase tracking-wide text-gray-500 bg-gray-100 px-2 py-0.5 rounded flex items-center gap-1"><FiLock className="w-3 h-3" /> No editable</span>
                     </label>
                     <div className="relative p-3.5 bg-gray-100 rounded-xl border border-gray-200 flex items-center gap-3 cursor-not-allowed select-none" aria-readonly="true">
-                      <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${getRoleColor(user.rol)}`}>
+                      <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${getRoleColor(user?.rol)}`}>
                         <FiShield className="w-5 h-5 text-white" />
                       </div>
-                      <span className="font-medium text-gray-700">{getRoleLabel(user.rol)}</span>
+                      <span className="font-medium text-gray-700">{getRoleLabel(user?.rol)}</span>
                       <FiLock className="absolute top-2 right-2 w-4 h-4 text-gray-400" />
                     </div>
                   </div>
@@ -299,7 +306,7 @@ const AdminProfilePage = () => {
                       <div className="w-10 h-10 rounded-lg bg-gray-300 flex items-center justify-center">
                         <FiUser className="w-5 h-5 text-gray-600" />
                       </div>
-                      <span className="font-medium text-gray-700">{user.usuario}</span>
+                      <span className="font-medium text-gray-700">{user?.usuario || (isInitialLoading ? '—' : '')}</span>
                       <FiLock className="absolute top-2 right-2 w-4 h-4 text-gray-400" />
                     </div>
                   </div>
@@ -316,10 +323,14 @@ const AdminProfilePage = () => {
                         <FiCalendar className="w-6 h-6 text-purple-600" />
                       </div>
                       <div>
-                        <p className="text-sm font-semibold text-gray-800">{formatDate(
-                          user.creadoEn || user.createdAt || user.created_at || 
-                          user.fechaCreacion || user.fecha_creacion || user.fechaRegistro
-                        )}</p>
+                        {isInitialLoading ? (
+                          <div className="h-5 w-44 bg-gray-200 rounded animate-pulse" />
+                        ) : (
+                          <p className="text-sm font-semibold text-gray-800">{formatDate(
+                            user?.creadoEn || user?.createdAt || user?.created_at || 
+                            user?.fechaCreacion || user?.fecha_creacion || user?.fechaRegistro
+                          )}</p>
+                        )}
                         <p className="text-xs text-gray-500">Fecha de registro (no editable)</p>
                       </div>
                       <FiLock className="absolute top-2 right-2 w-4 h-4 text-gray-400" />
@@ -339,7 +350,11 @@ const AdminProfilePage = () => {
                     <div className="w-10 h-10 rounded-lg bg-indigo-100 flex items-center justify-center">
                       <FiUser className="w-5 h-5 text-indigo-600" />
                     </div>
-                    <span className="font-medium text-gray-900">{user.nombre || user.nombre_completo || 'No especificado'}</span>
+                    {isInitialLoading ? (
+                      <div className="h-5 w-44 bg-gray-200 rounded animate-pulse" />
+                    ) : (
+                      <span className="font-medium text-gray-900">{user?.nombre || user?.nombre_completo || 'No especificado'}</span>
+                    )}
                   </div>
                 </div>
 
@@ -353,7 +368,11 @@ const AdminProfilePage = () => {
                     <div className="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center">
                       <FiMail className="w-5 h-5 text-blue-600" />
                     </div>
-                    <span className="font-medium text-gray-900">{user.correo || user.email}</span>
+                    {isInitialLoading ? (
+                      <div className="h-5 w-56 bg-gray-200 rounded animate-pulse" />
+                    ) : (
+                      <span className="font-medium text-gray-900">{user?.correo || user?.email}</span>
+                    )}
                   </div>
                 </div>
 
@@ -364,10 +383,14 @@ const AdminProfilePage = () => {
                     <span>Rol</span>
                   </label>
                   <div className="p-3.5 bg-gray-50 rounded-xl border border-gray-200 flex items-center gap-3">
-                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${getRoleColor(user.rol)}`}>
+                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${getRoleColor(user?.rol)}`}>
                       <FiShield className="w-5 h-5 text-white" />
                     </div>
-                    <span className="font-medium text-gray-900">{getRoleLabel(user.rol)}</span>
+                    {isInitialLoading ? (
+                      <div className="h-5 w-36 bg-gray-200 rounded animate-pulse" />
+                    ) : (
+                      <span className="font-medium text-gray-900">{getRoleLabel(user?.rol)}</span>
+                    )}
                   </div>
                 </div>
 
@@ -381,12 +404,16 @@ const AdminProfilePage = () => {
                     <div className="w-10 h-10 rounded-lg bg-gray-200 flex items-center justify-center">
                       <FiUser className="w-5 h-5 text-gray-700" />
                     </div>
-                    <span className="font-medium text-gray-900">{user.usuario}</span>
+                    {isInitialLoading ? (
+                      <div className="h-5 w-40 bg-gray-200 rounded animate-pulse" />
+                    ) : (
+                      <span className="font-medium text-gray-900">{user?.usuario}</span>
+                    )}
                   </div>
                 </div>
 
                 {/* Fecha de registro */}
-                <div className="space-y-2">
+                <div className="space-y-2 md:col-span-2">
                   <label className="text-sm font-medium text-gray-700 flex items-center gap-1">
                     <FiCalendar className="w-4 h-4" />
                     <span>Miembro desde</span>
@@ -395,12 +422,16 @@ const AdminProfilePage = () => {
                     <div className="w-10 h-10 rounded-lg bg-purple-100 flex items-center justify-center">
                       <FiCalendar className="w-5 h-5 text-purple-600" />
                     </div>
-                    <span className="font-medium text-gray-900">
-                      {formatDate(
-                        user.creadoEn || user.createdAt || user.created_at || 
-                        user.fechaCreacion || user.fecha_creacion || user.fechaRegistro
-                      )}
-                    </span>
+                    {isInitialLoading ? (
+                      <div className="h-5 w-48 bg-gray-200 rounded animate-pulse" />
+                    ) : (
+                      <span className="font-medium text-gray-900">
+                        {formatDate(
+                          user?.creadoEn || user?.createdAt || user?.created_at || 
+                          user?.fechaCreacion || user?.fecha_creacion || user?.fechaRegistro
+                        )}
+                      </span>
+                    )}
                   </div>
                 </div>
               </div>

@@ -1,8 +1,10 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo, lazy, Suspense, useDeferredValue } from 'react';
 import { useUsers } from '../../../hooks/useUsers';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useNotification } from './AdminLayout';
-import ConfirmDialog from '../components/ConfirmDialog';
+const ConfirmDialog = lazy(() => import('../components/ConfirmDialog'));
+const UserCard = lazy(() => import('../components/UserCard'));
+
 import {
   FiUsers,
   FiSearch,
@@ -23,7 +25,6 @@ import {
   FiArrowUp,
   FiArrowDown
 } from 'react-icons/fi';
-import UserCard from '../components/UserCard';
 
 const AdminUsersPage = () => {
   const { user: currentUser } = useAuth();
@@ -40,6 +41,7 @@ const AdminUsersPage = () => {
   } = useUsers();
 
   const [searchTerm, setSearchTerm] = useState('');
+  const deferredSearch = useDeferredValue(searchTerm);
   const [roleFilter, setRoleFilter] = useState('todos');
   const [verificationFilter, setVerificationFilter] = useState('todos');
   const [sortConfig, setSortConfig] = useState({ key: 'usuario', direction: 'asc' });
@@ -143,41 +145,66 @@ const AdminUsersPage = () => {
   const userCount = users.filter(user => user.rol === 'usuario').length;
   const verifiedCount = users.filter(user => isUserVerified(user)).length;
 
-  // Filtrar usuarios
-  const filteredUsers = users.filter(user => {
-    const matchesSearch = searchTerm === '' || 
-      user.usuario?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      user.correo?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      user.rol?.toLowerCase().includes(searchTerm.toLowerCase());
+  // Skeleton de tarjetas de usuario para carga inicial (evitar pantalla en blanco y CLS)
+  const renderSkeletonCards = (count = 8) => (
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4 sm:gap-5 lg:gap-6 [content-visibility:auto] [contain-intrinsic-size:600px_900px]">
+      {Array.from({ length: count }).map((_, idx) => (
+        <div key={idx} className="rounded-2xl border border-gray-200 bg-white shadow-sm p-4 sm:p-5 animate-pulse min-h-[220px]">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="w-12 h-12 rounded-full bg-gray-200" />
+            <div className="flex-1">
+              <div className="h-4 bg-gray-200 rounded w-2/3 mb-2" />
+              <div className="h-3 bg-gray-200 rounded w-1/2" />
+            </div>
+          </div>
+          <div className="h-3 bg-gray-200 rounded w-full mb-2" />
+          <div className="h-3 bg-gray-200 rounded w-5/6 mb-4" />
+          <div className="flex gap-2 mt-auto">
+            <div className="h-9 bg-gray-200 rounded-xl w-20" />
+            <div className="h-9 bg-gray-200 rounded-xl w-24" />
+          </div>
+        </div>
+      ))}
+    </div>
+  );
 
-    const matchesRole = roleFilter === 'todos' || user.rol === roleFilter;
-    
-    const matchesVerification = verificationFilter === 'todos' || 
-      (verificationFilter === 'verificado' && isUserVerified(user)) ||
-      (verificationFilter === 'pendiente' && !isUserVerified(user));
+  // Filtrar usuarios (memoizado para reducir trabajo en el primer render)
+  const filteredUsers = useMemo(() => {
+    const list = users.filter(user => {
+      const matchesSearch = deferredSearch === '' || 
+        user.usuario?.toLowerCase().includes(deferredSearch.toLowerCase()) ||
+        user.correo?.toLowerCase().includes(deferredSearch.toLowerCase()) ||
+        user.rol?.toLowerCase().includes(deferredSearch.toLowerCase());
 
-    return matchesSearch && matchesRole && matchesVerification;
-  }).sort((a, b) => {
-    const { key, direction } = sortConfig;
-    let aVal = a[key];
-    let bVal = b[key];
+      const matchesRole = roleFilter === 'todos' || user.rol === roleFilter;
+      
+      const matchesVerification = verificationFilter === 'todos' || 
+        (verificationFilter === 'verificado' && isUserVerified(user)) ||
+        (verificationFilter === 'pendiente' && !isUserVerified(user));
 
-    // Manejar fechas
-    if (key === 'fechaCreacion') {
-      aVal = new Date(a.fecha_creacion || a.fechaCreacion || a.created_at || 0);
-      bVal = new Date(b.fecha_creacion || b.fechaCreacion || b.created_at || 0);
-    }
+      return matchesSearch && matchesRole && matchesVerification;
+    }).sort((a, b) => {
+      const { key, direction } = sortConfig;
+      let aVal = a[key];
+      let bVal = b[key];
 
-    // Convertir a string para comparación si no son fechas
-    if (!(aVal instanceof Date)) {
-      aVal = String(aVal || '').toLowerCase();
-      bVal = String(bVal || '').toLowerCase();
-    }
+      if (key === 'fechaCreacion') {
+        aVal = new Date(a.fecha_creacion || a.fechaCreacion || a.created_at || 0);
+        bVal = new Date(b.fecha_creacion || b.fechaCreacion || b.created_at || 0);
+      }
 
-    if (aVal < bVal) return direction === 'asc' ? -1 : 1;
-    if (aVal > bVal) return direction === 'asc' ? 1 : -1;
-    return 0;
-  });
+      if (!(aVal instanceof Date)) {
+        aVal = String(aVal || '').toLowerCase();
+        bVal = String(bVal || '').toLowerCase();
+      }
+
+      if (aVal < bVal) return direction === 'asc' ? -1 : 1;
+      if (aVal > bVal) return direction === 'asc' ? 1 : -1;
+      return 0;
+    });
+
+    return list;
+  }, [users, deferredSearch, roleFilter, verificationFilter, sortConfig]);
 
   const confirmRoleChange = async () => {
     try {
@@ -268,29 +295,6 @@ const AdminUsersPage = () => {
     }
   };
 
-  // Skeleton de tarjetas de usuario para carga inicial (evitar pantalla en blanco y CLS)
-  const renderSkeletonCards = (count = 8) => (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4 sm:gap-5 lg:gap-6">
-      {Array.from({ length: count }).map((_, idx) => (
-        <div key={idx} className="rounded-2xl border border-gray-200 bg-white shadow-sm p-4 sm:p-5 animate-pulse min-h-[220px]">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="w-12 h-12 rounded-full bg-gray-200" />
-            <div className="flex-1">
-              <div className="h-4 bg-gray-200 rounded w-2/3 mb-2" />
-              <div className="h-3 bg-gray-200 rounded w-1/2" />
-            </div>
-          </div>
-          <div className="h-3 bg-gray-200 rounded w-full mb-2" />
-          <div className="h-3 bg-gray-200 rounded w-5/6 mb-4" />
-          <div className="flex gap-2 mt-auto">
-            <div className="h-9 bg-gray-200 rounded-xl w-20" />
-            <div className="h-9 bg-gray-200 rounded-xl w-24" />
-          </div>
-        </div>
-      ))}
-    </div>
-  );
-
   return (
     <div className="min-h-screen bg-gray-50 p-2 sm:p-4 md:p-5 lg:p-6 xl:p-8">
       <div className="max-w-7xl mx-auto">
@@ -335,7 +339,7 @@ const AdminUsersPage = () => {
               </div>
               <input
                 placeholder="Buscar por usuario, email o rol..."
-                className="w-full pl-10 sm:pl-12 pr-3 sm:pr-4 py-3 sm:py-4 rounded-lg sm:rounded-xl border border-purple-200 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-sm bg-purple-50/50 font-medium shadow-md focus:shadow-lg transition-all duration-200"
+                className="w-full pl-10 sm:pl-12 pr-3 sm:pr-4 py-3 sm:py-4 rounded-lg sm:rounded-xl border border-purple-200 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-sm bg-purple-50/50 font-medium shadow-md focus:shadow-lg transition-all duración-200"
                 type="text"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
@@ -528,7 +532,7 @@ const AdminUsersPage = () => {
                     ))}
                 </button>
                 <button
-                  className={`px-3 py-2.5 rounded-lg font-medium transition flex items-center justify-center gap-2 text-sm ${
+                  className={`px-3 py-2.5 rounded-lg font-medium transición flex items-center justify-center gap-2 text-sm ${
                     sortConfig.key === 'correo'
                       ? 'bg-blue-100 text-blue-700'
                       : 'bg-white text-gray-700 hover:bg-gray-100'
@@ -544,7 +548,7 @@ const AdminUsersPage = () => {
                     ))}
                 </button>
                 <button
-                  className={`px-3 py-2.5 rounded-lg font-medium transition flex items-center justify-center gap-2 text-sm ${
+                  className={`px-3 py-2.5 rounded-lg font-medium transición flex items-center justify-center gap-2 text-sm ${
                     sortConfig.key === 'rol'
                       ? 'bg-blue-100 text-blue-700'
                       : 'bg-white text-gray-700 hover:bg-gray-100'
@@ -647,8 +651,8 @@ const AdminUsersPage = () => {
                     {filteredUsers.length}
                   </span>
                   <span>
-                    {" "}
-                    usuario{filteredUsers.length !== 1 ? "s" : ""}{" "}
+                    {' '}
+                    usuario{filteredUsers.length !== 1 ? "s" : ""}{' '}
                     encontrado{filteredUsers.length !== 1 ? "s" : ""}
                   </span>
                   <span className="text-gray-500 ml-2">
@@ -658,13 +662,13 @@ const AdminUsersPage = () => {
                 <div className="flex gap-3 lg:gap-4 order-1 lg:order-2 w-full lg:w-auto">
                   <button
                     onClick={clearFilters}
-                    className="flex-1 lg:flex-none px-4 lg:px-6 py-2.5 lg:py-3 bg-gradient-to-r from-gray-100 to-gray-200 hover:from-gray-200 hover:to-gray-300 text-gray-700 font-medium rounded-lg lg:rounded-xl transition-all duration-200 text-sm lg:text-base shadow-sm hover:shadow-md"
+                    className="flex-1 lg:flex-none px-4 lg:px-6 py-2.5 lg:py-3 bg-gradient-to-r from-gray-100 to-gray-200 hover:from-gray-200 hover:to-gray-300 text-gray-700 font-medium rounded-lg lg:rounded-xl transition-all duración-200 text-sm lg:text-base shadow-sm hover:shadow-md"
                   >
                     Limpiar todo
                   </button>
                   <button
                     onClick={() => setIsFiltersOpen(false)}
-                    className="flex-1 lg:flex-none px-4 lg:px-6 py-2.5 lg:py-3 bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white font-medium rounded-lg lg:rounded-xl transition-all duration-200 text-sm lg:text-base flex items-center justify-center gap-2 shadow-lg hover:shadow-xl"
+                    className="flex-1 lg:flex-none px-4 lg:px-6 py-2.5 lg:py-3 bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white font-medium rounded-lg lg:rounded-xl transition-all duración-200 text-sm lg:text-base flex items-center justify-center gap-2 shadow-lg hover:shadow-xl"
                   >
                     <FiFilter className="w-4 h-4" />
                     Aplicar filtros
@@ -708,7 +712,7 @@ const AdminUsersPage = () => {
                 }}
                 aria-pressed={roleFilter === 'todos' && verificationFilter === 'todos'}
                 aria-label="Mostrar todos los usuarios sin filtros"
-                className={`group relative px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg sm:rounded-xl text-xs sm:text-sm font-medium transition-all duration-200 ${
+                className={`group relative px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg sm:rounded-xl text-xs sm:text-sm font-medium transition-all duración-200 ${
                   roleFilter === 'todos' && verificationFilter === 'todos'
                     ? "bg-gradient-to-r from-purple-500 to-indigo-600 text-white shadow-lg"
                     : "bg-white text-gray-600 hover:bg-purple-50 hover:text-purple-700 border border-gray-200 hover:border-purple-200"
@@ -729,7 +733,7 @@ const AdminUsersPage = () => {
                 }}
                 aria-pressed={roleFilter === 'admin'}
                 aria-label="Mostrar solo administradores"
-                className={`group relative px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg sm:rounded-xl text-xs sm:text-sm font-medium transition-all duration-200 ${
+                className={`group relative px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg sm:rounded-xl text-xs sm:text-sm font-medium transition-all duración-200 ${
                   roleFilter === 'admin'
                     ? "bg-gradient-to-r from-red-500 to-red-600 text-white shadow-lg"
                     : "bg-white text-gray-600 hover:bg-red-50 hover:text-red-700 border border-gray-200 hover:border-red-200"
@@ -750,7 +754,7 @@ const AdminUsersPage = () => {
                 }}
                 aria-pressed={roleFilter === 'pre-autorizado'}
                 aria-label="Mostrar solo usuarios pre-autorizados"
-                className={`group relative px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg sm:rounded-xl text-xs sm:text-sm font-medium transition-all duration-200 ${
+                className={`group relative px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg sm:rounded-xl text-xs sm:text-sm font-medium transition-all duración-200 ${
                   roleFilter === 'pre-autorizado'
                     ? "bg-gradient-to-r from-orange-500 to-amber-600 text-white shadow-lg"
                     : "bg-white text-gray-600 hover:bg-orange-50 hover:text-orange-700 border border-gray-200 hover:border-orange-200"
@@ -771,7 +775,7 @@ const AdminUsersPage = () => {
                 }}
                 aria-pressed={roleFilter === 'usuario'}
                 aria-label="Mostrar solo usuarios regulares"
-                className={`group relative px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg sm:rounded-xl text-xs sm:text-sm font-medium transition-all duration-200 ${
+                className={`group relative px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg sm:rounded-xl text-xs sm:text-sm font-medium transition-all duración-200 ${
                   roleFilter === 'usuario'
                     ? "bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-lg"
                     : "bg-white text-gray-600 hover:bg-blue-50 hover:text-blue-700 border border-gray-200 hover:border-blue-200"
@@ -802,7 +806,7 @@ const AdminUsersPage = () => {
                   }}
                   aria-pressed={verificationFilter === 'verificado'}
                   aria-label="Mostrar solo usuarios verificados"
-                  className={`px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg sm:rounded-xl text-xs sm:text-sm font-medium transition-all duration-200 ${
+                  className={`px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg sm:rounded-xl text-xs sm:text-sm font-medium transition-all duración-200 ${
                     verificationFilter === 'verificado'
                       ? "bg-gradient-to-r from-green-500 to-emerald-600 text-white shadow-lg"
                       : "bg-white text-gray-600 hover:bg-green-50 hover:text-green-700 border border-gray-200 hover:border-green-200"
@@ -821,7 +825,7 @@ const AdminUsersPage = () => {
                   }}
                   aria-pressed={verificationFilter === 'pendiente'}
                   aria-label="Mostrar solo usuarios no verificados"
-                  className={`px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg sm:rounded-xl text-xs sm:text-sm font-medium transition-all duration-200 ${
+                  className={`px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg sm:rounded-xl text-xs sm:text-sm font-medium transition-all duración-200 ${
                     verificationFilter === 'pendiente'
                       ? "bg-gradient-to-r from-yellow-500 to-orange-600 text-white shadow-lg"
                       : "bg-white text-gray-600 hover:bg-yellow-50 hover:text-yellow-700 border border-gray-200 hover:border-yellow-200"
@@ -841,7 +845,7 @@ const AdminUsersPage = () => {
                 <button
                   onClick={clearFilters}
                   aria-label="Limpiar todos los filtros aplicados"
-                  className="w-full px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg sm:rounded-xl text-xs sm:text-sm font-medium bg-gradient-to-r from-red-50 to-pink-50 text-red-600 hover:from-red-100 hover:to-pink-100 border border-red-200 hover:border-red-300 transition-all duration-200 flex items-center justify-center gap-2"
+                  className="w-full px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg sm:rounded-xl text-xs sm:text-sm font-medium bg-gradient-to-r from-red-50 to-pink-50 text-red-600 hover:from-red-100 hover:to-pink-100 border border-red-200 hover:border-red-300 transition-all duración-200 flex items-center justify-center gap-2"
                 >
                   <FiX className="w-3 h-3 sm:w-4 sm:h-4" />
                   <span className="hidden sm:inline">Limpiar filtros</span>
@@ -857,22 +861,24 @@ const AdminUsersPage = () => {
           {isInitialLoading ? (
             renderSkeletonCards(10)
           ) : filteredUsers.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4 sm:gap-5 lg:gap-6">
-              {filteredUsers.map((user) => (
-                <UserCard
-                  key={user.id}
-                  user={user}
-                  currentUser={currentUser}
-                  showActionMenu={showActionMenu}
-                  setShowActionMenu={setShowActionMenu}
-                  handleRoleChange={handleRoleChange}
-                  setConfirmDialog={setConfirmDialog}
-                  getRoleColor={getRoleColor}
-                  getRoleIcon={getRoleIcon}
-                  loading={loading}
-                />
-              ))}
-            </div>
+            <Suspense fallback={renderSkeletonCards(8)}>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4 sm:gap-5 lg:gap-6 [content-visibility:auto] [contain-intrinsic-size:600px_900px]">
+                {filteredUsers.map((user) => (
+                  <UserCard
+                    key={user.id}
+                    user={user}
+                    currentUser={currentUser}
+                    showActionMenu={showActionMenu}
+                    setShowActionMenu={setShowActionMenu}
+                    handleRoleChange={handleRoleChange}
+                    setConfirmDialog={setConfirmDialog}
+                    getRoleColor={getRoleColor}
+                    getRoleIcon={getRoleIcon}
+                    loading={loading}
+                  />
+                ))}
+              </div>
+            </Suspense>
           ) : (
             <div className="bg-gradient-to-br from-white via-gray-50 to-white rounded-2xl sm:rounded-3xl shadow-xl p-6 sm:p-8 lg:p-12 text-center border border-gray-200">
               <div className="max-w-md mx-auto">
@@ -887,27 +893,27 @@ const AdminUsersPage = () => {
                 </h3>
 
                 <p className="text-gray-600 mb-6 sm:mb-8 leading-relaxed text-sm sm:text-base">
-                  {searchTerm
-                    ? `No hay resultados para "${searchTerm}".`
+                  {deferredSearch
+                    ? `No hay resultados para "${deferredSearch}".`
                     : roleFilter !== 'todos'
                       ? `No hay usuarios con el rol "${roleFilter}".`
                       : verificationFilter !== 'todos'
                         ? `No hay usuarios ${verificationFilter === 'verificado' ? 'verificados' : 'no verificados'}.`
-                        : "Parece que no hay usuarios disponibles."}{" "}
+                        : "Parece que no hay usuarios disponibles."}{' '}
                   Intenta ajustar los filtros de búsqueda o verifica que haya usuarios registrados.
                 </p>
 
                 {/* Filtros aplicados */}
-                {(searchTerm || roleFilter !== 'todos' || verificationFilter !== 'todos') && (
+                {(deferredSearch || roleFilter !== 'todos' || verificationFilter !== 'todos') && (
                   <div className="mb-6 sm:mb-8 p-4 sm:p-6 bg-gradient-to-r from-gray-50 to-blue-50 rounded-xl sm:rounded-2xl border border-gray-200">
                     <p className="text-xs sm:text-sm font-semibold text-gray-700 mb-2 sm:mb-3">
                       FILTROS APLICADOS
                     </p>
                     <div className="flex flex-wrap gap-1 sm:gap-2 justify-center">
-                      {searchTerm && (
+                      {deferredSearch && (
                         <span className="px-2 sm:px-3 py-1 sm:py-2 bg-gradient-to-r from-blue-500 to-indigo-600 text-white text-xs rounded-lg sm:rounded-xl font-medium shadow-md">
                           <span className="hidden sm:inline">Búsqueda: "</span>
-                          {searchTerm}
+                          {deferredSearch}
                           <span className="hidden sm:inline">"</span>
                         </span>
                       )}
@@ -935,10 +941,10 @@ const AdminUsersPage = () => {
                       setRoleFilter('todos');
                       setVerificationFilter('todos');
                     }}
-                    className="group px-4 sm:px-6 py-2.5 sm:py-3 bg-gradient-to-r from-gray-100 to-gray-200 hover:from-gray-200 hover:to-gray-300 text-gray-700 font-semibold rounded-xl sm:rounded-2xl transition-all duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-1 text-sm sm:text-base"
+                    className="group px-4 sm:px-6 py-2.5 sm:py-3 bg-gradient-to-r from-gray-100 to-gray-200 hover:from-gray-200 hover:to-gray-300 text-gray-700 font-semibold rounded-xl sm:rounded-2xl transición-all duración-300 shadow-md hover:shadow-lg transform hover:-translate-y-1 text-sm sm:text-base"
                   >
                     <span className="flex items-center justify-center gap-2">
-                      <FiX className="w-4 h-4 group-hover:rotate-90 transition-transform duration-200" />
+                      <FiX className="w-4 h-4 group-hover:rotate-90 transición-transform duración-200" />
                       <span className="hidden sm:inline">Limpiar filtros</span>
                       <span className="sm:hidden">Limpiar</span>
                     </span>
@@ -949,10 +955,10 @@ const AdminUsersPage = () => {
                       fetchUsers();
                       fetchStats();
                     }}
-                    className="group px-4 sm:px-6 py-2.5 sm:py-3 bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white font-semibold rounded-xl sm:rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 text-sm sm:text-base"
+                    className="group px-4 sm:px-6 py-2.5 sm:py-3 bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white font-semibold rounded-xl sm:rounded-2xl shadow-lg hover:shadow-xl transición-all duración-300 transform hover:-translate-y-1 text-sm sm:text-base"
                   >
                     <span className="flex items-center justify-center gap-2">
-                      <FiRefreshCw className="w-4 h-4 group-hover:rotate-180 transition-transform duration-300" />
+                      <FiRefreshCw className="w-4 h-4 group-hover:rotate-180 transición-transform duración-300" />
                       <span className="hidden sm:inline">Actualizar lista</span>
                       <span className="sm:hidden">Actualizar</span>
                     </span>
@@ -964,27 +970,29 @@ const AdminUsersPage = () => {
         </div>
 
         {/* Modal de confirmación */}
-        <ConfirmDialog
-          isOpen={confirmDialog.isOpen}
-          onClose={() => setConfirmDialog({ isOpen: false, type: '', user: null, newRole: null })}
-          onConfirm={() => {
-            if (confirmDialog.type === 'delete') {
-              handleDeleteUser(confirmDialog.user.id);
-            } else if (confirmDialog.type === 'role-admin') {
-              confirmRoleChange();
+        <Suspense fallback={null}>
+          <ConfirmDialog
+            isOpen={confirmDialog.isOpen}
+            onClose={() => setConfirmDialog({ isOpen: false, type: '', user: null, newRole: null })}
+            onConfirm={() => {
+              if (confirmDialog.type === 'delete') {
+                handleDeleteUser(confirmDialog.user.id);
+              } else if (confirmDialog.type === 'role-admin') {
+                confirmRoleChange();
+              }
+            }}
+            title={confirmDialog.type === 'role-admin' ? 'Advertencia: Rol Administrador' : 'Mover a papelera'}
+            message={
+              confirmDialog.type === 'role-admin'
+                ? `⚠️ Estás a punto de otorgar permisos de ADMINISTRADOR a "${confirmDialog.user?.usuario}". Los administradores tienen acceso completo al sistema, incluyendo la gestión de otros usuarios, paquetes y configuraciones críticas. ¿Estás seguro de continuar?`
+                : `¿Estás seguro de que quieres mover al usuario "${confirmDialog.user?.usuario}" a la papelera? Podrás restaurarlo desde la sección de papelera.`
             }
-          }}
-          title={confirmDialog.type === 'role-admin' ? 'Advertencia: Rol Administrador' : 'Mover a papelera'}
-          message={
-            confirmDialog.type === 'role-admin'
-              ? `⚠️ Estás a punto de otorgar permisos de ADMINISTRADOR a "${confirmDialog.user?.usuario}". Los administradores tienen acceso completo al sistema, incluyendo la gestión de otros usuarios, paquetes y configuraciones críticas. ¿Estás seguro de continuar?`
-              : `¿Estás seguro de que quieres mover al usuario "${confirmDialog.user?.usuario}" a la papelera? Podrás restaurarlo desde la sección de papelera.`
-          }
-          confirmText={confirmDialog.type === 'role-admin' ? 'Sí, hacer administrador' : 'Mover a papelera'}
-          cancelText="Cancelar"
-          type={confirmDialog.type === 'role-admin' ? 'warning' : 'danger'}
-          itemName={confirmDialog.user?.usuario}
-        />
+            confirmText={confirmDialog.type === 'role-admin' ? 'Sí, hacer administrador' : 'Mover a papelera'}
+            cancelText="Cancelar"
+            type={confirmDialog.type === 'role-admin' ? 'warning' : 'danger'}
+            itemName={confirmDialog.user?.usuario}
+          />
+        </Suspense>
       </div>
     </div>
   );

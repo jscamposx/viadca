@@ -69,6 +69,9 @@ const AdminPaquetes = () => {
   });
   const { addNotification } = useNotification();
 
+  // Nuevo: bandera de carga y valores seguros para evitar saltos de layout y LCP tardío
+  const isLoading = loading;
+
   // Manejar notificaciones al regresar de crear/editar paquetes
   useEffect(() => {
     // Solo procesar si hay un estado de notificación y no se ha procesado esta navegación
@@ -287,17 +290,6 @@ const AdminPaquetes = () => {
     setSearchTerm("");
   };
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-4">
-        <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-        <p className="mt-4 text-gray-600 text-lg font-medium">
-          Cargando paquetes...
-        </p>
-      </div>
-    );
-  }
-
   if (error) {
     return (
       <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-4">
@@ -327,9 +319,13 @@ const AdminPaquetes = () => {
               <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
                 Gestión de Paquetes
               </h1>
-              <p className="text-gray-600 mt-1 sm:mt-2 text-sm sm:text-base">
-                Administra todos tus paquetes turísticos en un solo lugar ({totalItems} total)
-              </p>
+              {isLoading ? (
+                <div className="mt-2 h-4 sm:h-5 w-52 sm:w-72 bg-gray-200 rounded animate-pulse mx-auto sm:mx-0" />
+              ) : (
+                <p className="text-gray-600 mt-1 sm:mt-2 text-sm sm:text-base">
+                  Administra todos tus paquetes turísticos en un solo lugar ({totalItems} total)
+                </p>
+              )}
             </div>
 
             <Link
@@ -355,6 +351,7 @@ const AdminPaquetes = () => {
                 className="w-full pl-10 sm:pl-12 pr-3 sm:pr-4 py-3 sm:py-4 rounded-lg sm:rounded-xl border border-purple-200 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-sm bg-purple-50/50 font-medium shadow-md focus:shadow-lg transition-all duration-200"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
+                disabled={isLoading}
               />
             </div>
 
@@ -369,6 +366,7 @@ const AdminPaquetes = () => {
                       ? "bg-blue-100 text-blue-700 border border-blue-200"
                       : "bg-gray-100 hover:bg-gray-200 text-gray-700"
                   }`}
+                  disabled={isLoading}
                 >
                   <FiFilter className="w-4 h-4" />
                   <span>Filtros</span>
@@ -381,6 +379,7 @@ const AdminPaquetes = () => {
                       ? "bg-blue-100 text-blue-700 border border-blue-200"
                       : "bg-gray-100 text-gray-700 hover:bg-gray-200"
                   }`}
+                  disabled={isLoading}
                 >
                   {sortConfig.direction === "asc" ? (
                     <FiArrowUp className="w-4 h-4" />
@@ -398,7 +397,11 @@ const AdminPaquetes = () => {
                     <FiPackage className="w-4 h-4 opacity-95" />
                     <span className="text-xs font-medium">Paquetes</span>
                   </div>
-                  <div className="mt-1 text-2xl font-extrabold leading-none">{filteredPaquetes.length}</div>
+                  {isLoading ? (
+                    <div className="mt-1 h-6 w-10 bg-white/40 rounded animate-pulse" />
+                  ) : (
+                    <div className="mt-1 text-2xl font-extrabold leading-none">{filteredPaquetes.length}</div>
+                  )}
                 </div>
 
                 {paquetes && Array.isArray(paquetes) && (
@@ -407,7 +410,11 @@ const AdminPaquetes = () => {
                       <FiCheckCircle className="w-4 h-4 opacity-95" />
                       <span className="text-xs font-medium">Activos</span>
                     </div>
-                    <div className="mt-1 text-2xl font-extrabold leading-none">{paquetes.filter((p) => p.activo).length}</div>
+                    {isLoading ? (
+                      <div className="mt-1 h-6 w-10 bg-white/40 rounded animate-pulse" />
+                    ) : (
+                      <div className="mt-1 text-2xl font-extrabold leading-none">{paquetes.filter((p) => p.activo).length}</div>
+                    )}
                   </div>
                 )}
               </div>
@@ -422,6 +429,7 @@ const AdminPaquetes = () => {
                         ? "bg-blue-100 text-blue-700 border border-blue-200"
                         : "bg-gray-100 hover:bg-gray-200 text-gray-700"
                     }`}
+                    disabled={isLoading}
                   >
                     <FiFilter className="w-4 h-4" />
                     <span>Filtros avanzados</span>
@@ -434,6 +442,7 @@ const AdminPaquetes = () => {
                         ? "bg-blue-100 text-blue-700 border border-blue-200"
                         : "bg-gray-100 text-gray-700 hover:bg-gray-200"
                     }`}
+                    disabled={isLoading}
                   >
                     {sortConfig.direction === "asc" ? (
                       <FiArrowUp className="w-4 h-4" />
@@ -447,7 +456,11 @@ const AdminPaquetes = () => {
                 <div className="flex gap-3">
                   <div className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white py-2.5 px-4 rounded-xl font-medium text-sm flex items-center gap-2 shadow-md">
                     <div className="w-2 h-2 bg-white rounded-full"></div>
-                    <span className="font-bold">{filteredPaquetes.length}</span>
+                    {isLoading ? (
+                      <div className="h-4 w-6 bg-white/40 rounded animate-pulse" />
+                    ) : (
+                      <span className="font-bold">{filteredPaquetes.length}</span>
+                    )}
                     <span>paquetes</span>
                   </div>
 
@@ -455,23 +468,31 @@ const AdminPaquetes = () => {
                     <>
                       <div className="bg-gradient-to-r from-emerald-500 to-green-600 text-white py-2.5 px-4 rounded-xl font-medium text-sm flex items-center gap-2 shadow-md">
                         <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
-                        <span className="font-bold">
-                          {paquetes.filter((p) => p.activo).length}
-                        </span>
+                        {isLoading ? (
+                          <div className="h-4 w-6 bg-white/40 rounded animate-pulse" />
+                        ) : (
+                          <span className="font-bold">
+                            {paquetes.filter((p) => p.activo).length}
+                          </span>
+                        )}
                         <span>activos</span>
                       </div>
 
                       <div className="bg-gradient-to-r from-purple-500 to-indigo-600 text-white py-2.5 px-4 rounded-xl font-medium text-sm flex items-center gap-2 shadow-md">
                         <FiUsers className="w-4 h-4" />
-                        <span className="font-bold">
-                          {
-                            new Set(
-                              paquetes.flatMap(
-                                (p) => p.mayoristas?.map((m) => m.id) || [],
-                              ),
-                            ).size
-                          }
-                        </span>
+                        {isLoading ? (
+                          <div className="h-4 w-8 bg-white/40 rounded animate-pulse" />
+                        ) : (
+                          <span className="font-bold">
+                            {
+                              new Set(
+                                paquetes.flatMap(
+                                  (p) => p.mayoristas?.map((m) => m.id) || [],
+                                ),
+                              ).size
+                            }
+                          </span>
+                        )}
                         <span>mayoristas</span>
                       </div>
                     </>
@@ -872,8 +893,35 @@ const AdminPaquetes = () => {
           </div>
         </section>
 
-        {filteredPaquetes.length > 0 ? (
-          <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6 items-stretch">
+        {/* Lista / Skeleton / Vacío */}
+        {isLoading ? (
+          <>
+            <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6 [content-visibility:auto] [contain-intrinsic-size:600px_900px]">
+              {Array.from({ length: limit || 9 }).map((_, i) => (
+                <div key={i} className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 sm:p-5 animate-pulse">
+                  <div className="h-48 sm:h-56 lg:h-64 bg-gray-200 rounded-xl mb-4" />
+                  <div className="h-5 bg-gray-200 rounded w-3/4 mb-3" />
+                  <div className="grid grid-cols-3 gap-2 mb-3 sm:mb-4">
+                    <div className="h-14 bg-gray-200 rounded" />
+                    <div className="h-14 bg-gray-200 rounded" />
+                    <div className="h-14 bg-gray-200 rounded" />
+                  </div>
+                  <div className="grid grid-cols-2 gap-2">
+                    <div className="h-10 bg-gray-200 rounded" />
+                    <div className="h-10 bg-gray-200 rounded" />
+                  </div>
+                </div>
+              ))}
+            </div>
+            {/* Paginación skeleton */}
+            <div className="mt-6 sm:mt-8 flex items-center justify-between">
+              <div className="h-4 bg-gray-200 rounded w-24" />
+              <div className="h-10 bg-gray-200 rounded w-64" />
+              <div className="h-4 bg-gray-200 rounded w-24" />
+            </div>
+          </>
+        ) : filteredPaquetes.length > 0 ? (
+          <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6 items-stretch [content-visibility:auto] [contain-intrinsic-size:600px_900px]">
             {filteredPaquetes.map((paquete) => {
               return (
                 <div
@@ -1118,7 +1166,6 @@ const AdminPaquetes = () => {
         ) : (
           <div className="bg-gradient-to-br from-white via-gray-50 to-white rounded-2xl sm:rounded-3xl shadow-xl p-6 sm:p-8 lg:p-12 text-center border border-gray-200">
             <div className="max-w-md mx-auto">
-              {/* Icono central con animación */}
               <div className="relative inline-flex items-center justify-center w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-gradient-to-br from-blue-100 to-indigo-100 text-blue-500 mb-4 sm:mb-6">
                 <FiPackage className="w-10 h-10 sm:w-12 sm:h-12" />
                 <div className="absolute inset-0 rounded-full bg-gradient-to-br from-blue-500/20 to-indigo-500/20 animate-ping"></div>

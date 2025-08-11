@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, /* useEffect, */ useDeferredValue, useMemo, useCallback, lazy, Suspense } from "react";
 import { Link } from "react-router-dom";
 import { useMayoristas } from "../hooks/useMayoristas";
 import {
@@ -6,26 +6,22 @@ import {
   FiArrowDown,
   FiSearch,
   FiPlus,
-  FiEye,
-  FiEdit2,
-  FiTrash2,
   FiFilter,
   FiX,
   FiUsers,
-  FiCalendar,
   FiTag,
-  FiActivity,
-  FiSettings,
 } from "react-icons/fi";
-import api from "../../../api";
-import ConfirmDialog from "../components/ConfirmDialog";
+// import ConfirmDialog from "../components/ConfirmDialog";
+const ConfirmDialog = lazy(() => import("../components/ConfirmDialog"));
+const MayoristaCard = lazy(() => import("../components/MayoristaCard"));
 import { useNotification } from "./AdminLayout";
 
 const AdminMayoristasPage = () => {
-  const { mayoristas, setMayoristas, loading, error, deleteMayorista } =
+  const { mayoristas, /* setMayoristas, */ loading, error, deleteMayorista } =
     useMayoristas();
   const [searchTerm, setSearchTerm] = useState("");
-  const [filteredMayoristas, setFilteredMayoristas] = useState([]);
+  const deferredSearchTerm = useDeferredValue(searchTerm);
+  // const [filteredMayoristas, setFilteredMayoristas] = useState([]);
   const [sortConfig, setSortConfig] = useState({
     key: "nombre",
     direction: "asc",
@@ -40,13 +36,16 @@ const AdminMayoristasPage = () => {
   });
   const { addNotification } = useNotification();
 
-  const handleDelete = (mayoristaId, mayoristaName) => {
+  // Indica si es la primera carga (para no bloquear el layout y mejorar LCP)
+  const isInitialLoading = loading && (!Array.isArray(mayoristas) || mayoristas.length === 0);
+
+  const handleDelete = useCallback((mayoristaId, mayoristaName) => {
     setConfirmDialog({
       isOpen: true,
       mayoristaId: mayoristaId,
       mayoristaName: mayoristaName,
     });
-  };
+  }, []);
 
   const confirmDelete = async () => {
     try {
@@ -81,23 +80,20 @@ const AdminMayoristasPage = () => {
     setSortConfig({ key: "nombre", direction: "asc" });
   };
 
-  useEffect(() => {
-    // Asegurar que mayoristas sea un array antes de proceder
-    if (!Array.isArray(mayoristas)) {
-      setFilteredMayoristas([]);
-      return;
-    }
+  // useEffect reemplazado por useMemo para evitar un render extra al derivar estado
+  const filteredMayoristas = useMemo(() => {
+    if (!Array.isArray(mayoristas)) return [];
 
     let filtered = [...mayoristas];
 
-    if (searchTerm) {
+    if (deferredSearchTerm) {
       filtered = filtered.filter(
         (mayorista) =>
-          mayorista.nombre?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          mayorista.clave?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          mayorista.nombre?.toLowerCase().includes(deferredSearchTerm.toLowerCase()) ||
+          mayorista.clave?.toLowerCase().includes(deferredSearchTerm.toLowerCase()) ||
           mayorista.tipo_producto
             ?.toLowerCase()
-            .includes(searchTerm.toLowerCase()),
+            .includes(deferredSearchTerm.toLowerCase()),
       );
     }
 
@@ -127,23 +123,38 @@ const AdminMayoristasPage = () => {
       });
     }
 
-    setFilteredMayoristas(filtered);
-  }, [mayoristas, searchTerm, tipoFilter, sortConfig]);
+    return filtered;
+  }, [mayoristas, deferredSearchTerm, tipoFilter, sortConfig]);
 
-  const tiposUnicos = [
-    ...new Set((mayoristas || []).map((m) => m.tipo_producto)),
-  ].filter(Boolean);
+  const tiposUnicos = useMemo(() => (
+    [...new Set((mayoristas || []).map((m) => m.tipo_producto))].filter(Boolean)
+  ), [mayoristas]);
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-4">
-        <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-        <p className="mt-4 text-gray-600 text-lg font-medium">
-          Cargando mayoristas...
-        </p>
-      </div>
-    );
-  }
+  // Skeleton de tarjetas para carga inicial
+  const renderSkeletonCards = (count = 9) => (
+    <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6 [content-visibility:auto] [contain-intrinsic-size:600px_900px]">
+      {Array.from({ length: count }).map((_, idx) => (
+        <div key={idx} className="rounded-2xl border border-gray-200 bg-white shadow-sm p-4 sm:p-5 animate-pulse min-h-[220px]">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="w-12 h-12 rounded-xl bg-gray-200" />
+            <div className="flex-1">
+              <div className="h-4 bg-gray-200 rounded w-2/3 mb-2" />
+              <div className="h-3 bg-gray-200 rounded w-1/2" />
+            </div>
+          </div>
+          <div className="h-3 bg-gray-200 rounded w-full mb-2" />
+          <div className="h-3 bg-gray-200 rounded w-5/6 mb-4" />
+          <div className="grid grid-cols-2 gap-2 mt-auto">
+            <div className="h-10 bg-gray-200 rounded-xl" />
+            <div className="h-10 bg-gray-200 rounded-xl" />
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+
+  // Eliminar pantalla de carga bloqueante para mejorar LCP
+  // if (loading) { ... }  -> Se reemplaza por UI con skeletons
 
   if (error) {
     return (
@@ -174,9 +185,13 @@ const AdminMayoristasPage = () => {
               <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
                 Gestión de Mayoristas
               </h1>
-              <p className="text-gray-600 mt-1 sm:mt-2 text-sm sm:text-base">
-                Administra todos tus mayoristas en un solo lugar ({mayoristas.length} total)
-              </p>
+              {isInitialLoading ? (
+                <div className="mt-2 h-4 sm:h-5 w-48 sm:w-64 bg-gray-200 rounded animate-pulse mx-auto sm:mx-0" />
+              ) : (
+                <p className="text-gray-600 mt-1 sm:mt-2 text-sm sm:text-base">
+                  Administra todos tus mayoristas en un solo lugar ({Array.isArray(mayoristas) ? mayoristas.length : 0} total)
+                </p>
+              )}
             </div>
 
             <Link
@@ -202,6 +217,7 @@ const AdminMayoristasPage = () => {
                 className="w-full pl-10 sm:pl-12 pr-3 sm:pr-4 py-3 sm:py-4 rounded-lg sm:rounded-xl border border-purple-200 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-sm bg-purple-50/50 font-medium shadow-md focus:shadow-lg transition-all duration-200"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
+                disabled={loading}
               />
             </div>
 
@@ -245,7 +261,13 @@ const AdminMayoristasPage = () => {
                     <FiUsers className="w-4 h-4 opacity-95" />
                     <span className="text-xs font-medium">Mayoristas</span>
                   </div>
-                  <div className="mt-1 text-2xl font-extrabold leading-none">{filteredMayoristas.length}</div>
+                  <div className="mt-1 text-2xl font-extrabold leading-none">
+                    {isInitialLoading ? (
+                      <div className="h-7 w-8 bg-white/30 rounded animate-pulse" />
+                    ) : (
+                      filteredMayoristas.length
+                    )}
+                  </div>
                 </div>
 
                 <div className="rounded-xl p-3 bg-gradient-to-r from-teal-500 to-cyan-600 text-white shadow-md" aria-label="Tipos de producto">
@@ -253,7 +275,13 @@ const AdminMayoristasPage = () => {
                     <FiTag className="w-4 h-4 opacity-95" />
                     <span className="text-xs font-medium">Tipos de producto</span>
                   </div>
-                  <div className="mt-1 text-2xl font-extrabold leading-none">{tiposUnicos.length}</div>
+                  <div className="mt-1 text-2xl font-extrabold leading-none">
+                    {isInitialLoading ? (
+                      <div className="h-7 w-8 bg-white/30 rounded animate-pulse" />
+                    ) : (
+                      tiposUnicos.length
+                    )}
+                  </div>
                 </div>
               </div>
 
@@ -293,14 +321,24 @@ const AdminMayoristasPage = () => {
                   <div className="bg-gradient-to-r from-purple-500 to-indigo-600 text-white py-2.5 px-4 rounded-xl font-medium text-sm flex items-center gap-2 shadow-md">
                     <div className="w-2 h-2 bg-white rounded-full"></div>
                     <span className="font-bold">
-                      {filteredMayoristas.length}
+                      {isInitialLoading ? (
+                        <span className="inline-block h-4 w-6 bg-white/40 rounded animate-pulse" />
+                      ) : (
+                        filteredMayoristas.length
+                      )}
                     </span>
                     <span>mayoristas</span>
                   </div>
 
                   <div className="bg-gradient-to-r from-teal-500 to-cyan-600 text-white py-2.5 px-4 rounded-xl font-medium text-sm flex items-center gap-2 shadow-md">
                     <FiTag className="w-4 h-4" />
-                    <span className="font-bold">{tiposUnicos.length}</span>
+                    <span className="font-bold">
+                      {isInitialLoading ? (
+                        <span className="inline-block h-4 w-6 bg-white/40 rounded animate-pulse" />
+                      ) : (
+                        tiposUnicos.length
+                      )}
+                    </span>
                     <span>tipos</span>
                   </div>
                 </div>
@@ -411,7 +449,7 @@ const AdminMayoristasPage = () => {
                     encontrado{filteredMayoristas.length !== 1 ? "s" : ""}
                   </span>
                   <span className="text-gray-500 ml-2">
-                    de {mayoristas.length} total
+                    de {Array.isArray(mayoristas) ? mayoristas.length : 0} total
                   </span>
                 </div>
                 <div className="flex gap-3 lg:gap-4 order-1 lg:order-2 w-full lg:w-auto">
@@ -434,271 +472,24 @@ const AdminMayoristasPage = () => {
           )}
         </div>
 
-        {/* Filtros Rápidos - Mejorado para móvil */}
-        <section
-          className="bg-gradient-to-r from-white via-gray-50 to-white rounded-xl sm:rounded-2xl shadow-lg border border-gray-100 p-3 sm:p-4 lg:p-5 mb-4 sm:mb-6"
-          aria-labelledby="filtros-rapidos-mayoristas"
-        >
-          <div className="space-y-3 sm:space-y-4">
-            {/* Header de filtros */}
-            <div className="flex items-center gap-2 sm:gap-3">
-              <div className="w-1 h-4 sm:h-6 bg-gradient-to-b from-purple-500 to-indigo-600 rounded-full"></div>
-              <h2
-                id="filtros-rapidos-mayoristas"
-                className="text-xs sm:text-sm font-semibold text-gray-800"
-              >
-                Filtros Rápidos
-              </h2>
+        {/* Lista / Skeleton / Vacío */}
+        {isInitialLoading ? (
+          renderSkeletonCards()
+        ) : filteredMayoristas.length > 0 ? (
+          <Suspense fallback={renderSkeletonCards(Math.min(filteredMayoristas.length || 0, 9))}>
+            <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6 items-stretch [content-visibility:auto] [contain-intrinsic-size:600px_900px]">
+              {filteredMayoristas.map((mayorista) => (
+                <MayoristaCard
+                  key={mayorista.id}
+                  mayorista={mayorista}
+                  onDelete={handleDelete}
+                />
+              ))}
             </div>
-
-            {/* Filtros principales */}
-            <div
-              className="flex flex-col sm:flex-row flex-wrap gap-2 sm:gap-3"
-              role="group"
-              aria-labelledby="filtros-rapidos-mayoristas"
-            >
-              <button
-                onClick={() => {
-                  setTipoFilter("");
-                  setIsFiltersOpen(false);
-                }}
-                aria-pressed={!tipoFilter}
-                aria-label="Mostrar todos los mayoristas sin filtros"
-                className={`group relative px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg sm:rounded-xl text-xs sm:text-sm font-medium transition-all duration-200 ${
-                  !tipoFilter
-                    ? "bg-gradient-to-r from-purple-500 to-indigo-600 text-white shadow-lg"
-                    : "bg-white text-gray-600 hover:bg-purple-50 hover:text-purple-700 border border-gray-200 hover:border-purple-200"
-                }`}
-              >
-                <div className="flex items-center justify-center gap-2">
-                  <FiUsers className="w-3 h-3 sm:w-4 sm:h-4" />
-                  <span className="hidden sm:inline">Todos los Mayoristas</span>
-                  <span className="sm:hidden">Todos</span>
-                </div>
-              </button>
-            </div>
-
-            {/* Filtros por tipo de producto - Completo para desktop, simplificado para móvil */}
-            {tiposUnicos && tiposUnicos.length > 0 && (
-              <div className="space-y-2 sm:space-y-3">
-                <div className="flex items-center gap-2">
-                  <FiTag className="w-3 h-3 sm:w-4 sm:h-4 text-teal-500" />
-                  <span className="text-xs sm:text-sm font-medium text-gray-700">
-                    Filtrar por Tipo:
-                  </span>
-                </div>
-
-                {/* Versión móvil - limitada */}
-                <div
-                  className="grid grid-cols-2 gap-2 lg:hidden"
-                  role="group"
-                  aria-label="Filtros por tipo de producto - versión móvil"
-                >
-                  {tiposUnicos.slice(0, 3).map((tipo) => (
-                    <button
-                      key={tipo}
-                      onClick={() => {
-                        setTipoFilter(tipo);
-                        setIsFiltersOpen(false);
-                      }}
-                      aria-pressed={tipoFilter === tipo}
-                      aria-label={`Filtrar por tipo: ${tipo}`}
-                      className={`px-2 py-1.5 rounded-lg text-xs font-medium transition-all duration-200 truncate ${
-                        tipoFilter === tipo
-                          ? "bg-teal-500 text-white shadow-md"
-                          : "bg-white text-gray-600 hover:bg-teal-50 hover:text-teal-700 border border-gray-200 hover:border-teal-200"
-                      }`}
-                      title={tipo}
-                    >
-                      {tipo.length > 12 ? `${tipo.substring(0, 12)}...` : tipo}
-                    </button>
-                  ))}
-                  {tiposUnicos.length > 3 && (
-                    <button
-                      onClick={() => setIsFiltersOpen(true)}
-                      aria-label={`Ver ${tiposUnicos.length - 3} tipos de producto adicionales`}
-                      className="px-2 py-1.5 rounded-lg text-xs font-medium bg-gradient-to-r from-gray-100 to-gray-200 text-gray-700 hover:from-gray-200 hover:to-gray-300 transition-all duration-200 border border-gray-300 col-span-2"
-                    >
-                      +{tiposUnicos.length - 3} más
-                    </button>
-                  )}
-                </div>
-
-                {/* Versión desktop - completa */}
-                <div
-                  className="hidden lg:grid lg:grid-cols-4 lg:gap-3"
-                  role="group"
-                  aria-label="Filtros por tipo de producto - versión desktop"
-                >
-                  {tiposUnicos.map((tipo) => (
-                    <button
-                      key={tipo}
-                      onClick={() => {
-                        setTipoFilter(tipo);
-                        setIsFiltersOpen(false);
-                      }}
-                      aria-pressed={tipoFilter === tipo}
-                      aria-label={`Filtrar por tipo: ${tipo}`}
-                      className={`px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 flex items-center gap-2 ${
-                        tipoFilter === tipo
-                          ? "bg-teal-500 text-white shadow-lg transform scale-105"
-                          : "bg-white text-gray-600 hover:bg-teal-50 hover:text-teal-700 border border-gray-200 hover:border-teal-200 hover:shadow-md"
-                      }`}
-                      title={tipo}
-                    >
-                      <div
-                        className={`w-2 h-2 rounded-full ${
-                          tipoFilter === tipo ? "bg-white" : "bg-teal-500"
-                        }`}
-                      ></div>
-                      <span className="truncate">{tipo}</span>
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Botón para limpiar filtros */}
-            {(searchTerm || tipoFilter) && (
-              <div className="pt-2 sm:pt-2 border-t border-gray-200">
-                <button
-                  onClick={clearFilters}
-                  aria-label="Limpiar todos los filtros aplicados"
-                  className="w-full px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg sm:rounded-xl text-xs sm:text-sm font-medium bg-gradient-to-r from-red-50 to-pink-50 text-red-600 hover:from-red-100 hover:to-pink-100 border border-red-200 hover:border-red-300 transition-all duration-200 flex items-center justify-center gap-2"
-                >
-                  <FiX className="w-3 h-3 sm:w-4 sm:h-4" />
-                  <span className="hidden sm:inline">
-                    Limpiar todos los filtros
-                  </span>
-                  <span className="sm:hidden">Limpiar filtros</span>
-                </button>
-              </div>
-            )}
-          </div>
-        </section>
-
-        {filteredMayoristas.length > 0 ? (
-          <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6 items-stretch">
-            {filteredMayoristas.map((mayorista) => (
-              <div
-                key={mayorista.id}
-                className="group bg-white rounded-2xl sm:rounded-3xl shadow-lg overflow-hidden border border-gray-100 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 flex flex-col h-full"
-              >
-                {/* Header de la tarjeta */}
-                <div className="relative p-4 sm:p-5 lg:p-6 bg-gradient-to-br from-purple-50 via-indigo-50 to-blue-50">
-                  <div className="flex items-center gap-4">
-                    <div className="bg-gradient-to-br from-purple-500 to-indigo-600 p-3 rounded-xl shadow-md group-hover:scale-110 group-hover:rotate-3 transition-all duration-300">
-                      <FiUsers className="text-white text-xl" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <h3 className="text-lg sm:text-xl font-bold text-gray-900 truncate group-hover:text-purple-600 transition-colors duration-200">
-                        {mayorista.nombre}
-                      </h3>
-                      <div className="flex items-center gap-2 mt-1">
-                        <span className="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-medium bg-white/80 text-purple-700 shadow-sm">
-                          {mayorista.clave}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Contenido de la tarjeta */}
-                <div className="p-4 sm:p-5 lg:p-6 flex-1 flex flex-col">
-                  {/* Información en cards pequeñas */}
-                  <div className="grid grid-cols-2 gap-2 mb-4">
-                    <div className="bg-teal-50 hover:bg-teal-100 rounded-lg p-3 text-center transition-all duration-200 hover:shadow-md hover:scale-105 cursor-pointer">
-                      <FiTag className="w-4 h-4 text-teal-500 mx-auto mb-1 transition-transform duration-200" />
-                      <div
-                        className="text-xs text-teal-700 font-medium truncate"
-                        title={mayorista.tipo_producto}
-                      >
-                        {mayorista.tipo_producto || "Sin tipo"}
-                      </div>
-                    </div>
-
-                    <div className="bg-blue-50 hover:bg-blue-100 rounded-lg p-3 text-center transition-all duration-200 hover:shadow-md hover:scale-105 cursor-pointer">
-                      <FiCalendar className="w-4 h-4 text-blue-500 mx-auto mb-1 transition-transform duration-200" />
-                      <div className="text-xs text-blue-700 font-medium">
-                        {mayorista.creadoEn
-                          ? new Date(mayorista.creadoEn).toLocaleDateString(
-                              "es-MX",
-                              {
-                                month: "short",
-                                day: "numeric",
-                              },
-                            )
-                          : "N/A"}
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Información adicional */}
-                  <div className="flex-1">
-                    <div className="mb-4">
-                      <p className="text-xs text-gray-500 mb-2 font-medium">
-                        INFORMACIÓN
-                      </p>
-                      <div className="space-y-2">
-                        <div className="flex items-center justify-between">
-                          <span className="text-sm text-gray-600">Tipo:</span>
-                          <span className="text-sm font-medium text-gray-900 truncate ml-2">
-                            {mayorista.tipo_producto || "No especificado"}
-                          </span>
-                        </div>
-                        <div className="flex items-center justify-between">
-                          <span className="text-sm text-gray-600">Creado:</span>
-                          <span className="text-sm font-medium text-gray-900">
-                            {mayorista.creadoEn || mayorista.created_at
-                              ? new Date(
-                                  mayorista.creadoEn || mayorista.created_at,
-                                ).toLocaleDateString("es-MX")
-                              : "N/A"}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Botones de acción - Siempre en la parte inferior */}
-                  <div className="space-y-2">
-                    {/* Fila principal */}
-                    <div className="grid grid-cols-2 gap-2">
-                      {/* Editar */}
-                      <Link
-                        to={`/admin/mayoristas/editar/${mayorista.id}`}
-                        className="grupo/editar flex items-center justify-center gap-2 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-indigo-600 hover:to-purple-700 text-white font-semibold py-2.5 px-4 rounded-xl transition-all duration-300 text-sm shadow-sm hover:shadow-xl hover:scale-105 transform hover:-translate-y-1"
-                        title="Editar mayorista"
-                      >
-                        <FiEdit2 className="w-4 h-4 grupo-hover/editar:scale-110 grupo-hover/editar:rotate-45 transition-all duration-300" />
-                        <span className="grupo-hover/editar:tracking-wide transition-all duration-200">
-                          Editar
-                        </span>
-                      </Link>
-
-                      {/* Mover a papelera */}
-                      <button
-                        onClick={() =>
-                          handleDelete(mayorista.id, mayorista.nombre)
-                        }
-                        className="grupo/eliminar flex items-center justify-center gap-2 bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700 text-white font-semibold py-2.5 px-4 rounded-xl transition-all duration-300 text-sm shadow-sm hover:shadow-xl hover:scale-105 transform hover:-translate-y-1"
-                        title="Mover a papelera"
-                      >
-                        <FiTrash2 className="w-4 h-4 grupo-hover/eliminar:scale-125 grupo-hover/eliminar:rotate-12 transition-all duration-300" />
-                        <span className="grupo-hover/eliminar:font-bold transition-all duration-200">
-                          Eliminar
-                        </span>
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
+          </Suspense>
         ) : (
           <div className="bg-gradient-to-br from-white via-gray-50 to-white rounded-2xl sm:rounded-3xl shadow-xl p-6 sm:p-8 lg:p-12 text-center border border-gray-200">
             <div className="max-w-md mx-auto">
-              {/* Icono central con animación */}
               <div className="relative inline-flex items-center justify-center w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-gradient-to-br from-purple-100 to-indigo-100 text-purple-500 mb-4 sm:mb-6">
                 <FiUsers className="w-10 h-10 sm:w-12 sm:h-12" />
                 <div className="absolute inset-0 rounded-full bg-gradient-to-br from-purple-500/20 to-indigo-500/20 animate-ping"></div>
@@ -708,7 +499,7 @@ const AdminMayoristasPage = () => {
                 No se encontraron mayoristas
               </h3>
 
-              <p className="text-gray-600 mb-6 sm:mb-8 leading-relaxed text-sm sm:text-base">
+              <p className="text-gray-600 mb-6 sm:mb-8 leading-relaxed text-sm sm:text-base max-w-prose mx-auto">
                 {searchTerm
                   ? `No hay resultados para "${searchTerm}".`
                   : tipoFilter
@@ -741,7 +532,6 @@ const AdminMayoristasPage = () => {
                 </div>
               )}
 
-              {/* Botones de acción */}
               <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
                 <button
                   onClick={clearFilters}
@@ -772,17 +562,19 @@ const AdminMayoristasPage = () => {
         )}
 
         {/* Diálogo de confirmación */}
-        <ConfirmDialog
-          isOpen={confirmDialog.isOpen}
-          onClose={closeConfirmDialog}
-          onConfirm={confirmDelete}
-          title="Mover a papelera"
-          message="¿Estás seguro de que quieres mover este mayorista a la papelera? Podrás restaurarlo desde la sección de papelera."
-          itemName={confirmDialog.mayoristaName}
-          confirmText="Mover a papelera"
-          cancelText="Cancelar"
-          type="warning"
-        />
+        <Suspense fallback={null}>
+          <ConfirmDialog
+            isOpen={confirmDialog.isOpen}
+            onClose={closeConfirmDialog}
+            onConfirm={confirmDelete}
+            title="Mover a papelera"
+            message="¿Estás seguro de que quieres mover este mayorista a la papelera? Podrás restaurarlo desde la sección de papelera."
+            itemName={confirmDialog.mayoristaName}
+            confirmText="Mover a papelera"
+            cancelText="Cancelar"
+            type="warning"
+          />
+        </Suspense>
       </div>
     </div>
   );

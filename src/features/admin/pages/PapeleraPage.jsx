@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo, lazy, Suspense, useDeferredValue } from "react";
 import { Link } from "react-router-dom";
 import {
   FiTrash2,
@@ -25,11 +25,10 @@ import {
   FiPlus,
 } from "react-icons/fi";
 import { useNotification } from "./AdminLayout";
-import OptimizedImage from "../../../components/ui/OptimizedImage";
-import { getImageUrl } from "../../../utils/imageUtils";
-import ConfirmDialog from "../components/ConfirmDialog";
+const OptimizedImage = lazy(() => import("../../../components/ui/OptimizedImage"));
+const PapeleraItemCard = lazy(() => import("../components/PapeleraItemCard"));
+const ConfirmDialog = lazy(() => import("../components/ConfirmDialog"));
 import Pagination from "../../../components/ui/Pagination";
-import PapeleraItemCard from "../components/PapeleraItemCard";
 import usePapelera from "../hooks/usePapelera";
 
 const PapeleraPage = () => {
@@ -47,9 +46,20 @@ const PapeleraPage = () => {
     loadDeletedData,
     lastUpdated,
   } = usePapelera();
+
+  // Nuevo: banderas y valores seguros para mostrar UI estable durante loading
+  const isLoading = loading;
+  const safeStats = {
+    isEmpty: stats?.isEmpty ?? false,
+    totalPaquetes: stats?.totalPaquetes ?? 0,
+    totalMayoristas: stats?.totalMayoristas ?? 0,
+    totalUsuarios: stats?.totalUsuarios ?? 0,
+    total: stats?.total ?? 0,
+  };
   
   // Estados de filtros y búsqueda
   const [searchTerm, setSearchTerm] = useState("");
+  const deferredSearch = useDeferredValue(searchTerm);
   const [typeFilter, setTypeFilter] = useState("todos"); // todos, paquetes, mayoristas, usuarios
   const [sortConfig, setSortConfig] = useState({ key: "eliminadoEn", direction: "desc" });
   const [isFiltersOpen, setIsFiltersOpen] = useState(false);
@@ -67,48 +77,43 @@ const PapeleraPage = () => {
     itemType: "", // paquete, mayorista, usuario
   });
 
-  // Combinar y filtrar datos
-  const getFilteredItems = () => {
+  // Combinar y filtrar datos (memoizado)
+  const filteredItems = useMemo(() => {
     let allItems = getAllItems();
     
-    // Filtrar por tipo
     if (typeFilter !== "todos") {
       const filterType = typeFilter === "paquetes" ? "paquete" 
                        : typeFilter === "mayoristas" ? "mayorista"
                        : typeFilter === "usuarios" ? "usuario"
-                       : typeFilter.slice(0, -1); // fallback
+                       : typeFilter.slice(0, -1);
       allItems = allItems.filter(item => item.type === filterType);
     }
-    
-    // Filtrar por búsqueda
-    if (searchTerm) {
+
+    if (deferredSearch) {
+      const term = deferredSearch.toLowerCase();
       allItems = allItems.filter(item =>
-        item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        item.name.toLowerCase().includes(term) ||
         (item.type === "paquete" && item.destinos?.some(d => 
-          d.nombre?.toLowerCase().includes(searchTerm.toLowerCase())
+          d.nombre?.toLowerCase().includes(term)
         ))
       );
     }
-    
-    // Ordenar
+
     allItems.sort((a, b) => {
       let aValue = a[sortConfig.key];
       let bValue = b[sortConfig.key];
-      
       if (sortConfig.key === "eliminadoEn") {
         aValue = new Date(aValue);
         bValue = new Date(bValue);
       }
-      
       if (aValue < bValue) return sortConfig.direction === "asc" ? -1 : 1;
       if (aValue > bValue) return sortConfig.direction === "asc" ? 1 : -1;
       return 0;
     });
-    
-    return allItems;
-  };
 
-  const filteredItems = getFilteredItems();
+    return allItems;
+  }, [getAllItems, typeFilter, deferredSearch, sortConfig]);
+
   const totalItems = filteredItems.length;
   const totalPages = Math.ceil(totalItems / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
@@ -175,9 +180,9 @@ const PapeleraPage = () => {
     setConfirmDialog({
       isOpen: true,
       type,
-      itemId: item.id,
-      itemName: item.name,
-      itemType: item.type,
+      itemId: item?.id ?? null,
+      itemName: item?.name ?? "",
+      itemType: item?.type ?? "",
     });
   };
 
@@ -245,17 +250,6 @@ const PapeleraPage = () => {
     return daysLeft > 0 ? daysLeft : 0;
   };
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-4">
-        <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-        <p className="mt-4 text-gray-600 text-lg font-medium">
-          Cargando papelera...
-        </p>
-      </div>
-    );
-  }
-
   return (
     <div className="min-h-screen bg-gray-50 p-2 sm:p-4 lg:p-6">
       <div className="max-w-7xl mx-auto">
@@ -266,11 +260,15 @@ const PapeleraPage = () => {
               <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
                 Papelera de Reciclaje
               </h1>
-              <p className="text-gray-600 mt-1 sm:mt-2 text-sm sm:text-base">
-                Restaura o elimina permanentemente elementos ({totalItems} elementos)
-              </p>
-              {!stats.isEmpty && (
-                <div className="flex items-center gap-2 mt-2">
+              {isLoading ? (
+                <div className="mt-2 h-4 sm:h-5 w-44 sm:w-64 bg-gray-200 rounded animate-pulse mx-auto sm:mx-0" />
+              ) : (
+                <p className="text-gray-600 mt-1 sm:mt-2 text-sm sm:text-base">
+                  Restaura o elimina permanentemente elementos ({totalItems} elementos)
+                </p>
+              )}
+              {(!safeStats.isEmpty || isLoading) && (
+                <div className="flex items-center justify-center sm:justify-start gap-2 mt-2">
                   <FiAlertTriangle className="text-orange-500 w-4 h-4" />
                   <span className="text-xs sm:text-sm text-orange-600 font-medium">
                     Los elementos se eliminan automáticamente después de 14 días
@@ -282,14 +280,14 @@ const PapeleraPage = () => {
             <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
               <button
                 onClick={loadDeletedData}
-                disabled={loading}
+                disabled={isLoading}
                 className="w-full sm:w-auto lg:w-auto flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-purple-700 hover:from-blue-700 hover:to-purple-800 text-white font-semibold py-3 px-5 rounded-xl shadow-lg transition-all duration-300 ease-in-out transform hover:-translate-y-0.5 hover:shadow-xl text-sm sm:text-base whitespace-nowrap"
               >
-                <FiRefreshCw className={`w-4 h-4 sm:w-5 sm:h-5 ${loading ? "animate-spin" : ""}`} />
+                <FiRefreshCw className={`w-4 h-4 sm:w-5 sm:h-5 ${isLoading ? "animate-spin" : ""}`} />
                 Actualizar
               </button>
               
-              {!stats.isEmpty && (
+              {!safeStats.isEmpty && (
                 <button
                   onClick={() => setConfirmDialog({
                     isOpen: true,
@@ -309,7 +307,7 @@ const PapeleraPage = () => {
         </div>
 
         {/* Sección principal: estadísticas (chips) + búsqueda/controles */}
-        {!stats.isEmpty && (
+        {(!safeStats.isEmpty || isLoading) && (
           <div className="bg-gradient-to-br from-white/95 via-purple-50/30 to-blue-50/30 backdrop-blur-sm border border-white/40 rounded-xl sm:rounded-2xl shadow-lg p-3 sm:p-4 lg:p-6 mb-4 sm:mb-6">
 
             {/* Búsqueda y controles rápidos */}
@@ -324,6 +322,7 @@ const PapeleraPage = () => {
                   type="text"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
+                  disabled={isLoading}
                 />
               </div>
 
@@ -337,6 +336,7 @@ const PapeleraPage = () => {
                         ? 'bg-blue-100 text-blue-700 border border-blue-200'
                         : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
                     }`}
+                    disabled={isLoading}
                   >
                     <FiFilter className="w-4 h-4" />
                     <span>Filtros</span>
@@ -350,21 +350,33 @@ const PapeleraPage = () => {
                       <FiPackage className="w-4 h-4 opacity-95" />
                       <span className="text-xs font-medium">Paquetes</span>
                     </div>
-                    <div className="mt-1 text-2xl font-extrabold leading-none">{stats.totalPaquetes || 0}</div>
+                    {isLoading ? (
+                      <div className="mt-1 h-6 w-10 bg-white/40 rounded animate-pulse" />
+                    ) : (
+                      <div className="mt-1 text-2xl font-extrabold leading-none">{safeStats.totalPaquetes}</div>
+                    )}
                   </div>
                   <div className="rounded-xl p-3 bg-gradient-to-r from-green-500 to-emerald-600 text-white shadow-md" aria-label="Mayoristas">
                     <div className="flex items-center gap-2">
                       <FiUsers className="w-4 h-4 opacity-95" />
                       <span className="text-xs font-medium">Mayoristas</span>
                     </div>
-                    <div className="mt-1 text-2xl font-extrabold leading-none">{stats.totalMayoristas || 0}</div>
+                    {isLoading ? (
+                      <div className="mt-1 h-6 w-10 bg-white/40 rounded animate-pulse" />
+                    ) : (
+                      <div className="mt-1 text-2xl font-extrabold leading-none">{safeStats.totalMayoristas}</div>
+                    )}
                   </div>
                   <div className="rounded-xl p-3 bg-gradient-to-r from-yellow-500 to-orange-600 text-white shadow-md" aria-label="Usuarios">
                     <div className="flex items-center gap-2">
                       <FiUser className="w-4 h-4 opacity-95" />
                       <span className="text-xs font-medium">Usuarios</span>
                     </div>
-                    <div className="mt-1 text-2xl font-extrabold leading-none">{stats.totalUsuarios || 0}</div>
+                    {isLoading ? (
+                      <div className="mt-1 h-6 w-10 bg-white/40 rounded animate-pulse" />
+                    ) : (
+                      <div className="mt-1 text-2xl font-extrabold leading-none">{safeStats.totalUsuarios}</div>
+                    )}
                   </div>
                 </div>
 
@@ -378,6 +390,7 @@ const PapeleraPage = () => {
                           ? 'bg-blue-100 text-blue-700 border border-blue-200'
                           : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
                       }`}
+                      disabled={isLoading}
                     >
                       <FiFilter className="w-3 h-3 lg:w-4 lg:h-4" />
                       <span className="hidden lg:inline">Filtros avanzados</span>
@@ -385,131 +398,137 @@ const PapeleraPage = () => {
                     </button>
                   </div>
 
-                  <div className="flex flex-wrap gap-2 lg:gap-3">
-                    <div className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white py-2.5 px-3 lg:px-4 rounded-xl font-medium text-xs lg:text-sm flex items-center gap-2 shadow-md">
-                      <FiPackage className="w-3 h-3 lg:w-4 lg:h-4" />
-                      <span className="font-bold">{stats.totalPaquetes || 0}</span>
-                      <span className="hidden sm:inline">paquetes</span>
-                      <span className="sm:hidden">pack</span>
+                  <div className="grid grid-cols-3 gap-2 lg:gap-3">
+                    <div className="px-3 lg:px-4 py-2.5 bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-xl shadow-md text-center">
+                      <p className="text-[10px] lg:text-xs opacity-90">Paquetes</p>
+                      <p className="text-base lg:text-lg font-bold tabular-nums">
+                        {isLoading ? <span className="inline-block h-4 w-8 bg-white/40 rounded animate-pulse" /> : safeStats.totalPaquetes}
+                      </p>
                     </div>
-                    <div className="bg-gradient-to-r from-green-500 to-emerald-600 text-white py-2.5 px-3 lg:px-4 rounded-xl font-medium text-xs lg:text-sm flex items-center gap-2 shadow-md">
-                      <FiUsers className="w-3 h-3 lg:w-4 lg:h-4" />
-                      <span className="font-bold">{stats.totalMayoristas || 0}</span>
-                      <span className="hidden sm:inline">mayoristas</span>
-                      <span className="sm:hidden">mayor</span>
+                    <div className="px-3 lg:px-4 py-2.5 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-xl shadow-md text-center">
+                      <p className="text-[10px] lg:text-xs opacity-90">Mayoristas</p>
+                      <p className="text-base lg:text-lg font-bold tabular-nums">
+                        {isLoading ? <span className="inline-block h-4 w-8 bg-white/40 rounded animate-pulse" /> : safeStats.totalMayoristas}
+                      </p>
                     </div>
-                    <div className="bg-gradient-to-r from-yellow-500 to-orange-600 text-white py-2.5 px-3 lg:px-4 rounded-xl font-medium text-xs lg:text-sm flex items-center gap-2 shadow-md">
-                      <FiUser className="w-3 h-3 lg:w-4 lg:h-4" />
-                      <span className="font-bold">{stats.totalUsuarios || 0}</span>
-                      <span className="hidden sm:inline">usuarios</span>
-                      <span className="sm:hidden">users</span>
+                    <div className="px-3 lg:px-4 py-2.5 bg-gradient-to-r from-yellow-500 to-orange-600 text-white rounded-xl shadow-md text-center">
+                      <p className="text-[10px] lg:text-xs opacity-90">Usuarios</p>
+                      <p className="text-base lg:text-lg font-bold tabular-nums">
+                        {isLoading ? <span className="inline-block h-4 w-8 bg-white/40 rounded animate-pulse" /> : safeStats.totalUsuarios}
+                      </p>
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
 
-            {/* Filtros avanzados */}
-            {isFiltersOpen && (
-              <div className="mt-3 sm:mt-4 p-3 sm:p-4 lg:p-6 bg-gradient-to-br from-white via-purple-50/40 to-blue-50/40 rounded-lg sm:rounded-xl lg:rounded-2xl ">
-                <div className="flex justify-between items-center mb-3 sm:mb-4 lg:mb-6">
-                  <h3 className="text-sm sm:text-base lg:text-xl font-semibold text-gray-800">
-                    Filtros avanzados
-                  </h3>
-                  <button
-                    onClick={() => setIsFiltersOpen(false)}
-                    className="p-2 rounded-full hover:bg-gray-200 transition"
-                  >
-                    <FiX className="w-4 h-4 sm:w-5 sm:h-5 text-gray-500" />
-                  </button>
-                </div>
-
-                <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-5 lg:gap-6">
-                  {/* Filtro por tipo */}
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2 lg:mb-3">
-                      <FiTrash2 className="inline w-4 h-4 mr-1" />
-                      Tipo de Elemento
-                    </label>
-                    <select
-                      value={typeFilter}
-                      onChange={(e) => setTypeFilter(e.target.value)}
-                      className="w-full px-3 py-2.5 lg:py-3 rounded-lg lg:rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm lg:text-base"
-                    >
-                      <option value="todos">Todos los elementos</option>
-                      <option value="paquetes">Solo paquetes</option>
-                      <option value="mayoristas">Solo mayoristas</option>
-                      <option value="usuarios">Solo usuarios</option>
-                    </select>
-                  </div>
-
-                  {/* Filtro por ordenamiento */}
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2 lg:mb-3">
-                      <FiArrowUp className="inline w-4 h-4 mr-1" />
-                      Ordenar por
-                    </label>
-                    <select
-                      value={`${sortConfig.key}-${sortConfig.direction}`}
-                      onChange={(e) => {
-                        const [key, direction] = e.target.value.split('-');
-                        setSortConfig({ key, direction });
-                      }}
-                      className="w-full px-3 py-2.5 lg:py-3 rounded-lg lg:rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm lg:text-base"
-                    >
-                      <option value="eliminadoEn-desc">Más recientes</option>
-                      <option value="eliminadoEn-asc">Más antiguos</option>
-                      <option value="name-asc">Nombre (A-Z)</option>
-                      <option value="name-desc">Nombre (Z-A)</option>
-                      <option value="type-asc">Tipo (A-Z)</option>
-                      <option value="type-desc">Tipo (Z-A)</option>
-                    </select>
-                  </div>
-                </div>
-
-                {/* Botones de acción de filtros */}
-                <div className="flex flex-col lg:flex-row justify-between items-center pt-4 lg:pt-6 gap-3 lg:gap-4 border-t border-gray-200 mt-4 lg:mt-6">
-                  <div className="text-sm lg:text-base text-gray-600 order-2 lg:order-1 text-center lg:text-left">
-                    <span className="font-semibold text-blue-600">
-                      {getFilteredItems().length}
-                    </span>
-                    <span>
-                      {" "}
-                      elemento{getFilteredItems().length !== 1 ? "s" : ""}{" "}
-                      encontrado{getFilteredItems().length !== 1 ? "s" : ""}
-                    </span>
-                    <span className="text-gray-500 ml-2">
-                      de {getAllItems().length} total
-                    </span>
-                  </div>
-                  <div className="flex gap-3 lg:gap-4 order-1 lg:order-2 w-full lg:w-auto">
-                    <button
-                      onClick={() => {
-                        setSearchTerm('');
-                        setTypeFilter('todos');
-                        setSortConfig({ key: 'eliminadoEn', direction: 'desc' });
-                        setIsFiltersOpen(false);
-                      }}
-                      className="flex-1 lg:flex-none px-4 lg:px-6 py-2.5 lg:py-3 bg-gradient-to-r from-gray-100 to-gray-200 hover:from-gray-200 hover:to-gray-300 text-gray-700 font-medium rounded-lg lg:rounded-xl transition-all duration-200 text-sm lg:text-base shadow-sm hover:shadow-md"
-                    >
-                      Limpiar todo
-                    </button>
+              {/* Filtros (panel desplegable) */}
+              {isFiltersOpen && (
+                <div className="mt-3 sm:mt-4 p-3 sm:p-4 lg:p-6 bg-gradient-to-br from-white via-purple-50/40 to-blue-50/40 rounded-lg sm:rounded-xl lg:rounded-2xl border border-purple-100">
+                  <div className="flex justify-between items-center mb-3 sm:mb-4 lg:mb-6">
+                    <h3 className="text-sm sm:text-base lg:text-xl font-semibold text-gray-800">
+                      Filtros avanzados
+                    </h3>
                     <button
                       onClick={() => setIsFiltersOpen(false)}
-                      className="flex-1 lg:flex-none px-4 lg:px-6 py-2.5 lg:py-3 bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white font-medium rounded-lg lg:rounded-xl transition-all duration-200 text-sm lg:text-base flex items-center justify-center gap-2 shadow-lg hover:shadow-xl"
+                      className="p-2 rounded-full hover:bg-gray-200 transition"
                     >
-                      <FiFilter className="w-4 h-4" />
-                      Aplicar filtros
+                      <FiX className="w-4 h-4 sm:w-5 sm:h-5 text-gray-500" />
                     </button>
                   </div>
+
+                  <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-5 lg:gap-6">
+                    {/* Filtro por tipo */}
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2 lg:mb-3">
+                        <FiTrash2 className="inline w-4 h-4 mr-1" />
+                        Tipo de Elemento
+                      </label>
+                      <select
+                        value={typeFilter}
+                        onChange={(e) => setTypeFilter(e.target.value)}
+                        className="w-full px-3 py-2.5 lg:py-3 rounded-lg lg:rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm lg:text-base"
+                      >
+                        <option value="todos">Todos los elementos</option>
+                        <option value="paquetes">Solo paquetes</option>
+                        <option value="mayoristas">Solo mayoristas</option>
+                        <option value="usuarios">Solo usuarios</option>
+                      </select>
+                    </div>
+
+                    {/* Filtro por ordenamiento */}
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2 lg:mb-3">
+                        <FiArrowUp className="inline w-4 h-4 mr-1" />
+                        Ordenar por
+                      </label>
+                      <select
+                        value={`${sortConfig.key}-${sortConfig.direction}`}
+                        onChange={(e) => {
+                          const [key, direction] = e.target.value.split('-');
+                          setSortConfig({ key, direction });
+                        }}
+                        className="w-full px-3 py-2.5 lg:py-3 rounded-lg lg:rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm lg:text-base"
+                      >
+                        <option value="eliminadoEn-desc">Más recientes</option>
+                        <option value="eliminadoEn-asc">Más antiguos</option>
+                        <option value="name-asc">Nombre (A-Z)</option>
+                        <option value="name-desc">Nombre (Z-A)</option>
+                        <option value="type-asc">Tipo (A-Z)</option>
+                        <option value="type-desc">Tipo (Z-A)</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  {/* Botones de acción de filtros */}
+                  <div className="flex flex-col lg:flex-row justify-between items-center pt-4 lg:pt-6 gap-3 lg:gap-4 border-t border-gray-200 mt-4 lg:mt-6">
+                    <div className="text-sm lg:text-base text-gray-600 order-2 lg:order-1 text-center lg:text-left">
+                      {isLoading ? (
+                        <div className="h-4 w-64 bg-gray-200 rounded animate-pulse mx-auto lg:mx-0" />
+                      ) : (
+                        <>
+                          <span className="font-semibold text-blue-600">
+                            {getFilteredItems().length}
+                          </span>
+                          <span>
+                            {" "}
+                            elemento{getFilteredItems().length !== 1 ? "s" : ""}{" "}
+                            encontrado{getFilteredItems().length !== 1 ? "s" : ""}
+                          </span>
+                          <span className="text-gray-500 ml-2">
+                            de {getAllItems().length} total
+                          </span>
+                        </>
+                      )}
+                    </div>
+                    <div className="flex gap-3 lg:gap-4 order-1 lg:order-2 w-full lg:w-auto">
+                      <button
+                        onClick={() => {
+                          setSearchTerm('');
+                          setTypeFilter('todos');
+                          setSortConfig({ key: 'eliminadoEn', direction: 'desc' });
+                          setIsFiltersOpen(false);
+                        }}
+                        className="flex-1 lg:flex-none px-4 lg:px-6 py-2.5 lg:py-3 bg-gradient-to-r from-gray-100 to-gray-200 hover:from-gray-200 hover:to-gray-300 text-gray-700 font-medium rounded-lg lg:rounded-xl transition-all duration-200 text-sm lg:text-base shadow-sm hover:shadow-md"
+                      >
+                        Limpiar todo
+                      </button>
+                      <button
+                        onClick={() => setIsFiltersOpen(false)}
+                        className="flex-1 lg:flex-none px-4 lg:px-6 py-2.5 lg:py-3 bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white font-medium rounded-lg lg:rounded-xl transition-all duration-200 text-sm lg:text-base flex items-center justify-center gap-2 shadow-lg hover:shadow-xl"
+                      >
+                        <FiFilter className="w-4 h-4" />
+                        Aplicar filtros
+                      </button>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
+            </div>
           </div>
         )}
 
         {/* Filtros Rápidos */}
-        {!stats.isEmpty && (
+        {(!safeStats.isEmpty || isLoading) && (
           <section className="bg-gradient-to-r from-white via-gray-50 to-white rounded-xl sm:rounded-2xl shadow-lg border border-gray-100 p-3 sm:p-4 lg:p-5 mb-4 sm:mb-6" aria-labelledby="filtros-rapidos">
             <div className="space-y-3 sm:space-y-4">
               <div className="flex items-center gap-2 sm:gap-3">
@@ -589,9 +608,17 @@ const PapeleraPage = () => {
           </section>
         )}
 
-        {/* Estado vacío */}
-        {stats.isEmpty && (
-          <div className="bg-gradient-to-br from-white via-gray-50 to-white rounded-2xl sm:rounded-3xl shadow-xl p-6 sm:p-8 lg:p-12 text-center border border-gray-200 mb-4 sm:mb-6">
+        {/* Lista / Estado vacío / Paginación */}
+        {isLoading ? (
+          // Skeleton list: solo contenedor estable para evitar CLS y trabajar menos en primer render
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 [content-visibility:auto] [contain-intrinsic-size:600px_900px]">
+            {Array.from({ length: itemsPerPage }).map((_, i) => (
+              <div key={i} className="rounded-2xl border border-gray-200 bg-white shadow-sm p-4 sm:p-5 animate-pulse min-h-[220px]" />
+            ))}
+          </div>
+        ) : totalItems === 0 ? (
+          // Estado vacío
+          <div className="bg-gradient-to-br from-white via-gray-50 to-white rounded-2xl sm:rounded-3xl shadow-xl p-6 sm:p-8 lg:p-12 text-center border border-gray-200">
             <div className="max-w-md mx-auto">
               {/* Icono central con animación */}
               <div className="relative inline-flex items-center justify-center w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-gradient-to-br from-blue-100 to-indigo-100 text-blue-500 mb-4 sm:mb-6">
@@ -622,90 +649,15 @@ const PapeleraPage = () => {
               </div>
             </div>
           </div>
-        )}
-
-        {/* Lista de elementos */}
-        {currentItems.length === 0 && !stats.isEmpty ? (
-          <div className="bg-gradient-to-br from-white via-gray-50 to-white rounded-2xl sm:rounded-3xl shadow-xl p-6 sm:p-8 lg:p-12 text-center border border-gray-200">
-            <div className="max-w-md mx-auto">
-              {/* Icono central con animación */}
-              <div className="relative inline-flex items-center justify-center w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-gradient-to-br from-blue-100 to-indigo-100 text-blue-500 mb-4 sm:mb-6">
-                <FiSearch className="w-10 h-10 sm:w-12 sm:h-12" />
-                <div className="absolute inset-0 rounded-full bg-gradient-to-br from-blue-500/20 to-indigo-500/20 animate-ping"></div>
-              </div>
-
-              <h3 className="text-xl sm:text-2xl lg:text-3xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent mb-3 sm:mb-4">
-                No se encontraron elementos
-              </h3>
-
-              <p className="text-gray-600 mb-6 sm:mb-8 leading-relaxed text-sm sm:text-base">
-                {searchTerm
-                  ? `No hay resultados para "${searchTerm}".`
-                  : typeFilter !== "todos"
-                    ? `No hay ${typeFilter} en la papelera.`
-                    : "No hay elementos que coincidan con los filtros aplicados."}{" "}
-                Intenta ajustar los filtros o volver al dashboard.
-              </p>
-
-              {/* Filtros aplicados */}
-              {(searchTerm || typeFilter !== "todos") && (
-                <div className="mb-6 sm:mb-8 p-4 sm:p-6 bg-gradient-to-r from-gray-50 to-blue-50 rounded-xl sm:rounded-2xl border border-gray-200">
-                  <p className="text-xs sm:text-sm font-semibold text-gray-700 mb-2 sm:mb-3">
-                    FILTROS APLICADOS
-                  </p>
-                  <div className="flex flex-wrap gap-1 sm:gap-2 justify-center">
-                    {searchTerm && (
-                      <span className="px-2 sm:px-3 py-1 sm:py-2 bg-gradient-to-r from-blue-500 to-indigo-600 text-white text-xs rounded-lg sm:rounded-xl font-medium shadow-md">
-                        <span className="hidden sm:inline">Búsqueda: "</span>
-                        {searchTerm}
-                        <span className="hidden sm:inline">"</span>
-                      </span>
-                    )}
-                    {typeFilter !== "todos" && (
-                      <span className="px-2 sm:px-3 py-1 sm:py-2 bg-gradient-to-r from-teal-500 to-cyan-600 text-white text-xs rounded-lg sm:rounded-xl font-medium shadow-md">
-                        <span className="hidden sm:inline">Tipo: </span>
-                        {typeFilter === "paquetes" ? "Paquetes" : 
-                         typeFilter === "mayoristas" ? "Mayoristas" : 
-                         typeFilter === "usuarios" ? "Usuarios" : "Todos"}
-                      </span>
-                    )}
-                  </div>
-                </div>
-              )}
-
-              {/* Botones de acción */}
-              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
-                <button
-                  onClick={() => {
-                    setSearchTerm("");
-                    setTypeFilter("todos");
-                    setSortConfig({ key: "eliminadoEn", direction: "desc" });
-                  }}
-                  className="group px-4 sm:px-6 py-2.5 sm:py-3 bg-gradient-to-r from-gray-100 to-gray-200 hover:from-gray-200 hover:to-gray-300 text-gray-700 font-semibold rounded-xl sm:rounded-2xl transition-all duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-1 text-sm sm:text-base"
-                >
-                  <span className="flex items-center justify-center gap-2">
-                    <FiX className="w-4 h-4 group-hover:rotate-90 transition-transform duration-200" />
-                    <span className="hidden sm:inline">Limpiar filtros</span>
-                    <span className="sm:hidden">Limpiar</span>
-                  </span>
-                </button>
-
-                <Link
-                  to="/admin"
-                  className="group px-4 sm:px-6 py-2.5 sm:py-3 bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white font-semibold rounded-xl sm:rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 text-sm sm:text-base"
-                >
-                  <span className="flex items-center justify-center gap-2">
-                    <FiHome className="w-4 h-4 group-hover:scale-110 transition-transform duration-200" />
-                    <span className="hidden sm:inline">Volver al Dashboard</span>
-                    <span className="sm:hidden">Dashboard</span>
-                  </span>
-                </Link>
-              </div>
-            </div>
-          </div>
         ) : (
-          currentItems.length > 0 && (
-            <>
+          <>
+            <Suspense fallback={
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
+                {Array.from({ length: itemsPerPage }).map((_, i) => (
+                  <div key={i} className="rounded-2xl border border-gray-200 bg-white shadow-sm p-4 sm:p-5 animate-pulse min-h-[220px]" />
+                ))}
+              </div>
+            }>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 [content-visibility:auto] [contain-intrinsic-size:600px_900px]">
                 {currentItems.map((item) => (
                   <PapeleraItemCard
@@ -718,61 +670,63 @@ const PapeleraPage = () => {
                   />
                 ))}
               </div>
-              
-              {/* Paginación */}
-              {totalPages > 1 && (
-                <div className="mt-6 sm:mt-8">
-                  <Pagination
-                    currentPage={currentPage}
-                    totalPages={totalPages}
-                    itemsPerPage={itemsPerPage}
-                    totalItems={totalItems}
-                    onPageChange={setCurrentPage}
-                    onItemsPerPageChange={setItemsPerPage}
-                  />
-                </div>
-              )}
-            </>
-          )
+            </Suspense>
+
+            {/* Paginación */}
+            {totalPages > 1 && (
+              <div className="mt-6 sm:mt-8">
+                <Pagination
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  itemsPerPage={itemsPerPage}
+                  totalItems={totalItems}
+                  onPageChange={setCurrentPage}
+                  onItemsPerPageChange={setItemsPerPage}
+                />
+              </div>
+            )}
+          </>
         )}
       </div>
 
       {/* Diálogo de confirmación */}
-      <ConfirmDialog
-        isOpen={confirmDialog.isOpen}
-        onClose={closeConfirmDialog}
-        onConfirm={confirmAction}
-        title={
-          confirmDialog.type === "restore" 
-            ? "Restaurar elemento" 
-            : confirmDialog.type === "emptyTrash"
-            ? "Vaciar papelera"
-            : "Eliminar permanentemente"
-        }
-        message={
-          confirmDialog.type === "restore"
-            ? `¿Estás seguro de que quieres restaurar ${
-                confirmDialog.itemType === "paquete" ? "el paquete" : 
-                confirmDialog.itemType === "mayorista" ? "el mayorista" : "el usuario"
-              } "${confirmDialog.itemName}"?`
-            : confirmDialog.type === "emptyTrash"
-            ? `¿Estás seguro de que quieres vaciar TODA la papelera? Se eliminarán permanentemente ${stats.total} elementos. Esta acción no se puede deshacer.`
-            : `¿Estás seguro de que quieres eliminar PERMANENTEMENTE ${
-                confirmDialog.itemType === "paquete" ? "el paquete" : 
-                confirmDialog.itemType === "mayorista" ? "el mayorista" : "el usuario"
-              } "${confirmDialog.itemName}"? Esta acción no se puede deshacer.`
-        }
-        itemName={confirmDialog.type === "emptyTrash" ? "Papelera completa" : confirmDialog.itemName}
-        confirmText={
-          confirmDialog.type === "restore" 
-            ? "Restaurar" 
-            : confirmDialog.type === "emptyTrash"
-            ? "Vaciar papelera"
-            : "Eliminar permanentemente"
-        }
-        cancelText="Cancelar"
-        type={confirmDialog.type === "restore" ? "success" : "danger"}
-      />
+      <Suspense fallback={null}>
+        <ConfirmDialog
+          isOpen={confirmDialog.isOpen}
+          onClose={closeConfirmDialog}
+          onConfirm={confirmAction}
+          title={
+            confirmDialog.type === "restore" 
+              ? "Restaurar elemento" 
+              : confirmDialog.type === "emptyTrash"
+              ? "Vaciar papelera"
+              : "Eliminar permanentemente"
+          }
+          message={
+            confirmDialog.type === "restore"
+              ? `¿Estás seguro de que quieres restaurar ${
+                  confirmDialog.itemType === "paquete" ? "el paquete" : 
+                  confirmDialog.itemType === "mayorista" ? "el mayorista" : "el usuario"
+                } "${confirmDialog.itemName}"?`
+              : confirmDialog.type === "emptyTrash"
+              ? `¿Estás seguro de que quieres vaciar TODA la papelera? Se eliminarán permanentemente ${safeStats.total} elementos. Esta acción no se puede deshacer.`
+              : `¿Estás seguro de que quieres eliminar PERMANENTEMENTE ${
+                  confirmDialog.itemType === "paquete" ? "el paquete" : 
+                  confirmDialog.itemType === "mayorista" ? "el mayorista" : "el usuario"
+                } "${confirmDialog.itemName}"? Esta acción no se puede deshacer.`
+          }
+          itemName={confirmDialog.type === "emptyTrash" ? "Papelera completa" : confirmDialog.itemName}
+          confirmText={
+            confirmDialog.type === "restore" 
+              ? "Restaurar" 
+              : confirmDialog.type === "emptyTrash"
+              ? "Vaciar papelera"
+              : "Eliminar permanentemente"
+          }
+          cancelText="Cancelar"
+          type={confirmDialog.type === "restore" ? "success" : "danger"}
+        />
+      </Suspense>
     </div>
   );
 };
