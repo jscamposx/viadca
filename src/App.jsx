@@ -22,6 +22,7 @@ import VerifyEmailPage from "./features/auth/pages/VerifyEmailPage";
 import ForgotPasswordPage from "./features/auth/pages/ForgotPasswordPage";
 import ResetPasswordPage from "./features/auth/pages/ResetPasswordPage";
 import PendingApprovalPage from "./features/auth/pages/PendingApprovalPage";
+import ProtectedUserProfilePage from "./features/profile/pages/UserProfilePage";
 
 function App() {
   return (
@@ -41,6 +42,7 @@ function App() {
         <Route path="/restablecer-contraseña" element={<ResetPasswordPage />} />
         <Route path="/restablecer-contrase%c3%b1a" element={<ResetPasswordPage />} />
         <Route path="/pending-approval" element={<PendingApprovalPage />} />
+        <Route path="/profile" element={<ProtectedUserProfilePage />} />
         
         {/* Rutas protegidas de administración */}
         <Route 

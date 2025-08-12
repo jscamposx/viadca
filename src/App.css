@@ -40,6 +40,15 @@
   }
 }
 
+@keyframes logo-marquee {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
 .animate-fade-in {
   animation: fade-in 0.8s ease-out forwards;
 }
@@ -61,6 +70,10 @@
   );
   background-size: 200px 100%;
   animation: shimmer 2s infinite;
+}
+
+.animate-logo-marquee {
+  animation: logo-marquee 25s linear infinite;
 }
 
 .animate-reverse {
