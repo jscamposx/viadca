@@ -6,7 +6,9 @@ import {
   FiArrowLeft,
   FiAlertCircle,
   FiCheckCircle,
-  FiSend
+  FiSend,
+  FiLock,
+  FiHelpCircle
 } from 'react-icons/fi';
 
 const ForgotPasswordPage = () => {
@@ -40,8 +42,6 @@ const ForgotPasswordPage = () => {
       setIsSuccess(true);
       setMessage(response.message || 'Se ha enviado un enlace de recuperación a tu email');
     } catch (error) {
-      console.error('Error al solicitar recuperación:', error);
-      
       if (error.response?.data?.message) {
         setError(error.response.data.message);
       } else {
@@ -61,48 +61,90 @@ const ForgotPasswordPage = () => {
 
   if (isSuccess) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 flex items-center justify-center p-4">
+      <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50">
         <div className="w-full max-w-md">
-          <div className="bg-gradient-to-br from-green-50 to-emerald-50 border border-green-200 rounded-2xl shadow-xl p-8 text-center">
-            <div className="flex justify-center mb-6">
-              <div className="bg-green-100 p-4 rounded-full">
-                <FiCheckCircle className="w-12 h-12 text-green-600" />
+          {/* Volver al inicio - Mobile */}
+          <div className="sm:hidden mb-6">
+            <Link 
+              to="/" 
+              className="inline-flex items-center gap-2 text-indigo-600 hover:text-indigo-800 transition-colors"
+            >
+              <FiArrowLeft className="w-5 h-5" />
+              <span className="font-medium">Volver al inicio</span>
+            </Link>
+          </div>
+
+          {/* Tarjeta de éxito */}
+          <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100">
+            {/* Cabecera con gradiente */}
+            <div className="bg-gradient-to-r from-green-600 to-emerald-600 py-6 px-8">
+              <div className="flex items-center justify-center mb-4">
+                <div className="bg-white/20 p-3 rounded-full">
+                  <FiCheckCircle className="w-8 h-8 text-white" />
+                </div>
+              </div>
+              <h1 className="text-2xl font-bold text-white text-center">
+                ¡Email Enviado!
+              </h1>
+              <p className="text-green-100 text-center mt-1">
+                Revisa tu bandeja de entrada
+              </p>
+            </div>
+
+            {/* Contenido */}
+            <div className="p-6 sm:p-8">
+              <div className="text-center">
+                <p className="text-gray-700 mb-8 leading-relaxed">
+                  {message}
+                </p>
+                
+                <div className="space-y-4">
+                  <Link
+                    to="/login"
+                    className="w-full inline-block bg-gradient-to-r from-green-600 to-emerald-700 hover:from-green-700 hover:to-emerald-800 text-white font-semibold py-3 px-6 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-0.5"
+                  >
+                    Volver al Login
+                  </Link>
+                  
+                  <button
+                    onClick={() => {
+                      setIsSuccess(false);
+                      setEmail('');
+                      setMessage('');
+                    }}
+                    className="w-full text-green-600 hover:text-green-700 font-medium transition-colors"
+                  >
+                    Enviar otro email
+                  </button>
+                </div>
               </div>
             </div>
-            
-            <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-4">
-              ¡Email Enviado!
-            </h1>
-            
-            <p className="text-green-700 mb-6 leading-relaxed">
-              {message}
-            </p>
-            
-            <div className="space-y-4">
-              <Link
-                to="/login"
-                className="w-full inline-block bg-gradient-to-r from-green-600 to-emerald-700 hover:from-green-700 hover:to-emerald-800 text-white font-semibold py-3 px-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-0.5"
-              >
-                Volver al Login
-              </Link>
-              
-              <button
-                onClick={() => {
-                  setIsSuccess(false);
-                  setEmail('');
-                  setMessage('');
-                }}
-                className="w-full text-green-600 hover:text-green-700 text-sm transition-colors"
-              >
-                Enviar otro email
-              </button>
+          </div>
+
+          {/* Información adicional */}
+          <div className="mt-6 p-4 bg-white rounded-xl border border-green-200 shadow-sm">
+            <div className="flex items-start gap-3">
+              <div className="bg-green-100 p-2 rounded-full">
+                <FiHelpCircle className="w-5 h-5 text-green-600" />
+              </div>
+              <div>
+                <h3 className="font-semibold text-gray-800 mb-1">¿No recibiste el email?</h3>
+                <p className="text-sm text-gray-600">
+                  Revisa tu carpeta de spam o solicita un nuevo enlace. El enlace es válido por 1 hora.
+                </p>
+              </div>
             </div>
           </div>
-          
-          <div className="mt-6 p-4 bg-white/80 backdrop-blur-sm rounded-xl border border-green-200">
-            <p className="text-sm text-green-700">
-              <strong>Nota:</strong> Revisa también tu carpeta de spam. El enlace es válido por 1 hora.
-            </p>
+
+          {/* Link al home - Desktop */}
+          <div className="hidden sm:block text-center mt-6">
+            <Link
+              to="/"
+              className="text-gray-600 hover:text-gray-800 transition-colors font-medium inline-flex items-center gap-1"
+            >
+              <FiArrowLeft className="w-4 h-4" />
+              <span>Volver al inicio</span>
+            </Link>
           </div>
         </div>
       </div>
@@ -110,115 +152,137 @@ const ForgotPasswordPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 flex items-center justify-center p-4">
+    <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-indigo-50 via-blue-50 to-purple-50">
       <div className="w-full max-w-md">
-        {/* Header */}
-        <div className="text-center mb-8">
-          <div className="bg-gradient-to-br from-blue-600 to-indigo-700 p-4 rounded-2xl shadow-xl inline-block mb-4">
-            <FiMail className="w-8 h-8 text-white" />
-          </div>
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent">
-            Recuperar Contraseña
-          </h1>
-          <p className="text-gray-600 mt-2">
-            Te enviaremos un enlace para restablecer tu contraseña
-          </p>
+        {/* Volver al inicio - Mobile */}
+        <div className="sm:hidden mb-6">
+          <Link 
+            to="/" 
+            className="inline-flex items-center gap-2 text-indigo-600 hover:text-indigo-800 transition-colors"
+          >
+            <FiArrowLeft className="w-5 h-5" />
+            <span className="font-medium">Volver al inicio</span>
+          </Link>
         </div>
 
-        {/* Mensaje de error */}
-        {error && (
-          <div className="p-4 rounded-xl mb-6 bg-red-50 border border-red-200 text-red-700">
-            <div className="flex items-center gap-3">
-              <FiAlertCircle className="w-5 h-5" />
-              <span className="text-sm font-medium">{error}</span>
+        {/* Tarjeta principal */}
+        <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100">
+          {/* Cabecera con gradiente */}
+          <div className="bg-gradient-to-r from-indigo-600 to-blue-600 py-6 px-8">
+            <div className="flex items-center justify-center mb-4">
+              <div className="bg-white/20 p-3 rounded-full">
+                <FiLock className="w-8 h-8 text-white" />
+              </div>
             </div>
+            <h1 className="text-2xl font-bold text-white text-center">
+              Recuperar Contraseña
+            </h1>
+            <p className="text-indigo-100 text-center mt-1">
+              Te enviaremos un enlace para restablecer tu contraseña
+            </p>
           </div>
-        )}
 
-        {/* Formulario */}
-        <div className="bg-white rounded-2xl shadow-xl border border-gray-200 overflow-hidden">
-          <form onSubmit={handleSubmit} className="p-6">
-            {/* Campo Email */}
-            <div className="mb-6">
-              <label htmlFor="email" className="block text-sm font-semibold text-gray-700 mb-3">
-                <div className="flex items-center gap-2">
-                  <FiMail className="w-4 h-4 text-blue-600" />
-                  <span>Email</span>
-                </div>
-              </label>
-              <input
-                type="email"
-                id="email"
-                value={email}
-                onChange={handleEmailChange}
-                className={`w-full px-4 py-3 border-2 rounded-xl focus:ring-4 focus:ring-blue-500/30 focus:border-blue-500 transition-all duration-300 ${
-                  error
-                    ? 'border-red-300 bg-red-50 focus:border-red-500 focus:ring-red-500/30'
-                    : 'border-gray-200 bg-gray-50 hover:bg-white hover:border-gray-300'
-                }`}
-                placeholder="Ingresa tu email registrado"
+          {/* Contenido del formulario */}
+          <div className="p-6 sm:p-8">
+            {/* Mensaje de estado */}
+            {error && (
+              <div className="p-4 rounded-xl mb-6 flex items-start gap-3 bg-red-50 border border-red-200 text-red-700">
+                <FiAlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5" />
+                <span className="text-sm font-medium">{error}</span>
+              </div>
+            )}
+
+            <form onSubmit={handleSubmit} className="space-y-5">
+              {/* Campo Email */}
+              <div>
+                <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+                  <div className="flex items-center gap-2">
+                    <FiMail className="w-4 h-4 text-indigo-600" />
+                    <span>Email</span>
+                  </div>
+                </label>
+                <input
+                  type="email"
+                  id="email"
+                  value={email}
+                  onChange={handleEmailChange}
+                  className={`w-full px-4 py-3 border rounded-lg focus:ring-4 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all duration-300 ${
+                    error
+                      ? 'border-red-300 bg-red-50 focus:border-red-500 focus:ring-red-500/20'
+                      : 'border-gray-300 bg-gray-50 hover:bg-white'
+                  }`}
+                  placeholder="Ingresa tu email registrado"
+                  disabled={isLoading}
+                  required
+                />
+              </div>
+
+              {/* Botón Submit */}
+              <button
+                type="submit"
                 disabled={isLoading}
-                required
-              />
-            </div>
-
-            {/* Botón Submit */}
-            <button
-              type="submit"
-              disabled={isLoading}
-              className="w-full bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white font-semibold py-3 px-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
-            >
-              {isLoading ? (
-                <div className="flex items-center justify-center gap-2">
-                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                  <span>Enviando...</span>
-                </div>
-              ) : (
-                <div className="flex items-center justify-center gap-2">
-                  <FiSend className="w-5 h-5" />
-                  <span>Enviar Enlace</span>
-                </div>
-              )}
-            </button>
-          </form>
-
-          {/* Enlaces adicionales */}
-          <div className="px-6 py-4 bg-gray-50 border-t border-gray-200">
-            <div className="flex flex-col sm:flex-row justify-between items-center gap-4 text-sm">
-              <Link
-                to="/login"
-                className="flex items-center gap-2 text-blue-600 hover:text-blue-700 font-medium transition-colors"
+                className="w-full bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-700 hover:to-blue-700 text-white font-semibold py-3 px-6 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
               >
-                <FiArrowLeft className="w-4 h-4" />
-                Volver al Login
-              </Link>
-              <Link
-                to="/register"
-                className="text-gray-600 hover:text-gray-700 transition-colors"
-              >
-                ¿No tienes cuenta? Regístrate
-              </Link>
+                {isLoading ? (
+                  <div className="flex items-center justify-center gap-2">
+                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                    <span>Enviando...</span>
+                  </div>
+                ) : (
+                  <div className="flex items-center justify-center gap-2">
+                    <FiSend className="w-5 h-5" />
+                    <span>Enviar Enlace</span>
+                  </div>
+                )}
+              </button>
+            </form>
+
+            {/* Enlaces adicionales */}
+            <div className="mt-6 pt-5 border-t border-gray-200">
+              <div className="flex flex-col sm:flex-row justify-between gap-4 text-sm">
+                <Link
+                  to="/login"
+                  className="text-indigo-600 hover:text-indigo-800 font-medium transition-colors inline-flex items-center gap-2"
+                >
+                  <FiArrowLeft className="w-4 h-4" />
+                  <span>Volver al Login</span>
+                </Link>
+                <Link
+                  to="/register"
+                  className="text-gray-600 hover:text-gray-800 transition-colors"
+                >
+                  ¿No tienes cuenta? Regístrate
+                </Link>
+              </div>
             </div>
           </div>
         </div>
 
         {/* Información adicional */}
-        <div className="mt-6 p-4 bg-white/80 backdrop-blur-sm rounded-xl border border-blue-200">
-          <h3 className="font-semibold text-blue-800 mb-2">¿Cómo funciona?</h3>
-          <ul className="text-sm text-blue-700 space-y-1">
-            <li>• Recibirás un email con un enlace seguro</li>
-            <li>• El enlace es válido por 1 hora</li>
-            <li>• Podrás crear una nueva contraseña</li>
-          </ul>
+        <div className="mt-6 p-4 bg-white rounded-xl border border-indigo-200 shadow-sm">
+          <div className="flex items-start gap-3">
+            <div className="bg-indigo-100 p-2 rounded-full">
+              <FiHelpCircle className="w-5 h-5 text-indigo-600" />
+            </div>
+            <div>
+              <h3 className="font-semibold text-gray-800 mb-1">¿Cómo funciona?</h3>
+              <ul className="text-sm text-gray-600 space-y-1">
+                <li>• Recibirás un email con un enlace seguro</li>
+                <li>• El enlace es válido por 1 hora</li>
+                <li>• Podrás crear una nueva contraseña</li>
+              </ul>
+            </div>
+          </div>
         </div>
 
-        {/* Link al home */}
-        <div className="text-center mt-6">
+        {/* Link al home - Desktop */}
+        <div className="hidden sm:block text-center mt-6">
           <Link
             to="/"
-            className="text-gray-600 hover:text-gray-700 text-sm transition-colors"
+            className="text-gray-600 hover:text-gray-800 transition-colors font-medium inline-flex items-center gap-1"
           >
-            ← Volver al inicio
+            <FiArrowLeft className="w-4 h-4" />
+            <span>Volver al inicio</span>
           </Link>
         </div>
       </div>
