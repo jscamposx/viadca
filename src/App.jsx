@@ -14,7 +14,7 @@ import AdminUsersPage from "./features/admin/pages/AdminUsersPage";
 import AdminProfilePage from "./features/admin/pages/AdminProfilePage";
 import AdminConfigPage from "./features/admin/pages/AdminConfigPage";
 
-// Importar componentes de autenticación
+
 import { AuthProvider } from "./contexts/AuthContext";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 import LoginPage from "./features/auth/pages/LoginPage";
@@ -25,7 +25,7 @@ import ResetPasswordPage from "./features/auth/pages/ResetPasswordPage";
 import PendingApprovalPage from "./features/auth/pages/PendingApprovalPage";
 import ProtectedUserProfilePage from "./features/profile/pages/UserProfilePage";
 
-// Páginas legales
+
 import PrivacyPage from "./features/legal/pages/PrivacyPage";
 import TermsPage from "./features/legal/pages/TermsPage";
 import CookiesPage from "./features/legal/pages/CookiesPage";

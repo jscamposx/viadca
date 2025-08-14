@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import contactService from "../api/contactService";
 
 export const useContactInfo = () => {
@@ -16,12 +16,28 @@ export const useContactInfo = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
+  // Guardas para StrictMode y deduplicación
+  const didInitRef = useRef(false);
+  const inFlightRef = useRef(null);
+
   useEffect(() => {
+    if (didInitRef.current) return; // evita doble ejecución en StrictMode
+    didInitRef.current = true;
+
     const fetchContactInfo = async () => {
       try {
         setLoading(true);
         setError(null);
-        const data = await contactService.getContacto();
+
+        // Reutilizar promesa en vuelo para evitar duplicados
+        if (!inFlightRef.current) {
+          inFlightRef.current = contactService
+            .getContacto()
+            .finally(() => {
+              inFlightRef.current = null;
+            });
+        }
+        const data = await inFlightRef.current;
 
         // Filtrar valores null y usar fallbacks
         const processedData = {

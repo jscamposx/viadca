@@ -12,6 +12,10 @@ const CONTACT_FIELDS = [
   "youtube",
 ];
 
+// Caché y promesa en vuelo a nivel de módulo
+let contactoCache = null; // objeto normalizado o null
+let contactoInFlight = null; // Promise o null
+
 const normalize = (data = {}) => {
   const result = {};
   CONTACT_FIELDS.forEach((k) => {
@@ -41,10 +45,30 @@ const toNullIfEmpty = (v) => {
 };
 
 const contactService = {
-  async getContacto() {
-    // Evitar headers no permitidos por CORS; usar query anti-cache
-    const res = await api.get("/contacto", { params: { _ts: Date.now() } });
-    return normalize(res.data);
+  async getContacto(force = false) {
+    // Usar caché si existe y no es forzado
+    if (contactoCache && !force) {
+      return contactoCache;
+    }
+
+    // Si hay una promesa en vuelo y no es forzado, esperar
+    if (contactoInFlight && !force) {
+      return contactoInFlight;
+    }
+
+    // Lanzar nueva petición (con query anti-cache del lado del servidor si aplica)
+    contactoInFlight = api
+      .get("/contacto", { params: { _ts: Date.now() } })
+      .then((res) => normalize(res.data))
+      .then((data) => {
+        contactoCache = data;
+        return data;
+      })
+      .finally(() => {
+        contactoInFlight = null;
+      });
+
+    return contactoInFlight;
   },
 
   async createOrReplaceContacto(contacto) {
@@ -54,7 +78,9 @@ const contactService = {
       return acc;
     }, {});
     const res = await api.post("/contacto", payload);
-    return normalize(res.data);
+    // Invalida y actualiza caché
+    contactoCache = normalize(res.data);
+    return contactoCache;
   },
 
   async updateContacto(partialContacto) {
@@ -64,16 +90,22 @@ const contactService = {
       Object.entries(provided).map(([k, v]) => [k, toNullIfEmpty(v)]),
     );
     const res = await api.patch("/contacto", payload);
-    return normalize(res.data);
+    // Invalida y actualiza caché
+    contactoCache = normalize(res.data);
+    return contactoCache;
   },
 
   async clearContacto() {
     const res = await api.delete("/contacto");
-    return normalize(res.data);
+    // Invalida y actualiza caché
+    contactoCache = normalize(res.data);
+    return contactoCache;
   },
 
   async hardDeleteContacto() {
     const res = await api.delete("/contacto", { params: { hard: true } });
+    // Invalida caché (el backend puede ya no devolver el objeto)
+    contactoCache = null;
     return res.data; // puede no devolver el objeto
   },
 };

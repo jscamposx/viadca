@@ -1,55 +1,105 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import apiClient from "../../../api/axiosConfig";
 
+// Caché y promesas en vuelo por tipo a nivel de módulo
+const trashCache = {
+  paquetes: null,
+  mayoristas: null,
+  usuarios: null,
+};
+const trashInFlight = {
+  paquetes: null,
+  mayoristas: null,
+  usuarios: null,
+};
+
 export const usePapelera = () => {
-  const [loading, setLoading] = useState(false); // Cambiado a false para evitar loading infinito
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [paquetesEliminados, setPaquetesEliminados] = useState([]);
-  const [mayoristasEliminados, setMayoristasEliminados] = useState([]);
-  const [usuariosEliminados, setUsuariosEliminados] = useState([]);
+  const [paquetesEliminados, setPaquetesEliminados] = useState(
+    Array.isArray(trashCache.paquetes) ? trashCache.paquetes : [],
+  );
+  const [mayoristasEliminados, setMayoristasEliminados] = useState(
+    Array.isArray(trashCache.mayoristas) ? trashCache.mayoristas : [],
+  );
+  const [usuariosEliminados, setUsuariosEliminados] = useState(
+    Array.isArray(trashCache.usuarios) ? trashCache.usuarios : [],
+  );
   const [lastUpdated, setLastUpdated] = useState(null);
+  const mountedRef = useRef(false);
 
-  // Función para cargar datos eliminados
-  const loadDeletedData = useCallback(async () => {
+  const fetchType = useCallback(async (type, force = false) => {
     try {
-      setLoading(true);
-      setError(null);
+      // Cache hit
+      if (Array.isArray(trashCache[type]) && !force) {
+        return trashCache[type];
+      }
+      // In-flight existing
+      if (trashInFlight[type] && !force) {
+        return await trashInFlight[type];
+      }
+      // Build endpoint
+      const endpoint =
+        type === "paquetes"
+          ? "/admin/paquetes/deleted/list"
+          : type === "mayoristas"
+            ? "/admin/mayoristas/deleted/list"
+            : "/admin/usuarios/deleted/list";
 
-      // Cargar paquetes eliminados
-      const paquetesResponse = await apiClient.get(
-        "/admin/paquetes/deleted/list",
-      );
-      setPaquetesEliminados(paquetesResponse.data || []);
+      trashInFlight[type] = apiClient
+        .get(endpoint)
+        .then((res) => (Array.isArray(res.data) ? res.data : []))
+        .then((data) => {
+          trashCache[type] = data;
+          return data;
+        })
+        .finally(() => {
+          trashInFlight[type] = null;
+        });
 
-      // Cargar mayoristas eliminados
-      const mayoristasResponse = await apiClient.get(
-        "/admin/mayoristas/deleted/list",
-      );
-      setMayoristasEliminados(mayoristasResponse.data || []);
-
-      // Cargar usuarios eliminados
-      const usuariosResponse = await apiClient.get(
-        "/admin/usuarios/deleted/list",
-      );
-      setUsuariosEliminados(usuariosResponse.data || []);
-
-      setLastUpdated(new Date());
-    } catch (err) {
-      console.error("Error al cargar datos eliminados:", err);
-      setError("Error al cargar los elementos eliminados");
-      // Establecer valores por defecto en caso de error
-      setPaquetesEliminados([]);
-      setMayoristasEliminados([]);
-      setUsuariosEliminados([]);
-    } finally {
-      setLoading(false);
+      return await trashInFlight[type];
+    } catch (e) {
+      throw e;
     }
   }, []);
 
-  // Cargar datos al inicializar
+  // Función para cargar datos eliminados (las 3 colecciones)
+  const loadDeletedData = useCallback(
+    async (force = false) => {
+      try {
+        setLoading(true);
+        setError(null);
+
+        const [p, m, u] = await Promise.all([
+          fetchType("paquetes", force),
+          fetchType("mayoristas", force),
+          fetchType("usuarios", force),
+        ]);
+
+        setPaquetesEliminados(p);
+        setMayoristasEliminados(m);
+        setUsuariosEliminados(u);
+        setLastUpdated(new Date());
+      } catch (err) {
+        console.error("Error al cargar datos eliminados:", err);
+        setError("Error al cargar los elementos eliminados");
+        setPaquetesEliminados([]);
+        setMayoristasEliminados([]);
+        setUsuariosEliminados([]);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [fetchType],
+  );
+
+  // Cargar datos al inicializar una sola vez (evitar doble efecto por StrictMode)
   useEffect(() => {
-    loadDeletedData();
-  }, [loadDeletedData]);
+    if (mountedRef.current) return;
+    mountedRef.current = true;
+    loadDeletedData(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Función para restaurar un elemento
   const restoreItem = useCallback(async (itemId, itemType) => {
@@ -63,13 +113,21 @@ export const usePapelera = () => {
 
       await apiClient.patch(endpoint);
 
-      // Actualizar el estado local
       if (itemType === "paquete") {
         setPaquetesEliminados((prev) => prev.filter((p) => p.id !== itemId));
+        if (Array.isArray(trashCache.paquetes)) {
+          trashCache.paquetes = trashCache.paquetes.filter((p) => p.id !== itemId);
+        }
       } else if (itemType === "mayorista") {
         setMayoristasEliminados((prev) => prev.filter((m) => m.id !== itemId));
+        if (Array.isArray(trashCache.mayoristas)) {
+          trashCache.mayoristas = trashCache.mayoristas.filter((m) => m.id !== itemId);
+        }
       } else if (itemType === "usuario") {
         setUsuariosEliminados((prev) => prev.filter((u) => u.id !== itemId));
+        if (Array.isArray(trashCache.usuarios)) {
+          trashCache.usuarios = trashCache.usuarios.filter((u) => u.id !== itemId);
+        }
       }
 
       setLastUpdated(new Date());
@@ -83,10 +141,6 @@ export const usePapelera = () => {
   // Función para eliminar definitivamente un elemento
   const hardDeleteItem = useCallback(async (itemId, itemType) => {
     try {
-      // Endpoints según backend actual:
-      // - Paquetes: DELETE /admin/paquetes/:id/hard
-      // - Mayoristas: DELETE /admin/mayoristas/:id/hard
-      // - Usuarios:  POST   /admin/usuarios/:id/hard-delete
       if (itemType === "usuario") {
         await apiClient.post(`/admin/usuarios/${itemId}/hard-delete`);
       } else if (itemType === "paquete") {
@@ -97,13 +151,21 @@ export const usePapelera = () => {
         throw new Error(`Tipo de elemento desconocido: ${itemType}`);
       }
 
-      // Actualizar el estado local
       if (itemType === "paquete") {
         setPaquetesEliminados((prev) => prev.filter((p) => p.id !== itemId));
+        if (Array.isArray(trashCache.paquetes)) {
+          trashCache.paquetes = trashCache.paquetes.filter((p) => p.id !== itemId);
+        }
       } else if (itemType === "mayorista") {
         setMayoristasEliminados((prev) => prev.filter((m) => m.id !== itemId));
+        if (Array.isArray(trashCache.mayoristas)) {
+          trashCache.mayoristas = trashCache.mayoristas.filter((m) => m.id !== itemId);
+        }
       } else if (itemType === "usuario") {
         setUsuariosEliminados((prev) => prev.filter((u) => u.id !== itemId));
+        if (Array.isArray(trashCache.usuarios)) {
+          trashCache.usuarios = trashCache.usuarios.filter((u) => u.id !== itemId);
+        }
       }
 
       setLastUpdated(new Date());
@@ -117,14 +179,13 @@ export const usePapelera = () => {
   // Función para vaciar toda la papelera
   const emptyTrash = useCallback(async () => {
     try {
-      // Endpoint de limpieza masiva del backend:
-      // POST /admin/cleanup/hard-delete
       await apiClient.post("/admin/cleanup/hard-delete");
-
-      // Limpiar estado local tras éxito
       setPaquetesEliminados([]);
       setMayoristasEliminados([]);
       setUsuariosEliminados([]);
+      trashCache.paquetes = [];
+      trashCache.mayoristas = [];
+      trashCache.usuarios = [];
       setLastUpdated(new Date());
       return true;
     } catch (err) {

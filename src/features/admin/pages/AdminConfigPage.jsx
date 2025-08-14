@@ -114,11 +114,11 @@ const AdminConfigPage = () => {
     [data, initial],
   );
 
-  const fetchData = async () => {
+  const fetchData = async (force = false) => {
     setLoading(true);
     setMessage({ text: "", type: "" });
     try {
-      const res = await contactService.getContacto();
+      const res = await contactService.getContacto(force);
       const normalized = Object.fromEntries(
         Object.entries(res).map(([k, v]) => [k, v ?? ""]),
       );
@@ -133,7 +133,7 @@ const AdminConfigPage = () => {
   };
 
   useEffect(() => {
-    fetchData();
+    fetchData(false);
   }, []);
 
   const handleChange = (key, value) => {
@@ -241,7 +241,7 @@ const AdminConfigPage = () => {
 
             <div className="flex flex-wrap gap-3">
               <button
-                onClick={fetchData}
+                onClick={() => fetchData(true)}
                 disabled={loading || saving}
                 className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >

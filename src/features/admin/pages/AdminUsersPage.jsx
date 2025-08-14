@@ -5,6 +5,7 @@ import {
   lazy,
   Suspense,
   useDeferredValue,
+  useRef,
 } from "react";
 import { useUsers } from "../../../hooks/useUsers";
 import { useAuth } from "../../../contexts/AuthContext";
@@ -45,7 +46,11 @@ const AdminUsersPage = () => {
     fetchStats,
     updateUserRole,
     deleteUser,
+    refresh,
   } = useUsers();
+
+  // Evitar doble montaje/llamadas en StrictMode (dev) para la carga inicial
+  const didInitRef = useRef(false);
 
   const [searchTerm, setSearchTerm] = useState("");
   const deferredSearch = useDeferredValue(searchTerm);
@@ -67,8 +72,12 @@ const AdminUsersPage = () => {
   });
 
   useEffect(() => {
-    fetchUsers();
-    fetchStats();
+    if (didInitRef.current) return;
+    didInitRef.current = true;
+    // Carga inicial unificada y concurrente sin forzar (respeta caché del hook)
+    Promise.all([fetchUsers(), fetchStats()]).catch((e) => {
+      console.error("Error en carga inicial de usuarios/stats:", e);
+    });
   }, []);
 
   // Estado de carga inicial para evitar bloquear el layout (mejora LCP)
@@ -342,8 +351,7 @@ const AdminUsersPage = () => {
 
             <button
               onClick={() => {
-                fetchUsers({}, true); // Forzar actualización
-                fetchStats();
+                refresh(); // Forzar actualización unificada
               }}
               className="w-full sm:w-auto lg:w-auto flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-purple-700 hover:from-blue-700 hover:to-purple-800 text-white font-semibold py-3 px-5 rounded-xl shadow-lg transition-all duration-300 ease-in-out transform hover:-translate-y-0.5 hover:shadow-xl text-sm sm:text-base whitespace-nowrap"
               disabled={loading}
@@ -777,7 +785,7 @@ const AdminUsersPage = () => {
               >
                 <div className="flex items-center justify-center gap-2">
                   <FiUsers className="w-3 h-3 sm:w-4 sm:h-4" />
-                  <span className="hidden sm:inline">Todos los Usuarios</span>
+                  <span className="hidden sm:inline">Todos</span>
                   <span className="sm:hidden">Todos</span>
                 </div>
               </button>
@@ -826,7 +834,7 @@ const AdminUsersPage = () => {
 
               <button
                 onClick={() => {
-                  setRoleFilter("usuario");
+                	setRoleFilter("usuario");
                   setVerificationFilter("todos");
                   setIsFiltersOpen(false);
                 }}
@@ -1018,8 +1026,7 @@ const AdminUsersPage = () => {
 
                   <button
                     onClick={() => {
-                      fetchUsers();
-                      fetchStats();
+                      refresh();
                     }}
                     className="group px-4 sm:px-6 py-2.5 sm:py-3 bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white font-semibold rounded-xl sm:rounded-2xl shadow-lg hover:shadow-xl transición-all duración-300 transform hover:-translate-y-1 text-sm sm:text-base"
                   >
@@ -1076,7 +1083,7 @@ const AdminUsersPage = () => {
         </Suspense>
       </div>
     </div>
-  );
+  ) ;
 };
 
 export default AdminUsersPage;

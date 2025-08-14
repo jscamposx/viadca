@@ -153,7 +153,7 @@ const AdminPaquetes = () => {
   const handleRefresh = async () => {
     try {
       setIsRefreshing(true);
-      await refetch();
+      await refetch(true);
       addNotification("Lista de paquetes actualizada", "success");
     } catch (e) {
       addNotification("No se pudo actualizar la lista", "error");

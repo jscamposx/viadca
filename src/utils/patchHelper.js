@@ -80,16 +80,16 @@ export const preparePatchPayload = (originalPackage, currentFormData) => {
     payload.mayoristasIds = currentFormData.mayoristasIds || [];
   }
 
-  // Analizar cambios en imágenes
+
   const imageAnalysis = analyzeImageChanges(originalPackage, currentFormData);
   if (imageAnalysis.hasChanges) {
     console.log("🖼️ Cambios detectados en imágenes:", imageAnalysis);
 
     if (imageAnalysis.type === "ORDER_ONLY") {
-      // Solo cambios de orden - enviar payload optimizado
+
       payload.imagenes = "PROCESS_IMAGES_ORDER_ONLY";
     } else {
-      // Cambios completos - procesamiento normal
+
       payload.imagenes = "PROCESS_IMAGES";
     }
   } else {
@@ -205,7 +205,7 @@ const buildDestinosPayload = (formData) => {
 };
 
 const hasMayoristasChanges = (original, current) => {
-  // Si no hay original (nuevo paquete), y hay mayoristas actuales, hay "cambios"
+
   if (!original && current.mayoristasIds && current.mayoristasIds.length > 0) {
     console.log("🆕 Nuevo paquete con mayoristas - considerado como cambio");
     return true;
@@ -263,7 +263,7 @@ const analyzeImageChanges = (original, current) => {
     })),
   });
 
-  // Caso 1: Diferente cantidad de imágenes (hay nuevas o eliminadas)
+
   if (originalImages.length !== currentImages.length) {
     console.log("📈 Hay nuevas imágenes o se eliminaron");
     return {
@@ -273,7 +273,7 @@ const analyzeImageChanges = (original, current) => {
     };
   }
 
-  // Si no hay imágenes en ningún lado, no hay cambios
+
   if (originalImages.length === 0 && currentImages.length === 0) {
     console.log("✅ No hay imágenes en original ni current");
     return {
@@ -283,8 +283,7 @@ const analyzeImageChanges = (original, current) => {
     };
   }
 
-  // Si todas las imágenes current tienen originalContent y coinciden exactamente
-  // con las originales, entonces no hay cambios (caso común al cargar paquete)
+
   const allHaveOriginalContent = currentImages.every(
     (img) => img.originalContent,
   );
@@ -311,8 +310,7 @@ const analyzeImageChanges = (original, current) => {
     }
   }
 
-  // Verificar si hay cambios en el orden de las imágenes existentes
-  // Comparar el array de IDs en el orden original vs actual
+
   const originalIds = originalImages.map((img) => img.id);
   const currentIds = currentImages.map((img) => img.id);
 
@@ -322,14 +320,14 @@ const analyzeImageChanges = (original, current) => {
     orderChanged: !isEqual(originalIds, currentIds),
   });
 
-  // Si los arrays de IDs son diferentes, hay cambios de orden
+
   const hasOrderChanges = !isEqual(originalIds, currentIds);
 
-  // Verificar si hay imágenes nuevas
+
   let hasNewImages = false;
 
   const imageComparisons = currentImages.map((currImg, currentIndex) => {
-    // Detectar si es una imagen nueva (base64, file o tipo específico)
+
     const isNewImageFlag = isNewImage(currImg);
 
     if (isNewImageFlag) {
@@ -350,7 +348,7 @@ const analyzeImageChanges = (original, current) => {
     };
   });
 
-  // Determinar el tipo de cambio
+
   if (hasNewImages) {
     console.log("🆕 Hay imágenes nuevas - se requiere actualización completa");
     console.log("📋 Ejemplo de payload completo:", {
@@ -390,7 +388,7 @@ const analyzeImageChanges = (original, current) => {
     };
   }
 
-  // Verificar si hay cambios de contenido en imágenes existentes
+
   const hasContentChanges = imageComparisons.some(
     (comp) => comp.contentChanged,
   );
@@ -462,5 +460,5 @@ export const formatPayloadForLogging = (payload) => {
   return formatted;
 };
 
-// Exportar función para análisis de imágenes
+
 export { analyzeImageChanges };

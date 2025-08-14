@@ -1,19 +1,45 @@
 import { Navigate, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
+import { useEffect, useRef, useState } from "react";
 
 const ProtectedRoute = ({ children, requiredRole = null }) => {
-  const { user, loading, isAuthenticated } = useAuth();
+  const { user, loading, isAuthenticated, updateProfile } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
 
-  if (loading) {
+  // Verificación perezosa: si no hay usuario pero podría haber cookie válida, probar una vez
+  const triedOnceRef = useRef(false);
+  const [checking, setChecking] = useState(false);
+
+  useEffect(() => {
+    if (loading) return;
+    if (isAuthenticated()) return;
+    if (triedOnceRef.current) return;
+    triedOnceRef.current = true;
+
+    let mounted = true;
+    (async () => {
+      try {
+        setChecking(true);
+        await updateProfile();
+      } catch (_) {
+        // Ignorar errores (401 esperado si no hay sesión)
+      } finally {
+        if (mounted) setChecking(false);
+      }
+    })();
+
+    return () => {
+      mounted = false;
+    };
+  }, [loading, updateProfile, isAuthenticated]);
+
+  if (loading || checking) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-600 text-lg font-medium">
-            Verificando acceso...
-          </p>
+          <p className="text-gray-600 text-lg font-medium">Verificando acceso...</p>
         </div>
       </div>
     );

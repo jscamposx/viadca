@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect } from "react";
+import { createContext, useContext, useState, useEffect, useRef } from "react";
 import authService from "../api/authService";
 
 const AuthContext = createContext();
@@ -18,10 +18,16 @@ export const AuthProvider = ({ children }) => {
     return savedUser ? JSON.parse(savedUser) : null;
   });
   const [loading, setLoading] = useState(true);
+  const [isProfileLoaded, setIsProfileLoaded] = useState(false);
+
+  // Guardas para evitar dobles efectos en StrictMode y deduplicar llamadas
+  const didInitRef = useRef(false);
+  const inFlightProfileRef = useRef(null);
 
   // Función para limpiar autenticación (no hay token en cliente)
   const clearAuth = () => {
     setUser(null);
+    setIsProfileLoaded(true);
     localStorage.removeItem("auth_user");
     localStorage.removeItem("mock_user_role");
   };
@@ -30,19 +36,50 @@ export const AuthProvider = ({ children }) => {
   const saveUserToStorage = (userData) => {
     localStorage.setItem("auth_user", JSON.stringify(userData));
     setUser(userData);
+    setIsProfileLoaded(true);
   };
 
-  // Cargar usuario al inicializar preguntando al backend por la cookie
-  useEffect(() => {
-    const initializeAuth = async () => {
-      try {
-        const userData = await authService.getProfile();
+  // Dedupe: obtener perfil reutilizando una promesa en vuelo
+  const fetchProfileOnce = async () => {
+    if (inFlightProfileRef.current) return inFlightProfileRef.current;
+    inFlightProfileRef.current = authService
+      .getProfile()
+      .then((userData) => {
         saveUserToStorage(userData);
+        return userData;
+      })
+      .catch((err) => {
+        throw err;
+      })
+      .finally(() => {
+        inFlightProfileRef.current = null;
+      });
+    return inFlightProfileRef.current;
+  };
+
+  // Cargar usuario al inicializar sólo si existe en storage
+  // Evita golpear /usuarios/profile con 401 cuando no hay sesión
+  useEffect(() => {
+    if (didInitRef.current) return; // StrictMode guard
+    didInitRef.current = true;
+
+    const initializeAuth = async () => {
+      const hasStoredUser = Boolean(localStorage.getItem("auth_user"));
+      if (!hasStoredUser) {
+        // Usuario anónimo: no llamar al backend
+        setLoading(false);
+        setIsProfileLoaded(true);
+        return;
+      }
+
+      try {
+        await fetchProfileOnce();
       } catch (error) {
-        // No autenticado o cookie inválida
+        // No autenticado o cookie inválida -> limpiar
         clearAuth();
       } finally {
         setLoading(false);
+        setIsProfileLoaded(true);
       }
     };
 
@@ -50,13 +87,9 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const login = async (credentials) => {
-    // Backend setea cookie; luego consultamos el perfil
+    // Backend setea cookie; luego consultamos el perfil deduplicado
     await authService.login(credentials);
-
-    // Cargar perfil inmediatamente después del login
-    const userData = await authService.getProfile();
-    saveUserToStorage(userData);
-
+    const userData = await fetchProfileOnce();
     return { usuario: userData };
   };
 
@@ -78,10 +111,20 @@ export const AuthProvider = ({ children }) => {
   const resetPassword = async (token, newPassword) =>
     authService.resetPassword(token, newPassword);
 
+  // updateProfile para refrescar desde backend (deduped)
   const updateProfile = async () => {
-    const userData = await authService.getProfile();
-    saveUserToStorage(userData);
+    const userData = await fetchProfileOnce();
     return userData;
+  };
+
+  // Variante segura: si no hay sesión conocida, no intentes ir a backend
+  const safeUpdateProfile = async () => {
+    if (!localStorage.getItem("auth_user")) return null;
+    try {
+      return await fetchProfileOnce();
+    } catch (_) {
+      return null;
+    }
   };
 
   // Helpers
@@ -93,6 +136,7 @@ export const AuthProvider = ({ children }) => {
   const value = {
     user,
     loading,
+    isProfileLoaded,
     login,
     register,
     logout,
@@ -100,6 +144,7 @@ export const AuthProvider = ({ children }) => {
     forgotPassword,
     resetPassword,
     updateProfile,
+    safeUpdateProfile,
     isAuthenticated,
     isAdmin,
     isPreAuthorized,

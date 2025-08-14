@@ -1,44 +1,73 @@
 import { useState, useEffect, useCallback } from "react";
 import api from "../../../api";
 
+// Caché y promesa en vuelo a nivel de módulo para deduplicar peticiones
+let mayoristasCache = null; // Array | null
+let mayoristasInFlight = null; // Promise | null
+
 export const useMayoristas = () => {
-  const [mayoristas, setMayoristas] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [mayoristas, setMayoristas] = useState(Array.isArray(mayoristasCache) ? mayoristasCache : []);
+  const [loading, setLoading] = useState(!Array.isArray(mayoristasCache));
   const [error, setError] = useState(null);
-  const [isInitialized, setIsInitialized] = useState(false);
+  const [isInitialized, setIsInitialized] = useState(!!Array.isArray(mayoristasCache) && mayoristasCache.length >= 0);
 
   const fetchMayoristas = useCallback(
     async (force = false) => {
-      // Evitar múltiples peticiones si ya se inicializó y no es forzado
-      if (isInitialized && !force) {
-        return;
-      }
-
       try {
-        setLoading(true);
         setError(null);
+
+        // Usar caché si existe y no es forzado
+        if (Array.isArray(mayoristasCache) && !force) {
+          setMayoristas(mayoristasCache);
+          setIsInitialized(true);
+          setLoading(false);
+          return mayoristasCache;
+        }
+
+        // Si hay una promesa en vuelo y no es forzado, esperar a que termine
+        if (mayoristasInFlight && !force) {
+          setLoading(true);
+          const data = await mayoristasInFlight;
+          setMayoristas(data);
+          setIsInitialized(true);
+          setLoading(false);
+          return data;
+        }
+
+        // Lanzar una nueva petición (y deduplicar concurrentes)
+        setLoading(true);
         if (import.meta.env.DEV) {
           console.log("🔄 Cargando mayoristas desde API...");
         }
-        const response = await api.mayoristas.getMayoristas();
-        if (import.meta.env.DEV) {
-          console.log("✅ Mayoristas cargados:", {
-            count: response.data?.length || 0,
+        mayoristasInFlight = api.mayoristas
+          .getMayoristas()
+          .then((response) => (Array.isArray(response.data) ? response.data : []))
+          .then((data) => {
+            mayoristasCache = data;
+            return data;
+          })
+          .finally(() => {
+            mayoristasInFlight = null;
           });
+
+        const data = await mayoristasInFlight;
+        if (import.meta.env.DEV) {
+          console.log("✅ Mayoristas cargados:", { count: data?.length || 0 });
         }
-        // Asegurar que siempre sea un array
-        setMayoristas(Array.isArray(response.data) ? response.data : []);
+        setMayoristas(data);
         setIsInitialized(true);
+        return data;
       } catch (err) {
         if (import.meta.env.DEV) {
           console.error("❌ Error al cargar mayoristas:", err);
         }
         setError("Error al cargar los mayoristas");
+        throw err;
       } finally {
         setLoading(false);
       }
     },
-    [isInitialized],
+    [],
   );
 
   const createMayorista = useCallback(async (mayoristaData) => {
@@ -58,6 +87,10 @@ export const useMayoristas = () => {
       }
 
       setMayoristas((prev) => [response.data, ...prev]);
+      // Actualizar caché global
+      mayoristasCache = Array.isArray(mayoristasCache)
+        ? [response.data, ...mayoristasCache]
+        : [response.data];
       return response.data;
     } catch (err) {
       if (import.meta.env.DEV) {
@@ -79,10 +112,12 @@ export const useMayoristas = () => {
     try {
       const response = await api.mayoristas.updateMayorista(id, mayoristaData);
       setMayoristas((prev) =>
-        prev.map((mayorista) =>
-          mayorista.id === id ? response.data : mayorista,
-        ),
+        prev.map((mayorista) => (mayorista.id === id ? response.data : mayorista)),
       );
+      // Actualizar caché global
+      if (Array.isArray(mayoristasCache)) {
+        mayoristasCache = mayoristasCache.map((m) => (m.id === id ? response.data : m));
+      }
       return response.data;
     } catch (err) {
       if (import.meta.env.DEV) {
@@ -96,6 +131,10 @@ export const useMayoristas = () => {
     try {
       await api.mayoristas.deleteMayorista(id);
       setMayoristas((prev) => prev.filter((mayorista) => mayorista.id !== id));
+      // Actualizar caché global
+      if (Array.isArray(mayoristasCache)) {
+        mayoristasCache = mayoristasCache.filter((m) => m.id !== id);
+      }
     } catch (err) {
       if (import.meta.env.DEV) {
         console.error("Error al eliminar mayorista:", err);
@@ -106,6 +145,11 @@ export const useMayoristas = () => {
 
   const getMayoristaById = useCallback(async (id) => {
     try {
+      // Si está en caché devolver inmediato; si no, pedir a la API
+      if (Array.isArray(mayoristasCache)) {
+        const cached = mayoristasCache.find((m) => m.id === id);
+        if (cached) return cached;
+      }
       const response = await api.mayoristas.getMayoristaById(id);
       return response.data;
     } catch (err) {
@@ -117,8 +161,10 @@ export const useMayoristas = () => {
   }, []);
 
   useEffect(() => {
+    // En montaje, intentar cargar usando deduplicación
     fetchMayoristas();
-  }, [fetchMayoristas]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return {
     mayoristas,
@@ -130,5 +176,6 @@ export const useMayoristas = () => {
     deleteMayorista,
     getMayoristaById,
     refetch: fetchMayoristas,
+    isInitialized,
   };
 };
