@@ -14,19 +14,25 @@ export const usePapelera = () => {
     try {
       setLoading(true);
       setError(null);
-      
+
       // Cargar paquetes eliminados
-      const paquetesResponse = await apiClient.get("/admin/paquetes/deleted/list");
+      const paquetesResponse = await apiClient.get(
+        "/admin/paquetes/deleted/list",
+      );
       setPaquetesEliminados(paquetesResponse.data || []);
-      
+
       // Cargar mayoristas eliminados
-      const mayoristasResponse = await apiClient.get("/admin/mayoristas/deleted/list");
+      const mayoristasResponse = await apiClient.get(
+        "/admin/mayoristas/deleted/list",
+      );
       setMayoristasEliminados(mayoristasResponse.data || []);
-      
+
       // Cargar usuarios eliminados
-      const usuariosResponse = await apiClient.get("/admin/usuarios/deleted/list");
+      const usuariosResponse = await apiClient.get(
+        "/admin/usuarios/deleted/list",
+      );
       setUsuariosEliminados(usuariosResponse.data || []);
-      
+
       setLastUpdated(new Date());
     } catch (err) {
       console.error("Error al cargar datos eliminados:", err);
@@ -48,23 +54,24 @@ export const usePapelera = () => {
   // Función para restaurar un elemento
   const restoreItem = useCallback(async (itemId, itemType) => {
     try {
-      const endpoint = itemType === "paquete" 
-        ? `/admin/paquetes/${itemId}/restore`
-        : itemType === "mayorista"
-        ? `/admin/mayoristas/${itemId}/restore`
-        : `/admin/usuarios/${itemId}/restore`;
-      
+      const endpoint =
+        itemType === "paquete"
+          ? `/admin/paquetes/${itemId}/restore`
+          : itemType === "mayorista"
+            ? `/admin/mayoristas/${itemId}/restore`
+            : `/admin/usuarios/${itemId}/restore`;
+
       await apiClient.patch(endpoint);
-      
+
       // Actualizar el estado local
       if (itemType === "paquete") {
-        setPaquetesEliminados(prev => prev.filter(p => p.id !== itemId));
+        setPaquetesEliminados((prev) => prev.filter((p) => p.id !== itemId));
       } else if (itemType === "mayorista") {
-        setMayoristasEliminados(prev => prev.filter(m => m.id !== itemId));
+        setMayoristasEliminados((prev) => prev.filter((m) => m.id !== itemId));
       } else if (itemType === "usuario") {
-        setUsuariosEliminados(prev => prev.filter(u => u.id !== itemId));
+        setUsuariosEliminados((prev) => prev.filter((u) => u.id !== itemId));
       }
-      
+
       setLastUpdated(new Date());
       return true;
     } catch (err) {
@@ -89,16 +96,16 @@ export const usePapelera = () => {
       } else {
         throw new Error(`Tipo de elemento desconocido: ${itemType}`);
       }
-      
+
       // Actualizar el estado local
       if (itemType === "paquete") {
-        setPaquetesEliminados(prev => prev.filter(p => p.id !== itemId));
+        setPaquetesEliminados((prev) => prev.filter((p) => p.id !== itemId));
       } else if (itemType === "mayorista") {
-        setMayoristasEliminados(prev => prev.filter(m => m.id !== itemId));
+        setMayoristasEliminados((prev) => prev.filter((m) => m.id !== itemId));
       } else if (itemType === "usuario") {
-        setUsuariosEliminados(prev => prev.filter(u => u.id !== itemId));
+        setUsuariosEliminados((prev) => prev.filter((u) => u.id !== itemId));
       }
-      
+
       setLastUpdated(new Date());
       return true;
     } catch (err) {
@@ -112,8 +119,8 @@ export const usePapelera = () => {
     try {
       // Endpoint de limpieza masiva del backend:
       // POST /admin/cleanup/hard-delete
-      await apiClient.post('/admin/cleanup/hard-delete');
-      
+      await apiClient.post("/admin/cleanup/hard-delete");
+
       // Limpiar estado local tras éxito
       setPaquetesEliminados([]);
       setMayoristasEliminados([]);
@@ -131,33 +138,39 @@ export const usePapelera = () => {
     totalPaquetes: paquetesEliminados?.length || 0,
     totalMayoristas: mayoristasEliminados?.length || 0,
     totalUsuarios: usuariosEliminados?.length || 0,
-    total: (paquetesEliminados?.length || 0) + (mayoristasEliminados?.length || 0) + (usuariosEliminados?.length || 0),
-    isEmpty: (paquetesEliminados?.length || 0) === 0 && (mayoristasEliminados?.length || 0) === 0 && (usuariosEliminados?.length || 0) === 0,
+    total:
+      (paquetesEliminados?.length || 0) +
+      (mayoristasEliminados?.length || 0) +
+      (usuariosEliminados?.length || 0),
+    isEmpty:
+      (paquetesEliminados?.length || 0) === 0 &&
+      (mayoristasEliminados?.length || 0) === 0 &&
+      (usuariosEliminados?.length || 0) === 0,
   };
 
   // Obtener todos los elementos combinados
   const getAllItems = useCallback(() => {
-    const paquetes = paquetesEliminados.map(p => ({
+    const paquetes = paquetesEliminados.map((p) => ({
       ...p,
       type: "paquete",
       name: p.titulo,
       eliminadoEn: p.eliminadoEn || p.eliminado_en,
     }));
-    
-    const mayoristas = mayoristasEliminados.map(m => ({
+
+    const mayoristas = mayoristasEliminados.map((m) => ({
       ...m,
-      type: "mayorista", 
+      type: "mayorista",
       name: m.nombre,
       eliminadoEn: m.eliminadoEn || m.eliminado_en,
     }));
-    
-    const usuarios = usuariosEliminados.map(u => ({
+
+    const usuarios = usuariosEliminados.map((u) => ({
       ...u,
       type: "usuario",
       name: u.usuario,
       eliminadoEn: u.eliminadoEn || u.eliminado_en,
     }));
-    
+
     return [...paquetes, ...mayoristas, ...usuarios];
   }, [paquetesEliminados, mayoristasEliminados, usuariosEliminados]);
 

@@ -9,7 +9,7 @@ export const devLog = {
       }
     }
   },
-  
+
   success: (message, data = null) => {
     if (import.meta.env.DEV) {
       if (data) {
@@ -19,7 +19,7 @@ export const devLog = {
       }
     }
   },
-  
+
   error: (message, error = null) => {
     if (import.meta.env.DEV) {
       if (error) {
@@ -29,13 +29,13 @@ export const devLog = {
       }
     }
   },
-  
+
   loading: (message) => {
     if (import.meta.env.DEV) {
       console.log(`🔄 ${message}`);
     }
   },
-  
+
   auth: (message, data = null) => {
     if (import.meta.env.DEV) {
       if (data) {
@@ -44,7 +44,7 @@ export const devLog = {
         console.log(`🔐 ${message}`);
       }
     }
-  }
+  },
 };
 
 // Helper para limitar logs repetitivos

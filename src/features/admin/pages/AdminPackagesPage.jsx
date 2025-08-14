@@ -22,7 +22,7 @@ import {
   FiActivity,
   FiPackage,
   FiCheckCircle,
-  FiRefreshCw
+  FiRefreshCw,
 } from "react-icons/fi";
 import api from "../../../api";
 import { useNotification } from "./AdminLayout";
@@ -278,7 +278,10 @@ const AdminPaquetes = () => {
           ? prevPaquetes.filter((p) => p.id !== confirmDialog.packageId)
           : [],
       );
-      addNotification("Paquete movido a la papelera. Puedes restaurarlo desde la sección de papelera.", "success");
+      addNotification(
+        "Paquete movido a la papelera. Puedes restaurarlo desde la sección de papelera.",
+        "success",
+      );
     } catch (err) {
       console.error("Error al eliminar el paquete:", err);
       addNotification(
@@ -338,7 +341,8 @@ const AdminPaquetes = () => {
                 <div className="mt-2 h-4 sm:h-5 w-52 sm:w-72 bg-gray-200 rounded animate-pulse mx-auto sm:mx-0" />
               ) : (
                 <p className="text-gray-600 mt-1 sm:mt-2 text-sm sm:text-base">
-                  Administra todos tus paquetes turísticos en un solo lugar ({totalItems} total)
+                  Administra todos tus paquetes turísticos en un solo lugar (
+                  {totalItems} total)
                 </p>
               )}
             </div>
@@ -356,8 +360,10 @@ const AdminPaquetes = () => {
                 }`}
                 aria-label="Actualizar lista de paquetes"
                 title="Actualizar"
-             >
-                <FiRefreshCw className={`w-4 h-4 sm:w-5 sm:h-5 ${isRefreshing ? "animate-spin" : ""}`} />
+              >
+                <FiRefreshCw
+                  className={`w-4 h-4 sm:w-5 sm:h-5 ${isRefreshing ? "animate-spin" : ""}`}
+                />
                 <span>Actualizar</span>
               </button>
 
@@ -426,7 +432,10 @@ const AdminPaquetes = () => {
 
               {/* Estadísticas - Solo en móvil, mejoradas */}
               <div className="grid grid-cols-2 gap-3 lg:hidden">
-                <div className="rounded-xl p-3 bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-md" aria-label="Paquetes filtrados">
+                <div
+                  className="rounded-xl p-3 bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-md"
+                  aria-label="Paquetes filtrados"
+                >
                   <div className="flex items-center gap-2">
                     <FiPackage className="w-4 h-4 opacity-95" />
                     <span className="text-xs font-medium">Paquetes</span>
@@ -434,12 +443,17 @@ const AdminPaquetes = () => {
                   {isLoading ? (
                     <div className="mt-1 h-6 w-10 bg-white/40 rounded animate-pulse" />
                   ) : (
-                    <div className="mt-1 text-2xl font-extrabold leading-none">{filteredPaquetes.length}</div>
+                    <div className="mt-1 text-2xl font-extrabold leading-none">
+                      {filteredPaquetes.length}
+                    </div>
                   )}
                 </div>
 
                 {paquetes && Array.isArray(paquetes) && (
-                  <div className="rounded-xl p-3 bg-gradient-to-r from-emerald-500 to-green-600 text-white shadow-md" aria-label="Activos">
+                  <div
+                    className="rounded-xl p-3 bg-gradient-to-r from-emerald-500 to-green-600 text-white shadow-md"
+                    aria-label="Activos"
+                  >
                     <div className="flex items-center gap-2">
                       <FiCheckCircle className="w-4 h-4 opacity-95" />
                       <span className="text-xs font-medium">Activos</span>
@@ -447,7 +461,9 @@ const AdminPaquetes = () => {
                     {isLoading ? (
                       <div className="mt-1 h-6 w-10 bg-white/40 rounded animate-pulse" />
                     ) : (
-                      <div className="mt-1 text-2xl font-extrabold leading-none">{paquetes.filter((p) => p.activo).length}</div>
+                      <div className="mt-1 text-2xl font-extrabold leading-none">
+                        {paquetes.filter((p) => p.activo).length}
+                      </div>
                     )}
                   </div>
                 )}
@@ -493,7 +509,9 @@ const AdminPaquetes = () => {
                     {isLoading ? (
                       <div className="h-4 w-6 bg-white/40 rounded animate-pulse" />
                     ) : (
-                      <span className="font-bold">{filteredPaquetes.length}</span>
+                      <span className="font-bold">
+                        {filteredPaquetes.length}
+                      </span>
                     )}
                     <span>paquetes</span>
                   </div>
@@ -932,7 +950,10 @@ const AdminPaquetes = () => {
           <>
             <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6 [content-visibility:auto] [contain-intrinsic-size:600px_900px]">
               {Array.from({ length: limit || 9 }).map((_, i) => (
-                <div key={i} className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 sm:p-5 animate-pulse">
+                <div
+                  key={i}
+                  className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 sm:p-5 animate-pulse"
+                >
                   <div className="h-48 sm:h-56 lg:h-64 bg-gray-200 rounded-xl mb-4" />
                   <div className="h-5 bg-gray-200 rounded w-3/4 mb-3" />
                   <div className="grid grid-cols-3 gap-2 mb-3 sm:mb-4">
@@ -992,8 +1013,16 @@ const AdminPaquetes = () => {
 
                     {/* Badge de precio */}
                     <div className="absolute top-2 sm:top-4 right-2 sm:right-4">
-                      <div className="bg-gradient-to-r from-blue-600 to-indigo-700 text-white text-xs sm:text-sm font-bold px-2 sm:px-4 py-1 sm:py-2 rounded-lg sm:rounded-2xl shadow-xl backdrop-blur-sm border border-white/20 flex items-center gap-1" title={`Moneda: ${sanitizeMoneda(paquete?.moneda)}`}>
-                        <span>{formatPrecio(paquete?.precio_total, sanitizeMoneda(paquete?.moneda))}</span>
+                      <div
+                        className="bg-gradient-to-r from-blue-600 to-indigo-700 text-white text-xs sm:text-sm font-bold px-2 sm:px-4 py-1 sm:py-2 rounded-lg sm:rounded-2xl shadow-xl backdrop-blur-sm border border-white/20 flex items-center gap-1"
+                        title={`Moneda: ${sanitizeMoneda(paquete?.moneda)}`}
+                      >
+                        <span>
+                          {formatPrecio(
+                            paquete?.precio_total,
+                            sanitizeMoneda(paquete?.moneda),
+                          )}
+                        </span>
                         <span className="ml-0.5 text-[9px] sm:text-[10px] leading-none tracking-wide bg-white/15 px-1 py-0.5 rounded uppercase">
                           {sanitizeMoneda(paquete?.moneda)}
                         </span>
@@ -1078,7 +1107,10 @@ const AdminPaquetes = () => {
                         )}
 
                         {/* Moneda */}
-                        <div className="bg-amber-50 hover:bg-amber-100 rounded-lg sm:rounded-xl p-2 sm:p-3 text-center transition-all duration-200 hover:shadow-md hover:scale-105 cursor-pointer" title={`Moneda: ${sanitizeMoneda(paquete?.moneda)}`}>
+                        <div
+                          className="bg-amber-50 hover:bg-amber-100 rounded-lg sm:rounded-xl p-2 sm:p-3 text-center transition-all duration-200 hover:shadow-md hover:scale-105 cursor-pointer"
+                          title={`Moneda: ${sanitizeMoneda(paquete?.moneda)}`}
+                        >
                           <FiDollarSign className="w-3 h-3 sm:w-4 sm:h-4 text-amber-600 mx-auto mb-1 transition-transform duration-200" />
                           <div className="text-xs text-amber-700 font-medium uppercase tracking-wide">
                             {sanitizeMoneda(paquete?.moneda)}

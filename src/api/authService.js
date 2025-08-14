@@ -1,56 +1,58 @@
-import api from './axiosConfig';
+import api from "./axiosConfig";
 
 const authService = {
   // Endpoints públicos
   register: async (userData) => {
-    const response = await api.post('/usuarios/register', userData);
+    const response = await api.post("/usuarios/register", userData);
     return response.data;
   },
 
   login: async (credentials) => {
     // El backend setea cookie HttpOnly access_token; no guardamos el token
-    const response = await api.post('/usuarios/login', credentials);
+    const response = await api.post("/usuarios/login", credentials);
     return response.data;
   },
 
   logout: async () => {
     // Limpia la cookie HttpOnly en el backend
-    const response = await api.post('/usuarios/logout');
+    const response = await api.post("/usuarios/logout");
     return response.data;
   },
 
   verifyEmail: async (token) => {
-    const response = await api.post('/usuarios/verify-email', { token });
+    const response = await api.post("/usuarios/verify-email", { token });
     return response.data;
   },
 
   forgotPassword: async (email) => {
-    const response = await api.post('/usuarios/forgot-password', { correo: email });
+    const response = await api.post("/usuarios/forgot-password", {
+      correo: email,
+    });
     return response.data;
   },
 
   resetPassword: async (token, newPassword) => {
-    const response = await api.post('/usuarios/reset-password', {
+    const response = await api.post("/usuarios/reset-password", {
       token,
-      nuevaContrasena: newPassword
+      nuevaContrasena: newPassword,
     });
     return response.data;
   },
 
   // Endpoints autenticados (definitivo: /usuarios/profile)
   getProfile: async () => {
-    const res = await api.get('/usuarios/profile');
+    const res = await api.get("/usuarios/profile");
     return res.data;
   },
 
   updateProfile: async (userData) => {
-    const res = await api.patch('/usuarios/profile', userData);
+    const res = await api.patch("/usuarios/profile", userData);
     return res.data;
   },
 
   // Endpoints de administración
   getAllUsers: async (params = {}) => {
-    const response = await api.get('/admin/usuarios', { params });
+    const response = await api.get("/admin/usuarios", { params });
     return response.data;
   },
 
@@ -60,17 +62,19 @@ const authService = {
   },
 
   getDeletedUsers: async () => {
-    const response = await api.get('/admin/usuarios/deleted/list');
+    const response = await api.get("/admin/usuarios/deleted/list");
     return response.data;
   },
 
   getUserStats: async () => {
-    const response = await api.get('/admin/usuarios/stats/overview');
+    const response = await api.get("/admin/usuarios/stats/overview");
     return response.data;
   },
 
   updateUserRole: async (id, role) => {
-    const response = await api.patch(`/admin/usuarios/${id}/role`, { rol: role });
+    const response = await api.patch(`/admin/usuarios/${id}/role`, {
+      rol: role,
+    });
     return response.data;
   },
 
@@ -87,7 +91,7 @@ const authService = {
   hardDeleteUser: async (id) => {
     const response = await api.post(`/admin/usuarios/${id}/hard-delete`);
     return response.data;
-  }
+  },
 };
 
 export default authService;

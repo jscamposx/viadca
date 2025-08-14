@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import authService from '../api/authService';
+import { useState, useEffect } from "react";
+import authService from "../api/authService";
 
 export const useUsers = () => {
   const [users, setUsers] = useState([]);
@@ -25,8 +25,9 @@ export const useUsers = () => {
       }
       return data;
     } catch (error) {
-      console.error('Error al obtener usuarios:', error);
-      const errorMessage = error.response?.data?.message || 'Error al cargar usuarios';
+      console.error("Error al obtener usuarios:", error);
+      const errorMessage =
+        error.response?.data?.message || "Error al cargar usuarios";
       setError(errorMessage);
       // No lanzar el error para evitar excepciones no capturadas
       return [];
@@ -44,8 +45,9 @@ export const useUsers = () => {
       setStats(data);
       return data;
     } catch (error) {
-      console.error('Error al obtener estadísticas:', error);
-      const errorMessage = error.response?.data?.message || 'Error al cargar estadísticas';
+      console.error("Error al obtener estadísticas:", error);
+      const errorMessage =
+        error.response?.data?.message || "Error al cargar estadísticas";
       setError(errorMessage);
       // No lanzar el error para evitar excepciones no capturadas
       return null;
@@ -62,8 +64,9 @@ export const useUsers = () => {
       const data = await authService.getUserById(id);
       return data;
     } catch (error) {
-      console.error('Error al obtener usuario:', error);
-      const errorMessage = error.response?.data?.message || 'Error al cargar usuario';
+      console.error("Error al obtener usuario:", error);
+      const errorMessage =
+        error.response?.data?.message || "Error al cargar usuario";
       setError(errorMessage);
       // No lanzar el error para evitar excepciones no capturadas
       return null;
@@ -78,18 +81,19 @@ export const useUsers = () => {
       setLoading(true);
       setError(null);
       const data = await authService.updateUserRole(id, role);
-      
+
       // Actualizar en la lista local
-      setUsers(prevUsers => 
-        prevUsers.map(user => 
-          user.id === id ? { ...user, rol: role } : user
-        )
+      setUsers((prevUsers) =>
+        prevUsers.map((user) =>
+          user.id === id ? { ...user, rol: role } : user,
+        ),
       );
-      
+
       return data;
     } catch (error) {
-      console.error('Error al actualizar rol:', error);
-      const errorMessage = error.response?.data?.message || 'Error al actualizar rol';
+      console.error("Error al actualizar rol:", error);
+      const errorMessage =
+        error.response?.data?.message || "Error al actualizar rol";
       setError(errorMessage);
       // No lanzar el error para evitar excepciones no capturadas
       return null;
@@ -104,14 +108,15 @@ export const useUsers = () => {
       setLoading(true);
       setError(null);
       const data = await authService.softDeleteUser(id);
-      
+
       // Remover de la lista local
-      setUsers(prevUsers => prevUsers.filter(user => user.id !== id));
-      
+      setUsers((prevUsers) => prevUsers.filter((user) => user.id !== id));
+
       return data;
     } catch (error) {
-      console.error('Error al eliminar usuario:', error);
-      const errorMessage = error.response?.data?.message || 'Error al eliminar usuario';
+      console.error("Error al eliminar usuario:", error);
+      const errorMessage =
+        error.response?.data?.message || "Error al eliminar usuario";
       setError(errorMessage);
       // No lanzar el error para evitar excepciones no capturadas
       return null;
@@ -123,12 +128,9 @@ export const useUsers = () => {
   // Refrescar datos
   const refresh = async () => {
     try {
-      await Promise.all([
-        fetchUsers(),
-        fetchStats()
-      ]);
+      await Promise.all([fetchUsers(), fetchStats()]);
     } catch (error) {
-      console.error('Error al refrescar datos:', error);
+      console.error("Error al refrescar datos:", error);
       // No lanzar error ya que fetchUsers y fetchStats ya manejan sus errores
     }
   };
@@ -143,6 +145,6 @@ export const useUsers = () => {
     getUserById,
     updateUserRole,
     deleteUser,
-    refresh
+    refresh,
   };
 };

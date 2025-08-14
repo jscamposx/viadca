@@ -3,22 +3,22 @@ import axios from "axios";
 // Obtener la URL base con fallback
 const getBaseURL = () => {
   const envURL = import.meta.env.VITE_API_BASE_URL;
-  
+
   // Solo mostrar logs en desarrollo
   if (import.meta.env.DEV) {
     console.log("🔧 Variables de entorno:", {
       VITE_API_BASE_URL: envURL,
       MODE: import.meta.env.MODE,
       DEV: import.meta.env.DEV,
-      PROD: import.meta.env.PROD
+      PROD: import.meta.env.PROD,
     });
   }
-  
+
   // Fallback basado en el entorno
   if (envURL) {
     return envURL;
   }
-  
+
   // Fallbacks por entorno
   if (import.meta.env.DEV) {
     return "http://localhost:3000";
@@ -65,7 +65,7 @@ apiClient.interceptors.request.use(
       console.error("❌ Request Error:", error);
     }
     return Promise.reject(error);
-  }
+  },
 );
 
 // Interceptor para logs de response (solo en desarrollo)
@@ -76,7 +76,7 @@ apiClient.interceptors.response.use(
         status: response.status,
         statusText: response.statusText,
         url: response.config.url,
-        data: response.data
+        data: response.data,
       });
     }
     return response;
@@ -87,18 +87,21 @@ apiClient.interceptors.response.use(
       const isAuthError = error.response?.status === 401;
       const logLevel = isAuthError ? "log" : "error";
       const emoji = isAuthError ? "🔒" : "❌";
-      
-      console[logLevel](`${emoji} API Response ${isAuthError ? "(Auth required)" : "Error"}:`, {
-        message: error.message,
-        status: error.response?.status,
-        statusText: error.response?.statusText,
-        url: error.config?.url,
-        data: error.response?.data,
-        headers: error.response?.headers
-      });
+
+      console[logLevel](
+        `${emoji} API Response ${isAuthError ? "(Auth required)" : "Error"}:`,
+        {
+          message: error.message,
+          status: error.response?.status,
+          statusText: error.response?.statusText,
+          url: error.config?.url,
+          data: error.response?.data,
+          headers: error.response?.headers,
+        },
+      );
     }
     return Promise.reject(error);
-  }
+  },
 );
 
 export default apiClient;

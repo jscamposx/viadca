@@ -7,36 +7,39 @@ export const useMayoristas = () => {
   const [error, setError] = useState(null);
   const [isInitialized, setIsInitialized] = useState(false);
 
-  const fetchMayoristas = useCallback(async (force = false) => {
-    // Evitar múltiples peticiones si ya se inicializó y no es forzado
-    if (isInitialized && !force) {
-      return;
-    }
+  const fetchMayoristas = useCallback(
+    async (force = false) => {
+      // Evitar múltiples peticiones si ya se inicializó y no es forzado
+      if (isInitialized && !force) {
+        return;
+      }
 
-    try {
-      setLoading(true);
-      setError(null);
-      if (import.meta.env.DEV) {
-        console.log("🔄 Cargando mayoristas desde API...");
+      try {
+        setLoading(true);
+        setError(null);
+        if (import.meta.env.DEV) {
+          console.log("🔄 Cargando mayoristas desde API...");
+        }
+        const response = await api.mayoristas.getMayoristas();
+        if (import.meta.env.DEV) {
+          console.log("✅ Mayoristas cargados:", {
+            count: response.data?.length || 0,
+          });
+        }
+        // Asegurar que siempre sea un array
+        setMayoristas(Array.isArray(response.data) ? response.data : []);
+        setIsInitialized(true);
+      } catch (err) {
+        if (import.meta.env.DEV) {
+          console.error("❌ Error al cargar mayoristas:", err);
+        }
+        setError("Error al cargar los mayoristas");
+      } finally {
+        setLoading(false);
       }
-      const response = await api.mayoristas.getMayoristas();
-      if (import.meta.env.DEV) {
-        console.log("✅ Mayoristas cargados:", {
-          count: response.data?.length || 0,
-        });
-      }
-      // Asegurar que siempre sea un array
-      setMayoristas(Array.isArray(response.data) ? response.data : []);
-      setIsInitialized(true);
-    } catch (err) {
-      if (import.meta.env.DEV) {
-        console.error("❌ Error al cargar mayoristas:", err);
-      }
-      setError("Error al cargar los mayoristas");
-    } finally {
-      setLoading(false);
-    }
-  }, [isInitialized]);
+    },
+    [isInitialized],
+  );
 
   const createMayorista = useCallback(async (mayoristaData) => {
     try {
@@ -44,16 +47,16 @@ export const useMayoristas = () => {
         console.log("🚀 Creando mayorista...", {
           data: mayoristaData,
           apiBaseUrl: import.meta.env.VITE_API_BASE_URL,
-          environment: import.meta.env.MODE
+          environment: import.meta.env.MODE,
         });
       }
-      
+
       const response = await api.mayoristas.createMayorista(mayoristaData);
-      
+
       if (import.meta.env.DEV) {
         console.log("✅ Mayorista creado exitosamente:", response.data);
       }
-      
+
       setMayoristas((prev) => [response.data, ...prev]);
       return response.data;
     } catch (err) {
@@ -65,7 +68,7 @@ export const useMayoristas = () => {
           status: err.response?.status,
           statusText: err.response?.statusText,
           data: err.response?.data,
-          headers: err.response?.headers
+          headers: err.response?.headers,
         });
       }
       throw err;

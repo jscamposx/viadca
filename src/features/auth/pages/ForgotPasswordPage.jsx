@@ -1,7 +1,7 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { useAuth } from '../../../contexts/AuthContext';
-import PageTransition from '../../../components/ui/PageTransition';
+import { useState } from "react";
+import { Link } from "react-router-dom";
+import { useAuth } from "../../../contexts/AuthContext";
+import PageTransition from "../../../components/ui/PageTransition";
 import {
   FiMail,
   FiArrowLeft,
@@ -9,44 +9,47 @@ import {
   FiCheckCircle,
   FiSend,
   FiLock,
-  FiHelpCircle
-} from 'react-icons/fi';
+  FiHelpCircle,
+} from "react-icons/fi";
 
 const ForgotPasswordPage = () => {
   const { forgotPassword } = useAuth();
-  
-  const [email, setEmail] = useState('');
+
+  const [email, setEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [message, setMessage] = useState('');
+  const [message, setMessage] = useState("");
   const [isSuccess, setIsSuccess] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (!email.trim()) {
-      setError('El email es requerido');
+      setError("El email es requerido");
       return;
     }
 
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      setError('El email no es válido');
+      setError("El email no es válido");
       return;
     }
 
     setIsLoading(true);
-    setMessage('');
-    setError('');
+    setMessage("");
+    setError("");
 
     try {
       const response = await forgotPassword(email);
       setIsSuccess(true);
-      setMessage(response.message || 'Se ha enviado un enlace de recuperación a tu email');
+      setMessage(
+        response.message ||
+          "Se ha enviado un enlace de recuperación a tu email",
+      );
     } catch (error) {
       if (error.response?.data?.message) {
         setError(error.response.data.message);
       } else {
-        setError('Error al enviar el email de recuperación. Intenta de nuevo.');
+        setError("Error al enviar el email de recuperación. Intenta de nuevo.");
       }
     } finally {
       setIsLoading(false);
@@ -56,7 +59,7 @@ const ForgotPasswordPage = () => {
   const handleEmailChange = (e) => {
     setEmail(e.target.value);
     if (error) {
-      setError('');
+      setError("");
     }
   };
 
@@ -69,7 +72,7 @@ const ForgotPasswordPage = () => {
             <div className="absolute top-0 right-0 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl"></div>
             <div className="absolute bottom-20 left-20 w-80 h-80 bg-green-500/20 rounded-full blur-3xl"></div>
             <div className="absolute top-1/3 left-1/4 w-64 h-64 bg-white/10 rounded-full blur-2xl"></div>
-            
+
             {/* Patrón geométrico */}
             <div className="absolute inset-0 opacity-20">
               <div className="absolute top-10 left-10 w-16 h-16 rounded-lg border-2 border-white rotate-45"></div>
@@ -77,22 +80,25 @@ const ForgotPasswordPage = () => {
               <div className="absolute bottom-20 left-1/3 w-20 h-20 rounded-lg border-2 border-white rotate-30"></div>
             </div>
           </div>
-          
+
           <div className="relative z-10 h-full flex flex-col justify-between p-12 text-white">
             <div>
               <div className="mb-6">
                 <div className="text-3xl font-bold">VIADCA</div>
                 <div className="text-green-200 text-sm">by Zafiro Tours</div>
               </div>
-              
+
               <div className="mt-16 max-w-md">
-                <h2 className="text-3xl md:text-4xl font-bold mb-4">Seguridad ante todo</h2>
+                <h2 className="text-3xl md:text-4xl font-bold mb-4">
+                  Seguridad ante todo
+                </h2>
                 <p className="text-green-100 opacity-90">
-                  Protegemos tus datos y te ayudamos a recuperar el acceso a tu cuenta de forma segura.
+                  Protegemos tus datos y te ayudamos a recuperar el acceso a tu
+                  cuenta de forma segura.
                 </p>
               </div>
             </div>
-            
+
             <div>
               <div className="flex items-center gap-2 text-green-200 text-sm">
                 <div className="w-3 h-3 bg-white rounded-full animate-pulse"></div>
@@ -112,14 +118,16 @@ const ForgotPasswordPage = () => {
                   <FiCheckCircle className="w-8 h-8 text-white" />
                 </div>
               </div>
-              <h1 className="text-2xl font-bold text-gray-800 mb-1">¡Email Enviado!</h1>
+              <h1 className="text-2xl font-bold text-gray-800 mb-1">
+                ¡Email Enviado!
+              </h1>
               <p className="text-gray-600">Revisa tu bandeja de entrada</p>
             </div>
 
             {/* Volver al inicio */}
             <div className="mb-6">
-              <Link 
-                to="/" 
+              <Link
+                to="/"
                 className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors font-medium group"
               >
                 <FiArrowLeft className="w-5 h-5 transition-transform group-hover:-translate-x-1" />
@@ -132,7 +140,9 @@ const ForgotPasswordPage = () => {
               <div className="p-6 md:p-8">
                 {/* Título para escritorio */}
                 <div className="hidden md:block mb-8">
-                  <h1 className="text-3xl font-bold text-gray-800 mb-2">¡Email Enviado!</h1>
+                  <h1 className="text-3xl font-bold text-gray-800 mb-2">
+                    ¡Email Enviado!
+                  </h1>
                   <p className="text-gray-500">Revisa tu bandeja de entrada</p>
                 </div>
 
@@ -149,12 +159,12 @@ const ForgotPasswordPage = () => {
                   >
                     Volver al Login
                   </Link>
-                  
+
                   <button
                     onClick={() => {
                       setIsSuccess(false);
-                      setEmail('');
-                      setMessage('');
+                      setEmail("");
+                      setMessage("");
                     }}
                     className="w-full text-center text-green-600 hover:text-green-700 font-medium transition-colors"
                   >
@@ -163,7 +173,7 @@ const ForgotPasswordPage = () => {
                 </div>
               </div>
             </div>
-            
+
             {/* Información adicional */}
             <div className="mt-6 p-4 bg-white rounded-xl border border-green-200 shadow-sm">
               <div className="flex items-start gap-3">
@@ -171,24 +181,28 @@ const ForgotPasswordPage = () => {
                   <FiHelpCircle className="w-5 h-5 text-green-600" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-gray-800 mb-1">¿No recibiste el email?</h3>
+                  <h3 className="font-semibold text-gray-800 mb-1">
+                    ¿No recibiste el email?
+                  </h3>
                   <p className="text-sm text-gray-600">
-                    Revisa tu carpeta de spam o solicita un nuevo enlace. El enlace es válido por 1 hora.
+                    Revisa tu carpeta de spam o solicita un nuevo enlace. El
+                    enlace es válido por 1 hora.
                   </p>
                 </div>
               </div>
             </div>
-            
+
             {/* Pie de página móvil */}
             <div className="mt-4 text-center text-gray-500 text-sm md:hidden">
               © {new Date().getFullYear()} VIADCA by Zafiro Tours
             </div>
           </div>
         </div>
-        
+
         {/* Pie de página desktop */}
         <div className="hidden md:block absolute bottom-0 right-0 p-6 text-gray-500 text-sm">
-          © {new Date().getFullYear()} VIADCA by Zafiro Tours. Todos los derechos reservados.
+          © {new Date().getFullYear()} VIADCA by Zafiro Tours. Todos los
+          derechos reservados.
         </div>
       </div>
     );
@@ -203,7 +217,7 @@ const ForgotPasswordPage = () => {
             <div className="absolute top-0 right-0 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl"></div>
             <div className="absolute bottom-20 left-20 w-80 h-80 bg-indigo-500/20 rounded-full blur-3xl"></div>
             <div className="absolute top-1/3 left-1/4 w-64 h-64 bg-white/10 rounded-full blur-2xl"></div>
-            
+
             {/* Patrón geométrico */}
             <div className="absolute inset-0 opacity-20">
               <div className="absolute top-10 left-10 w-16 h-16 rounded-lg border-2 border-white rotate-45"></div>
@@ -211,22 +225,25 @@ const ForgotPasswordPage = () => {
               <div className="absolute bottom-20 left-1/3 w-20 h-20 rounded-lg border-2 border-white rotate-30"></div>
             </div>
           </div>
-          
+
           <div className="relative z-10 h-full flex flex-col justify-between p-12 text-white">
             <div>
               <div className="mb-6">
                 <div className="text-3xl font-bold">VIADCA</div>
                 <div className="text-indigo-200 text-sm">by Zafiro Tours</div>
               </div>
-              
+
               <div className="mt-16 max-w-md">
-                <h2 className="text-3xl md:text-4xl font-bold mb-4">Recupera tu acceso</h2>
+                <h2 className="text-3xl md:text-4xl font-bold mb-4">
+                  Recupera tu acceso
+                </h2>
                 <p className="text-indigo-100 opacity-90">
-                  Te ayudaremos a restablecer tu contraseña de forma segura y rápida.
+                  Te ayudaremos a restablecer tu contraseña de forma segura y
+                  rápida.
                 </p>
               </div>
             </div>
-            
+
             <div>
               <div className="flex items-center gap-2 text-indigo-200 text-sm">
                 <div className="w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
@@ -246,14 +263,16 @@ const ForgotPasswordPage = () => {
                   <FiLock className="w-8 h-8 text-white" />
                 </div>
               </div>
-              <h1 className="text-2xl font-bold text-gray-800 mb-1">Recuperar Contraseña</h1>
+              <h1 className="text-2xl font-bold text-gray-800 mb-1">
+                Recuperar Contraseña
+              </h1>
               <p className="text-gray-600">Te enviaremos un enlace seguro</p>
             </div>
 
             {/* Volver al inicio */}
             <div className="mb-6">
-              <Link 
-                to="/" 
+              <Link
+                to="/"
                 className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors font-medium group"
               >
                 <FiArrowLeft className="w-5 h-5 transition-transform group-hover:-translate-x-1" />
@@ -266,8 +285,12 @@ const ForgotPasswordPage = () => {
               <div className="p-6 md:p-8">
                 {/* Título para escritorio */}
                 <div className="hidden md:block mb-8">
-                  <h1 className="text-3xl font-bold text-gray-800 mb-2">Recuperar Contraseña</h1>
-                  <p className="text-gray-500">Ingresa tu email para recibir un enlace seguro</p>
+                  <h1 className="text-3xl font-bold text-gray-800 mb-2">
+                    Recuperar Contraseña
+                  </h1>
+                  <p className="text-gray-500">
+                    Ingresa tu email para recibir un enlace seguro
+                  </p>
                 </div>
 
                 {/* Mensaje de error */}
@@ -294,8 +317,8 @@ const ForgotPasswordPage = () => {
                         onChange={handleEmailChange}
                         className={`w-full pl-11 pr-4 py-3.5 border rounded-xl focus:ring-2 focus:ring-indigo-300 focus:border-indigo-500 transition-all duration-300 ${
                           error
-                            ? 'border-red-300 bg-red-50'
-                            : 'border-gray-300 hover:border-gray-400'
+                            ? "border-red-300 bg-red-50"
+                            : "border-gray-300 hover:border-gray-400"
                         }`}
                         placeholder="usuario@ejemplo.com"
                         disabled={isLoading}
@@ -346,7 +369,7 @@ const ForgotPasswordPage = () => {
                 </div>
               </div>
             </div>
-            
+
             {/* Información adicional */}
             <div className="mt-6 p-4 bg-white rounded-xl border border-indigo-200 shadow-sm">
               <div className="flex items-start gap-3">
@@ -354,7 +377,9 @@ const ForgotPasswordPage = () => {
                   <FiHelpCircle className="w-5 h-5 text-indigo-600" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-gray-800 mb-1">¿Cómo funciona?</h3>
+                  <h3 className="font-semibold text-gray-800 mb-1">
+                    ¿Cómo funciona?
+                  </h3>
                   <ul className="text-sm text-gray-600 space-y-1">
                     <li className="flex items-start gap-2">
                       <span className="inline-block w-5 h-5 bg-indigo-100 rounded-full flex items-center justify-center flex-shrink-0">
@@ -378,17 +403,18 @@ const ForgotPasswordPage = () => {
                 </div>
               </div>
             </div>
-            
+
             {/* Pie de página móvil */}
             <div className="mt-4 text-center text-gray-500 text-sm md:hidden">
               © {new Date().getFullYear()} VIADCA by Zafiro Tours
             </div>
           </div>
         </div>
-        
+
         {/* Pie de página desktop */}
         <div className="hidden md:block absolute bottom-0 right-0 p-6 text-gray-500 text-sm">
-          © {new Date().getFullYear()} VIADCA by Zafiro Tours. Todos los derechos reservados.
+          © {new Date().getFullYear()} VIADCA by Zafiro Tours. Todos los
+          derechos reservados.
         </div>
       </div>
     </PageTransition>

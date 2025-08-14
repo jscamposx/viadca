@@ -13,7 +13,7 @@ const PatchPreview = ({ patchPayload, onToggle }) => {
 
   // Determinar moneda a usar: si el patch incluye cambio de moneda, usarlo; si no, intentar mantener la actual
   const monedaPatch = sanitizeMoneda(
-    patchPayload?.moneda || patchPayload?.currency || "MXN"
+    patchPayload?.moneda || patchPayload?.currency || "MXN",
   );
 
   const getFieldLabel = (fieldName) => {

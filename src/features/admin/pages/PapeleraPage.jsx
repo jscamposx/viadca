@@ -1,4 +1,11 @@
-import { useState, useEffect, useMemo, lazy, Suspense, useDeferredValue } from "react";
+import {
+  useState,
+  useEffect,
+  useMemo,
+  lazy,
+  Suspense,
+  useDeferredValue,
+} from "react";
 import { Link } from "react-router-dom";
 import {
   FiTrash2,
@@ -25,7 +32,9 @@ import {
   FiPlus,
 } from "react-icons/fi";
 import { useNotification } from "./AdminLayout";
-const OptimizedImage = lazy(() => import("../../../components/ui/OptimizedImage"));
+const OptimizedImage = lazy(
+  () => import("../../../components/ui/OptimizedImage"),
+);
 const PapeleraItemCard = lazy(() => import("../components/PapeleraItemCard"));
 const ConfirmDialog = lazy(() => import("../components/ConfirmDialog"));
 import Pagination from "../../../components/ui/Pagination";
@@ -33,7 +42,7 @@ import usePapelera from "../hooks/usePapelera";
 
 const PapeleraPage = () => {
   const { addNotification } = useNotification();
-  
+
   // Hook personalizado para gestionar la papelera
   const {
     loading,
@@ -56,20 +65,23 @@ const PapeleraPage = () => {
     totalUsuarios: stats?.totalUsuarios ?? 0,
     total: stats?.total ?? 0,
   };
-  
+
   // Estados de filtros y búsqueda
   const [searchTerm, setSearchTerm] = useState("");
   const deferredSearch = useDeferredValue(searchTerm);
   const [typeFilter, setTypeFilter] = useState("todos"); // todos, paquetes, mayoristas, usuarios
-  const [sortConfig, setSortConfig] = useState({ key: "eliminadoEn", direction: "desc" });
+  const [sortConfig, setSortConfig] = useState({
+    key: "eliminadoEn",
+    direction: "desc",
+  });
   const [isFiltersOpen, setIsFiltersOpen] = useState(false);
   // Nuevo: control de menú de orden
   const [isSortMenuOpen, setIsSortMenuOpen] = useState(false);
-  
+
   // Estados de paginación
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(12);
-  
+
   // Estados de modales
   const [confirmDialog, setConfirmDialog] = useState({
     isOpen: false,
@@ -82,22 +94,26 @@ const PapeleraPage = () => {
   // Combinar y filtrar datos (memoizado)
   const filteredItems = useMemo(() => {
     let allItems = getAllItems();
-    
+
     if (typeFilter !== "todos") {
-      const filterType = typeFilter === "paquetes" ? "paquete" 
-                       : typeFilter === "mayoristas" ? "mayorista"
-                       : typeFilter === "usuarios" ? "usuario"
-                       : typeFilter.slice(0, -1);
-      allItems = allItems.filter(item => item.type === filterType);
+      const filterType =
+        typeFilter === "paquetes"
+          ? "paquete"
+          : typeFilter === "mayoristas"
+            ? "mayorista"
+            : typeFilter === "usuarios"
+              ? "usuario"
+              : typeFilter.slice(0, -1);
+      allItems = allItems.filter((item) => item.type === filterType);
     }
 
     if (deferredSearch) {
       const term = deferredSearch.toLowerCase();
-      allItems = allItems.filter(item =>
-        item.name.toLowerCase().includes(term) ||
-        (item.type === "paquete" && item.destinos?.some(d => 
-          d.nombre?.toLowerCase().includes(term)
-        ))
+      allItems = allItems.filter(
+        (item) =>
+          item.name.toLowerCase().includes(term) ||
+          (item.type === "paquete" &&
+            item.destinos?.some((d) => d.nombre?.toLowerCase().includes(term))),
       );
     }
 
@@ -119,62 +135,78 @@ const PapeleraPage = () => {
   const totalItems = filteredItems.length;
   const totalPages = Math.ceil(totalItems / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
-  const currentItems = filteredItems.slice(startIndex, startIndex + itemsPerPage);
+  const currentItems = filteredItems.slice(
+    startIndex,
+    startIndex + itemsPerPage,
+  );
 
   // Funciones de acción
   const handleRestore = async (item) => {
     const success = await restoreItem(item.id, item.type);
-    
+
     if (success) {
-      const itemTypeText = item.type === "paquete" ? "Paquete" : 
-                          item.type === "mayorista" ? "Mayorista" : "Usuario";
+      const itemTypeText =
+        item.type === "paquete"
+          ? "Paquete"
+          : item.type === "mayorista"
+            ? "Mayorista"
+            : "Usuario";
       addNotification(
         `${itemTypeText} "${item.name}" restaurado correctamente`,
-        "success"
+        "success",
       );
     } else {
-      const itemTypeText = item.type === "paquete" ? "el paquete" : 
-                          item.type === "mayorista" ? "el mayorista" : "el usuario";
-      addNotification(
-        `Error al restaurar ${itemTypeText}`,
-        "error"
-      );
+      const itemTypeText =
+        item.type === "paquete"
+          ? "el paquete"
+          : item.type === "mayorista"
+            ? "el mayorista"
+            : "el usuario";
+      addNotification(`Error al restaurar ${itemTypeText}`, "error");
     }
-    
+
     closeConfirmDialog();
   };
 
   const handleHardDelete = async (item) => {
     const success = await hardDeleteItem(item.id, item.type);
-    
+
     if (success) {
-      const itemTypeText = item.type === "paquete" ? "Paquete" : 
-                          item.type === "mayorista" ? "Mayorista" : "Usuario";
+      const itemTypeText =
+        item.type === "paquete"
+          ? "Paquete"
+          : item.type === "mayorista"
+            ? "Mayorista"
+            : "Usuario";
       addNotification(
         `${itemTypeText} "${item.name}" eliminado permanentemente`,
-        "success"
+        "success",
       );
     } else {
-      const itemTypeText = item.type === "paquete" ? "el paquete" : 
-                          item.type === "mayorista" ? "el mayorista" : "el usuario";
+      const itemTypeText =
+        item.type === "paquete"
+          ? "el paquete"
+          : item.type === "mayorista"
+            ? "el mayorista"
+            : "el usuario";
       addNotification(
         `Error al eliminar permanentemente ${itemTypeText}`,
-        "error"
+        "error",
       );
     }
-    
+
     closeConfirmDialog();
   };
 
   const handleEmptyTrash = async () => {
     const success = await emptyTrash();
-    
+
     if (success) {
       addNotification("Papelera vaciada correctamente", "success");
     } else {
       addNotification("Error al vaciar la papelera", "error");
     }
-    
+
     closeConfirmDialog();
   };
 
@@ -203,10 +235,10 @@ const PapeleraPage = () => {
       handleEmptyTrash();
       return;
     }
-    
-    const item = filteredItems.find(i => i.id === confirmDialog.itemId);
+
+    const item = filteredItems.find((i) => i.id === confirmDialog.itemId);
     if (!item) return;
-    
+
     if (confirmDialog.type === "restore") {
       handleRestore(item);
     } else if (confirmDialog.type === "hardDelete") {
@@ -215,9 +247,9 @@ const PapeleraPage = () => {
   };
 
   const handleSort = (key) => {
-    setSortConfig(prev => ({
+    setSortConfig((prev) => ({
       key,
-      direction: prev.key === key && prev.direction === "asc" ? "desc" : "asc"
+      direction: prev.key === key && prev.direction === "asc" ? "desc" : "asc",
     }));
   };
 
@@ -226,10 +258,10 @@ const PapeleraPage = () => {
     const date = new Date(dateString);
     return date.toLocaleDateString("es-ES", {
       day: "2-digit",
-      month: "2-digit", 
+      month: "2-digit",
       year: "numeric",
       hour: "2-digit",
-      minute: "2-digit"
+      minute: "2-digit",
     });
   };
 
@@ -238,17 +270,28 @@ const PapeleraPage = () => {
     if (!dateString) return "—";
     const d = new Date(dateString);
     if (isNaN(d.getTime())) return "—";
-    const fecha = d.toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' });
-    const hora = d.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+    const fecha = d.toLocaleDateString("es-ES", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+    });
+    const hora = d.toLocaleTimeString("es-ES", {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
     return `${fecha}, ${hora}`;
   };
 
   const getDaysUntilPermanentDelete = (dateString) => {
     if (!dateString) return null;
     const deleteDate = new Date(dateString);
-    const permanentDeleteDate = new Date(deleteDate.getTime() + (14 * 24 * 60 * 60 * 1000)); // 14 días
+    const permanentDeleteDate = new Date(
+      deleteDate.getTime() + 14 * 24 * 60 * 60 * 1000,
+    ); // 14 días
     const now = new Date();
-    const daysLeft = Math.ceil((permanentDeleteDate - now) / (24 * 60 * 60 * 1000));
+    const daysLeft = Math.ceil(
+      (permanentDeleteDate - now) / (24 * 60 * 60 * 1000),
+    );
     return daysLeft > 0 ? daysLeft : 0;
   };
 
@@ -266,7 +309,8 @@ const PapeleraPage = () => {
                 <div className="mt-2 h-4 sm:h-5 w-44 sm:w-64 bg-gray-200 rounded animate-pulse mx-auto sm:mx-0" />
               ) : (
                 <p className="text-gray-600 mt-1 sm:mt-2 text-sm sm:text-base">
-                  Restaura o elimina permanentemente elementos ({totalItems} elementos)
+                  Restaura o elimina permanentemente elementos ({totalItems}{" "}
+                  elementos)
                 </p>
               )}
               {(!safeStats.isEmpty || isLoading) && (
@@ -278,26 +322,30 @@ const PapeleraPage = () => {
                 </div>
               )}
             </div>
-            
+
             <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
               <button
                 onClick={loadDeletedData}
                 disabled={isLoading}
                 className="w-full sm:w-auto lg:w-auto flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-purple-700 hover:from-blue-700 hover:to-purple-800 text-white font-semibold py-3 px-5 rounded-xl shadow-lg transition-all duration-300 ease-in-out transform hover:-translate-y-0.5 hover:shadow-xl text-sm sm:text-base whitespace-nowrap"
               >
-                <FiRefreshCw className={`w-4 h-4 sm:w-5 sm:h-5 ${isLoading ? "animate-spin" : ""}`} />
+                <FiRefreshCw
+                  className={`w-4 h-4 sm:w-5 sm:h-5 ${isLoading ? "animate-spin" : ""}`}
+                />
                 Actualizar
               </button>
-              
+
               {!safeStats.isEmpty && (
                 <button
-                  onClick={() => setConfirmDialog({
-                    isOpen: true,
-                    type: "emptyTrash",
-                    itemId: null,
-                    itemName: "",
-                    itemType: "",
-                  })}
+                  onClick={() =>
+                    setConfirmDialog({
+                      isOpen: true,
+                      type: "emptyTrash",
+                      itemId: null,
+                      itemName: "",
+                      itemType: "",
+                    })
+                  }
                   className="w-full sm:w-auto flex items-center justify-center gap-2 bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700 text-white font-semibold py-3 px-5 rounded-xl shadow-md transition-all duration-300 ease-in-out transform hover:-translate-y-0.5 hover:shadow-lg text-sm sm:text-base whitespace-nowrap"
                 >
                   <FiTrash2 className="w-4 h-4 sm:w-5 sm:h-5" />
@@ -311,7 +359,6 @@ const PapeleraPage = () => {
         {/* Sección principal: estadísticas (chips) + búsqueda/controles */}
         {(!safeStats.isEmpty || isLoading) && (
           <div className="bg-gradient-to-br from-white/95 via-purple-50/30 to-blue-50/30 backdrop-blur-sm border border-white/40 rounded-xl sm:rounded-2xl shadow-lg p-3 sm:p-4 lg:p-6 mb-4 sm:mb-6">
-
             {/* Búsqueda y controles rápidos */}
             <div className="space-y-3 sm:space-y-4">
               <div className="relative">
@@ -332,12 +379,12 @@ const PapeleraPage = () => {
                 {/* Controles móviles */}
                 {/* Igual que en AdminMayoristasPage: Filtros y Ordenar */}
                 <div className="grid grid-cols-2 gap-2 lg:hidden">
-                  <button 
+                  <button
                     onClick={() => setIsFiltersOpen(!isFiltersOpen)}
                     className={`flex items-center justify-center gap-2 font-medium py-3 px-3 rounded-lg transition text-xs ${
                       isFiltersOpen
-                        ? 'bg-blue-100 text-blue-700 border border-blue-200'
-                        : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
+                        ? "bg-blue-100 text-blue-700 border border-blue-200"
+                        : "bg-gray-100 hover:bg-gray-200 text-gray-700"
                     }`}
                     disabled={isLoading}
                   >
@@ -349,11 +396,11 @@ const PapeleraPage = () => {
                     onClick={() => setIsSortMenuOpen(!isSortMenuOpen)}
                     className={`flex items-center justify-center gap-2 py-3 px-3 rounded-lg font-medium transition text-xs ${
                       isSortMenuOpen
-                        ? 'bg-blue-100 text-blue-700 border border-blue-200'
-                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                        ? "bg-blue-100 text-blue-700 border border-blue-200"
+                        : "bg-gray-100 text-gray-700 hover:bg-gray-200"
                     }`}
                   >
-                    {sortConfig.direction === 'asc' ? (
+                    {sortConfig.direction === "asc" ? (
                       <FiArrowUp className="w-4 h-4" />
                     ) : (
                       <FiArrowDown className="w-4 h-4" />
@@ -364,7 +411,10 @@ const PapeleraPage = () => {
 
                 {/* Estadísticas móviles (chips) */}
                 <div className="grid grid-cols-2 gap-3 lg:hidden">
-                  <div className="rounded-xl p-3 bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-md" aria-label="Paquetes">
+                  <div
+                    className="rounded-xl p-3 bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-md"
+                    aria-label="Paquetes"
+                  >
                     <div className="flex items-center gap-2">
                       <FiPackage className="w-4 h-4 opacity-95" />
                       <span className="text-xs font-medium">Paquetes</span>
@@ -372,10 +422,15 @@ const PapeleraPage = () => {
                     {isLoading ? (
                       <div className="mt-1 h-6 w-10 bg-white/40 rounded animate-pulse" />
                     ) : (
-                      <div className="mt-1 text-2xl font-extrabold leading-none">{safeStats.totalPaquetes}</div>
+                      <div className="mt-1 text-2xl font-extrabold leading-none">
+                        {safeStats.totalPaquetes}
+                      </div>
                     )}
                   </div>
-                  <div className="rounded-xl p-3 bg-gradient-to-r from-green-500 to-emerald-600 text-white shadow-md" aria-label="Mayoristas">
+                  <div
+                    className="rounded-xl p-3 bg-gradient-to-r from-green-500 to-emerald-600 text-white shadow-md"
+                    aria-label="Mayoristas"
+                  >
                     <div className="flex items-center gap-2">
                       <FiUsers className="w-4 h-4 opacity-95" />
                       <span className="text-xs font-medium">Mayoristas</span>
@@ -383,10 +438,15 @@ const PapeleraPage = () => {
                     {isLoading ? (
                       <div className="mt-1 h-6 w-10 bg-white/40 rounded animate-pulse" />
                     ) : (
-                      <div className="mt-1 text-2xl font-extrabold leading-none">{safeStats.totalMayoristas}</div>
+                      <div className="mt-1 text-2xl font-extrabold leading-none">
+                        {safeStats.totalMayoristas}
+                      </div>
                     )}
                   </div>
-                  <div className="rounded-xl p-3 bg-gradient-to-r from-yellow-500 to-orange-600 text-white shadow-md" aria-label="Usuarios">
+                  <div
+                    className="rounded-xl p-3 bg-gradient-to-r from-yellow-500 to-orange-600 text-white shadow-md"
+                    aria-label="Usuarios"
+                  >
                     <div className="flex items-center gap-2">
                       <FiUser className="w-4 h-4 opacity-95" />
                       <span className="text-xs font-medium">Usuarios</span>
@@ -394,7 +454,9 @@ const PapeleraPage = () => {
                     {isLoading ? (
                       <div className="mt-1 h-6 w-10 bg-white/40 rounded animate-pulse" />
                     ) : (
-                      <div className="mt-1 text-2xl font-extrabold leading-none">{safeStats.totalUsuarios}</div>
+                      <div className="mt-1 text-2xl font-extrabold leading-none">
+                        {safeStats.totalUsuarios}
+                      </div>
                     )}
                   </div>
                 </div>
@@ -402,12 +464,12 @@ const PapeleraPage = () => {
                 {/* Controles desktop + chips alineados como en AdminMayoristasPage */}
                 <div className="hidden lg:flex lg:items-center lg:justify-between">
                   <div className="grid grid-cols-2 gap-2">
-                    <button 
+                    <button
                       onClick={() => setIsFiltersOpen(!isFiltersOpen)}
                       className={`flex items-center justify-center gap-2 font-medium py-3 px-4 rounded-xl transition text-sm ${
                         isFiltersOpen
-                          ? 'bg-blue-100 text-blue-700 border border-blue-200'
-                          : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
+                          ? "bg-blue-100 text-blue-700 border border-blue-200"
+                          : "bg-gray-100 hover:bg-gray-200 text-gray-700"
                       }`}
                       disabled={isLoading}
                     >
@@ -419,11 +481,11 @@ const PapeleraPage = () => {
                       onClick={() => setIsSortMenuOpen(!isSortMenuOpen)}
                       className={`flex items-center justify-center gap-2 py-3 px-4 rounded-xl font-medium transition text-sm ${
                         isSortMenuOpen
-                          ? 'bg-blue-100 text-blue-700 border border-blue-200'
-                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                          ? "bg-blue-100 text-blue-700 border border-blue-200"
+                          : "bg-gray-100 text-gray-700 hover:bg-gray-200"
                       }`}
                     >
-                      {sortConfig.direction === 'asc' ? (
+                      {sortConfig.direction === "asc" ? (
                         <FiArrowUp className="w-4 h-4" />
                       ) : (
                         <FiArrowDown className="w-4 h-4" />
@@ -478,48 +540,51 @@ const PapeleraPage = () => {
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                     <button
                       className={`px-3 py-2.5 rounded-lg font-medium transition flex items-center justify-center gap-2 text-sm ${
-                        sortConfig.key === 'eliminadoEn'
-                          ? 'bg-blue-100 text-blue-700'
-                          : 'bg-white text-gray-700 hover:bg-gray-100'
+                        sortConfig.key === "eliminadoEn"
+                          ? "bg-blue-100 text-blue-700"
+                          : "bg-white text-gray-700 hover:bg-gray-100"
                       }`}
-                      onClick={() => handleSort('eliminadoEn')}
+                      onClick={() => handleSort("eliminadoEn")}
                     >
                       <span>Fecha de eliminación</span>
-                      {sortConfig.key === 'eliminadoEn' && (sortConfig.direction === 'asc' ? (
-                        <FiArrowUp className="w-3 h-3" />
-                      ) : (
-                        <FiArrowDown className="w-3 h-3" />
-                      ))}
+                      {sortConfig.key === "eliminadoEn" &&
+                        (sortConfig.direction === "asc" ? (
+                          <FiArrowUp className="w-3 h-3" />
+                        ) : (
+                          <FiArrowDown className="w-3 h-3" />
+                        ))}
                     </button>
                     <button
                       className={`px-3 py-2.5 rounded-lg font-medium transition flex items-center justify-center gap-2 text-sm ${
-                        sortConfig.key === 'name'
-                          ? 'bg-blue-100 text-blue-700'
-                          : 'bg-white text-gray-700 hover:bg-gray-100'
+                        sortConfig.key === "name"
+                          ? "bg-blue-100 text-blue-700"
+                          : "bg-white text-gray-700 hover:bg-gray-100"
                       }`}
-                      onClick={() => handleSort('name')}
+                      onClick={() => handleSort("name")}
                     >
                       <span>Nombre</span>
-                      {sortConfig.key === 'name' && (sortConfig.direction === 'asc' ? (
-                        <FiArrowUp className="w-3 h-3" />
-                      ) : (
-                        <FiArrowDown className="w-3 h-3" />
-                      ))}
+                      {sortConfig.key === "name" &&
+                        (sortConfig.direction === "asc" ? (
+                          <FiArrowUp className="w-3 h-3" />
+                        ) : (
+                          <FiArrowDown className="w-3 h-3" />
+                        ))}
                     </button>
                     <button
                       className={`px-3 py-2.5 rounded-lg font-medium transition flex items-center justify-center gap-2 text-sm ${
-                        sortConfig.key === 'type'
-                          ? 'bg-blue-100 text-blue-700'
-                          : 'bg-white text-gray-700 hover:bg-gray-100'
+                        sortConfig.key === "type"
+                          ? "bg-blue-100 text-blue-700"
+                          : "bg-white text-gray-700 hover:bg-gray-100"
                       }`}
-                      onClick={() => handleSort('type')}
+                      onClick={() => handleSort("type")}
                     >
                       <span>Tipo</span>
-                      {sortConfig.key === 'type' && (sortConfig.direction === 'asc' ? (
-                        <FiArrowUp className="w-3 h-3" />
-                      ) : (
-                        <FiArrowDown className="w-3 h-3" />
-                      ))}
+                      {sortConfig.key === "type" &&
+                        (sortConfig.direction === "asc" ? (
+                          <FiArrowUp className="w-3 h-3" />
+                        ) : (
+                          <FiArrowDown className="w-3 h-3" />
+                        ))}
                     </button>
                   </div>
                 </div>
@@ -568,7 +633,7 @@ const PapeleraPage = () => {
                       <select
                         value={`${sortConfig.key}-${sortConfig.direction}`}
                         onChange={(e) => {
-                          const [key, direction] = e.target.value.split('-');
+                          const [key, direction] = e.target.value.split("-");
                           setSortConfig({ key, direction });
                         }}
                         className="w-full px-3 py-2.5 lg:py-3 rounded-lg lg:rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm lg:text-base"
@@ -607,9 +672,12 @@ const PapeleraPage = () => {
                     <div className="flex gap-3 lg:gap-4 order-1 lg:order-2 w-full lg:w-auto">
                       <button
                         onClick={() => {
-                          setSearchTerm('');
-                          setTypeFilter('todos');
-                          setSortConfig({ key: 'eliminadoEn', direction: 'desc' });
+                          setSearchTerm("");
+                          setTypeFilter("todos");
+                          setSortConfig({
+                            key: "eliminadoEn",
+                            direction: "desc",
+                          });
                           setIsFiltersOpen(false);
                         }}
                         className="flex-1 lg:flex-none px-4 lg:px-6 py-2.5 lg:py-3 bg-gradient-to-r from-gray-100 to-gray-200 hover:from-gray-200 hover:to-gray-300 text-gray-700 font-medium rounded-lg lg:rounded-xl transition-all duration-200 text-sm lg:text-base shadow-sm hover:shadow-md"
@@ -633,41 +701,55 @@ const PapeleraPage = () => {
 
         {/* Filtros Rápidos */}
         {(!safeStats.isEmpty || isLoading) && (
-          <section className="bg-gradient-to-r from-white via-gray-50 to-white rounded-xl sm:rounded-2xl shadow-lg border border-gray-100 p-3 sm:p-4 lg:p-5 mb-4 sm:mb-6" aria-labelledby="filtros-rapidos">
+          <section
+            className="bg-gradient-to-r from-white via-gray-50 to-white rounded-xl sm:rounded-2xl shadow-lg border border-gray-100 p-3 sm:p-4 lg:p-5 mb-4 sm:mb-6"
+            aria-labelledby="filtros-rapidos"
+          >
             <div className="space-y-3 sm:space-y-4">
               <div className="flex items-center gap-2 sm:gap-3">
                 <div className="w-1 h-4 sm:h-6 bg-gradient-to-b from-purple-500 to-indigo-600 rounded-full"></div>
-                <h2 id="filtros-rapidos" className="text-xs sm:text-sm font-semibold text-gray-800">Filtros Rápidos</h2>
+                <h2
+                  id="filtros-rapidos"
+                  className="text-xs sm:text-sm font-semibold text-gray-800"
+                >
+                  Filtros Rápidos
+                </h2>
               </div>
-              
-              <div className="flex flex-col sm:flex-row flex-wrap gap-2 sm:gap-3" role="group" aria-labelledby="filtros-rapidos">
+
+              <div
+                className="flex flex-col sm:flex-row flex-wrap gap-2 sm:gap-3"
+                role="group"
+                aria-labelledby="filtros-rapidos"
+              >
                 {/* Primer chip a la izquierda con contador (Total) */}
                 <button
-                  onClick={() => setTypeFilter('todos')}
-                  aria-pressed={typeFilter === 'todos'}
+                  onClick={() => setTypeFilter("todos")}
+                  aria-pressed={typeFilter === "todos"}
                   aria-label="Mostrar todos los elementos eliminados"
                   className={`group relative px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg sm:rounded-xl text-xs sm:text-sm font-medium transition-all duration-200 ${
-                    typeFilter === 'todos'
-                      ? 'bg-gradient-to-r from-purple-500 to-indigo-600 text-white shadow-lg'
-                      : 'bg-white text-gray-600 hover:bg-purple-50 hover:text-purple-700 border border-gray-200 hover:border-purple-200'
+                    typeFilter === "todos"
+                      ? "bg-gradient-to-r from-purple-500 to-indigo-600 text-white shadow-lg"
+                      : "bg-white text-gray-600 hover:bg-purple-50 hover:text-purple-700 border border-gray-200 hover:border-purple-200"
                   }`}
                 >
                   <div className="flex items-center justify-center gap-2">
                     <FiTrash2 className="w-3 h-3 sm:w-4 sm:h-4" />
-                    <span className="hidden sm:inline">Todos los Elementos</span>
+                    <span className="hidden sm:inline">
+                      Todos los Elementos
+                    </span>
                     <span className="sm:hidden">Todos</span>
                   </div>
                 </button>
 
                 {/* Resto de chips sin contador */}
                 <button
-                  onClick={() => setTypeFilter('paquetes')}
-                  aria-pressed={typeFilter === 'paquetes'}
+                  onClick={() => setTypeFilter("paquetes")}
+                  aria-pressed={typeFilter === "paquetes"}
                   aria-label="Filtrar por paquetes eliminados"
                   className={`group relative px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg sm:rounded-xl text-xs sm:text-sm font-medium transition-all duration-200 ${
-                    typeFilter === 'paquetes'
-                      ? 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-lg'
-                      : 'bg-white text-gray-600 hover:bg-blue-50 hover:text-blue-700 border border-gray-200 hover:border-blue-200'
+                    typeFilter === "paquetes"
+                      ? "bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-lg"
+                      : "bg-white text-gray-600 hover:bg-blue-50 hover:text-blue-700 border border-gray-200 hover:border-blue-200"
                   }`}
                 >
                   <div className="flex items-center justify-center gap-2">
@@ -677,13 +759,13 @@ const PapeleraPage = () => {
                 </button>
 
                 <button
-                  onClick={() => setTypeFilter('mayoristas')}
-                  aria-pressed={typeFilter === 'mayoristas'}
+                  onClick={() => setTypeFilter("mayoristas")}
+                  aria-pressed={typeFilter === "mayoristas"}
                   aria-label="Filtrar por mayoristas eliminados"
                   className={`group relative px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg sm:rounded-xl text-xs sm:text-sm font-medium transition-all duration-200 ${
-                    typeFilter === 'mayoristas'
-                      ? 'bg-gradient-to-r from-green-500 to-emerald-600 text-white shadow-lg'
-                      : 'bg-white text-gray-600 hover:bg-green-50 hover:text-green-700 border border-gray-200 hover:border-green-200'
+                    typeFilter === "mayoristas"
+                      ? "bg-gradient-to-r from-green-500 to-emerald-600 text-white shadow-lg"
+                      : "bg-white text-gray-600 hover:bg-green-50 hover:text-green-700 border border-gray-200 hover:border-green-200"
                   }`}
                 >
                   <div className="flex items-center justify-center gap-2">
@@ -693,13 +775,13 @@ const PapeleraPage = () => {
                 </button>
 
                 <button
-                  onClick={() => setTypeFilter('usuarios')}
-                  aria-pressed={typeFilter === 'usuarios'}
+                  onClick={() => setTypeFilter("usuarios")}
+                  aria-pressed={typeFilter === "usuarios"}
                   aria-label="Filtrar por usuarios eliminados"
                   className={`group relative px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg sm:rounded-xl text-xs sm:text-sm font-medium transition-all duration-200 ${
-                    typeFilter === 'usuarios'
-                      ? 'bg-gradient-to-r from-yellow-500 to-orange-600 text-white shadow-lg'
-                      : 'bg-white text-gray-600 hover:bg-yellow-50 hover:text-yellow-700 border border-gray-200 hover:border-yellow-200'
+                    typeFilter === "usuarios"
+                      ? "bg-gradient-to-r from-yellow-500 to-orange-600 text-white shadow-lg"
+                      : "bg-white text-gray-600 hover:bg-yellow-50 hover:text-yellow-700 border border-gray-200 hover:border-yellow-200"
                   }`}
                 >
                   <div className="flex items-center justify-center gap-2">
@@ -717,7 +799,10 @@ const PapeleraPage = () => {
           // Skeleton list: solo contenedor estable para evitar CLS y trabajar menos en primer render
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 [content-visibility:auto] [contain-intrinsic-size:600px_900px]">
             {Array.from({ length: itemsPerPage }).map((_, i) => (
-              <div key={i} className="rounded-2xl border border-gray-200 bg-white shadow-sm p-4 sm:p-5 animate-pulse min-h-[220px]" />
+              <div
+                key={i}
+                className="rounded-2xl border border-gray-200 bg-white shadow-sm p-4 sm:p-5 animate-pulse min-h-[220px]"
+              />
             ))}
           </div>
         ) : totalItems === 0 ? (
@@ -735,7 +820,8 @@ const PapeleraPage = () => {
               </h3>
 
               <p className="text-gray-600 mb-6 sm:mb-8 leading-relaxed text-sm sm:text-base">
-                No hay elementos en la papelera. Todos los paquetes, mayoristas y usuarios están en su lugar correcto.
+                No hay elementos en la papelera. Todos los paquetes, mayoristas
+                y usuarios están en su lugar correcto.
               </p>
 
               {/* Botón de acción */}
@@ -746,7 +832,9 @@ const PapeleraPage = () => {
                 >
                   <span className="flex items-center justify-center gap-2">
                     <FiHome className="w-4 h-4 group-hover:scale-110 transition-transform duration-200" />
-                    <span className="hidden sm:inline">Volver al Dashboard</span>
+                    <span className="hidden sm:inline">
+                      Volver al Dashboard
+                    </span>
                     <span className="sm:hidden">Dashboard</span>
                   </span>
                 </Link>
@@ -755,20 +843,27 @@ const PapeleraPage = () => {
           </div>
         ) : (
           <>
-            <Suspense fallback={
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
-                {Array.from({ length: itemsPerPage }).map((_, i) => (
-                  <div key={i} className="rounded-2xl border border-gray-200 bg-white shadow-sm p-4 sm:p-5 animate-pulse min-h-[220px]" />
-                ))}
-              </div>
-            }>
+            <Suspense
+              fallback={
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
+                  {Array.from({ length: itemsPerPage }).map((_, i) => (
+                    <div
+                      key={i}
+                      className="rounded-2xl border border-gray-200 bg-white shadow-sm p-4 sm:p-5 animate-pulse min-h-[220px]"
+                    />
+                  ))}
+                </div>
+              }
+            >
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 [content-visibility:auto] [contain-intrinsic-size:600px_900px]">
                 {currentItems.map((item) => (
                   <PapeleraItemCard
                     key={`${item.type}-${item.id}`}
                     item={item}
                     onRestore={(item) => openConfirmDialog("restore", item)}
-                    onHardDelete={(item) => openConfirmDialog("hardDelete", item)}
+                    onHardDelete={(item) =>
+                      openConfirmDialog("hardDelete", item)
+                    }
                     formatDate={formatDate}
                     getDaysUntilPermanentDelete={getDaysUntilPermanentDelete}
                   />
@@ -800,32 +895,42 @@ const PapeleraPage = () => {
           onClose={closeConfirmDialog}
           onConfirm={confirmAction}
           title={
-            confirmDialog.type === "restore" 
-              ? "Restaurar elemento" 
+            confirmDialog.type === "restore"
+              ? "Restaurar elemento"
               : confirmDialog.type === "emptyTrash"
-              ? "Vaciar papelera"
-              : "Eliminar permanentemente"
+                ? "Vaciar papelera"
+                : "Eliminar permanentemente"
           }
           message={
             confirmDialog.type === "restore"
               ? `¿Estás seguro de que quieres restaurar ${
-                  confirmDialog.itemType === "paquete" ? "el paquete" : 
-                  confirmDialog.itemType === "mayorista" ? "el mayorista" : "el usuario"
+                  confirmDialog.itemType === "paquete"
+                    ? "el paquete"
+                    : confirmDialog.itemType === "mayorista"
+                      ? "el mayorista"
+                      : "el usuario"
                 } "${confirmDialog.itemName}"?`
               : confirmDialog.type === "emptyTrash"
-              ? `¿Estás seguro de que quieres vaciar TODA la papelera? Se eliminarán permanentemente ${safeStats.total} elementos. Esta acción no se puede deshacer.`
-              : `¿Estás seguro de que quieres eliminar PERMANENTEMENTE ${
-                  confirmDialog.itemType === "paquete" ? "el paquete" : 
-                  confirmDialog.itemType === "mayorista" ? "el mayorista" : "el usuario"
-                } "${confirmDialog.itemName}"? Esta acción no se puede deshacer.`
+                ? `¿Estás seguro de que quieres vaciar TODA la papelera? Se eliminarán permanentemente ${safeStats.total} elementos. Esta acción no se puede deshacer.`
+                : `¿Estás seguro de que quieres eliminar PERMANENTEMENTE ${
+                    confirmDialog.itemType === "paquete"
+                      ? "el paquete"
+                      : confirmDialog.itemType === "mayorista"
+                        ? "el mayorista"
+                        : "el usuario"
+                  } "${confirmDialog.itemName}"? Esta acción no se puede deshacer.`
           }
-          itemName={confirmDialog.type === "emptyTrash" ? "Papelera completa" : confirmDialog.itemName}
+          itemName={
+            confirmDialog.type === "emptyTrash"
+              ? "Papelera completa"
+              : confirmDialog.itemName
+          }
           confirmText={
-            confirmDialog.type === "restore" 
-              ? "Restaurar" 
+            confirmDialog.type === "restore"
+              ? "Restaurar"
               : confirmDialog.type === "emptyTrash"
-              ? "Vaciar papelera"
-              : "Eliminar permanentemente"
+                ? "Vaciar papelera"
+                : "Eliminar permanentemente"
           }
           cancelText="Cancelar"
           type={confirmDialog.type === "restore" ? "success" : "danger"}

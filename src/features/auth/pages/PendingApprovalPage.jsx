@@ -1,7 +1,7 @@
-import { useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../../../contexts/AuthContext';
-import PageTransition from '../../../components/ui/PageTransition';
+import { useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../../../contexts/AuthContext";
+import PageTransition from "../../../components/ui/PageTransition";
 import {
   FiClock,
   FiMail,
@@ -14,16 +14,16 @@ import {
   FiArrowLeft,
   FiHelpCircle,
   FiAlertTriangle,
-  FiChevronRight
-} from 'react-icons/fi';
+  FiChevronRight,
+} from "react-icons/fi";
 
 const PendingApprovalPage = () => {
   const { user, logout, updateProfile } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (user && user.rol === 'admin') {
-      navigate('/admin', { replace: true });
+    if (user && user.rol === "admin") {
+      navigate("/admin", { replace: true });
     }
   }, [user, navigate]);
 
@@ -31,7 +31,7 @@ const PendingApprovalPage = () => {
     try {
       await updateProfile();
     } catch (error) {
-      console.error('Error al actualizar perfil:', error);
+      console.error("Error al actualizar perfil:", error);
     }
   };
 
@@ -48,29 +48,33 @@ const PendingApprovalPage = () => {
             <div className="absolute top-0 right-0 w-96 h-96 bg-orange-500/20 rounded-full blur-3xl"></div>
             <div className="absolute bottom-20 left-20 w-80 h-80 bg-amber-500/20 rounded-full blur-3xl"></div>
             <div className="absolute top-1/3 left-1/4 w-64 h-64 bg-white/10 rounded-full blur-2xl"></div>
-            
+
             <div className="absolute inset-0 opacity-20">
               <div className="absolute top-10 left-10 w-16 h-16 rounded-lg border-2 border-white rotate-45"></div>
               <div className="absolute top-40 right-20 w-24 h-24 rounded-lg border-2 border-white rotate-12"></div>
               <div className="absolute bottom-20 left-1/3 w-20 h-20 rounded-lg border-2 border-white rotate-30"></div>
             </div>
           </div>
-          
+
           <div className="relative z-10 h-full flex flex-col justify-between p-12 text-white">
             <div>
               <div className="mb-6">
                 <div className="text-3xl font-bold">VIADCA</div>
                 <div className="text-amber-200 text-sm">by Zafiro Tours</div>
               </div>
-              
+
               <div className="mt-16 max-w-md">
-                <h2 className="text-3xl md:text-4xl font-bold mb-4">Aprobación Pendiente</h2>
+                <h2 className="text-3xl md:text-4xl font-bold mb-4">
+                  Aprobación Pendiente
+                </h2>
                 <p className="text-amber-100 opacity-90">
-                  Estamos revisando tu solicitud para garantizar que cumples con todos los requisitos necesarios para acceder al panel administrativo.
+                  Estamos revisando tu solicitud para garantizar que cumples con
+                  todos los requisitos necesarios para acceder al panel
+                  administrativo.
                 </p>
               </div>
             </div>
-            
+
             <div className="flex flex-col gap-3">
               <div className="flex items-center gap-2 text-amber-200">
                 <FiShield className="w-5 h-5" />
@@ -89,8 +93,8 @@ const PendingApprovalPage = () => {
           <div className="w-full max-w-md p-4 md:p-6">
             {/* Volver al inicio - Mobile */}
             <div className="md:hidden mb-6">
-              <Link 
-                to="/" 
+              <Link
+                to="/"
                 className="inline-flex items-center gap-2 text-amber-600 hover:text-amber-800 transition-colors font-medium group"
               >
                 <FiArrowLeft className="w-5 h-5 transition-transform group-hover:-translate-x-1" />
@@ -124,41 +128,59 @@ const PendingApprovalPage = () => {
                       <FiUser className="w-5 h-5 text-white" />
                     </div>
                     <div>
-                      <h3 className="font-semibold text-amber-800">Información de tu cuenta</h3>
-                      <p className="text-sm text-amber-600">Estado actual del registro</p>
+                      <h3 className="font-semibold text-amber-800">
+                        Información de tu cuenta
+                      </h3>
+                      <p className="text-sm text-amber-600">
+                        Estado actual del registro
+                      </p>
                     </div>
                   </div>
-                  
+
                   <div className="grid grid-cols-1 gap-3">
                     <div className="bg-white p-3 rounded-lg border border-amber-200">
                       <div className="flex items-center gap-2 mb-1">
                         <FiUser className="w-4 h-4 text-amber-600" />
-                        <span className="text-gray-600 font-medium">Usuario:</span>
+                        <span className="text-gray-600 font-medium">
+                          Usuario:
+                        </span>
                       </div>
-                      <p className="font-medium text-gray-800 truncate">{user?.usuario}</p>
+                      <p className="font-medium text-gray-800 truncate">
+                        {user?.usuario}
+                      </p>
                     </div>
-                    
+
                     <div className="bg-white p-3 rounded-lg border border-amber-200">
                       <div className="flex items-center gap-2 mb-1">
                         <FiMail className="w-4 h-4 text-amber-600" />
-                        <span className="text-gray-600 font-medium">Email:</span>
+                        <span className="text-gray-600 font-medium">
+                          Email:
+                        </span>
                       </div>
-                      <p className="font-medium text-gray-800 truncate">{user?.correo}</p>
+                      <p className="font-medium text-gray-800 truncate">
+                        {user?.correo}
+                      </p>
                     </div>
-                    
+
                     <div className="grid grid-cols-2 gap-3">
                       <div className="bg-white p-3 rounded-lg border border-amber-200">
                         <div className="flex items-center gap-2 mb-1">
                           <FiAlertTriangle className="w-4 h-4 text-amber-600" />
-                          <span className="text-gray-600 font-medium">Estado:</span>
+                          <span className="text-gray-600 font-medium">
+                            Estado:
+                          </span>
                         </div>
-                        <p className="font-medium text-amber-600">Pre-autorizado</p>
+                        <p className="font-medium text-amber-600">
+                          Pre-autorizado
+                        </p>
                       </div>
-                      
+
                       <div className="bg-white p-3 rounded-lg border border-amber-200">
                         <div className="flex items-center gap-2 mb-1">
                           <FiCheckCircle className="w-4 h-4 text-green-600" />
-                          <span className="text-gray-600 font-medium">Email:</span>
+                          <span className="text-gray-600 font-medium">
+                            Email:
+                          </span>
                         </div>
                         <p className="font-medium text-green-600">Verificado</p>
                       </div>
@@ -176,11 +198,12 @@ const PendingApprovalPage = () => {
                       ¡Gracias por registrarte!
                     </h2>
                     <p className="text-gray-600 mb-4">
-                      Tu cuenta ha sido creada exitosamente y tu email ha sido verificado. 
-                      Ahora estamos revisando tu solicitud para darte acceso completo al panel de administración.
+                      Tu cuenta ha sido creada exitosamente y tu email ha sido
+                      verificado. Ahora estamos revisando tu solicitud para
+                      darte acceso completo al panel de administración.
                     </p>
                   </div>
-                  
+
                   <div className="bg-white rounded-lg p-4 border border-blue-200 mt-4">
                     <h3 className="font-semibold text-blue-800 mb-3 flex items-center gap-2">
                       <FiHelpCircle className="w-5 h-5" />
@@ -197,13 +220,17 @@ const PendingApprovalPage = () => {
                         <div className="bg-blue-100 p-1 rounded-full mt-0.5">
                           <FiChevronRight className="w-3 h-3 text-blue-600" />
                         </div>
-                        <span>Recibirás un email cuando tu cuenta sea aprobada</span>
+                        <span>
+                          Recibirás un email cuando tu cuenta sea aprobada
+                        </span>
                       </li>
                       <li className="flex items-start gap-2">
                         <div className="bg-blue-100 p-1 rounded-full mt-0.5">
                           <FiChevronRight className="w-3 h-3 text-blue-600" />
                         </div>
-                        <span>Podrás acceder al panel administrativo completo</span>
+                        <span>
+                          Podrás acceder al panel administrativo completo
+                        </span>
                       </li>
                     </ul>
                   </div>
@@ -211,11 +238,16 @@ const PendingApprovalPage = () => {
 
                 {/* Estado de progreso */}
                 <div className="mb-6">
-                  <h3 className="font-semibold text-gray-800 mb-4 text-center">Estado del Proceso</h3>
-                  
+                  <h3 className="font-semibold text-gray-800 mb-4 text-center">
+                    Estado del Proceso
+                  </h3>
+
                   <div className="relative mb-1">
                     <div className="absolute top-1/2 transform -translate-y-1/2 w-full h-1.5 bg-gray-200 rounded-full"></div>
-                    <div className="absolute top-1/2 transform -translate-y-1/2 h-1.5 bg-gradient-to-r from-green-500 via-blue-500 to-amber-500 rounded-full" style={{ width: '66%' }}></div>
+                    <div
+                      className="absolute top-1/2 transform -translate-y-1/2 h-1.5 bg-gradient-to-r from-green-500 via-blue-500 to-amber-500 rounded-full"
+                      style={{ width: "66%" }}
+                    ></div>
                     <div className="relative flex justify-between">
                       <div className="z-10">
                         <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
@@ -239,23 +271,39 @@ const PendingApprovalPage = () => {
                       </div>
                     </div>
                   </div>
-                  
+
                   <div className="flex justify-between mt-4">
                     <div className="flex flex-col items-center">
-                      <span className="text-xs text-green-600 font-medium">Registro</span>
-                      <span className="text-xs text-green-600 font-medium">Completado</span>
+                      <span className="text-xs text-green-600 font-medium">
+                        Registro
+                      </span>
+                      <span className="text-xs text-green-600 font-medium">
+                        Completado
+                      </span>
                     </div>
                     <div className="flex flex-col items-center">
-                      <span className="text-xs text-green-600 font-medium">Verificación</span>
-                      <span className="text-xs text-green-600 font-medium">Completado</span>
+                      <span className="text-xs text-green-600 font-medium">
+                        Verificación
+                      </span>
+                      <span className="text-xs text-green-600 font-medium">
+                        Completado
+                      </span>
                     </div>
                     <div className="flex flex-col items-center">
-                      <span className="text-xs text-amber-600 font-medium">Aprobación</span>
-                      <span className="text-xs text-amber-600 font-medium">En proceso</span>
+                      <span className="text-xs text-amber-600 font-medium">
+                        Aprobación
+                      </span>
+                      <span className="text-xs text-amber-600 font-medium">
+                        En proceso
+                      </span>
                     </div>
                     <div className="flex flex-col items-center">
-                      <span className="text-xs text-gray-500 font-medium">Acceso</span>
-                      <span className="text-xs text-gray-500 font-medium">Pendiente</span>
+                      <span className="text-xs text-gray-500 font-medium">
+                        Acceso
+                      </span>
+                      <span className="text-xs text-gray-500 font-medium">
+                        Pendiente
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -266,9 +314,14 @@ const PendingApprovalPage = () => {
                     <FiClock className="w-6 h-6 text-blue-600" />
                   </div>
                   <div>
-                    <h4 className="font-semibold text-gray-800 mb-1">Tiempo estimado de aprobación</h4>
+                    <h4 className="font-semibold text-gray-800 mb-1">
+                      Tiempo estimado de aprobación
+                    </h4>
                     <p className="text-sm text-gray-600">
-                      Normalmente procesamos las solicitudes en <span className="font-medium text-blue-600">24-48 horas</span>
+                      Normalmente procesamos las solicitudes en{" "}
+                      <span className="font-medium text-blue-600">
+                        24-48 horas
+                      </span>
                     </p>
                   </div>
                 </div>
@@ -282,7 +335,7 @@ const PendingApprovalPage = () => {
                     <FiRefreshCw className="w-5 h-5" />
                     <span>Verificar Estado</span>
                   </button>
-                  
+
                   <div className="grid grid-cols-2 gap-4">
                     <Link
                       to="/"
@@ -311,10 +364,16 @@ const PendingApprovalPage = () => {
                   <FiMail className="w-5 h-5 text-amber-600" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-gray-800 mb-1">¿Necesitas ayuda?</h3>
+                  <h3 className="font-semibold text-gray-800 mb-1">
+                    ¿Necesitas ayuda?
+                  </h3>
                   <p className="text-sm text-gray-600">
-                    Si tienes alguna pregunta sobre tu solicitud, puedes contactarnos en{' '}
-                    <a href="mailto:admin@viajes.com" className="text-amber-600 hover:text-amber-700 font-medium">
+                    Si tienes alguna pregunta sobre tu solicitud, puedes
+                    contactarnos en{" "}
+                    <a
+                      href="mailto:admin@viajes.com"
+                      className="text-amber-600 hover:text-amber-700 font-medium"
+                    >
                       admin@viajes.com
                     </a>
                   </p>
@@ -328,10 +387,11 @@ const PendingApprovalPage = () => {
             </div>
           </div>
         </div>
-        
+
         {/* Pie de página desktop */}
         <div className="hidden md:block absolute bottom-0 right-0 p-6 text-gray-500 text-sm">
-          © {new Date().getFullYear()} VIADCA by Zafiro Tours. Todos los derechos reservados.
+          © {new Date().getFullYear()} VIADCA by Zafiro Tours. Todos los
+          derechos reservados.
         </div>
       </div>
     </PageTransition>

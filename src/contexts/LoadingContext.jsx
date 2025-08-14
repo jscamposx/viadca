@@ -1,11 +1,11 @@
-import { createContext, useContext, useState } from 'react';
+import { createContext, useContext, useState } from "react";
 
 const LoadingContext = createContext();
 
 export const useLoading = () => {
   const context = useContext(LoadingContext);
   if (!context) {
-    throw new Error('useLoading debe ser usado dentro de un LoadingProvider');
+    throw new Error("useLoading debe ser usado dentro de un LoadingProvider");
   }
   return context;
 };
@@ -14,22 +14,25 @@ export const LoadingProvider = ({ children }) => {
   const [loadingStates, setLoadingStates] = useState({});
 
   const setLoading = (key, isLoading) => {
-    setLoadingStates(prev => ({
+    setLoadingStates((prev) => ({
       ...prev,
-      [key]: isLoading
+      [key]: isLoading,
     }));
   };
 
   const isLoading = (key) => !!loadingStates[key];
 
-  const isAnyLoading = () => Object.values(loadingStates).some(state => state);
+  const isAnyLoading = () =>
+    Object.values(loadingStates).some((state) => state);
 
   return (
-    <LoadingContext.Provider value={{
-      setLoading,
-      isLoading,
-      isAnyLoading
-    }}>
+    <LoadingContext.Provider
+      value={{
+        setLoading,
+        isLoading,
+        isAnyLoading,
+      }}
+    >
       {children}
       {/* Indicador global de loading opcional */}
       {isAnyLoading() && (

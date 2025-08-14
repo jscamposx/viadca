@@ -1,41 +1,41 @@
-import { motion } from 'framer-motion'
+import { motion } from "framer-motion";
 
-const AnimatedButton = ({ 
-  children, 
-  className = "", 
-  onClick, 
-  disabled = false, 
+const AnimatedButton = ({
+  children,
+  className = "",
+  onClick,
+  disabled = false,
   type = "button",
   variant = "primary",
-  ...props 
+  ...props
 }) => {
   const variants = {
     primary: {
-      hover: { 
+      hover: {
         scale: 1.02,
         y: -2,
         boxShadow: "0 10px 25px rgba(0, 0, 0, 0.15)",
-        transition: { duration: 0.2 }
+        transition: { duration: 0.2 },
       },
-      tap: { 
+      tap: {
         scale: 0.98,
         y: 0,
-        transition: { duration: 0.1 }
-      }
+        transition: { duration: 0.1 },
+      },
     },
     secondary: {
-      hover: { 
+      hover: {
         scale: 1.01,
         borderColor: "rgba(99, 102, 241, 0.4)",
         backgroundColor: "rgba(99, 102, 241, 0.05)",
-        transition: { duration: 0.2 }
+        transition: { duration: 0.2 },
       },
-      tap: { 
+      tap: {
         scale: 0.99,
-        transition: { duration: 0.1 }
-      }
-    }
-  }
+        transition: { duration: 0.1 },
+      },
+    },
+  };
 
   return (
     <motion.button
@@ -53,7 +53,7 @@ const AnimatedButton = ({
     >
       {children}
     </motion.button>
-  )
-}
+  );
+};
 
-export default AnimatedButton
+export default AnimatedButton;

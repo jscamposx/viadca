@@ -1,15 +1,15 @@
-import api from './axiosConfig';
+import api from "./axiosConfig";
 
 const CONTACT_FIELDS = [
-  'telefono',
-  'email',
-  'whatsapp',
-  'direccion',
-  'horario',
-  'facebook',
-  'instagram',
-  'tiktok',
-  'youtube',
+  "telefono",
+  "email",
+  "whatsapp",
+  "direccion",
+  "horario",
+  "facebook",
+  "instagram",
+  "tiktok",
+  "youtube",
 ];
 
 const normalize = (data = {}) => {
@@ -33,9 +33,9 @@ const pickAllowed = (data = {}) => {
 // Convierte strings vacíos en null y trimea strings
 const toNullIfEmpty = (v) => {
   if (v === undefined || v === null) return null;
-  if (typeof v === 'string') {
+  if (typeof v === "string") {
     const t = v.trim();
-    return t === '' ? null : t;
+    return t === "" ? null : t;
   }
   return v;
 };
@@ -43,7 +43,7 @@ const toNullIfEmpty = (v) => {
 const contactService = {
   async getContacto() {
     // Evitar headers no permitidos por CORS; usar query anti-cache
-    const res = await api.get('/contacto', { params: { _ts: Date.now() } });
+    const res = await api.get("/contacto", { params: { _ts: Date.now() } });
     return normalize(res.data);
   },
 
@@ -53,25 +53,27 @@ const contactService = {
       acc[k] = toNullIfEmpty(contacto?.[k]);
       return acc;
     }, {});
-    const res = await api.post('/contacto', payload);
+    const res = await api.post("/contacto", payload);
     return normalize(res.data);
   },
 
   async updateContacto(partialContacto) {
     // Enviar solo campos provistos; '' -> null para vaciar
     const provided = pickAllowed(partialContacto);
-    const payload = Object.fromEntries(Object.entries(provided).map(([k, v]) => [k, toNullIfEmpty(v)]));
-    const res = await api.patch('/contacto', payload);
+    const payload = Object.fromEntries(
+      Object.entries(provided).map(([k, v]) => [k, toNullIfEmpty(v)]),
+    );
+    const res = await api.patch("/contacto", payload);
     return normalize(res.data);
   },
 
   async clearContacto() {
-    const res = await api.delete('/contacto');
+    const res = await api.delete("/contacto");
     return normalize(res.data);
   },
 
   async hardDeleteContacto() {
-    const res = await api.delete('/contacto', { params: { hard: true } });
+    const res = await api.delete("/contacto", { params: { hard: true } });
     return res.data; // puede no devolver el objeto
   },
 };

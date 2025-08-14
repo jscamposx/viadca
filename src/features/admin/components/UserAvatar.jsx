@@ -13,7 +13,8 @@ const UserAvatar = ({
 
   // Usar datos del usuario autenticado si no se pasan props específicos
   const displayName = name || user?.nombre || user?.usuario || "Usuario";
-  const displayEmail = email || user?.correo || user?.email || "No especificado";
+  const displayEmail =
+    email || user?.correo || user?.email || "No especificado";
 
   const sizeClasses = {
     sm: "w-8 h-8 text-sm",
@@ -23,13 +24,13 @@ const UserAvatar = ({
 
   const getInitials = (name) => {
     if (!name) return "U";
-    
+
     // Si es un solo nombre o palabra, tomar primera letra
     const words = name.trim().split(" ");
     if (words.length === 1) {
       return words[0].charAt(0).toUpperCase();
     }
-    
+
     // Si son múltiples palabras, tomar primeras letras de las primeras dos palabras
     return words
       .slice(0, 2)
@@ -51,7 +52,11 @@ const UserAvatar = ({
           />
         ) : (
           <div className="w-full h-full bg-gradient-to-br from-blue-500 via-indigo-600 to-purple-700 flex items-center justify-center text-white font-semibold shadow-md">
-            {displayName ? getInitials(displayName) : <FiUser className="w-1/2 h-1/2" />}
+            {displayName ? (
+              getInitials(displayName)
+            ) : (
+              <FiUser className="w-1/2 h-1/2" />
+            )}
           </div>
         )}
 

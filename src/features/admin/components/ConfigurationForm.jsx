@@ -117,10 +117,14 @@ const ConfigurationForm = ({ formData, onFormChange, isEdit = false }) => {
           <div>
             <span className="font-medium text-blue-700">Precio:</span>
             <p className="text-blue-600">
-              {formatPrecio(formData?.precio_total, moneda) || formatPrecio(0, moneda)}
+              {formatPrecio(formData?.precio_total, moneda) ||
+                formatPrecio(0, moneda)}
               {formData?.descuento && (
                 <span className="text-green-600 block sm:inline sm:ml-2">
-                  (Descuento: {formatPrecio(formData?.descuento, moneda) || formatPrecio(0, moneda)})
+                  (Descuento:{" "}
+                  {formatPrecio(formData?.descuento, moneda) ||
+                    formatPrecio(0, moneda)}
+                  )
                 </span>
               )}
             </p>

@@ -77,7 +77,7 @@ const PackageInfo = ({ paquete }) => {
 
   const pricePerDay = formatPrecio(
     (paquete.precio_total || 0) / (paquete.duracion_dias || 1),
-    moneda
+    moneda,
   );
   const precioTotalFormatted = formatPrecio(paquete?.precio_total, moneda);
 

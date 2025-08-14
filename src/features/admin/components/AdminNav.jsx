@@ -18,7 +18,15 @@ import {
 import UserAvatar from "./UserAvatar";
 import { useAuth } from "../../../contexts/AuthContext";
 
-const NavItem = ({ to, onClick, icon, label, isOpen, isMobile = false, isButton = false }) => {
+const NavItem = ({
+  to,
+  onClick,
+  icon,
+  label,
+  isOpen,
+  isMobile = false,
+  isButton = false,
+}) => {
   const activeLinkStyle = {
     background:
       "linear-gradient(135deg, #3b82f6 0%, #6366f1 50%, #8b5cf6 100%)",
@@ -74,11 +82,7 @@ const NavItem = ({ to, onClick, icon, label, isOpen, isMobile = false, isButton 
         <NavLink
           to={to}
           end={to === "/admin"}
-          style={({ isActive }) => 
-            isActive 
-              ? activeLinkStyle
-              : undefined
-          }
+          style={({ isActive }) => (isActive ? activeLinkStyle : undefined)}
           className={({ isActive }) =>
             `${commonClasses} ${isMobile ? "" : desktopClasses} ${
               isActive
@@ -124,7 +128,7 @@ const AdminNav = ({ isOpen, setIsOpen }) => {
 
   const handleLogout = () => {
     logout();
-    navigate('/login');
+    navigate("/login");
   };
 
   const userLinks = [
@@ -134,11 +138,11 @@ const AdminNav = ({ isOpen, setIsOpen }) => {
       icon: <FiSettings size={20} />,
       label: "Configuración",
     },
-    { 
-      onClick: handleLogout, 
-      icon: <FiLogOut size={20} />, 
+    {
+      onClick: handleLogout,
+      icon: <FiLogOut size={20} />,
       label: "Cerrar sesión",
-      isButton: true
+      isButton: true,
     },
   ];
 
@@ -205,10 +209,7 @@ const AdminNav = ({ isOpen, setIsOpen }) => {
         {isMobileMenuOpen && (
           <nav className="bg-white text-gray-700 shadow-xl border-t border-gray-100">
             <div className="p-4 border-b border-gray-100 bg-gradient-to-r from-gray-50 to-blue-50">
-              <UserAvatar
-                size="md"
-                showInfo={true}
-              />
+              <UserAvatar size="md" showInfo={true} />
             </div>
 
             <ul className="flex flex-col gap-1 p-4">
@@ -326,15 +327,9 @@ const AdminNav = ({ isOpen, setIsOpen }) => {
           className={`flex items-center p-3 rounded-xl bg-gradient-to-r from-gray-50 to-blue-50 mb-4 border border-gray-100 shadow-sm nav-hover-lift ${!isOpen ? "justify-center" : ""}`}
         >
           {isOpen ? (
-            <UserAvatar
-              size="md"
-              showInfo={true}
-            />
+            <UserAvatar size="md" showInfo={true} />
           ) : (
-            <UserAvatar
-              size="md"
-              showInfo={false}
-            />
+            <UserAvatar size="md" showInfo={false} />
           )}
         </div>
 

@@ -6,9 +6,7 @@ const MayoristaCard = ({ mayorista, onDelete }) => {
   if (!mayorista) return null;
 
   return (
-    <div
-      className="group bg-white rounded-2xl sm:rounded-3xl shadow-lg overflow-hidden border border-gray-100 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 flex flex-col h-full"
-    >
+    <div className="group bg-white rounded-2xl sm:rounded-3xl shadow-lg overflow-hidden border border-gray-100 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 flex flex-col h-full">
       {/* Header de la tarjeta */}
       <div className="relative p-4 sm:p-5 lg:p-6 bg-gradient-to-br from-purple-50 via-indigo-50 to-blue-50">
         <div className="flex items-center gap-4">
@@ -46,13 +44,10 @@ const MayoristaCard = ({ mayorista, onDelete }) => {
             <FiCalendar className="w-4 h-4 text-blue-500 mx-auto mb-1 transition-transform duration-200" />
             <div className="text-xs text-blue-700 font-medium">
               {mayorista.creadoEn
-                ? new Date(mayorista.creadoEn).toLocaleDateString(
-                    "es-MX",
-                    {
-                      month: "short",
-                      day: "numeric",
-                    },
-                  )
+                ? new Date(mayorista.creadoEn).toLocaleDateString("es-MX", {
+                    month: "short",
+                    day: "numeric",
+                  })
                 : "N/A"}
             </div>
           </div>
@@ -61,7 +56,9 @@ const MayoristaCard = ({ mayorista, onDelete }) => {
         {/* Información adicional */}
         <div className="flex-1">
           <div className="mb-4">
-            <p className="text-xs text-gray-500 mb-2 font-medium">INFORMACIÓN</p>
+            <p className="text-xs text-gray-500 mb-2 font-medium">
+              INFORMACIÓN
+            </p>
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <span className="text-sm text-gray-600">Tipo:</span>

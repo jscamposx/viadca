@@ -1,4 +1,11 @@
-import { useState, /* useEffect, */ useDeferredValue, useMemo, useCallback, lazy, Suspense } from "react";
+import {
+  useState,
+  /* useEffect, */ useDeferredValue,
+  useMemo,
+  useCallback,
+  lazy,
+  Suspense,
+} from "react";
 import { Link } from "react-router-dom";
 import { useMayoristas } from "../hooks/useMayoristas";
 import {
@@ -18,8 +25,13 @@ const MayoristaCard = lazy(() => import("../components/MayoristaCard"));
 import { useNotification } from "./AdminLayout";
 
 const AdminMayoristasPage = () => {
-  const { mayoristas, /* setMayoristas, */ loading, error, deleteMayorista, refetch } =
-    useMayoristas();
+  const {
+    mayoristas,
+    /* setMayoristas, */ loading,
+    error,
+    deleteMayorista,
+    refetch,
+  } = useMayoristas();
   const [searchTerm, setSearchTerm] = useState("");
   const deferredSearchTerm = useDeferredValue(searchTerm);
   // const [filteredMayoristas, setFilteredMayoristas] = useState([]);
@@ -39,7 +51,8 @@ const AdminMayoristasPage = () => {
   const [isRefreshing, setIsRefreshing] = useState(false);
 
   // Indica si es la primera carga (para no bloquear el layout y mejorar LCP)
-  const isInitialLoading = loading && (!Array.isArray(mayoristas) || mayoristas.length === 0);
+  const isInitialLoading =
+    loading && (!Array.isArray(mayoristas) || mayoristas.length === 0);
 
   const handleDelete = useCallback((mayoristaId, mayoristaName) => {
     setConfirmDialog({
@@ -52,7 +65,10 @@ const AdminMayoristasPage = () => {
   const confirmDelete = async () => {
     try {
       await deleteMayorista(confirmDialog.mayoristaId);
-      addNotification("Mayorista movido a la papelera. Puedes restaurarlo desde la sección de papelera.", "success");
+      addNotification(
+        "Mayorista movido a la papelera. Puedes restaurarlo desde la sección de papelera.",
+        "success",
+      );
     } catch (error) {
       console.error("Error al eliminar mayorista:", error);
       addNotification("Error al mover el mayorista a la papelera", "error");
@@ -103,8 +119,12 @@ const AdminMayoristasPage = () => {
     if (deferredSearchTerm) {
       filtered = filtered.filter(
         (mayorista) =>
-          mayorista.nombre?.toLowerCase().includes(deferredSearchTerm.toLowerCase()) ||
-          mayorista.clave?.toLowerCase().includes(deferredSearchTerm.toLowerCase()) ||
+          mayorista.nombre
+            ?.toLowerCase()
+            .includes(deferredSearchTerm.toLowerCase()) ||
+          mayorista.clave
+            ?.toLowerCase()
+            .includes(deferredSearchTerm.toLowerCase()) ||
           mayorista.tipo_producto
             ?.toLowerCase()
             .includes(deferredSearchTerm.toLowerCase()),
@@ -140,15 +160,22 @@ const AdminMayoristasPage = () => {
     return filtered;
   }, [mayoristas, deferredSearchTerm, tipoFilter, sortConfig]);
 
-  const tiposUnicos = useMemo(() => (
-    [...new Set((mayoristas || []).map((m) => m.tipo_producto))].filter(Boolean)
-  ), [mayoristas]);
+  const tiposUnicos = useMemo(
+    () =>
+      [...new Set((mayoristas || []).map((m) => m.tipo_producto))].filter(
+        Boolean,
+      ),
+    [mayoristas],
+  );
 
   // Skeleton de tarjetas para carga inicial
   const renderSkeletonCards = (count = 9) => (
     <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6 [content-visibility:auto] [contain-intrinsic-size:600px_900px]">
       {Array.from({ length: count }).map((_, idx) => (
-        <div key={idx} className="rounded-2xl border border-gray-200 bg-white shadow-sm p-4 sm:p-5 animate-pulse min-h-[220px]">
+        <div
+          key={idx}
+          className="rounded-2xl border border-gray-200 bg-white shadow-sm p-4 sm:p-5 animate-pulse min-h-[220px]"
+        >
           <div className="flex items-center gap-3 mb-4">
             <div className="w-12 h-12 rounded-xl bg-gray-200" />
             <div className="flex-1">
@@ -203,7 +230,8 @@ const AdminMayoristasPage = () => {
                 <div className="mt-2 h-4 sm:h-5 w-48 sm:w-64 bg-gray-200 rounded animate-pulse mx-auto sm:mx-0" />
               ) : (
                 <p className="text-gray-600 mt-1 sm:mt-2 text-sm sm:text-base">
-                  Administra todos tus mayoristas en un solo lugar ({Array.isArray(mayoristas) ? mayoristas.length : 0} total)
+                  Administra todos tus mayoristas en un solo lugar (
+                  {Array.isArray(mayoristas) ? mayoristas.length : 0} total)
                 </p>
               )}
             </div>
@@ -222,7 +250,9 @@ const AdminMayoristasPage = () => {
                 aria-label="Actualizar lista de mayoristas"
                 title="Actualizar"
               >
-                <FiRefreshCw className={`w-4 h-4 sm:w-5 sm:h-5 ${isRefreshing ? "animate-spin" : ""}`} />
+                <FiRefreshCw
+                  className={`w-4 h-4 sm:w-5 sm:h-5 ${isRefreshing ? "animate-spin" : ""}`}
+                />
                 <span>Actualizar</span>
               </button>
 
@@ -289,7 +319,10 @@ const AdminMayoristasPage = () => {
 
               {/* Estadísticas - Solo en móvil (mejoradas) */}
               <div className="grid grid-cols-2 gap-3 lg:hidden">
-                <div className="rounded-xl p-3 bg-gradient-to-r from-purple-500 to-indigo-600 text-white shadow-md" aria-label="Mayoristas">
+                <div
+                  className="rounded-xl p-3 bg-gradient-to-r from-purple-500 to-indigo-600 text-white shadow-md"
+                  aria-label="Mayoristas"
+                >
                   <div className="flex items-center gap-2">
                     <FiUsers className="w-4 h-4 opacity-95" />
                     <span className="text-xs font-medium">Mayoristas</span>
@@ -303,10 +336,15 @@ const AdminMayoristasPage = () => {
                   </div>
                 </div>
 
-                <div className="rounded-xl p-3 bg-gradient-to-r from-teal-500 to-cyan-600 text-white shadow-md" aria-label="Tipos de producto">
+                <div
+                  className="rounded-xl p-3 bg-gradient-to-r from-teal-500 to-cyan-600 text-white shadow-md"
+                  aria-label="Tipos de producto"
+                >
                   <div className="flex items-center gap-2">
                     <FiTag className="w-4 h-4 opacity-95" />
-                    <span className="text-xs font-medium">Tipos de producto</span>
+                    <span className="text-xs font-medium">
+                      Tipos de producto
+                    </span>
                   </div>
                   <div className="mt-1 text-2xl font-extrabold leading-none">
                     {isInitialLoading ? (
@@ -516,7 +554,10 @@ const AdminMayoristasPage = () => {
             <div className="flex items-center justify-between gap-2 sm:gap-3 flex-wrap">
               <div className="flex items-center gap-2 sm:gap-3">
                 <div className="w-1 h-4 sm:h-6 bg-gradient-to-b from-purple-500 to-indigo-600 rounded-full"></div>
-                <h2 id="filtros-rapidos-mayoristas" className="text-xs sm:text-sm font-semibold text-gray-800">
+                <h2
+                  id="filtros-rapidos-mayoristas"
+                  className="text-xs sm:text-sm font-semibold text-gray-800"
+                >
                   Filtros Rápidos
                 </h2>
               </div>
@@ -559,7 +600,9 @@ const AdminMayoristasPage = () => {
                   <div className="flex items-center justify-center gap-2">
                     <FiTag className="w-3 h-3 sm:w-4 sm:h-4" />
                     <span className="hidden sm:inline">{tipo}</span>
-                    <span className="sm:hidden truncate max-w-[70px]">{tipo}</span>
+                    <span className="sm:hidden truncate max-w-[70px]">
+                      {tipo}
+                    </span>
                   </div>
                 </button>
               ))}
@@ -571,7 +614,11 @@ const AdminMayoristasPage = () => {
         {isInitialLoading ? (
           renderSkeletonCards()
         ) : filteredMayoristas.length > 0 ? (
-          <Suspense fallback={renderSkeletonCards(Math.min(filteredMayoristas.length || 0, 9))}>
+          <Suspense
+            fallback={renderSkeletonCards(
+              Math.min(filteredMayoristas.length || 0, 9),
+            )}
+          >
             <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6 items-stretch [content-visibility:auto] [contain-intrinsic-size:600px_900px]">
               {filteredMayoristas.map((mayorista) => (
                 <MayoristaCard

@@ -180,7 +180,10 @@ function InactivePackageMessage() {
 
       <div className="max-w-lg w-full bg-white/85 backdrop-blur-xl rounded-2xl shadow-xl p-8 text-center border border-white/30 relative z-10">
         <div className="relative w-20 h-20 bg-gradient-to-br from-amber-100 to-yellow-100 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg">
-          <FiInfo className="h-10 w-10 text-amber-600 relative z-10" aria-hidden="true" />
+          <FiInfo
+            className="h-10 w-10 text-amber-600 relative z-10"
+            aria-hidden="true"
+          />
         </div>
 
         <h3 className="text-2xl font-bold text-gray-900 mb-4">
@@ -188,7 +191,8 @@ function InactivePackageMessage() {
         </h3>
 
         <p className="text-gray-600 mb-8 leading-relaxed text-base">
-          Este paquete fue desactivado por el administrador y no está visible en la vista pública.
+          Este paquete fue desactivado por el administrador y no está visible en
+          la vista pública.
         </p>
 
         <button
@@ -287,8 +291,9 @@ function PackageViewPage() {
   // Valores formateados con manejo de nulos/NaN
   const precioTotalFormatted = formatPrecio(paquete?.precio_total, moneda);
   const precioOriginalFormatted = formatPrecio(
-    (parseFloat(paquete?.precio_total) || 0) + (parseFloat(paquete?.descuento) || 0),
-    moneda
+    (parseFloat(paquete?.precio_total) || 0) +
+      (parseFloat(paquete?.descuento) || 0),
+    moneda,
   );
 
   return (
@@ -401,7 +406,9 @@ function PackageViewPage() {
                 {paquete.precio_total && (
                   <Badge variant="gradient" icon={FiDollarSign}>
                     {formatPrecio(paquete.precio_total, moneda)}
-                    <span className="ml-2 text-xs opacity-90 font-semibold tracking-wide">({moneda})</span>
+                    <span className="ml-2 text-xs opacity-90 font-semibold tracking-wide">
+                      ({moneda})
+                    </span>
                   </Badge>
                 )}
                 {paquete.hotel && (
@@ -682,7 +689,9 @@ function PackageViewPage() {
                           <span className="text-2xl font-bold text-gray-400 line-through">
                             {precioOriginalFormatted}
                             {precioOriginalFormatted && (
-                              <span className="ml-2 text-xs text-gray-500 font-medium">({moneda})</span>
+                              <span className="ml-2 text-xs text-gray-500 font-medium">
+                                ({moneda})
+                              </span>
                             )}
                           </span>
                           <div className="absolute -top-2 -right-2 w-4 h-4 bg-red-500 rounded-full animate-pulse"></div>
@@ -692,7 +701,9 @@ function PackageViewPage() {
                           <span className="text-4xl lg:text-5xl font-bold bg-gradient-to-r from-emerald-600 to-green-600 bg-clip-text text-transparent">
                             {precioTotalFormatted}
                             {precioTotalFormatted && (
-                              <span className="ml-2 text-sm text-emerald-700 font-semibold">{moneda}</span>
+                              <span className="ml-2 text-sm text-emerald-700 font-semibold">
+                                {moneda}
+                              </span>
                             )}
                           </span>
                           <span className="block text-gray-500 font-medium mt-2">
@@ -702,11 +713,7 @@ function PackageViewPage() {
 
                         <div className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-red-500 to-pink-500 text-white rounded-full text-sm font-bold shadow-lg">
                           <FiAward className="w-4 h-4 mr-2" />
-                          ¡Ahorras{" "}
-                          {formatPrecio(
-                            paquete.descuento,
-                            moneda
-                          )}
+                          ¡Ahorras {formatPrecio(paquete.descuento, moneda)}
                           <span className="ml-1">({moneda})</span>!
                         </div>
                       </div>
@@ -715,7 +722,9 @@ function PackageViewPage() {
                         <span className="text-4xl lg:text-5xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
                           {precioTotalFormatted}
                           {precioTotalFormatted && (
-                            <span className="ml-2 text-sm text-blue-700 font-semibold">{moneda}</span>
+                            <span className="ml-2 text-sm text-blue-700 font-semibold">
+                              {moneda}
+                            </span>
                           )}
                         </span>
                         <span className="block text-gray-500 font-medium">
@@ -740,11 +749,10 @@ function PackageViewPage() {
                         </h3>
                       </div>
                       <p className="text-3xl font-bold text-blue-700 mb-2">
-                        {formatPrecio(
-                          paquete.anticipo,
-                          moneda
-                        )}
-                        <span className="ml-2 text-sm text-blue-700 font-semibold">{moneda}</span>
+                        {formatPrecio(paquete.anticipo, moneda)}
+                        <span className="ml-2 text-sm text-blue-700 font-semibold">
+                          {moneda}
+                        </span>
                       </p>
                       <p className="text-blue-600 text-sm">
                         Para asegurar tu reservación

@@ -32,7 +32,7 @@ import CookiesPage from "./features/legal/pages/CookiesPage";
 
 function AppRoutes() {
   const location = useLocation();
-  
+
   return (
     <AnimatePresence mode="wait" initial={false}>
       <Routes location={location} key={location.pathname}>
@@ -43,7 +43,7 @@ function AppRoutes() {
         <Route path="/privacidad" element={<PrivacyPage />} />
         <Route path="/terminos" element={<TermsPage />} />
         <Route path="/cookies" element={<CookiesPage />} />
-        
+
         {/* Rutas de autenticación */}
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
@@ -52,13 +52,16 @@ function AppRoutes() {
         <Route path="/forgot-password" element={<ForgotPasswordPage />} />
         <Route path="/reset-password" element={<ResetPasswordPage />} />
         <Route path="/restablecer-contraseña" element={<ResetPasswordPage />} />
-        <Route path="/restablecer-contrase%c3%b1a" element={<ResetPasswordPage />} />
+        <Route
+          path="/restablecer-contrase%c3%b1a"
+          element={<ResetPasswordPage />}
+        />
         <Route path="/pending-approval" element={<PendingApprovalPage />} />
         <Route path="/profile" element={<ProtectedUserProfilePage />} />
-        
+
         {/* Rutas protegidas de administración */}
-        <Route 
-          path="/admin" 
+        <Route
+          path="/admin"
           element={
             <ProtectedRoute requiredRole="admin">
               <AdminLayout />

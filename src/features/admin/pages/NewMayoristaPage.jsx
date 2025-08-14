@@ -122,7 +122,7 @@ const NewMayoristaPage = () => {
             id,
             environment: import.meta.env.MODE,
             apiUrl: import.meta.env.VITE_API_BASE_URL,
-          }
+          },
         );
       }
 
@@ -165,13 +165,22 @@ const NewMayoristaPage = () => {
         error.code === "NETWORK_ERROR" ||
         error.message.includes("Network Error")
       ) {
-        addNotification("Error de conexión. Verifica tu conexión a internet.", "error");
-      } else if (error.code === "TIMEOUT" || error.message.includes("timeout")) {
-        addNotification("La solicitud tardó demasiado. Intenta de nuevo.", "error");
+        addNotification(
+          "Error de conexión. Verifica tu conexión a internet.",
+          "error",
+        );
+      } else if (
+        error.code === "TIMEOUT" ||
+        error.message.includes("timeout")
+      ) {
+        addNotification(
+          "La solicitud tardó demasiado. Intenta de nuevo.",
+          "error",
+        );
       } else {
         addNotification(
           `Error al ${isEditing ? "actualizar" : "crear"} el mayorista: ${error.message}`,
-          "error"
+          "error",
         );
       }
     } finally {
@@ -267,8 +276,8 @@ const NewMayoristaPage = () => {
                         errors.nombre
                           ? "border-red-300 bg-red-50 focus:border-red-500 focus:ring-red-500/30"
                           : formData.nombre.trim()
-                          ? "border-green-300 bg-green-50 focus:border-green-500 focus:ring-green-500/30"
-                          : "border-gray-200 bg-gray-50 hover:bg-white hover:border-gray-300"
+                            ? "border-green-300 bg-green-50 focus:border-green-500 focus:ring-green-500/30"
+                            : "border-gray-200 bg-gray-50 hover:bg-white hover:border-gray-300"
                       }`}
                       placeholder="Ej: Agencia de Viajes Central"
                     />
@@ -320,8 +329,8 @@ const NewMayoristaPage = () => {
                         errors.tipo_producto
                           ? "border-red-300 bg-red-50 focus:border-red-500 focus:ring-red-500/30"
                           : formData.tipo_producto
-                          ? "border-green-300 bg-green-50 focus:border-green-500 focus:ring-green-500/30"
-                          : "border-gray-200 bg-gray-50 hover:bg-white hover:border-gray-300"
+                            ? "border-green-300 bg-green-50 focus:border-green-500 focus:ring-green-500/30"
+                            : "border-gray-200 bg-gray-50 hover:bg-white hover:border-gray-300"
                       }`}
                     >
                       <option value="">Selecciona un tipo de producto</option>

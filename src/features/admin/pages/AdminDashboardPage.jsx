@@ -16,7 +16,7 @@ import {
   FiPlus,
   FiTrash2,
   FiCheckCircle,
-  FiPauseCircle
+  FiPauseCircle,
 } from "react-icons/fi";
 import OptimizedImage from "../../../components/ui/OptimizedImage";
 import { getImageUrl } from "../../../utils/imageUtils";
@@ -24,8 +24,16 @@ import { formatPrecio, sanitizeMoneda } from "../../../utils/priceUtils";
 
 const AdminDashboard = () => {
   const [timeFilter, setTimeFilter] = useState("monthly");
-  const { paquetes, loading: paquetesLoading, error: paquetesError } = useAllPackages();
-  const { mayoristas, loading: mayoristasLoading, error: mayoristasError } = useMayoristas();
+  const {
+    paquetes,
+    loading: paquetesLoading,
+    error: paquetesError,
+  } = useAllPackages();
+  const {
+    mayoristas,
+    loading: mayoristasLoading,
+    error: mayoristasError,
+  } = useMayoristas();
 
   const loading = paquetesLoading || mayoristasLoading;
 
@@ -33,13 +41,19 @@ const AdminDashboard = () => {
   const totalPaquetes = paquetes?.length || 0;
   const totalMayoristas = mayoristas?.length || 0;
   const paquetesActivos = paquetes?.filter((p) => p.activo).length || 0;
-  const totalVentas = paquetes?.reduce((sum, p) => sum + (parseFloat(p.precio_total) || 0), 0) || 0;
+  const totalVentas =
+    paquetes?.reduce((sum, p) => sum + (parseFloat(p.precio_total) || 0), 0) ||
+    0;
 
   // Obtener los paquetes más destacados
-  const topPaquetes = paquetes
-    ?.filter((p) => p.activo)
-    ?.sort((a, b) => (parseFloat(b.precio_total) || 0) - (parseFloat(a.precio_total) || 0))
-    ?.slice(0, 4) || [];
+  const topPaquetes =
+    paquetes
+      ?.filter((p) => p.activo)
+      ?.sort(
+        (a, b) =>
+          (parseFloat(b.precio_total) || 0) - (parseFloat(a.precio_total) || 0),
+      )
+      ?.slice(0, 4) || [];
 
   // Calcular estadísticas adicionales
   const promedioPrecios = totalPaquetes > 0 ? totalVentas / totalPaquetes : 0;
@@ -56,7 +70,8 @@ const AdminDashboard = () => {
                 Dashboard Administrativo
               </h1>
               <p className="text-gray-600 mt-1 sm:mt-2 text-sm sm:text-base">
-                Gestiona tu plataforma con herramientas avanzadas y visualización en tiempo real
+                Gestiona tu plataforma con herramientas avanzadas y
+                visualización en tiempo real
               </p>
             </div>
 
@@ -77,7 +92,9 @@ const AdminDashboard = () => {
                 disabled={loading}
                 className="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white font-semibold py-3 px-5 rounded-xl shadow-md transition-all duration-300 ease-in-out transform hover:-translate-y-0.5 hover:shadow-lg text-sm whitespace-nowrap"
               >
-                <FiRefreshCw className={`w-4 h-4 ${loading ? "animate-spin" : ""}`} />
+                <FiRefreshCw
+                  className={`w-4 h-4 ${loading ? "animate-spin" : ""}`}
+                />
                 Actualizar
               </button>
             </div>
@@ -88,7 +105,9 @@ const AdminDashboard = () => {
               disabled={loading}
               className="w-full sm:w-auto lg:hidden flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white font-semibold py-3 px-5 rounded-xl shadow-md transition-all duration-300 ease-in-out transform hover:-translate-y-0.5 hover:shadow-lg text-sm sm:text-base whitespace-nowrap"
             >
-              <FiRefreshCw className={`w-4 h-4 sm:w-5 sm:h-5 ${loading ? "animate-spin" : ""}`} />
+              <FiRefreshCw
+                className={`w-4 h-4 sm:w-5 sm:h-5 ${loading ? "animate-spin" : ""}`}
+              />
               Actualizar
             </button>
           </div>
@@ -104,7 +123,9 @@ const AdminDashboard = () => {
                   <div className="bg-blue-500 p-1.5 rounded-lg">
                     <FiPackage className="w-4 h-4 text-white" />
                   </div>
-                  <p className="text-blue-600 text-xs sm:text-sm font-semibold uppercase tracking-wide">Total Paquetes</p>
+                  <p className="text-blue-600 text-xs sm:text-sm font-semibold uppercase tracking-wide">
+                    Total Paquetes
+                  </p>
                 </div>
                 <div className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
                   {loading ? (
@@ -134,7 +155,9 @@ const AdminDashboard = () => {
                   <div className="bg-green-500 p-1.5 rounded-lg">
                     <FiUsers className="w-4 h-4 text-white" />
                   </div>
-                  <p className="text-green-600 text-xs sm:text-sm font-semibold uppercase tracking-wide">Total Mayoristas</p>
+                  <p className="text-green-600 text-xs sm:text-sm font-semibold uppercase tracking-wide">
+                    Total Mayoristas
+                  </p>
                 </div>
                 <div className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
                   {loading ? (
@@ -164,7 +187,9 @@ const AdminDashboard = () => {
                   <div className="bg-purple-500 p-1.5 rounded-lg">
                     <FiDollarSign className="w-4 h-4 text-white" />
                   </div>
-                  <p className="text-purple-600 text-xs sm:text-sm font-semibold uppercase tracking-wide">Valor Total</p>
+                  <p className="text-purple-600 text-xs sm:text-sm font-semibold uppercase tracking-wide">
+                    Valor Total
+                  </p>
                 </div>
                 <div className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
                   {loading ? (
@@ -194,7 +219,9 @@ const AdminDashboard = () => {
                   <div className="bg-orange-500 p-1.5 rounded-lg">
                     <FiActivity className="w-4 h-4 text-white" />
                   </div>
-                  <p className="text-orange-600 text-xs sm:text-sm font-semibold uppercase tracking-wide">Paquetes Activos</p>
+                  <p className="text-orange-600 text-xs sm:text-sm font-semibold uppercase tracking-wide">
+                    Paquetes Activos
+                  </p>
                 </div>
                 <div className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
                   {loading ? (
@@ -372,7 +399,7 @@ const AdminDashboard = () => {
                 </p>
               </div>
             </div>
-            
+
             <div className="space-y-4">
               <div className="flex items-start gap-3 p-4 rounded-xl bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 hover:shadow-md transition-all">
                 <div className="bg-green-500 p-2.5 rounded-full shadow-md">
@@ -476,7 +503,9 @@ const AdminDashboard = () => {
                   <div className="bg-blue-100 p-4 rounded-full mb-4">
                     <FiPackage className="w-8 h-8 text-blue-600" />
                   </div>
-                  <p className="text-gray-600 font-medium mb-2">No hay paquetes disponibles</p>
+                  <p className="text-gray-600 font-medium mb-2">
+                    No hay paquetes disponibles
+                  </p>
                   <Link
                     to="/admin/paquetes/nuevo"
                     className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white rounded-xl font-medium transition-all shadow-md hover:shadow-lg"
@@ -520,7 +549,10 @@ const AdminDashboard = () => {
                         </h3>
                         <div className="flex justify-between items-center">
                           <span className="font-bold text-lg text-gray-900">
-                            {formatPrecio(paquete?.precio_total, sanitizeMoneda(paquete?.moneda))}
+                            {formatPrecio(
+                              paquete?.precio_total,
+                              sanitizeMoneda(paquete?.moneda),
+                            )}
                           </span>
                           <span
                             className={`text-xs px-3 py-1 rounded-full font-medium shadow-sm flex items-center gap-1 ${
@@ -565,7 +597,7 @@ const AdminDashboard = () => {
                 </p>
               </div>
             </div>
-            
+
             <div className="space-y-4">
               <Link
                 to="/admin/paquetes/nuevo"
@@ -575,8 +607,12 @@ const AdminDashboard = () => {
                   <FiPlus className="w-5 h-5 text-white" />
                 </div>
                 <div className="flex-1">
-                  <p className="font-semibold text-gray-900 group-hover:text-blue-700">Nuevo Paquete</p>
-                  <p className="text-sm text-gray-600">Crear paquete turístico</p>
+                  <p className="font-semibold text-gray-900 group-hover:text-blue-700">
+                    Nuevo Paquete
+                  </p>
+                  <p className="text-sm text-gray-600">
+                    Crear paquete turístico
+                  </p>
                 </div>
                 <FiArrowRight className="w-4 h-4 text-gray-400 group-hover:text-blue-600 group-hover:translate-x-1 transition-all" />
               </Link>
@@ -589,7 +625,9 @@ const AdminDashboard = () => {
                   <FiUsers className="w-5 h-5 text-white" />
                 </div>
                 <div className="flex-1">
-                  <p className="font-semibold text-gray-900 group-hover:text-green-700">Nuevo Mayorista</p>
+                  <p className="font-semibold text-gray-900 group-hover:text-green-700">
+                    Nuevo Mayorista
+                  </p>
                   <p className="text-sm text-gray-600">Agregar mayorista</p>
                 </div>
                 <FiArrowRight className="w-4 h-4 text-gray-400 group-hover:text-green-600 group-hover:translate-x-1 transition-all" />
@@ -603,7 +641,9 @@ const AdminDashboard = () => {
                   <FiEye className="w-5 h-5 text-white" />
                 </div>
                 <div className="flex-1">
-                  <p className="font-semibold text-gray-900 group-hover:text-purple-700">Ver Paquetes</p>
+                  <p className="font-semibold text-gray-900 group-hover:text-purple-700">
+                    Ver Paquetes
+                  </p>
                   <p className="text-sm text-gray-600">Gestionar inventario</p>
                 </div>
                 <FiArrowRight className="w-4 h-4 text-gray-400 group-hover:text-purple-600 group-hover:translate-x-1 transition-all" />
@@ -617,7 +657,9 @@ const AdminDashboard = () => {
                   <FiUsers className="w-5 h-5 text-white" />
                 </div>
                 <div className="flex-1">
-                  <p className="font-semibold text-gray-900 group-hover:text-orange-700">Ver Mayoristas</p>
+                  <p className="font-semibold text-gray-900 group-hover:text-orange-700">
+                    Ver Mayoristas
+                  </p>
                   <p className="text-sm text-gray-600">Gestionar proveedores</p>
                 </div>
                 <FiArrowRight className="w-4 h-4 text-gray-400 group-hover:text-orange-600 group-hover:translate-x-1 transition-all" />
@@ -631,7 +673,9 @@ const AdminDashboard = () => {
                   <FiTrash2 className="w-5 h-5 text-white" />
                 </div>
                 <div className="flex-1">
-                  <p className="font-semibold text-gray-900 group-hover:text-red-700">Papelera</p>
+                  <p className="font-semibold text-gray-900 group-hover:text-red-700">
+                    Papelera
+                  </p>
                   <p className="text-sm text-gray-600">Elementos eliminados</p>
                 </div>
                 <FiArrowRight className="w-4 h-4 text-gray-400 group-hover:text-red-600 group-hover:translate-x-1 transition-all" />
@@ -658,7 +702,9 @@ const AdminDashboard = () => {
             </div>
             <div className="flex items-center gap-2 px-3 py-2 bg-green-100 rounded-lg border border-green-200">
               <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-              <span className="text-sm text-green-700 font-medium">En vivo</span>
+              <span className="text-sm text-green-700 font-medium">
+                En vivo
+              </span>
             </div>
           </div>
 
@@ -669,11 +715,17 @@ const AdminDashboard = () => {
                   <FiPackage className="w-6 h-6 text-white" />
                 </div>
                 <div>
-                  <p className="text-sm text-blue-600 font-semibold uppercase tracking-wide mb-1">Paquetes Activos</p>
-                  <p className="text-2xl font-bold text-blue-900">{paquetesActivos}</p>
+                  <p className="text-sm text-blue-600 font-semibold uppercase tracking-wide mb-1">
+                    Paquetes Activos
+                  </p>
+                  <p className="text-2xl font-bold text-blue-900">
+                    {paquetesActivos}
+                  </p>
                   <div className="flex items-center gap-1 mt-2">
                     <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
-                    <p className="text-xs text-blue-700 font-medium">Disponibles</p>
+                    <p className="text-xs text-blue-700 font-medium">
+                      Disponibles
+                    </p>
                   </div>
                 </div>
               </div>
@@ -685,11 +737,17 @@ const AdminDashboard = () => {
                   <FiUsers className="w-6 h-6 text-white" />
                 </div>
                 <div>
-                  <p className="text-sm text-green-600 font-semibold uppercase tracking-wide mb-1">Mayoristas</p>
-                  <p className="text-2xl font-bold text-green-900">{totalMayoristas}</p>
+                  <p className="text-sm text-green-600 font-semibold uppercase tracking-wide mb-1">
+                    Mayoristas
+                  </p>
+                  <p className="text-2xl font-bold text-green-900">
+                    {totalMayoristas}
+                  </p>
                   <div className="flex items-center gap-1 mt-2">
                     <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                    <p className="text-xs text-green-700 font-medium">Registrados</p>
+                    <p className="text-xs text-green-700 font-medium">
+                      Registrados
+                    </p>
                   </div>
                 </div>
               </div>
@@ -701,13 +759,17 @@ const AdminDashboard = () => {
                   <FiDollarSign className="w-6 h-6 text-white" />
                 </div>
                 <div>
-                  <p className="text-sm text-purple-600 font-semibold uppercase tracking-wide mb-1">Precio Promedio</p>
+                  <p className="text-sm text-purple-600 font-semibold uppercase tracking-wide mb-1">
+                    Precio Promedio
+                  </p>
                   <p className="text-2xl font-bold text-purple-900">
                     {formatPrecio(Math.round(promedioPrecios), "MXN")}
                   </p>
                   <div className="flex items-center gap-1 mt-2">
                     <div className="w-3 h-3 bg-purple-500 rounded-full"></div>
-                    <p className="text-xs text-purple-700 font-medium">Por paquete</p>
+                    <p className="text-xs text-purple-700 font-medium">
+                      Por paquete
+                    </p>
                   </div>
                 </div>
               </div>
@@ -719,13 +781,20 @@ const AdminDashboard = () => {
                   <FiActivity className="w-6 h-6 text-white" />
                 </div>
                 <div>
-                  <p className="text-sm text-orange-600 font-semibold uppercase tracking-wide mb-1">Tasa Actividad</p>
+                  <p className="text-sm text-orange-600 font-semibold uppercase tracking-wide mb-1">
+                    Tasa Actividad
+                  </p>
                   <p className="text-2xl font-bold text-orange-900">
-                    {totalPaquetes > 0 ? Math.round((paquetesActivos / totalPaquetes) * 100) : 0}%
+                    {totalPaquetes > 0
+                      ? Math.round((paquetesActivos / totalPaquetes) * 100)
+                      : 0}
+                    %
                   </p>
                   <div className="flex items-center gap-1 mt-2">
                     <div className="w-3 h-3 bg-orange-500 rounded-full"></div>
-                    <p className="text-xs text-orange-700 font-medium">Del total</p>
+                    <p className="text-xs text-orange-700 font-medium">
+                      Del total
+                    </p>
                   </div>
                 </div>
               </div>
@@ -735,16 +804,23 @@ const AdminDashboard = () => {
           {/* Barra de progreso global */}
           <div className="mt-8 p-6 bg-gradient-to-r from-gray-50 to-blue-50 rounded-xl border border-gray-200">
             <div className="flex items-center justify-between mb-3">
-              <h3 className="text-lg font-semibold text-gray-900">Estado General del Sistema</h3>
+              <h3 className="text-lg font-semibold text-gray-900">
+                Estado General del Sistema
+              </h3>
               <span className="text-sm font-medium text-gray-600">
-                {Math.round((paquetesActivos + totalMayoristas) / (totalPaquetes + totalMayoristas + 1) * 100)}% operativo
+                {Math.round(
+                  ((paquetesActivos + totalMayoristas) /
+                    (totalPaquetes + totalMayoristas + 1)) *
+                    100,
+                )}
+                % operativo
               </span>
             </div>
             <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
-              <div 
+              <div
                 className="h-full bg-gradient-to-r from-blue-500 to-green-500 rounded-full transition-all duration-1000 shadow-sm"
-                style={{ 
-                  width: `${Math.round((paquetesActivos + totalMayoristas) / (totalPaquetes + totalMayoristas + 1) * 100)}%` 
+                style={{
+                  width: `${Math.round(((paquetesActivos + totalMayoristas) / (totalPaquetes + totalMayoristas + 1)) * 100)}%`,
                 }}
               ></div>
             </div>

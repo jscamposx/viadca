@@ -24,7 +24,10 @@ const extractLocationComponents = (addressComponents = []) => {
   };
   // En MX a veces municipio puede venir como administrative_area_level_3 o level_2
   const locality = get("locality") || get("sublocality") || null; // ciudad
-  const municipality = get("administrative_area_level_2") || get("administrative_area_level_3") || null; // municipio
+  const municipality =
+    get("administrative_area_level_2") ||
+    get("administrative_area_level_3") ||
+    null; // municipio
   const state = get("administrative_area_level_1") || null; // estado
   const country = get("country") || null; // país
 
@@ -44,7 +47,8 @@ const buildPreciseQueries = ({ city, municipality, state, country }) => {
   if (city && state && country) add(`${city}, ${state}, ${country}`);
   if (city && municipality && state && country)
     add(`${city}, ${municipality}, ${state}, ${country}`);
-  if (municipality && state && country) add(`${municipality}, ${state}, ${country}`);
+  if (municipality && state && country)
+    add(`${municipality}, ${state}, ${country}`);
   if (city && state) add(`${city}, ${state}`);
   if (city && country) add(`${city}, ${country}`);
   if (state && country) add(`${state}, ${country}`);
@@ -272,125 +276,135 @@ const DestinationImageManager = ({
     return url;
   };
 
-  const fetchImagesFromPexels = useCallback(async (destinationInput) => {
-    const hasCoords = destinationInput && destinationInput.lat && destinationInput.lng;
-    const destinationName = typeof destinationInput === "string" ? destinationInput : destinationInput?.name;
+  const fetchImagesFromPexels = useCallback(
+    async (destinationInput) => {
+      const hasCoords =
+        destinationInput && destinationInput.lat && destinationInput.lng;
+      const destinationName =
+        typeof destinationInput === "string"
+          ? destinationInput
+          : destinationInput?.name;
 
-    if (!destinationName && !hasCoords) {
-      setImages([]);
-      setAllAvailableImages([]);
-      setStatus("idle");
-      return;
-    }
-
-    setStatus("loading");
-    setError(null);
-
-    const PEXELS_API_KEY = import.meta.env.VITE_PEXELS_API_KEY;
-    if (!PEXELS_API_KEY) {
-      setError("La clave de API de Pexels no está configurada.");
-      setStatus("error");
-      return;
-    }
-
-    try {
-      // 1) Obtener componentes de ubicación con mayor precisión
-      let components = null;
-      if (hasCoords) {
-        const geoResult = await geocodeLatLngToComponents(
-          destinationInput.lat,
-          destinationInput.lng,
-        );
-        if (geoResult?.address_components) {
-          components = extractLocationComponents(geoResult.address_components);
-        }
+      if (!destinationName && !hasCoords) {
+        setImages([]);
+        setAllAvailableImages([]);
+        setStatus("idle");
+        return;
       }
 
-      // 2) Fallback: intentar parsear del nombre "Ciudad, Estado"
-      if (!components) {
-        const parts = (destinationName || "")
-          .split(",")
-          .map((p) => p.trim())
-          .filter(Boolean);
-        const city = parts[0] || null;
-        const state = parts[1] || null;
-        components = { city, state, municipality: null, country: null };
+      setStatus("loading");
+      setError(null);
+
+      const PEXELS_API_KEY = import.meta.env.VITE_PEXELS_API_KEY;
+      if (!PEXELS_API_KEY) {
+        setError("La clave de API de Pexels no está configurada.");
+        setStatus("error");
+        return;
       }
 
-      // 3) Construir queries precisas
-      const preciseQueries = buildPreciseQueries(components);
-
-      // Agregar algunos refuerzos simples basados en destinationName
-      const reinforcement = destinationName
-        ? [
-            `${destinationName} turismo`,
-            `${destinationName} atracciones`,
-          ]
-        : [];
-
-      const allQueries = Array.from(new Set([...preciseQueries, ...reinforcement]));
-
-      // 4) Ejecutar llamadas a Pexels con límite y orientación
-      const axiosCalls = allQueries.map((query) =>
-        axios.get(`https://api.pexels.com/v1/search`, {
-          headers: { Authorization: PEXELS_API_KEY },
-          params: {
-            query,
-            per_page: 6,
-            orientation: "landscape",
-            locale: "es-ES",
-          },
-        }),
-      );
-
-      const responses = await Promise.allSettled(axiosCalls);
-
-      const allPhotos = [];
-      responses.forEach((res) => {
-        if (res.status === "fulfilled" && res.value?.data?.photos) {
-          allPhotos.push(...res.value.data.photos);
-        }
-      });
-
-      const uniquePhotos = allPhotos.filter(
-        (photo, index, self) => index === self.findIndex((p) => p.id === photo.id),
-      );
-
-      if (uniquePhotos.length > 0) {
-        const photoData = uniquePhotos.map((photo) => ({
-          id: `pexels-${photo.id}`,
-          url: optimizePexelsUrl(photo.src.large),
-          isUploaded: false,
-          tipo: "url",
-          source: "pexels",
-        }));
-
-        if (isInitialized && images.length > 0) {
-          const newUniquePhotos = photoData.filter(
-            (newPhoto) => !images.some((existingImg) => existingImg.url === newPhoto.url),
+      try {
+        // 1) Obtener componentes de ubicación con mayor precisión
+        let components = null;
+        if (hasCoords) {
+          const geoResult = await geocodeLatLngToComponents(
+            destinationInput.lat,
+            destinationInput.lng,
           );
+          if (geoResult?.address_components) {
+            components = extractLocationComponents(
+              geoResult.address_components,
+            );
+          }
+        }
 
-          setAllAvailableImages((prev) => [...prev, ...newUniquePhotos]);
-          setImages((prev) => [...prev, ...newUniquePhotos.slice(0, 5)]);
+        // 2) Fallback: intentar parsear del nombre "Ciudad, Estado"
+        if (!components) {
+          const parts = (destinationName || "")
+            .split(",")
+            .map((p) => p.trim())
+            .filter(Boolean);
+          const city = parts[0] || null;
+          const state = parts[1] || null;
+          components = { city, state, municipality: null, country: null };
+        }
+
+        // 3) Construir queries precisas
+        const preciseQueries = buildPreciseQueries(components);
+
+        // Agregar algunos refuerzos simples basados en destinationName
+        const reinforcement = destinationName
+          ? [`${destinationName} turismo`, `${destinationName} atracciones`]
+          : [];
+
+        const allQueries = Array.from(
+          new Set([...preciseQueries, ...reinforcement]),
+        );
+
+        // 4) Ejecutar llamadas a Pexels con límite y orientación
+        const axiosCalls = allQueries.map((query) =>
+          axios.get(`https://api.pexels.com/v1/search`, {
+            headers: { Authorization: PEXELS_API_KEY },
+            params: {
+              query,
+              per_page: 6,
+              orientation: "landscape",
+              locale: "es-ES",
+            },
+          }),
+        );
+
+        const responses = await Promise.allSettled(axiosCalls);
+
+        const allPhotos = [];
+        responses.forEach((res) => {
+          if (res.status === "fulfilled" && res.value?.data?.photos) {
+            allPhotos.push(...res.value.data.photos);
+          }
+        });
+
+        const uniquePhotos = allPhotos.filter(
+          (photo, index, self) =>
+            index === self.findIndex((p) => p.id === photo.id),
+        );
+
+        if (uniquePhotos.length > 0) {
+          const photoData = uniquePhotos.map((photo) => ({
+            id: `pexels-${photo.id}`,
+            url: optimizePexelsUrl(photo.src.large),
+            isUploaded: false,
+            tipo: "url",
+            source: "pexels",
+          }));
+
+          if (isInitialized && images.length > 0) {
+            const newUniquePhotos = photoData.filter(
+              (newPhoto) =>
+                !images.some((existingImg) => existingImg.url === newPhoto.url),
+            );
+
+            setAllAvailableImages((prev) => [...prev, ...newUniquePhotos]);
+            setImages((prev) => [...prev, ...newUniquePhotos.slice(0, 5)]);
+          } else {
+            setAllAvailableImages(photoData);
+            setImages(photoData.slice(0, 10));
+          }
+
+          setStatus("success");
         } else {
-          setAllAvailableImages(photoData);
-          setImages(photoData.slice(0, 10));
+          if (!isInitialized) {
+            setImages([]);
+            setAllAvailableImages([]);
+          }
+          setStatus("no_photos");
         }
-
-        setStatus("success");
-      } else {
-        if (!isInitialized) {
-          setImages([]);
-          setAllAvailableImages([]);
-        }
-        setStatus("no_photos");
+      } catch (error) {
+        console.error("Error al buscar imágenes:", error);
+        setError("Error al buscar imágenes en Pexels.");
+        setStatus("error");
       }
-    } catch (error) {
-      console.error("Error al buscar imágenes:", error);
-      setError("Error al buscar imágenes en Pexels.");
-      setStatus("error");
-    }
-  }, [images.length, isInitialized]);
+    },
+    [images.length, isInitialized],
+  );
 
   useEffect(() => {
     if (
@@ -407,7 +421,14 @@ const DestinationImageManager = ({
       setAllAvailableImages([]);
       setStatus("idle");
     }
-  }, [destination?.name, initialImages?.length, isInitialized, fetchImagesFromPexels, destination?.lat, destination?.lng]);
+  }, [
+    destination?.name,
+    initialImages?.length,
+    isInitialized,
+    fetchImagesFromPexels,
+    destination?.lat,
+    destination?.lng,
+  ]);
 
   const prevImagesRef = useRef();
   useEffect(() => {
@@ -784,7 +805,8 @@ const DestinationImageManager = ({
                     className="px-6 py-3 bg-slate-600 hover:bg-slate-700 text-white rounded-xl shadow-lg font-medium transition-all duration-200 hover:shadow-xl hover:scale-105 flex items-center gap-2"
                   >
                     <FiEye className="w-4 h-4" />
-                    Agregar {nextBatch} imagen{nextBatch !== 1 ? "es" : ""} más ({remainingCount} restante{remainingCount !== 1 ? "s" : ""})
+                    Agregar {nextBatch} imagen{nextBatch !== 1 ? "es" : ""} más
+                    ({remainingCount} restante{remainingCount !== 1 ? "s" : ""})
                   </button>
                 </div>
               );
@@ -799,7 +821,8 @@ const DestinationImageManager = ({
         <div className="mb-4 -mt-1 text-xs sm:text-sm flex items-start gap-2 bg-amber-50 border border-amber-200 text-amber-700 px-3 py-2 rounded-lg">
           <FiInfo className="w-4 h-4 mt-0.5 flex-shrink-0" />
           <span>
-            Puedes generar o subir más imágenes. Los cambios solo se guardarán al pulsar <strong>Actualizar Paquete</strong>.
+            Puedes generar o subir más imágenes. Los cambios solo se guardarán
+            al pulsar <strong>Actualizar Paquete</strong>.
           </span>
         </div>
       )}
