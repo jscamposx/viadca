@@ -35,7 +35,6 @@ const RegisterPage = () => {
   const [passwordStrength, setPasswordStrength] = useState(0);
   const [acceptedTerms, setAcceptedTerms] = useState(false);
 
-  // Efecto para calcular la fuerza de la contraseña
   useEffect(() => {
     if (!formData.contrasena) {
       setPasswordStrength(0);
@@ -58,7 +57,6 @@ const RegisterPage = () => {
       [name]: value
     }));
 
-    // Limpiar error del campo
     if (errors[name]) {
       setErrors(prev => ({
         ...prev,
@@ -70,7 +68,6 @@ const RegisterPage = () => {
   const validateForm = () => {
     const newErrors = {};
 
-    // Validar usuario
     if (!formData.usuario.trim()) {
       newErrors.usuario = 'El usuario es requerido';
     } else if (formData.usuario.length < 3) {
@@ -79,14 +76,12 @@ const RegisterPage = () => {
       newErrors.usuario = 'El usuario solo puede contener letras, números y guiones bajos';
     }
 
-    // Validar email
     if (!formData.correo.trim()) {
       newErrors.correo = 'El email es requerido';
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.correo)) {
       newErrors.correo = 'El email no es válido';
     }
 
-    // Validar contraseña
     if (!formData.contrasena) {
       newErrors.contrasena = 'La contraseña es requerida';
     } else if (formData.contrasena.length < 6) {
@@ -95,14 +90,12 @@ const RegisterPage = () => {
       newErrors.contrasena = 'La contraseña es demasiado débil';
     }
 
-    // Validar confirmación de contraseña
     if (!formData.confirmarContrasena) {
       newErrors.confirmarContrasena = 'Confirma tu contraseña';
     } else if (formData.contrasena !== formData.confirmarContrasena) {
       newErrors.confirmarContrasena = 'Las contraseñas no coinciden';
     }
 
-    // Validar términos y condiciones
     if (!acceptedTerms) {
       newErrors.terms = 'Debes aceptar los términos y condiciones';
     }
@@ -122,7 +115,6 @@ const RegisterPage = () => {
     setMessage('');
 
     try {
-      // Construir payload: incluir solo presentes (nombre opcional)
       const { confirmarContrasena, nombre, usuario, correo, contrasena } = formData;
       const dataToSend = { usuario, correo, contrasena };
       if (nombre && String(nombre).trim() !== '') {
@@ -133,7 +125,6 @@ const RegisterPage = () => {
       
       setMessage('Registro exitoso. Intentando iniciar sesión...');
       
-      // Intentar auto-login
       try {
         const resp = await login({ usuario: formData.usuario, contrasena: formData.contrasena });
         const rol = resp?.usuario?.rol;
@@ -143,7 +134,6 @@ const RegisterPage = () => {
           navigate('/', { replace: true, state: { message: '¡Bienvenido! Tu cuenta fue creada.' } });
         }
       } catch (loginErr) {
-        // Si no se puede iniciar sesión (p.ej., debe verificar email), enviar a Home con mensaje
         navigate('/', { replace: true, state: { message: 'Cuenta creada. Verifica tu email antes de iniciar sesión.' } });
       }
       
@@ -164,7 +154,6 @@ const RegisterPage = () => {
                           message.includes('Verifica') || 
                           message.includes('Bienvenido');
 
-  // Función para obtener el color según la fuerza de la contraseña
   const getPasswordStrengthColor = () => {
     if (passwordStrength >= 75) return 'bg-green-500';
     if (passwordStrength >= 50) return 'bg-yellow-500';
@@ -172,7 +161,6 @@ const RegisterPage = () => {
     return 'bg-red-500';
   };
 
-  // Función para obtener el texto según la fuerza de la contraseña
   const getPasswordStrengthText = () => {
     if (!formData.contrasena) return '';
     if (passwordStrength >= 75) return 'Fuerte';
@@ -184,15 +172,13 @@ const RegisterPage = () => {
   return (
     <PageTransition animationType="zoom">
       <div className="min-h-screen flex flex-col md:flex-row bg-gradient-to-br from-gray-50 to-gray-100 overflow-hidden">
-        {/* Panel izquierdo con gradiente para escritorio */}
+        {/* Panel izquierdo */}
         <div className="hidden md:flex md:w-1/2 min-h-screen relative bg-gradient-to-br from-indigo-600 to-purple-700 overflow-hidden">
           <div className="absolute inset-0">
-            {/* Elementos decorativos abstractos */}
             <div className="absolute top-0 right-0 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl"></div>
             <div className="absolute bottom-20 left-20 w-80 h-80 bg-indigo-500/20 rounded-full blur-3xl"></div>
             <div className="absolute top-1/3 left-1/4 w-64 h-64 bg-white/10 rounded-full blur-2xl"></div>
             
-            {/* Patrón geométrico */}
             <div className="absolute inset-0 opacity-20">
               <div className="absolute top-10 left-10 w-16 h-16 rounded-lg border-2 border-white rotate-45"></div>
               <div className="absolute top-40 right-20 w-24 h-24 rounded-lg border-2 border-white rotate-12"></div>
@@ -229,9 +215,9 @@ const RegisterPage = () => {
           </div>
         </div>
 
-        {/* Contenido principal - Adaptable a cualquier altura */}
+        {/* Contenido principal - Optimizado para desktop */}
         <div className="flex-1 flex items-center justify-center min-h-[calc(100vh-80px)] md:min-h-0">
-          <div className="w-full max-w-md p-4 md:p-6">
+          <div className="w-full max-w-3xl p-4 md:p-6">
             {/* Cabecera para móvil */}
             <div className="md:hidden mb-6 text-center">
               <div className="flex justify-center mb-4">
@@ -254,7 +240,7 @@ const RegisterPage = () => {
               </Link>
             </div>
 
-            {/* Contenedor del formulario con altura adaptable */}
+            {/* Contenedor del formulario con diseño optimizado */}
             <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100">
               <div className="p-6 md:p-8">
                 {/* Título para escritorio */}
@@ -280,65 +266,169 @@ const RegisterPage = () => {
                 )}
 
                 <form onSubmit={handleSubmit} className="space-y-5">
-                  {/* Campo Usuario */}
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      <div className="flex items-center gap-2">
-                        <FiUser className="w-4 h-4 text-indigo-600" />
-                        <span>Usuario</span>
+                  {/* Campos en grid de 2 columnas para desktop */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    {/* Columna izquierda */}
+                    <div className="space-y-5">
+                      {/* Campo Usuario */}
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          <div className="flex items-center gap-2">
+                            <FiUser className="w-4 h-4 text-indigo-600" />
+                            <span>Usuario</span>
+                          </div>
+                        </label>
+                        <input
+                          type="text"
+                          name="usuario"
+                          value={formData.usuario}
+                          onChange={handleInputChange}
+                          className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-indigo-300 focus:border-indigo-500 transition-all duration-300 ${
+                            errors.usuario
+                              ? 'border-red-300 bg-red-50'
+                              : 'border-gray-300 hover:border-gray-400'
+                          }`}
+                          placeholder="Ej: juan_perez"
+                          disabled={isLoading}
+                        />
+                        {errors.usuario && (
+                          <p className="text-red-600 text-sm mt-2 flex items-center gap-2">
+                            <FiAlertCircle className="w-4 h-4" />
+                            {errors.usuario}
+                          </p>
+                        )}
                       </div>
-                    </label>
-                    <input
-                      type="text"
-                      name="usuario"
-                      value={formData.usuario}
-                      onChange={handleInputChange}
-                      className={`w-full px-4 py-3.5 border rounded-xl focus:ring-2 focus:ring-indigo-300 focus:border-indigo-500 transition-all duration-300 ${
-                        errors.usuario
-                          ? 'border-red-300 bg-red-50'
-                          : 'border-gray-300 hover:border-gray-400'
-                      }`}
-                      placeholder="Ej: juan_perez"
-                      disabled={isLoading}
-                    />
-                    {errors.usuario && (
-                      <p className="text-red-600 text-sm mt-2 flex items-center gap-2">
-                        <FiAlertCircle className="w-4 h-4" />
-                        {errors.usuario}
-                      </p>
-                    )}
+
+                      {/* Campo Email */}
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          <div className="flex items-center gap-2">
+                            <FiMail className="w-4 h-4 text-indigo-600" />
+                            <span>Email</span>
+                          </div>
+                        </label>
+                        <input
+                          type="email"
+                          name="correo"
+                          value={formData.correo}
+                          onChange={handleInputChange}
+                          className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-indigo-300 focus:border-indigo-500 transition-all duration-300 ${
+                            errors.correo
+                              ? 'border-red-300 bg-red-50'
+                              : 'border-gray-300 hover:border-gray-400'
+                          }`}
+                          placeholder="tu@email.com"
+                          disabled={isLoading}
+                        />
+                        {errors.correo && (
+                          <p className="text-red-600 text-sm mt-2 flex items-center gap-2">
+                            <FiAlertCircle className="w-4 h-4" />
+                            {errors.correo}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Columna derecha */}
+                    <div className="space-y-5">
+                      {/* Campo Contraseña */}
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          <div className="flex items-center gap-2">
+                            <FiLock className="w-4 h-4 text-indigo-600" />
+                            <span>Contraseña</span>
+                          </div>
+                        </label>
+                        <div className="relative">
+                          <input
+                            type={showPassword ? 'text' : 'password'}
+                            name="contrasena"
+                            value={formData.contrasena}
+                            onChange={handleInputChange}
+                            className={`w-full px-4 py-3 pr-12 border rounded-xl focus:ring-2 focus:ring-indigo-300 focus:border-indigo-500 transition-all duration-300 ${
+                              errors.contrasena
+                                ? 'border-red-300 bg-red-50'
+                                : 'border-gray-300 hover:border-gray-400'
+                            }`}
+                            placeholder="Mínimo 6 caracteres"
+                            disabled={isLoading}
+                          />
+                          <button
+                            type="button"
+                            onClick={() => setShowPassword(!showPassword)}
+                            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                            disabled={isLoading}
+                          >
+                            {showPassword ? <FiEyeOff className="w-5 h-5" /> : <FiEye className="w-5 h-5" />}
+                          </button>
+                        </div>
+                        
+                        {/* Indicador de fuerza de contraseña */}
+                        {formData.contrasena && (
+                          <div className="mt-2">
+                            <div className="w-full bg-gray-200 rounded-full h-1.5 mb-1">
+                              <div 
+                                className={`h-1.5 rounded-full ${getPasswordStrengthColor()}`} 
+                                style={{ width: `${passwordStrength}%` }}
+                              ></div>
+                            </div>
+                            <div className="flex justify-between text-xs text-gray-500">
+                              <span>Seguridad</span>
+                              <span className="font-medium text-gray-700">{getPasswordStrengthText()}</span>
+                            </div>
+                          </div>
+                        )}
+                        
+                        {errors.contrasena && (
+                          <p className="text-red-600 text-sm mt-2 flex items-center gap-2">
+                            <FiAlertCircle className="w-4 h-4" />
+                            {errors.contrasena}
+                          </p>
+                        )}
+                      </div>
+
+                      {/* Campo Confirmar Contraseña */}
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          <div className="flex items-center gap-2">
+                            <FiLock className="w-4 h-4 text-indigo-600" />
+                            <span>Confirmar Contraseña</span>
+                          </div>
+                        </label>
+                        <div className="relative">
+                          <input
+                            type={showConfirmPassword ? 'text' : 'password'}
+                            name="confirmarContrasena"
+                            value={formData.confirmarContrasena}
+                            onChange={handleInputChange}
+                            className={`w-full px-4 py-3 pr-12 border rounded-xl focus:ring-2 focus:ring-indigo-300 focus:border-indigo-500 transition-all duration-300 ${
+                              errors.confirmarContrasena
+                                ? 'border-red-300 bg-red-50'
+                                : 'border-gray-300 hover:border-gray-400'
+                            }`}
+                            placeholder="Confirma tu contraseña"
+                            disabled={isLoading}
+                          />
+                          <button
+                            type="button"
+                            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                            disabled={isLoading}
+                          >
+                            {showConfirmPassword ? <FiEyeOff className="w-5 h-5" /> : <FiEye className="w-5 h-5" />}
+                          </button>
+                        </div>
+                        {errors.confirmarContrasena && (
+                          <p className="text-red-600 text-sm mt-2 flex items-center gap-2">
+                            <FiAlertCircle className="w-4 h-4" />
+                            {errors.confirmarContrasena}
+                          </p>
+                        )}
+                      </div>
+                    </div>
                   </div>
 
-                  {/* Campo Email */}
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      <div className="flex items-center gap-2">
-                        <FiMail className="w-4 h-4 text-indigo-600" />
-                        <span>Email</span>
-                      </div>
-                    </label>
-                    <input
-                      type="email"
-                      name="correo"
-                      value={formData.correo}
-                      onChange={handleInputChange}
-                      className={`w-full px-4 py-3.5 border rounded-xl focus:ring-2 focus:ring-indigo-300 focus:border-indigo-500 transition-all duration-300 ${
-                        errors.correo
-                          ? 'border-red-300 bg-red-50'
-                          : 'border-gray-300 hover:border-gray-400'
-                      }`}
-                      placeholder="tu@email.com"
-                      disabled={isLoading}
-                    />
-                    {errors.correo && (
-                      <p className="text-red-600 text-sm mt-2 flex items-center gap-2">
-                        <FiAlertCircle className="w-4 h-4" />
-                        {errors.correo}
-                      </p>
-                    )}
-                  </div>
-
-                  {/* Campo Nombre (opcional) */}
+                  {/* Campo Nombre completo - Ancho completo */}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       <div className="flex items-center gap-2">
@@ -351,106 +441,10 @@ const RegisterPage = () => {
                       name="nombre"
                       value={formData.nombre}
                       onChange={handleInputChange}
-                      className="w-full px-4 py-3.5 border rounded-xl focus:ring-2 focus:ring-indigo-300 focus:border-indigo-500 transition-all duration-300 border-gray-300 hover:border-gray-400"
+                      className="w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-indigo-300 focus:border-indigo-500 transition-all duration-300 border-gray-300 hover:border-gray-400"
                       placeholder="Ej: Juan Pérez"
                       disabled={isLoading}
                     />
-                    <p className="text-xs text-gray-500 mt-1">Este campo es opcional.</p>
-                  </div>
-
-                  {/* Campo Contraseña */}
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      <div className="flex items-center gap-2">
-                        <FiLock className="w-4 h-4 text-indigo-600" />
-                        <span>Contraseña</span>
-                      </div>
-                    </label>
-                    <div className="relative">
-                      <input
-                        type={showPassword ? 'text' : 'password'}
-                        name="contrasena"
-                        value={formData.contrasena}
-                        onChange={handleInputChange}
-                        className={`w-full px-4 py-3.5 pr-12 border rounded-xl focus:ring-2 focus:ring-indigo-300 focus:border-indigo-500 transition-all duration-300 ${
-                          errors.contrasena
-                            ? 'border-red-300 bg-red-50'
-                            : 'border-gray-300 hover:border-gray-400'
-                        }`}
-                        placeholder="Mínimo 6 caracteres"
-                        disabled={isLoading}
-                      />
-                      <button
-                        type="button"
-                        onClick={() => setShowPassword(!showPassword)}
-                        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
-                        disabled={isLoading}
-                      >
-                        {showPassword ? <FiEyeOff className="w-5 h-5" /> : <FiEye className="w-5 h-5" />}
-                      </button>
-                    </div>
-                    
-                    {/* Indicador de fuerza de contraseña */}
-                    {formData.contrasena && (
-                      <div className="mt-2">
-                        <div className="w-full bg-gray-200 rounded-full h-1.5 mb-1">
-                          <div 
-                            className={`h-1.5 rounded-full ${getPasswordStrengthColor()}`} 
-                            style={{ width: `${passwordStrength}%` }}
-                          ></div>
-                        </div>
-                        <div className="flex justify-between text-xs text-gray-500">
-                          <span>Seguridad</span>
-                          <span className="font-medium text-gray-700">{getPasswordStrengthText()}</span>
-                        </div>
-                      </div>
-                    )}
-                    
-                    {errors.contrasena && (
-                      <p className="text-red-600 text-sm mt-2 flex items-center gap-2">
-                        <FiAlertCircle className="w-4 h-4" />
-                        {errors.contrasena}
-                      </p>
-                    )}
-                  </div>
-
-                  {/* Campo Confirmar Contraseña */}
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      <div className="flex items-center gap-2">
-                        <FiLock className="w-4 h-4 text-indigo-600" />
-                        <span>Confirmar Contraseña</span>
-                      </div>
-                    </label>
-                    <div className="relative">
-                      <input
-                        type={showConfirmPassword ? 'text' : 'password'}
-                        name="confirmarContrasena"
-                        value={formData.confirmarContrasena}
-                        onChange={handleInputChange}
-                        className={`w-full px-4 py-3.5 pr-12 border rounded-xl focus:ring-2 focus:ring-indigo-300 focus:border-indigo-500 transition-all duration-300 ${
-                          errors.confirmarContrasena
-                            ? 'border-red-300 bg-red-50'
-                            : 'border-gray-300 hover:border-gray-400'
-                        }`}
-                        placeholder="Confirma tu contraseña"
-                        disabled={isLoading}
-                      />
-                      <button
-                        type="button"
-                        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
-                        disabled={isLoading}
-                      >
-                        {showConfirmPassword ? <FiEyeOff className="w-5 h-5" /> : <FiEye className="w-5 h-5" />}
-                      </button>
-                    </div>
-                    {errors.confirmarContrasena && (
-                      <p className="text-red-600 text-sm mt-2 flex items-center gap-2">
-                        <FiAlertCircle className="w-4 h-4" />
-                        {errors.confirmarContrasena}
-                      </p>
-                    )}
                   </div>
 
                   {/* Términos y Condiciones */}

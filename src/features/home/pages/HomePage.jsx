@@ -340,19 +340,26 @@ const Home = () => {
                   isScrolled 
                     ? 'text-slate-700 hover:text-blue-600 hover:bg-blue-50' 
                     : 'text-slate-700 hover:text-blue-600 hover:bg-white/20'
-                }`}
-                aria-label={isMobileMenuOpen ? "Cerrar menú" : "Abrir menú"}
+                } ${isMobileMenuOpen ? 'bg-white/90 text-slate-900 shadow-sm' : ''}`}
+                aria-label={isMobileMenuOpen ? 'Cerrar menú' : 'Abrir menú'}
+                aria-expanded={isMobileMenuOpen}
               >
                 <div className="relative w-6 h-6">
-                  <span className={`absolute top-1 left-0 w-6 h-0.5 bg-current transition-all duration-300 ${
-                    isMobileMenuOpen ? 'rotate-45 top-3' : ''
-                  }`}></span>
-                  <span className={`absolute top-3 left-0 w-6 h-0.5 bg-current transition-all duration-300 ${
-                    isMobileMenuOpen ? 'opacity-0' : ''
-                  }`}></span>
-                  <span className={`absolute top-5 left-0 w-6 h-0.5 bg-current transition-all duration-300 ${
-                    isMobileMenuOpen ? '-rotate-45 top-3' : ''
-                  }`}></span>
+                  <span
+                    className={`absolute left-1/2 -translate-x-1/2 w-6 h-[3px] bg-current rounded-full transition-all duration-300 origin-center ${
+                      isMobileMenuOpen ? 'top-1/2 -translate-y-1/2 rotate-45' : 'top-1'
+                    }`}
+                  />
+                  <span
+                    className={`absolute left-1/2 -translate-x-1/2 w-6 h-[3px] bg-current rounded-full transition-all duration-300 origin-center ${
+                      isMobileMenuOpen ? 'opacity-0' : 'top-1/2 -translate-y-1/2'
+                    }`}
+                  />
+                  <span
+                    className={`absolute left-1/2 -translate-x-1/2 w-6 h-[3px] bg-current rounded-full transition-all duration-300 origin-center ${
+                      isMobileMenuOpen ? 'top-1/2 -translate-y-1/2 -rotate-45' : 'top-5'
+                    }`}
+                  />
                 </div>
               </button>
             </div>
