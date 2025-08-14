@@ -40,9 +40,10 @@ const Logos = ({ logos }) => {
     };
   }, [base]);
 
-  // Animación con rAF: cuando desplazamos una longitud de secuencia, reajustamos el offset sin salto
+  // Animación con rAF: desplazamiento continuo sin saltos usando módulo
   React.useEffect(() => {
-    const prefersReduced = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const prefersReduced =
+      window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (prefersReduced) return; // respeta preferencias del usuario
 
     const speed = 60; // px/segundo (ajusta al gusto)
@@ -60,11 +61,12 @@ const Logos = ({ logos }) => {
 
       if (!paused) {
         offsetRef.current -= speed * dt;
-        // cuando hemos desplazado una secuencia completa, reajusta el offset
-        if (offsetRef.current <= -seqWidth) {
-          offsetRef.current += seqWidth;
-        }
-        trackRef.current.style.transform = `translate3d(${offsetRef.current}px, 0, 0)`;
+        // Normaliza el offset a [0, seqWidth) y aplica el negativo para mover a la izquierda
+        const visual = ((offsetRef.current % seqWidth) + seqWidth) % seqWidth;
+        const x = -visual;
+        // Suaviza subpíxeles para evitar jitter
+        const snapped = Math.round(x * (window.devicePixelRatio || 1)) / (window.devicePixelRatio || 1);
+        trackRef.current.style.transform = `translate3d(${snapped}px, 0, 0)`;
       }
 
       rafIdRef.current = requestAnimationFrame(tick);
@@ -110,7 +112,7 @@ const Logos = ({ logos }) => {
 
           <div
             ref={trackRef}
-            className="flex w-max items-center gap-24 opacity-90 hover:opacity-100 transition-opacity py-4 will-change-transform select-none"
+            className="flex w-max items-center opacity-90 hover:opacity-100 transition-opacity py-4 will-change-transform select-none"
             style={{ transform: "translate3d(0,0,0)" }}
           >
             {sequences.map((seq, sIdx) => (
