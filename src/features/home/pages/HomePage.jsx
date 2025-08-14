@@ -69,19 +69,42 @@ const Home = () => {
     }
   }, [])
 
-  // Reemplaza el anterior listener de scroll por uno que también mide el header
+  // Scroll: solo alterna el estado con rAF (sin medir layout para evitar reflows)
   useEffect(() => {
-    const handleScrollResize = () => {
-      setIsScrolled(window.scrollY > 50)
-      // medir SOLO la altura del nav (sin incluir el dropdown móvil)
-      setHeaderHeight(navRef.current?.offsetHeight || 90)
+    let last = window.scrollY > 50
+    setIsScrolled(last)
+    let ticking = false
+    const onScroll = () => {
+      if (ticking) return
+      ticking = true
+      requestAnimationFrame(() => {
+        const sc = window.scrollY > 50
+        if (sc !== last) {
+          last = sc
+          setIsScrolled(sc)
+        }
+        ticking = false
+      })
     }
-    handleScrollResize()
-    window.addEventListener('scroll', handleScrollResize, { passive: true })
-    window.addEventListener('resize', handleScrollResize)
-    return () => {
-      window.removeEventListener('scroll', handleScrollResize)
-      window.removeEventListener('resize', handleScrollResize)
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
+
+  // Medir altura estable del nav con ResizeObserver (cambia por padding/breakpoints)
+  useEffect(() => {
+    const el = navRef.current
+    if (!el) return
+
+    const measure = () => setHeaderHeight(el.offsetHeight || 90)
+    measure()
+
+    if ('ResizeObserver' in window) {
+      const ro = new ResizeObserver(() => measure())
+      ro.observe(el)
+      return () => ro.disconnect()
+    } else {
+      window.addEventListener('resize', measure)
+      return () => window.removeEventListener('resize', measure)
     }
   }, [])
 
@@ -194,14 +217,21 @@ const Home = () => {
   return (
     <>
       {/* Navbar global fija */}
-      <header ref={headerRef} className={`fixed top-0 left-0 right-0 z-[9999] transition-all duration-500 ease-in-out px-3 sm:px-6 lg:px-8 ${
-        isScrolled 
-          ? 'bg-white/98 backdrop-blur-lg shadow-2xl border-b border-blue-200/60' 
-          : 'bg-gradient-to-br from-blue-50/95 to-orange-50/95 backdrop-blur-md'
-      }`}>
-        <nav ref={navRef} className={`flex items-center justify-between max-w-7xl mx-auto transition-all duration-300 ${
-          isScrolled ? 'py-2.5' : 'py-4 sm:py-6'
-        }`}>
+      <header
+        ref={headerRef}
+        className={`fixed top-0 left-0 right-0 z-[9999] transform-gpu transition-colors duration-500 ease-in-out px-3 sm:px-6 lg:px-8 ${
+          isScrolled
+            ? 'bg-white/95 shadow-md border-b border-blue-200/60 lg:backdrop-blur-lg'
+            : 'bg-white/80 lg:bg-gradient-to-br lg:from-blue-50/90 lg:to-orange-50/90'
+        }`}
+        style={{ willChange: 'transform, opacity', contain: 'layout paint' }}
+      >
+        <nav
+          ref={navRef}
+          className={`flex items-center justify-between max-w-7xl mx-auto transition-[padding] duration-300 ${
+            isScrolled ? 'py-2.5' : 'py-4 sm:py-6'
+          }`}
+        >
           <div className="flex items-center w-full">
             {/* Logo - Optimizado para mobile */}
             <div className="flex items-center shrink-0">

@@ -3,13 +3,18 @@ import React from 'react'
 const Hero = () => {
   return (
     <section id="hero" className="relative min-h-[100svh] bg-gradient-to-br from-blue-50 to-orange-50 scroll-mt-32">
+      {/* Fondo superior SOLO mobile: transparente */}
+      {/* (El degradado se eliminó para dejar el fondo completamente transparente en mobile) */}
+
       {/* Background Decorations */}
       <div className="absolute top-0 right-0 w-1/2 h-full bg-hero-pattern bg-no-repeat bg-right-top opacity-20"></div>
-      <div className="absolute top-20 left-20 w-96 h-96 bg-blue-200 rounded-full opacity-30"></div>
+      <div className="absolute top-20 left-1/2 -translate-x-1/2 w-72 h-72 sm:w-80 sm:h-80 bg-blue-200 rounded-full opacity-30 lg:left-20 lg:translate-x-0 lg:w-96 lg:h-96"></div>
 
       {/* Hero Content - Optimizado para mobile */}
-      <div className="relative z-10 px-4 sm:px-6 lg:px-8 pt-20 sm:pt-24 lg:pt-32 pb-8 lg:pb-16">
+      <div className="relative z-10 px-4 sm:px-6 lg:px-8 pt-5 sm:pt-24 lg:pt-32 pb-8 lg:pb-16">
         <div className="max-w-7xl mx-auto">
+          {/* Texto superior SOLO mobile - eliminado */}
+
           <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
             {/* Left Content */}
             <div className="space-y-6 lg:space-y-8 text-center lg:text-left">
@@ -73,11 +78,11 @@ const Hero = () => {
                 <img 
                   src="https://codia-f2c.s3.us-west-1.amazonaws.com/image/2025-08-12/1pyELBTywW.png" 
                   alt="Viajero explorando destinos increíbles" 
-                  className="w-full h-auto sm:h-80 lg:h-auto max-h-[70vh] object-contain sm:object-cover border-0 shadow-none ring-0 outline-none"
+                  className="w-full h-auto sm:h-80 lg:h-auto max-h-[70vh] object-contain object-center sm:object-cover border-0 shadow-none ring-0 outline-none mx-auto"
                 />
                 
-                {/* Overlay gradient para mobile (sin oscurecer) */}
-                <div className="absolute inset-0 bg-gradient-to-t from-transparent via-transparent to-transparent lg:hidden pointer-events-none"></div>
+                {/* Overlay gradient para mobile (transparente) */}
+                <div className="absolute inset-0 bg-transparent lg:hidden pointer-events-none"></div>
               </div>
 
               {/* Stats móviles - Tarjetas flotantes */}
