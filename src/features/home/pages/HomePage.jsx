@@ -147,59 +147,89 @@ const Home = () => {
 
   useEffect(() => {
     const sectionIds = ['hero','servicios','destinos','pasos','testimonios']
-    const getHeaderH = () => headerHeight
 
     let ticking = false
+    let io = null
+    let onScroll = null
 
-    const calcActive = () => {
-      const headerH = getHeaderH()
-      const viewportTop = headerH + 4
-      const viewportBottom = window.innerHeight
+    const setActiveSafe = (id) => setActiveSection(prev => (prev !== id ? id : prev))
 
-      let current = sectionIds[0]
-      let maxVisible = 0
+    const setupIO = () => {
+      if (typeof window === 'undefined' || !('IntersectionObserver' in window)) return false
+      if (window.innerWidth >= 1024) return false
 
-      for (const id of sectionIds) {
-        const el = document.getElementById(id)
-        if (!el) continue
-        const rect = el.getBoundingClientRect()
-        if (rect.bottom < viewportTop || rect.top > viewportBottom) continue
-        const visible = Math.min(rect.bottom, viewportBottom) - Math.max(rect.top, viewportTop)
-        if (visible > maxVisible && visible > 30) {
-          maxVisible = visible
-          current = id
+      const topOffset = Math.ceil((headerHeight || 90) + 12)
+      const rootMargin = `-${topOffset}px 0px -55% 0px`
+      const thresholds = [0, 0.05, 0.1, 0.2, 0.35, 0.5, 0.65, 0.8, 1]
+
+      const visible = new Map()
+      io = new IntersectionObserver((entries) => {
+        for (const e of entries) {
+          visible.set(e.target.id, e.isIntersecting ? e.intersectionRatio : 0)
         }
-      }
-
-      for (let i = sectionIds.length - 1; i >= 0; i--) {
-        const id = sectionIds[i]
-        const el = document.getElementById(id)
-        if (!el) continue
-        const topAbs = el.getBoundingClientRect().top
-        if (topAbs <= getHeaderH() + 10) {
-          current = sectionIds[i]
-          break
+        let bestId = sectionIds[0]
+        let bestRatio = -1
+        for (const id of sectionIds) {
+          const r = visible.get(id) ?? 0
+          if (r > bestRatio + 0.001) {
+            bestRatio = r
+            bestId = id
+          }
         }
-      }
+        setActiveSafe(bestId)
+      }, { root: null, rootMargin, threshold: thresholds })
 
-      setActiveSection(prev => prev !== current ? current : prev)
-      ticking = false
+      sectionIds.forEach(id => {
+        const el = document.getElementById(id)
+        if (el) io.observe(el)
+      })
+      return true
     }
 
-    const requestCalc = () => {
-      if (!ticking) {
+    const setupScrollProbe = () => {
+      const calcActive = () => {
+        const headerH = headerHeight || 90
+        const probeY = headerH + Math.round(window.innerHeight * 0.45)
+        let current = sectionIds[0]
+
+        for (const id of sectionIds) {
+          const el = document.getElementById(id)
+          if (!el) continue
+          const rect = el.getBoundingClientRect()
+          if (rect.top <= probeY && rect.bottom >= probeY) {
+            current = id
+            break
+          }
+          if (rect.top - probeY > 0) break
+        }
+
+        setActiveSafe(current)
+        ticking = false
+      }
+
+      onScroll = () => {
+        if (ticking) return
         ticking = true
         requestAnimationFrame(calcActive)
       }
+
+      window.addEventListener('scroll', onScroll, { passive: true })
+      window.addEventListener('resize', onScroll)
+      window.addEventListener('orientationchange', onScroll)
+      // Primera ejecución
+      onScroll()
     }
 
-    window.addEventListener('scroll', requestCalc, { passive: true })
-    window.addEventListener('resize', requestCalc)
-    calcActive()
+    const usingIO = setupIO()
+    if (!usingIO) setupScrollProbe()
 
     return () => {
-      window.removeEventListener('scroll', requestCalc)
-      window.removeEventListener('resize', requestCalc)
+      if (io) io.disconnect()
+      if (onScroll) {
+        window.removeEventListener('scroll', onScroll)
+        window.removeEventListener('resize', onScroll)
+        window.removeEventListener('orientationchange', onScroll)
+      }
     }
   }, [headerHeight])
 
@@ -335,30 +365,35 @@ const Home = () => {
             {/* Botón móvil - Mejorado */}
             <div className="lg:hidden ml-auto">
               <button
+                id="mobile-menu-button"
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className={`relative p-2 rounded-lg transition-all duration-300 ${
+                className={`relative h-10 w-10 flex items-center justify-center rounded-lg transition-colors duration-300 ${
                   isScrolled 
                     ? 'text-slate-700 hover:text-blue-600 hover:bg-blue-50' 
                     : 'text-slate-700 hover:text-blue-600 hover:bg-white/20'
                 } ${isMobileMenuOpen ? 'bg-white/90 text-slate-900 shadow-sm' : ''}`}
                 aria-label={isMobileMenuOpen ? 'Cerrar menú' : 'Abrir menú'}
                 aria-expanded={isMobileMenuOpen}
+                aria-controls="mobile-menu"
               >
-                <div className="relative w-6 h-6">
+                <div className="relative w-7 h-7" aria-hidden="true">
                   <span
-                    className={`absolute left-1/2 -translate-x-1/2 w-6 h-[3px] bg-current rounded-full transition-all duration-300 origin-center ${
-                      isMobileMenuOpen ? 'top-1/2 -translate-y-1/2 rotate-45' : 'top-1'
+                    className={`absolute left-1/2 top-1/2 w-6 h-1 bg-current rounded-full transition-transform duration-300 ease-out origin-center ${
+                      isMobileMenuOpen ? '-translate-x-1/2 -translate-y-0 rotate-45' : '-translate-x-1/2 -translate-y-[8px]'
                     }`}
+                    style={{ willChange: 'transform' }}
                   />
                   <span
-                    className={`absolute left-1/2 -translate-x-1/2 w-6 h-[3px] bg-current rounded-full transition-all duration-300 origin-center ${
-                      isMobileMenuOpen ? 'opacity-0' : 'top-1/2 -translate-y-1/2'
+                    className={`absolute left-1/2 top-1/2 w-6 h-1 bg-current rounded-full transition-all duration-300 ease-out origin-center ${
+                      isMobileMenuOpen ? '-translate-x-1/2 -translate-y-0 opacity-0 scale-x-0' : '-translate-x-1/2 -translate-y-0 opacity-100 scale-x-100'
                     }`}
+                    style={{ willChange: 'transform, opacity' }}
                   />
                   <span
-                    className={`absolute left-1/2 -translate-x-1/2 w-6 h-[3px] bg-current rounded-full transition-all duration-300 origin-center ${
-                      isMobileMenuOpen ? 'top-1/2 -translate-y-1/2 -rotate-45' : 'top-5'
+                    className={`absolute left-1/2 top-1/2 w-6 h-1 bg-current rounded-full transition-transform duration-300 ease-out origin-center ${
+                      isMobileMenuOpen ? '-translate-x-1/2 -translate-y-0 -rotate-45' : '-translate-x-1/2 translate-y-[8px]'
                     }`}
+                    style={{ willChange: 'transform' }}
                   />
                 </div>
               </button>
@@ -367,9 +402,15 @@ const Home = () => {
         </nav>
 
         {/* Mobile menu - Mejorado con animaciones */}
-        <div className={`lg:hidden overflow-hidden transition-all duration-300 ease-in-out ${
-          isMobileMenuOpen ? 'max-h-screen opacity-100' : 'max-h-0 opacity-0'
-        }`}>
+        <div
+          id="mobile-menu"
+          role="region"
+          aria-labelledby="mobile-menu-button"
+          aria-hidden={!isMobileMenuOpen}
+          className={`lg:hidden overflow-hidden transition-all duration-300 ease-in-out ${
+            isMobileMenuOpen ? 'max-h-screen opacity-100' : 'max-h-0 opacity-0'
+          }`}
+        >
           <div className={`backdrop-blur-md border-t transition-all duration-300 ${
             isScrolled 
               ? 'bg-white/98 border-blue-100/50' 
