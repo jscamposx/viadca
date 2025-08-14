@@ -2,7 +2,7 @@ import React from 'react'
 
 const Hero = () => {
   return (
-    <section id="hero" className="relative min-h-screen bg-gradient-to-br from-blue-50 to-orange-50 scroll-mt-32">
+    <section id="hero" className="relative min-h-[100svh] bg-gradient-to-br from-blue-50 to-orange-50 scroll-mt-32">
       {/* Background Decorations */}
       <div className="absolute top-0 right-0 w-1/2 h-full bg-hero-pattern bg-no-repeat bg-right-top opacity-20"></div>
       <div className="absolute top-20 left-20 w-96 h-96 bg-blue-200 rounded-full opacity-30"></div>
@@ -76,50 +76,21 @@ const Hero = () => {
                   className="w-full h-auto sm:h-80 lg:h-auto max-h-[70vh] object-contain sm:object-cover border-0 shadow-none ring-0 outline-none"
                 />
                 
-                {/* Overlay gradient para mobile */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent lg:hidden"></div>
-                
-                {/* Floating elements - Adaptados para mobile */}
-                <div className="absolute top-4 right-4 lg:top-10 lg:right-10">
-                  <div className="bg-white/90 backdrop-blur-sm rounded-full p-2 lg:p-3 shadow-lg animate-bounce">
-                    <img 
-                      src="https://codia-f2c.s3.us-west-1.amazonaws.com/image/2025-08-12/BTbQz3WXGG.svg" 
-                      alt="Icono de avión" 
-                      className="w-6 h-6 lg:w-8 lg:h-8"
-                    />
-                  </div>
-                </div>
-                
-                <div className="absolute bottom-4 left-4 lg:bottom-20 lg:left-10">
-                  <div className="bg-white/90 backdrop-blur-sm rounded-full p-2 lg:p-3 shadow-lg animate-bounce" style={{ animationDelay: '1s' }}>
-                    <img 
-                      src="https://codia-f2c.s3.us-west-1.amazonaws.com/image/2025-08-12/RYL1asKg5e.svg" 
-                      alt="Icono de avión" 
-                      className="w-6 h-6 lg:w-8 lg:h-8"
-                    />
-                  </div>
-                </div>
-
-                {/* Badge de confianza - Solo mobile */}
-                <div className="absolute bottom-4 right-4 lg:hidden">
-                  <div className="bg-gradient-to-r from-green-500 to-emerald-500 text-white px-3 py-2 rounded-lg text-xs font-semibold shadow-lg flex items-center gap-2">
-                    <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
-                    <span>Agencia certificada</span>
-                  </div>
-                </div>
+                {/* Overlay gradient para mobile (sin oscurecer) */}
+                <div className="absolute inset-0 bg-gradient-to-t from-transparent via-transparent to-transparent lg:hidden pointer-events-none"></div>
               </div>
 
               {/* Stats móviles - Tarjetas flotantes */}
               <div className="flex lg:hidden justify-center gap-4 mt-6">
-                <div className="bg-white rounded-xl p-4 shadow-lg border border-blue-100 text-center flex-1 max-w-24">
+                <div className="bg-white rounded-xl p-4 shadow-none border-0 text-center flex-1 max-w-24">
                   <div className="text-xl font-bold text-blue-600">15+</div>
                   <div className="text-xs text-slate-600">Años</div>
                 </div>
-                <div className="bg-white rounded-xl p-4 shadow-lg border border-blue-100 text-center flex-1 max-w-24">
+                <div className="bg-white rounded-xl p-4 shadow-none border-0 text-center flex-1 max-w-24">
                   <div className="text-xl font-bold text-green-600">5K+</div>
                   <div className="text-xs text-slate-600">Clientes</div>
                 </div>
-                <div className="bg-white rounded-xl p-4 shadow-lg border border-blue-100 text-center flex-1 max-w-24">
+                <div className="bg-white rounded-xl p-4 shadow-none border-0 text-center flex-1 max-w-24">
                   <div className="text-xl font-bold text-orange-600">50+</div>
                   <div className="text-xs text-slate-600">Destinos</div>
                 </div>

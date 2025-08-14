@@ -32,6 +32,7 @@ const Home = () => {
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false)
   // Medición del header para offset del contenido
   const headerRef = useRef(null)
+  const navRef = useRef(null)
   const [headerHeight, setHeaderHeight] = useState(90)
   const { user, isAuthenticated, logout, isAdmin } = useAuth()
   const { contactInfo, loading: contactLoading } = useContactInfo()
@@ -72,7 +73,8 @@ const Home = () => {
   useEffect(() => {
     const handleScrollResize = () => {
       setIsScrolled(window.scrollY > 50)
-      setHeaderHeight(headerRef.current?.offsetHeight || 90)
+      // medir SOLO la altura del nav (sin incluir el dropdown móvil)
+      setHeaderHeight(navRef.current?.offsetHeight || 90)
     }
     handleScrollResize()
     window.addEventListener('scroll', handleScrollResize, { passive: true })
@@ -83,10 +85,10 @@ const Home = () => {
     }
   }, [])
 
-  // Actualiza altura cuando cambia menú móvil/usuario o estado de scroll
+  // Actualiza altura cuando cambian estados que sí afectan el alto del nav (no el menú móvil desplegado)
   useEffect(() => {
-    setHeaderHeight(headerRef.current?.offsetHeight || 90)
-  }, [isMobileMenuOpen, isUserMenuOpen, isScrolled])
+    setHeaderHeight(navRef.current?.offsetHeight || 90)
+  }, [isUserMenuOpen, isScrolled])
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -122,7 +124,7 @@ const Home = () => {
 
   useEffect(() => {
     const sectionIds = ['hero','servicios','destinos','pasos','testimonios']
-    const getHeaderH = () => (document.querySelector('header')?.offsetHeight || 90)
+    const getHeaderH = () => headerHeight
 
     let ticking = false
 
@@ -176,14 +178,13 @@ const Home = () => {
       window.removeEventListener('scroll', requestCalc)
       window.removeEventListener('resize', requestCalc)
     }
-  }, [])
+  }, [headerHeight])
 
   const handleNavClick = (e, id) => {
     e.preventDefault()
     const el = document.getElementById(id)
     if (el) {
-      const header = document.querySelector('header')
-      const dynamicOffset = (header?.offsetHeight || 90) + 10
+      const dynamicOffset = (headerHeight || 90) + 10
       const y = el.getBoundingClientRect().top + window.pageYOffset - dynamicOffset
       window.scrollTo({ top: y, behavior: 'smooth' })
     }
@@ -193,15 +194,12 @@ const Home = () => {
   return (
     <>
       {/* Navbar global fija */}
-      <header
-        ref={headerRef}
-        className={`fixed top-0 left-0 right-0 z-[9999] transition-all duration-500 ease-in-out px-3 sm:px-6 lg:px-8 ${
-          isScrolled
-            ? 'bg-white/98 backdrop-blur-lg shadow-2xl border-b border-blue-200/60'
-            : 'bg-gradient-to-br from-blue-50/95 to-orange-50/95 backdrop-blur-md'
-        }`}
-      >
-        <nav className={`flex items-center justify-between max-w-7xl mx-auto transition-all duration-300 ${
+      <header ref={headerRef} className={`fixed top-0 left-0 right-0 z-[9999] transition-all duration-500 ease-in-out px-3 sm:px-6 lg:px-8 ${
+        isScrolled 
+          ? 'bg-white/98 backdrop-blur-lg shadow-2xl border-b border-blue-200/60' 
+          : 'bg-gradient-to-br from-blue-50/95 to-orange-50/95 backdrop-blur-md'
+      }`}>
+        <nav ref={navRef} className={`flex items-center justify-between max-w-7xl mx-auto transition-all duration-300 ${
           isScrolled ? 'py-2.5' : 'py-4 sm:py-6'
         }`}>
           <div className="flex items-center w-full">
