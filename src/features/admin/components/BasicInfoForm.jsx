@@ -56,7 +56,7 @@ const BasicInfoForm = ({ formData, onFormChange }) => {
             onChange={onFormChange}
             rows="3"
             className="w-full p-2.5 sm:p-3 border border-gray-300 rounded-lg sm:rounded-md focus:ring-2 focus:ring-blue-500 text-sm sm:text-base resize-none"
-            placeholder="Detalla qué incluye el paquete: vuelos, hospedaje, tours, comidas, etc..."
+            placeholder="Detalla qué incluye el paquete: hospedaje, tours, comidas, etc..."
           ></textarea>
         </div>
 

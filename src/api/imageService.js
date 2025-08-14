@@ -14,17 +14,6 @@ export const deleteImageFromPaquete = (imagenId) => {
   return apiClient.delete(`/admin/paquetes/imagenes/${imagenId}`);
 };
 
-export const upload = (data) => {
-  return apiClient.post("/imagenes/upload", data);
-};
-
-export const uploadBase64Image = (base64Image) => {
-  const payload = {
-    image: base64Image,
-  };
-  return upload(payload);
-};
-
 // Nuevas funciones para Cloudinary
 export const uploadToCloudinary = async (file, folder = "viajes_app") => {
   return cloudinaryService.uploadImage(file, folder);

@@ -183,7 +183,7 @@ class CloudinaryService {
 
   /**
    * Procesa una imagen del backend para mostrarla correctamente
-   * Detecta si es Cloudinary, URL externa o base64 y devuelve la URL apropiada
+   * Detecta si es Cloudinary o URL externa y devuelve la URL apropiada
    * @param {Object} image - Objeto imagen del backend
    * @param {Object} options - Opciones de optimización
    * @returns {string} URL procesada
@@ -208,14 +208,6 @@ class CloudinaryService {
       if (contenido?.startsWith("http")) {
         return contenido;
       }
-    }
-
-    // Para contenido base64 (legacy)
-    if (tipo === "base64" && contenido) {
-      if (contenido.startsWith("data:")) {
-        return contenido;
-      }
-      return `data:image/jpeg;base64,${contenido}`;
     }
 
     // Fallback

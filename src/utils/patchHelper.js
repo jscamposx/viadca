@@ -80,16 +80,13 @@ export const preparePatchPayload = (originalPackage, currentFormData) => {
     payload.mayoristasIds = currentFormData.mayoristasIds || [];
   }
 
-
   const imageAnalysis = analyzeImageChanges(originalPackage, currentFormData);
   if (imageAnalysis.hasChanges) {
     console.log("🖼️ Cambios detectados en imágenes:", imageAnalysis);
 
     if (imageAnalysis.type === "ORDER_ONLY") {
-
       payload.imagenes = "PROCESS_IMAGES_ORDER_ONLY";
     } else {
-
       payload.imagenes = "PROCESS_IMAGES";
     }
   } else {
@@ -205,7 +202,6 @@ const buildDestinosPayload = (formData) => {
 };
 
 const hasMayoristasChanges = (original, current) => {
-
   if (!original && current.mayoristasIds && current.mayoristasIds.length > 0) {
     console.log("🆕 Nuevo paquete con mayoristas - considerado como cambio");
     return true;
@@ -263,7 +259,6 @@ const analyzeImageChanges = (original, current) => {
     })),
   });
 
-
   if (originalImages.length !== currentImages.length) {
     console.log("📈 Hay nuevas imágenes o se eliminaron");
     return {
@@ -273,7 +268,6 @@ const analyzeImageChanges = (original, current) => {
     };
   }
 
-
   if (originalImages.length === 0 && currentImages.length === 0) {
     console.log("✅ No hay imágenes en original ni current");
     return {
@@ -282,7 +276,6 @@ const analyzeImageChanges = (original, current) => {
       reason: "Sin imágenes",
     };
   }
-
 
   const allHaveOriginalContent = currentImages.every(
     (img) => img.originalContent,
@@ -310,7 +303,6 @@ const analyzeImageChanges = (original, current) => {
     }
   }
 
-
   const originalIds = originalImages.map((img) => img.id);
   const currentIds = currentImages.map((img) => img.id);
 
@@ -320,14 +312,11 @@ const analyzeImageChanges = (original, current) => {
     orderChanged: !isEqual(originalIds, currentIds),
   });
 
-
   const hasOrderChanges = !isEqual(originalIds, currentIds);
-
 
   let hasNewImages = false;
 
   const imageComparisons = currentImages.map((currImg, currentIndex) => {
-
     const isNewImageFlag = isNewImage(currImg);
 
     if (isNewImageFlag) {
@@ -348,7 +337,6 @@ const analyzeImageChanges = (original, current) => {
     };
   });
 
-
   if (hasNewImages) {
     console.log("🆕 Hay imágenes nuevas - se requiere actualización completa");
     console.log("📋 Ejemplo de payload completo:", {
@@ -356,8 +344,8 @@ const analyzeImageChanges = (original, current) => {
         { id: "uuid-existente-1", orden: 1 },
         {
           orden: 2,
-          tipo: "base64",
-          contenido: "data:image/jpeg;base64,/9j/4AAQ...",
+          tipo: "cloudinary",
+          contenido: "https://res.cloudinary.com/<cloud>/image/upload/...",
           mime_type: "image/jpeg",
           nombre: "nueva-imagen.jpg",
         },
@@ -387,7 +375,6 @@ const analyzeImageChanges = (original, current) => {
       details: { hasNewImages: false, hasOrderChanges: true },
     };
   }
-
 
   const hasContentChanges = imageComparisons.some(
     (comp) => comp.contentChanged,
@@ -459,6 +446,5 @@ export const formatPayloadForLogging = (payload) => {
 
   return formatted;
 };
-
 
 export { analyzeImageChanges };

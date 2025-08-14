@@ -8,13 +8,25 @@ const Logos = ({ logos }) => (
     role="region"
   >
     <div className="max-w-7xl mx-auto">
-      <h2 id="logos-heading" className="text-center text-xl sm:text-2xl font-semibold text-slate-800 mb-6">
+      <h2
+        id="logos-heading"
+        className="text-center text-xl sm:text-2xl font-semibold text-slate-800 mb-6"
+      >
         Socios y marcas colaboradoras
       </h2>
       <div className="relative overflow-hidden" aria-live="polite">
-        <div className="pointer-events-none absolute left-0 top-0 h-full w-32 bg-gradient-to-r from-white to-transparent z-10" aria-hidden="true" />
-        <div className="pointer-events-none absolute right-0 top-0 h-full w-32 bg-gradient-to-l from-white to-transparent z-10" aria-hidden="true" />
-        <ul className="flex w-max items-center gap-24 animate-logo-marquee opacity-90 hover:opacity-100 transition-opacity py-4 will-change-transform" role="list">
+        <div
+          className="pointer-events-none absolute left-0 top-0 h-full w-32 bg-gradient-to-r from-white to-transparent z-10"
+          aria-hidden="true"
+        />
+        <div
+          className="pointer-events-none absolute right-0 top-0 h-full w-32 bg-gradient-to-l from-white to-transparent z-10"
+          aria-hidden="true"
+        />
+        <ul
+          className="flex w-max items-center gap-24 animate-logo-marquee opacity-90 hover:opacity-100 transition-opacity py-4 will-change-transform"
+          role="list"
+        >
           {[...logos, ...logos].map((logo, idx) => (
             <li key={idx} className="shrink-0">
               <div

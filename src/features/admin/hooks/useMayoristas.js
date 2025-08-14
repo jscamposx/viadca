@@ -1,74 +1,75 @@
 import { useState, useEffect, useCallback } from "react";
 import api from "../../../api";
 
-// Caché y promesa en vuelo a nivel de módulo para deduplicar peticiones
+// Caché y promesa en curso a nivel de módulo para deduplicar peticiones
 let mayoristasCache = null; // Array | null
-let mayoristasInFlight = null; // Promise | null
+let mayoristasPending = null; // Promise | null
 
 export const useMayoristas = () => {
-  const [mayoristas, setMayoristas] = useState(Array.isArray(mayoristasCache) ? mayoristasCache : []);
+  const [mayoristas, setMayoristas] = useState(
+    Array.isArray(mayoristasCache) ? mayoristasCache : [],
+  );
   const [loading, setLoading] = useState(!Array.isArray(mayoristasCache));
   const [error, setError] = useState(null);
-  const [isInitialized, setIsInitialized] = useState(!!Array.isArray(mayoristasCache) && mayoristasCache.length >= 0);
+  const [isInitialized, setIsInitialized] = useState(
+    !!Array.isArray(mayoristasCache) && mayoristasCache.length >= 0,
+  );
 
-  const fetchMayoristas = useCallback(
-    async (force = false) => {
-      try {
-        setError(null);
+  const fetchMayoristas = useCallback(async (force = false) => {
+    try {
+      setError(null);
 
-        // Usar caché si existe y no es forzado
-        if (Array.isArray(mayoristasCache) && !force) {
-          setMayoristas(mayoristasCache);
-          setIsInitialized(true);
-          setLoading(false);
-          return mayoristasCache;
-        }
+      // Usar caché si existe y no es forzado
+      if (Array.isArray(mayoristasCache) && !force) {
+        setMayoristas(mayoristasCache);
+        setIsInitialized(true);
+        setLoading(false);
+        return mayoristasCache;
+      }
 
-        // Si hay una promesa en vuelo y no es forzado, esperar a que termine
-        if (mayoristasInFlight && !force) {
-          setLoading(true);
-          const data = await mayoristasInFlight;
-          setMayoristas(data);
-          setIsInitialized(true);
-          setLoading(false);
-          return data;
-        }
-
-        // Lanzar una nueva petición (y deduplicar concurrentes)
+      // Si hay una promesa en curso y no es forzado, esperar a que termine
+      if (mayoristasPending && !force) {
         setLoading(true);
-        if (import.meta.env.DEV) {
-          console.log("🔄 Cargando mayoristas desde API...");
-        }
-        mayoristasInFlight = api.mayoristas
-          .getMayoristas()
-          .then((response) => (Array.isArray(response.data) ? response.data : []))
-          .then((data) => {
-            mayoristasCache = data;
-            return data;
-          })
-          .finally(() => {
-            mayoristasInFlight = null;
-          });
-
-        const data = await mayoristasInFlight;
-        if (import.meta.env.DEV) {
-          console.log("✅ Mayoristas cargados:", { count: data?.length || 0 });
-        }
+        const data = await mayoristasPending;
         setMayoristas(data);
         setIsInitialized(true);
-        return data;
-      } catch (err) {
-        if (import.meta.env.DEV) {
-          console.error("❌ Error al cargar mayoristas:", err);
-        }
-        setError("Error al cargar los mayoristas");
-        throw err;
-      } finally {
         setLoading(false);
+        return data;
       }
-    },
-    [],
-  );
+
+      // Lanzar una nueva petición (y deduplicar concurrentes)
+      setLoading(true);
+      if (import.meta.env.DEV) {
+        console.log("🔄 Cargando mayoristas desde API...");
+      }
+      mayoristasPending = api.mayoristas
+        .getMayoristas()
+        .then((response) => (Array.isArray(response.data) ? response.data : []))
+        .then((data) => {
+          mayoristasCache = data;
+          return data;
+        })
+        .finally(() => {
+          mayoristasPending = null;
+        });
+
+      const data = await mayoristasPending;
+      if (import.meta.env.DEV) {
+        console.log("✅ Mayoristas cargados:", { count: data?.length || 0 });
+      }
+      setMayoristas(data);
+      setIsInitialized(true);
+      return data;
+    } catch (err) {
+      if (import.meta.env.DEV) {
+        console.error("❌ Error al cargar mayoristas:", err);
+      }
+      setError("Error al cargar los mayoristas");
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   const createMayorista = useCallback(async (mayoristaData) => {
     try {
@@ -112,11 +113,15 @@ export const useMayoristas = () => {
     try {
       const response = await api.mayoristas.updateMayorista(id, mayoristaData);
       setMayoristas((prev) =>
-        prev.map((mayorista) => (mayorista.id === id ? response.data : mayorista)),
+        prev.map((mayorista) =>
+          mayorista.id === id ? response.data : mayorista,
+        ),
       );
       // Actualizar caché global
       if (Array.isArray(mayoristasCache)) {
-        mayoristasCache = mayoristasCache.map((m) => (m.id === id ? response.data : m));
+        mayoristasCache = mayoristasCache.map((m) =>
+          m.id === id ? response.data : m,
+        );
       }
       return response.data;
     } catch (err) {

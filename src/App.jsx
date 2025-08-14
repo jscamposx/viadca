@@ -14,7 +14,6 @@ import AdminUsersPage from "./features/admin/pages/AdminUsersPage";
 import AdminProfilePage from "./features/admin/pages/AdminProfilePage";
 import AdminConfigPage from "./features/admin/pages/AdminConfigPage";
 
-
 import { AuthProvider } from "./contexts/AuthContext";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 import LoginPage from "./features/auth/pages/LoginPage";
@@ -24,7 +23,6 @@ import ForgotPasswordPage from "./features/auth/pages/ForgotPasswordPage";
 import ResetPasswordPage from "./features/auth/pages/ResetPasswordPage";
 import PendingApprovalPage from "./features/auth/pages/PendingApprovalPage";
 import ProtectedUserProfilePage from "./features/profile/pages/UserProfilePage";
-
 
 import PrivacyPage from "./features/legal/pages/PrivacyPage";
 import TermsPage from "./features/legal/pages/TermsPage";

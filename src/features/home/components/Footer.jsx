@@ -26,7 +26,10 @@ const Footer = ({ contactInfo, contactLoading, currentYear }) => (
         </div>
       </div>
 
-      <div className="absolute bottom-10 right-10 opacity-10" aria-hidden="true">
+      <div
+        className="absolute bottom-10 right-10 opacity-10"
+        aria-hidden="true"
+      >
         <div className="grid grid-cols-4 gap-3">
           {Array.from({ length: 16 }).map((_, i) => (
             <div
@@ -68,7 +71,9 @@ const Footer = ({ contactInfo, contactLoading, currentYear }) => (
     </div>
 
     <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <h2 id="footer-heading" className="sr-only">Información del pie de página</h2>
+      <h2 id="footer-heading" className="sr-only">
+        Información del pie de página
+      </h2>
       {/* Main Content */}
       <div className="grid lg:grid-cols-3 gap-12 lg:gap-16" role="presentation">
         {/* Brand Section */}
@@ -93,7 +98,11 @@ const Footer = ({ contactInfo, contactLoading, currentYear }) => (
           </div>
 
           {/* Quick Stats */}
-          <ul className="grid grid-cols-3 gap-4 py-4" role="list" aria-label="Estadísticas rápidas">
+          <ul
+            className="grid grid-cols-3 gap-4 py-4"
+            role="list"
+            aria-label="Estadísticas rápidas"
+          >
             <li className="text-center">
               <div className="text-2xl font-bold text-blue-700">200+</div>
               <div className="text-xs text-slate-700 uppercase tracking-wide">
@@ -207,7 +216,10 @@ const Footer = ({ contactInfo, contactLoading, currentYear }) => (
         <div className="lg:col-span-1 space-y-6">
           <div>
             <h3 className="text-lg font-bold text-slate-900 mb-6 flex items-center gap-2">
-              <div className="w-2 h-6 bg-gradient-to-b from-blue-600 to-orange-600 rounded-full" aria-hidden="true"></div>
+              <div
+                className="w-2 h-6 bg-gradient-to-b from-blue-600 to-orange-600 rounded-full"
+                aria-hidden="true"
+              ></div>
               Contacto
             </h3>
 
@@ -222,7 +234,10 @@ const Footer = ({ contactInfo, contactLoading, currentYear }) => (
               <div className="space-y-4">
                 {contactInfo.direccion && (
                   <div className="group flex items-start gap-4 p-3 rounded-lg hover:bg-white/60 transition-all duration-300">
-                    <div className="w-10 h-10 bg-blue-100 group-hover:bg-blue-200 rounded-lg flex items-center justify-center flex-shrink-0 transition-colors duration-300" aria-hidden="true">
+                    <div
+                      className="w-10 h-10 bg-blue-100 group-hover:bg-blue-200 rounded-lg flex items-center justify-center flex-shrink-0 transition-colors duration-300"
+                      aria-hidden="true"
+                    >
                       <svg
                         className="w-5 h-5 text-blue-700"
                         fill="none"
@@ -256,7 +271,10 @@ const Footer = ({ contactInfo, contactLoading, currentYear }) => (
 
                 {contactInfo.telefono && (
                   <div className="group flex items-start gap-4 p-3 rounded-lg hover:bg-white/60 transition-all duration-300">
-                    <div className="w-10 h-10 bg-green-100 group-hover:bg-green-200 rounded-lg flex items-center justify-center flex-shrink-0 transition-colors duration-300" aria-hidden="true">
+                    <div
+                      className="w-10 h-10 bg-green-100 group-hover:bg-green-200 rounded-lg flex items-center justify-center flex-shrink-0 transition-colors duration-300"
+                      aria-hidden="true"
+                    >
                       <svg
                         className="w-5 h-5 text-green-700"
                         fill="none"
@@ -287,7 +305,10 @@ const Footer = ({ contactInfo, contactLoading, currentYear }) => (
 
                 {contactInfo.whatsapp && (
                   <div className="group flex items-start gap-4 p-3 rounded-lg hover:bg-white/60 transition-all duration-300">
-                    <div className="w-10 h-10 bg-emerald-100 group-hover:bg-emerald-200 rounded-lg flex items-center justify-center flex-shrink-0 transition-colors duration-300" aria-hidden="true">
+                    <div
+                      className="w-10 h-10 bg-emerald-100 group-hover:bg-emerald-200 rounded-lg flex items-center justify-center flex-shrink-0 transition-colors duration-300"
+                      aria-hidden="true"
+                    >
                       <svg
                         className="w-5 h-5 text-emerald-700"
                         fill="currentColor"
@@ -314,7 +335,10 @@ const Footer = ({ contactInfo, contactLoading, currentYear }) => (
 
                 {contactInfo.email && (
                   <div className="group flex items-start gap-4 p-3 rounded-lg hover:bg-white/60 transition-all duration-300">
-                    <div className="w-10 h-10 bg-purple-100 group-hover:bg-purple-200 rounded-lg flex items-center justify-center flex-shrink-0 transition-colors duration-300" aria-hidden="true">
+                    <div
+                      className="w-10 h-10 bg-purple-100 group-hover:bg-purple-200 rounded-lg flex items-center justify-center flex-shrink-0 transition-colors duration-300"
+                      aria-hidden="true"
+                    >
                       <svg
                         className="w-5 h-5 text-purple-700"
                         fill="none"
@@ -345,7 +369,10 @@ const Footer = ({ contactInfo, contactLoading, currentYear }) => (
 
                 {contactInfo.horario && (
                   <div className="group flex items-start gap-4 p-3 rounded-lg hover:bg-white/60 transition-all duration-300">
-                    <div className="w-10 h-10 bg-orange-100 group-hover:bg-orange-200 rounded-lg flex items-center justify-center flex-shrink-0 transition-colors duration-300" aria-hidden="true">
+                    <div
+                      className="w-10 h-10 bg-orange-100 group-hover:bg-orange-200 rounded-lg flex items-center justify-center flex-shrink-0 transition-colors duration-300"
+                      aria-hidden="true"
+                    >
                       <svg
                         className="w-5 h-5 text-orange-700"
                         fill="none"
@@ -379,12 +406,18 @@ const Footer = ({ contactInfo, contactLoading, currentYear }) => (
         <div className="lg:col-span-1 space-y-6">
           <div>
             <h3 className="text-lg font-bold text-slate-900 mb-6 flex items-center gap-2">
-              <div className="w-2 h-6 bg-gradient-to-b from-blue-600 to-orange-600 rounded-full" aria-hidden="true"></div>
+              <div
+                className="w-2 h-6 bg-gradient-to-b from-blue-600 to-orange-600 rounded-full"
+                aria-hidden="true"
+              ></div>
               Ubicación
             </h3>
 
             <div className="relative group">
-              <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-orange-500 rounded-2xl blur opacity-25 group-hover:opacity-40 transition-opacity duration-300" aria-hidden="true"></div>
+              <div
+                className="absolute inset-0 bg-gradient-to-r from-blue-500 to-orange-500 rounded-2xl blur opacity-25 group-hover:opacity-40 transition-opacity duration-300"
+                aria-hidden="true"
+              ></div>
               <div className="relative bg-white rounded-2xl overflow-hidden shadow-xl border-4 border-white">
                 <div className="aspect-[4/3] w-full">
                   <iframe
@@ -435,21 +468,28 @@ const Footer = ({ contactInfo, contactLoading, currentYear }) => (
             </div>
           </div>
 
-          <nav className="flex flex-wrap items-center gap-4 text-sm" aria-label="Enlaces legales">
+          <nav
+            className="flex flex-wrap items-center gap-4 text-sm"
+            aria-label="Enlaces legales"
+          >
             <Link
               to="/privacidad"
               className="text-slate-700 hover:text-blue-700 transition-colors duration-300 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-600"
             >
               Privacidad
             </Link>
-            <span className="text-slate-400" aria-hidden="true">•</span>
+            <span className="text-slate-400" aria-hidden="true">
+              •
+            </span>
             <Link
               to="/terminos"
               className="text-slate-700 hover:text-blue-700 transition-colors duration-300 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-600"
             >
               Términos
             </Link>
-            <span className="text-slate-400" aria-hidden="true">•</span>
+            <span className="text-slate-400" aria-hidden="true">
+              •
+            </span>
             <Link
               to="/cookies"
               className="text-slate-700 hover:text-blue-700 transition-colors duration-300 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-600"

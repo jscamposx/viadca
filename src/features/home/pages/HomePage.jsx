@@ -92,9 +92,11 @@ const Home = () => {
         }
         // Calcular progreso de scroll (0-100)
         const doc = document.documentElement;
-        const scrollTop = window.scrollY || doc.scrollTop || document.body.scrollTop || 0;
-        const max = (doc.scrollHeight - window.innerHeight);
-        const pct = max > 0 ? Math.min(100, Math.max(0, (scrollTop / max) * 100)) : 0;
+        const scrollTop =
+          window.scrollY || doc.scrollTop || document.body.scrollTop || 0;
+        const max = doc.scrollHeight - window.innerHeight;
+        const pct =
+          max > 0 ? Math.min(100, Math.max(0, (scrollTop / max) * 100)) : 0;
         setScrollProgress(pct);
         ticking = false;
       });
@@ -307,7 +309,10 @@ const Home = () => {
       </a>
 
       {/* Barra de progreso de scroll superior */}
-      <div className="fixed top-0 left-0 right-0 h-0.5 z-[10000]" aria-hidden="true">
+      <div
+        className="fixed top-0 left-0 right-0 h-0.5 z-[10000]"
+        aria-hidden="true"
+      >
         <div
           className="h-full bg-gradient-to-r from-blue-500 via-indigo-500 to-cyan-500 transition-all duration-150"
           style={{ width: `${scrollProgress}%` }}
@@ -345,7 +350,13 @@ const Home = () => {
             </div>
             {/* Links centro */}
             <div className="hidden lg:flex items-center justify-center space-x-6 xl:space-x-8 flex-1 min-w-0 px-4">
-              {[{ id: "hero", label: "Inicio" }, { id: "servicios", label: "Servicios" }, { id: "destinos", label: "Destinos" }, { id: "pasos", label: "Cómo Reservar" }, { id: "testimonios", label: "Testimonios" }].map((link) => (
+              {[
+                { id: "hero", label: "Inicio" },
+                { id: "servicios", label: "Servicios" },
+                { id: "destinos", label: "Destinos" },
+                { id: "pasos", label: "Cómo Reservar" },
+                { id: "testimonios", label: "Testimonios" },
+              ].map((link) => (
                 <a
                   key={link.id}
                   href={`#${link.id}`}
@@ -376,7 +387,9 @@ const Home = () => {
                     aria-expanded={isUserMenuOpen}
                     aria-controls="user-menu"
                     aria-label={
-                      isUserMenuOpen ? "Cerrar menú de usuario" : "Abrir menú de usuario"
+                      isUserMenuOpen
+                        ? "Cerrar menú de usuario"
+                        : "Abrir menú de usuario"
                     }
                     type="button"
                     title="Menú de usuario"
@@ -395,14 +408,21 @@ const Home = () => {
                     </span>
                     <svg
                       className={`w-4 h-4 text-slate-500 transition-transform duration-300 ${
-                        isUserMenuOpen ? "rotate-180" : "group-hover:translate-y-0.5"
+                        isUserMenuOpen
+                          ? "rotate-180"
+                          : "group-hover:translate-y-0.5"
                       }`}
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
                       aria-hidden="true"
                     >
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M19 9l-7 7-7-7"
+                      />
                     </svg>
                   </button>
                   {isUserMenuOpen && (
@@ -413,10 +433,16 @@ const Home = () => {
                       aria-label="Menú de usuario"
                       style={{ willChange: "transform, opacity" }}
                     >
-                      <div className="h-1 w-full bg-gradient-to-r from-blue-500 via-indigo-500 to-cyan-500" aria-hidden="true" />
+                      <div
+                        className="h-1 w-full bg-gradient-to-r from-blue-500 via-indigo-500 to-cyan-500"
+                        aria-hidden="true"
+                      />
                       <div className="px-4 py-4">
                         <div className="flex items-center gap-3">
-                          <span className="relative inline-flex items-center justify-center w-11 h-11 rounded-full shadow-sm" aria-hidden="true">
+                          <span
+                            className="relative inline-flex items-center justify-center w-11 h-11 rounded-full shadow-sm"
+                            aria-hidden="true"
+                          >
                             <span className="absolute inset-0 rounded-full bg-gradient-to-tr from-blue-500 via-indigo-500 to-cyan-500 opacity-90" />
                             <span className="relative w-11 h-11 rounded-full bg-white flex items-center justify-center text-base font-bold text-blue-700">
                               {userInitial}
@@ -431,7 +457,10 @@ const Home = () => {
                             </p>
                           </div>
                           {isAdmin() && (
-                            <span className="ml-auto text-[11px] px-2 py-1 rounded-full bg-blue-600 text-white/95 tracking-wide font-semibold" aria-label="Rol administrador">
+                            <span
+                              className="ml-auto text-[11px] px-2 py-1 rounded-full bg-blue-600 text-white/95 tracking-wide font-semibold"
+                              aria-label="Rol administrador"
+                            >
                               ADMIN
                             </span>
                           )}
@@ -445,9 +474,25 @@ const Home = () => {
                             className="group flex items-center gap-3 rounded-xl px-3 py-2.5 text-slate-700 hover:text-blue-700 hover:bg-blue-50/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600/60 transition-all"
                             role="menuitem"
                           >
-                            <svg className="w-5 h-5 text-blue-600 group-hover:rotate-6 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                            <svg
+                              className="w-5 h-5 text-blue-600 group-hover:rotate-6 transition-transform"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                              aria-hidden="true"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
+                              />
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                              />
                             </svg>
                             <span className="font-medium">Dashboard</span>
                           </Link>
@@ -458,8 +503,19 @@ const Home = () => {
                           className="group flex items-center gap-3 rounded-xl px-3 py-2.5 text-slate-700 hover:text-blue-700 hover:bg-blue-50/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600/60 transition-all"
                           role="menuitem"
                         >
-                          <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                          <svg
+                            className="w-5 h-5 text-blue-600"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                            aria-hidden="true"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                            />
                           </svg>
                           <span className="font-medium">Mi Perfil</span>
                         </Link>
@@ -474,8 +530,19 @@ const Home = () => {
                           role="menuitem"
                           type="button"
                         >
-                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                          <svg
+                            className="w-5 h-5"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                            aria-hidden="true"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+                            />
                           </svg>
                           <span className="font-medium">Cerrar Sesión</span>
                         </button>

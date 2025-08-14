@@ -37,7 +37,10 @@ const Hero = () => {
                 </p>
               </div>
 
-              <h1 id="hero-heading" className="font-volkhov font-bold text-4xl sm:text-5xl lg:text-6xl xl:text-7xl leading-tight text-slate-800">
+              <h1
+                id="hero-heading"
+                className="font-volkhov font-bold text-4xl sm:text-5xl lg:text-6xl xl:text-7xl leading-tight text-slate-800"
+              >
                 <span className="block">Vive experiencias</span>
                 <span className="block bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
                   extraordinarias,

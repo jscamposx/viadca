@@ -22,14 +22,6 @@ const isUUID = (str) =>
     str,
   );
 
-const fileToBase64 = (file) =>
-  new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = () => resolve(reader.result);
-    reader.onerror = (error) => reject(error);
-  });
-
 export const usePackageForm = (initialPackageData = null) => {
   const navigate = useNavigate();
 
@@ -95,20 +87,11 @@ export const usePackageForm = (initialPackageData = null) => {
 
       const processedImages = (initialPackageData.imagenes || []).map(
         (img, index) => {
-          // Determinar si es contenido subido por usuario (que debería ir a Cloudinary)
-          const isUserUpload =
-            img.tipo === "cloudinary" ||
-            (img.contenido && img.contenido.includes("base64")) ||
-            (img.contenido && !img.contenido.startsWith("http"));
-
+          // Solo soportar Cloudinary y URLs externas
           let imageUrl;
-          if (isUserUpload && !img.contenido?.startsWith("http")) {
-            // Para contenido de usuario o base64 legacy
-            imageUrl = img.contenido?.startsWith("data:")
-              ? img.contenido
-              : `data:${img.mime_type || "image/jpeg"};base64,${img.contenido}`;
+          if (img.cloudinary_url) {
+            imageUrl = img.cloudinary_url;
           } else if (img.contenido?.startsWith("http")) {
-            // Para URLs externas
             imageUrl = img.contenido;
           } else {
             // Para rutas de archivos en el servidor
@@ -119,8 +102,8 @@ export const usePackageForm = (initialPackageData = null) => {
             id: img.id || `img-${index}`,
             url: imageUrl,
             orden: img.orden || index + 1,
-            tipo: img.tipo || (isUserUpload ? "cloudinary" : "url"),
-            isUploaded: img.tipo === "cloudinary" || isUserUpload,
+            tipo: img.tipo || (img.cloudinary_url ? "cloudinary" : "url"),
+            isUploaded: img.tipo === "cloudinary",
             file: null,
             // Preservar el contenido original para comparaciones
             originalContent: img.contenido,
@@ -624,7 +607,7 @@ export const usePackageForm = (initialPackageData = null) => {
         tipo: img.tipo || "indefinido",
         source: img.source || "sin source",
         isUploaded: img.isUploaded,
-        esUsuario: img.file || img.url?.startsWith("data:"),
+        esUsuario: !!img.file,
         tieneArchivo: !!img.file,
         tieneCloudinaryId: !!img.cloudinary_public_id,
         urlPreview: img.url?.substring(0, 50) + "...",
@@ -640,7 +623,7 @@ export const usePackageForm = (initialPackageData = null) => {
           isUploaded: img.isUploaded,
           hasFile: !!img.file,
           hasCloudinaryId: !!img.cloudinary_public_id,
-          isUserUpload: img.file || img.url?.startsWith("data:"),
+          isUserUpload: !!img.file,
         });
 
         // PRIORIDAD 1: Imágenes de Google Places - DIRECTO AL BACKEND
@@ -686,7 +669,7 @@ export const usePackageForm = (initialPackageData = null) => {
         }
 
         // PRIORIDAD 4: Imágenes subidas por el usuario - ENVIAR A CLOUDINARY
-        if (img.file || img.url?.startsWith("data:") || img.isUploaded) {
+        if (img.file || img.isUploaded) {
           console.log(`☁️ ✅ IMAGEN DE USUARIO - Enviar a Cloudinary`);
           return {
             orden: index + 1,
@@ -764,7 +747,7 @@ export const usePackageForm = (initialPackageData = null) => {
       // Procesar las nuevas imágenes de forma normal
       const newImagesPayload = await Promise.all(
         nonExistingImages.map(async (img, index) => {
-          if (img.url?.startsWith("data:image") || img.file) {
+          if (img.file) {
             // Imágenes subidas por el usuario van a Cloudinary
             console.log(
               `☁️ Nueva imagen de usuario ${index + 1} - A Cloudinary`,
@@ -829,7 +812,7 @@ export const usePackageForm = (initialPackageData = null) => {
           tipo: img.tipo,
           hasFile: !!img.file,
           contenido: img.contenido?.substring(0, 50) + "...",
-          isUserUpload: img.file || img.contenido?.startsWith("data:"),
+          isUserUpload: !!img.file,
         });
 
         // PRIORIDAD 1: Imágenes de Google Places
@@ -845,7 +828,7 @@ export const usePackageForm = (initialPackageData = null) => {
         }
 
         // PRIORIDAD 2: Imágenes subidas por el usuario - VAN A CLOUDINARY
-        if (img.file || (img.contenido && img.contenido.startsWith("data:"))) {
+        if (img.file) {
           console.log(`☁️ Hotel imagen de usuario - A Cloudinary`);
           return {
             orden: index + 1,

@@ -5,12 +5,8 @@ const ImagesSummary = ({ images = [] }) => {
     return null;
   }
 
-  const uploadedImages = images.filter(
-    (img) => img.isUploaded || img.tipo === "base64",
-  );
-  const urlImages = images.filter(
-    (img) => !img.isUploaded && img.tipo !== "base64",
-  );
+  const uploadedImages = images.filter((img) => img.isUploaded);
+  const urlImages = images.filter((img) => !img.isUploaded);
 
   return (
     <div className="bg-slate-50 border border-slate-200 rounded-xl p-4">
@@ -34,7 +30,7 @@ const ImagesSummary = ({ images = [] }) => {
                 {uploadedImages.length !== 1 ? "s" : ""}
               </div>
               <div className="text-xs text-green-600">
-                Se enviarán como archivos base64
+                Se enviarán como archivos subidos
               </div>
             </div>
           </div>

@@ -834,7 +834,7 @@ const AdminUsersPage = () => {
 
               <button
                 onClick={() => {
-                	setRoleFilter("usuario");
+                  setRoleFilter("usuario");
                   setVerificationFilter("todos");
                   setIsFiltersOpen(false);
                 }}
@@ -1083,7 +1083,7 @@ const AdminUsersPage = () => {
         </Suspense>
       </div>
     </div>
-  ) ;
+  );
 };
 
 export default AdminUsersPage;

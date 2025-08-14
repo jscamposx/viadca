@@ -57,7 +57,11 @@ export const useUsers = () => {
     }
 
     // Respaldo: reutilizar promesa en vuelo por instancia si coincide la key y no es forzado
-    if (!force && inFlightUsersRef.current && inFlightUsersKeyRef.current === key) {
+    if (
+      !force &&
+      inFlightUsersRef.current &&
+      inFlightUsersKeyRef.current === key
+    ) {
       try {
         const data = await inFlightUsersRef.current;
         setUsers(data);
@@ -187,7 +191,9 @@ export const useUsers = () => {
 
       // Actualizar en la lista local
       setUsers((prevUsers) =>
-        prevUsers.map((user) => (user.id === id ? { ...user, rol: role } : user)),
+        prevUsers.map((user) =>
+          user.id === id ? { ...user, rol: role } : user,
+        ),
       );
       // Actualizar caché global
       if (Array.isArray(usersCache)) {
@@ -222,7 +228,10 @@ export const useUsers = () => {
       setUsers((prevUsers) => prevUsers.filter((user) => user.id !== id));
       // Remover de la caché global
       if (Array.isArray(usersCache)) {
-        setCacheUsers(usersCache.filter((u) => u.id !== id), usersCacheKey);
+        setCacheUsers(
+          usersCache.filter((u) => u.id !== id),
+          usersCacheKey,
+        );
       }
       // Invalidar estadísticas
       clearStatsCache();

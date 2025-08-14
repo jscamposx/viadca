@@ -58,12 +58,16 @@ export function useFetch(apiFunc, params = []) {
         const response = await promise;
         if (mountedRef.current) {
           // Compatibilidad: si apiFunc ya devuelve .data, usa eso; si no, intenta response.data
-          const payload = response?.data !== undefined ? response.data : response;
+          const payload =
+            response?.data !== undefined ? response.data : response;
           setData(payload);
         }
       } catch (err) {
         if (mountedRef.current) {
-          const msg = err?.message || err?.response?.data?.message || "Ocurrió un error al obtener los datos.";
+          const msg =
+            err?.message ||
+            err?.response?.data?.message ||
+            "Ocurrió un error al obtener los datos.";
           setError(msg);
         }
       } finally {

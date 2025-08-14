@@ -31,11 +31,9 @@ export const useContactInfo = () => {
 
         // Reutilizar promesa en vuelo para evitar duplicados
         if (!inFlightRef.current) {
-          inFlightRef.current = contactService
-            .getContacto()
-            .finally(() => {
-              inFlightRef.current = null;
-            });
+          inFlightRef.current = contactService.getContacto().finally(() => {
+            inFlightRef.current = null;
+          });
         }
         const data = await inFlightRef.current;
 

@@ -116,17 +116,23 @@ export const usePapelera = () => {
       if (itemType === "paquete") {
         setPaquetesEliminados((prev) => prev.filter((p) => p.id !== itemId));
         if (Array.isArray(trashCache.paquetes)) {
-          trashCache.paquetes = trashCache.paquetes.filter((p) => p.id !== itemId);
+          trashCache.paquetes = trashCache.paquetes.filter(
+            (p) => p.id !== itemId,
+          );
         }
       } else if (itemType === "mayorista") {
         setMayoristasEliminados((prev) => prev.filter((m) => m.id !== itemId));
         if (Array.isArray(trashCache.mayoristas)) {
-          trashCache.mayoristas = trashCache.mayoristas.filter((m) => m.id !== itemId);
+          trashCache.mayoristas = trashCache.mayoristas.filter(
+            (m) => m.id !== itemId,
+          );
         }
       } else if (itemType === "usuario") {
         setUsuariosEliminados((prev) => prev.filter((u) => u.id !== itemId));
         if (Array.isArray(trashCache.usuarios)) {
-          trashCache.usuarios = trashCache.usuarios.filter((u) => u.id !== itemId);
+          trashCache.usuarios = trashCache.usuarios.filter(
+            (u) => u.id !== itemId,
+          );
         }
       }
 
@@ -154,17 +160,23 @@ export const usePapelera = () => {
       if (itemType === "paquete") {
         setPaquetesEliminados((prev) => prev.filter((p) => p.id !== itemId));
         if (Array.isArray(trashCache.paquetes)) {
-          trashCache.paquetes = trashCache.paquetes.filter((p) => p.id !== itemId);
+          trashCache.paquetes = trashCache.paquetes.filter(
+            (p) => p.id !== itemId,
+          );
         }
       } else if (itemType === "mayorista") {
         setMayoristasEliminados((prev) => prev.filter((m) => m.id !== itemId));
         if (Array.isArray(trashCache.mayoristas)) {
-          trashCache.mayoristas = trashCache.mayoristas.filter((m) => m.id !== itemId);
+          trashCache.mayoristas = trashCache.mayoristas.filter(
+            (m) => m.id !== itemId,
+          );
         }
       } else if (itemType === "usuario") {
         setUsuariosEliminados((prev) => prev.filter((u) => u.id !== itemId));
         if (Array.isArray(trashCache.usuarios)) {
-          trashCache.usuarios = trashCache.usuarios.filter((u) => u.id !== itemId);
+          trashCache.usuarios = trashCache.usuarios.filter(
+            (u) => u.id !== itemId,
+          );
         }
       }
 

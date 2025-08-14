@@ -1,9 +1,7 @@
-
 export const sanitizeMoneda = (moneda) => {
   if (moneda === "USD" || moneda === "MXN") return moneda;
   return "MXN";
 };
-
 
 export const formatPrecio = (valor, moneda) => {
   if (valor === null || valor === undefined || valor === "") return "";
