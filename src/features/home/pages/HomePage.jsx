@@ -411,11 +411,7 @@ const Home = () => {
             isMobileMenuOpen ? 'max-h-screen opacity-100' : 'max-h-0 opacity-0'
           }`}
         >
-          <div className={`backdrop-blur-md border-t transition-all duration-300 ${
-            isScrolled 
-              ? 'bg-white/98 border-blue-100/50' 
-              : 'bg-gradient-to-br from-blue-50/98 to-orange-50/98 border-white/30'
-          }`}>
+          <div className={`backdrop-blur-md border-t bg-white/98 border-blue-100/50 transition-all duration-300`}>
             <div className="px-4 py-6 space-y-2">
               {/* Enlaces de navegación mejorados para mobile */}
               <div className="space-y-1">
