@@ -306,6 +306,7 @@ const Home = () => {
           className={`flex items-center justify-between max-w-7xl mx-auto transition-[padding] duration-300 ${
             isScrolled ? "py-2.5" : "py-4 sm:py-6"
           }`}
+          aria-label="Navegación principal"
         >
           <div className="flex items-center w-full">
             {/* Logo - Optimizado para mobile */}
@@ -336,6 +337,7 @@ const Home = () => {
                       ? "text-blue-600 after:w-full after:bg-blue-600"
                       : "text-slate-700 hover:text-blue-600 after:w-0 after:bg-blue-600 hover:after:w-full"
                   }`}
+                  aria-current={activeSection === link.id ? "true" : undefined}
                 >
                   {link.label}
                 </a>
@@ -348,8 +350,12 @@ const Home = () => {
                   <button
                     onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
                     className="flex items-center space-x-2 text-slate-700 hover:text-blue-600 transition-all duration-300 font-medium hover:scale-105 p-2 rounded-lg hover:bg-blue-50"
+                    aria-haspopup="menu"
+                    aria-expanded={isUserMenuOpen}
+                    aria-controls="user-menu"
+                    type="button"
                   >
-                    <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white text-sm font-bold">
+                    <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white text-sm font-bold" aria-hidden="true">
                       {userInitial}
                     </div>
                     <span>{displayName}</span>
@@ -358,6 +364,7 @@ const Home = () => {
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
+                      aria-hidden="true"
                     >
                       <path
                         strokeLinecap="round"
@@ -368,10 +375,10 @@ const Home = () => {
                     </svg>
                   </button>
                   {isUserMenuOpen && (
-                    <div className="absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-xl border border-blue-100 py-2 z-50">
+                    <div className="absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-xl border border-blue-100 py-2 z-50" id="user-menu" role="menu" aria-label="Menú de usuario">
                       <div className="px-4 py-3 border-b border-blue-100">
                         <div className="flex items-center space-x-3">
-                          <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center text-white text-sm font-bold">
+                          <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center text-white text-sm font-bold" aria-hidden="true">
                             {userInitial}
                           </div>
                           <div>
@@ -390,6 +397,7 @@ const Home = () => {
                             to="/admin"
                             onClick={closeUserMenu}
                             className="block px-4 py-2 text-slate-700 hover:bg-blue-50 hover:text-blue-600 transition-colors duration-300"
+                            role="menuitem"
                           >
                             Dashboard
                           </Link>
@@ -398,6 +406,7 @@ const Home = () => {
                           to="/profile"
                           onClick={closeUserMenu}
                           className="block px-4 py-2 text-slate-700 hover:bg-blue-50 hover:text-blue-600 transition-colors duration-300"
+                          role="menuitem"
                         >
                           Mi Perfil
                         </Link>
@@ -405,6 +414,8 @@ const Home = () => {
                         <button
                           onClick={handleLogout}
                           className="w-full text-left px-4 py-2 text-slate-700 hover:bg-red-50 hover:text-red-600 transition-colors duration-300"
+                          role="menuitem"
+                          type="button"
                         >
                           Cerrar Sesión
                         </button>
@@ -442,6 +453,7 @@ const Home = () => {
                 aria-label={isMobileMenuOpen ? "Cerrar menú" : "Abrir menú"}
                 aria-expanded={isMobileMenuOpen}
                 aria-controls="mobile-menu"
+                type="button"
               >
                 <div className="relative w-7 h-7" aria-hidden="true">
                   <span
@@ -500,6 +512,7 @@ const Home = () => {
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
+                        aria-hidden="true"
                       >
                         <path
                           strokeLinecap="round"
@@ -519,6 +532,7 @@ const Home = () => {
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
+                        aria-hidden="true"
                       >
                         <path
                           strokeLinecap="round"
@@ -538,6 +552,7 @@ const Home = () => {
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
+                        aria-hidden="true"
                       >
                         <path
                           strokeLinecap="round"
@@ -557,6 +572,7 @@ const Home = () => {
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
+                        aria-hidden="true"
                       >
                         <path
                           strokeLinecap="round"
@@ -576,6 +592,7 @@ const Home = () => {
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
+                        aria-hidden="true"
                       >
                         <path
                           strokeLinecap="round"
@@ -602,11 +619,12 @@ const Home = () => {
                         ? "slideInFromLeft 0.3s ease-out forwards"
                         : "none",
                     }}
+                    aria-current={activeSection === link.id ? "true" : undefined}
                   >
                     {link.icon}
                     <span className="font-medium">{link.label}</span>
                     {activeSection === link.id && (
-                      <div className="ml-auto w-2 h-2 bg-blue-600 rounded-full animate-pulse"></div>
+                      <div className="ml-auto w-2 h-2 bg-blue-600 rounded-full animate-pulse" aria-hidden="true"></div>
                     )}
                   </a>
                 ))}
@@ -621,9 +639,9 @@ const Home = () => {
                 {isAuthenticated() ? (
                   // Usuario autenticado en móvil - Rediseñado
                   <>
-                    <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-4 rounded-xl border border-blue-200 shadow-sm">
+                    <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-4 rounded-xl border border-blue-200 shadow-sm" aria-label="Información rápida de usuario" role="group">
                       <div className="flex items-center space-x-3">
-                        <div className="w-12 h-12 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full flex items-center justify-center text-white text-lg font-bold shadow-md">
+                        <div className="w-12 h-12 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full flex items-center justify-center text-white text-lg font-bold shadow-md" aria-hidden="true">
                           {userInitial}
                         </div>
                         <div className="flex-1 min-w-0">
@@ -634,7 +652,7 @@ const Home = () => {
                             {displayEmail || "Sin email"}
                           </p>
                         </div>
-                        <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
+                        <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse" aria-hidden="true"></div>
                       </div>
                     </div>
 
@@ -650,6 +668,7 @@ const Home = () => {
                             fill="none"
                             stroke="currentColor"
                             viewBox="0 0 24 24"
+                            aria-hidden="true"
                           >
                             <path
                               strokeLinecap="round"
@@ -677,6 +696,7 @@ const Home = () => {
                           fill="none"
                           stroke="currentColor"
                           viewBox="0 0 24 24"
+                          aria-hidden="true"
                         >
                           <path
                             strokeLinecap="round"
@@ -693,12 +713,14 @@ const Home = () => {
                           closeMobileMenu();
                         }}
                         className="flex items-center gap-3 w-full text-left text-red-600 hover:text-red-700 hover:bg-red-50 transition-all duration-300 py-3 px-4 rounded-xl font-medium transform hover:scale-[1.02]"
+                        type="button"
                       >
                         <svg
                           className="w-5 h-5"
                           fill="none"
                           stroke="currentColor"
                           viewBox="0 0 24 24"
+                          aria-hidden="true"
                         >
                           <path
                             strokeLinecap="round"
@@ -724,6 +746,7 @@ const Home = () => {
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
+                        aria-hidden="true"
                       >
                         <path
                           strokeLinecap="round"
@@ -744,6 +767,7 @@ const Home = () => {
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
+                        aria-hidden="true"
                       >
                         <path
                           strokeLinecap="round"

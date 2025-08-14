@@ -1,7 +1,7 @@
 import React from "react";
 
 const Testimonials = () => (
-  <section id="testimonios" className="py-20 px-4 sm:px-6 lg:px-8 scroll-mt-32">
+  <section id="testimonios" className="py-20 px-4 sm:px-6 lg:px-8 scroll-mt-32" aria-labelledby="testimonios-heading">
     <div className="max-w-7xl mx-auto">
       <div className="grid lg:grid-cols-2 gap-16 items-center">
         {/* Left Content */}
@@ -10,13 +10,13 @@ const Testimonials = () => (
             Testimonios
           </p>
 
-          <h2 className="font-volkhov font-bold text-5xl text-secondary leading-tight">
+          <h2 id="testimonios-heading" className="font-volkhov font-bold text-5xl text-secondary leading-tight">
             Lo que dicen nuestros
             <br />
             viajeros satisfechos
           </h2>
 
-          <div className="flex space-x-4">
+          <div className="flex space-x-4" aria-hidden="true">
             <div className="w-4 h-4 bg-secondary rounded-full"></div>
             <div className="w-4 h-4 bg-light-gray rounded-full"></div>
             <div className="w-4 h-4 bg-light-gray rounded-full"></div>
@@ -24,7 +24,7 @@ const Testimonials = () => (
         </div>
 
         {/* Right Content - Testimonials */}
-        <div className="relative">
+        <div className="relative" role="region" aria-label="Carrusel de testimonios">
           {/* Main Testimonial */}
           <div className="bg-white rounded-xl p-8 shadow-custom relative z-10">
             <img
@@ -66,12 +66,13 @@ const Testimonials = () => (
 
           {/* Navigation Arrows */}
           <div className="absolute right-0 top-1/2 transform -translate-y-1/2 space-y-4">
-            <button className="w-8 h-8 flex items-center justify-center">
+            <button className="w-8 h-8 flex items-center justify-center" type="button" aria-label="Testimonio anterior">
               <svg
                 className="w-4 h-4 text-gray-400"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
+                aria-hidden="true"
               >
                 <path
                   strokeLinecap="round"
@@ -81,12 +82,13 @@ const Testimonials = () => (
                 />
               </svg>
             </button>
-            <button className="w-8 h-8 flex items-center justify-center">
+            <button className="w-8 h-8 flex items-center justify-center" type="button" aria-label="Siguiente testimonio">
               <svg
                 className="w-4 h-4 text-secondary"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
+                aria-hidden="true"
               >
                 <path
                   strokeLinecap="round"

@@ -110,7 +110,7 @@ const ForgotPasswordPage = () => {
 
         {/* Contenido principal */}
         <div className="flex-1 flex items-center justify-center min-h-[calc(100vh-80px)] md:min-h-0">
-          <div className="w-full max-w-md p-4 md:p-6">
+          <div className="w-full max-w-md sm:max-w-lg md:max-w-xl p-4 md:p-6 lg:p-8">
             {/* Cabecera para móvil */}
             <div className="md:hidden mb-6 text-center">
               <div className="flex justify-center mb-4">
@@ -136,7 +136,7 @@ const ForgotPasswordPage = () => {
             </div>
 
             {/* Contenedor del formulario con altura adaptable */}
-            <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
+            <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-green-200">
               <div className="p-6 md:p-8">
                 {/* Título para escritorio */}
                 <div className="hidden md:block mb-8">
@@ -147,7 +147,7 @@ const ForgotPasswordPage = () => {
                 </div>
 
                 {/* Mensaje */}
-                <div className="p-4 rounded-xl mb-6 flex items-start gap-3 bg-green-50 border border-green-200 text-green-700">
+                <div className="p-4 rounded-xl mb-6 flex items-start gap-3 bg-green-50 border border-green-200 text-green-700" role="alert" aria-live="polite">
                   <FiCheckCircle className="w-5 h-5 flex-shrink-0 mt-0.5" />
                   <span className="text-sm font-medium">{message}</span>
                 </div>
@@ -255,7 +255,7 @@ const ForgotPasswordPage = () => {
 
         {/* Contenido principal */}
         <div className="flex-1 flex items-center justify-center min-h-[calc(100vh-80px)] md:min-h-0">
-          <div className="w-full max-w-md p-4 md:p-6">
+          <div className="w-full max-w-md sm:max-w-lg md:max-w-xl p-4 md:p-6 lg:p-8">
             {/* Cabecera para móvil */}
             <div className="md:hidden mb-6 text-center">
               <div className="flex justify-center mb-4">
@@ -281,7 +281,7 @@ const ForgotPasswordPage = () => {
             </div>
 
             {/* Contenedor del formulario con altura adaptable */}
-            <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
+            <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100">
               <div className="p-6 md:p-8">
                 {/* Título para escritorio */}
                 <div className="hidden md:block mb-8">
@@ -295,7 +295,7 @@ const ForgotPasswordPage = () => {
 
                 {/* Mensaje de error */}
                 {error && (
-                  <div className="p-4 rounded-xl mb-6 flex items-start gap-3 bg-red-50 border border-red-200 text-red-700">
+                  <div className="p-4 rounded-xl mb-6 flex items-start gap-3 bg-red-50 border border-red-200 text-red-700" role="alert" aria-live="assertive">
                     <FiAlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5" />
                     <span className="text-sm font-medium">{error}</span>
                   </div>
@@ -304,7 +304,7 @@ const ForgotPasswordPage = () => {
                 <form onSubmit={handleSubmit} className="space-y-6">
                   {/* Campo Email */}
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
                       Email
                     </label>
                     <div className="relative">
@@ -312,6 +312,7 @@ const ForgotPasswordPage = () => {
                         <FiMail className="w-5 h-5" />
                       </div>
                       <input
+                        id="email"
                         type="email"
                         value={email}
                         onChange={handleEmailChange}
@@ -323,20 +324,29 @@ const ForgotPasswordPage = () => {
                         placeholder="usuario@ejemplo.com"
                         disabled={isLoading}
                         required
+                        aria-invalid={Boolean(error)}
+                        aria-describedby={error ? "email-error" : undefined}
                       />
                     </div>
+                    {error && (
+                      <p id="email-error" className="text-red-600 text-sm mt-2 flex items-center gap-2">
+                        <FiAlertCircle className="w-4 h-4" />
+                        {error}
+                      </p>
+                    )}
                   </div>
 
                   {/* Botón de Envío */}
                   <button
                     type="submit"
                     disabled={isLoading}
+                    aria-busy={isLoading}
                     className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-medium py-3.5 px-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-0.5 disabled:opacity-70 disabled:cursor-not-allowed disabled:transform-none group"
                   >
                     <div className="flex items-center justify-center gap-3">
                       {isLoading ? (
                         <>
-                          <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                          <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" aria-hidden="true"></div>
                           <span>Enviando...</span>
                         </>
                       ) : (
@@ -382,19 +392,19 @@ const ForgotPasswordPage = () => {
                   </h3>
                   <ul className="text-sm text-gray-600 space-y-1">
                     <li className="flex items-start gap-2">
-                      <span className="inline-block w-5 h-5 bg-indigo-100 rounded-full flex items-center justify-center flex-shrink-0">
+                      <span className="inline-flex w-5 h-5 bg-indigo-100 rounded-full items-center justify-center flex-shrink-0">
                         <span className="w-1.5 h-1.5 bg-indigo-600 rounded-full"></span>
                       </span>
                       <span>Recibirás un email con un enlace seguro</span>
                     </li>
                     <li className="flex items-start gap-2">
-                      <span className="inline-block w-5 h-5 bg-indigo-100 rounded-full flex items-center justify-center flex-shrink-0">
+                      <span className="inline-flex w-5 h-5 bg-indigo-100 rounded-full items-center justify-center flex-shrink-0">
                         <span className="w-1.5 h-1.5 bg-indigo-600 rounded-full"></span>
                       </span>
                       <span>El enlace es válido por 1 hora</span>
                     </li>
                     <li className="flex items-start gap-2">
-                      <span className="inline-block w-5 h-5 bg-indigo-100 rounded-full flex items-center justify-center flex-shrink-0">
+                      <span className="inline-flex w-5 h-5 bg-indigo-100 rounded-full items-center justify-center flex-shrink-0">
                         <span className="w-1.5 h-1.5 bg-indigo-600 rounded-full"></span>
                       </span>
                       <span>Podrás crear una nueva contraseña</span>

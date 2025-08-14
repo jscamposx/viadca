@@ -4,14 +4,20 @@ const Hero = () => {
   return (
     <section
       id="hero"
-      className="relative min-h-[100svh] bg-gradient-to-br from-blue-50 to-orange-50 scroll-mt-32"
+      className="relative min-h-[100svh] md:min-h-[78svh] lg:min-h-[100svh] bg-gradient-to-br from-blue-50 to-orange-50 scroll-mt-32"
     >
       {/* Fondo superior SOLO mobile: transparente */}
       {/* (El degradado se eliminó para dejar el fondo completamente transparente en mobile) */}
 
       {/* Background Decorations */}
-      <div className="absolute top-0 right-0 w-1/2 h-full bg-hero-pattern bg-no-repeat bg-right-top opacity-20 pointer-events-none"></div>
-      <div className="absolute top-20 left-1/2 -translate-x-1/2 w-72 h-72 sm:w-80 sm:h-80 bg-blue-200 rounded-full opacity-30 md:opacity-25 lg:left-20 lg:translate-x-0 lg:w-96 lg:h-96"></div>
+      <div
+        className="absolute top-0 right-0 w-1/2 h-full bg-hero-pattern bg-no-repeat bg-right-top opacity-20 pointer-events-none"
+        aria-hidden="true"
+      ></div>
+      <div
+        className="absolute top-20 left-1/2 -translate-x-1/2 w-72 h-72 sm:w-80 sm:h-80 bg-blue-200 rounded-full opacity-30 md:opacity-25 lg:left-20 lg:translate-x-0 lg:w-96 lg:h-96"
+        aria-hidden="true"
+      ></div>
 
       {/* Hero Content - Optimizado para mobile */}
       <div className="relative z-10 px-4 sm:px-6 lg:px-8 pt-5 sm:pt-16 md:pt-12 lg:pt-32 pb-8 lg:pb-16">
@@ -52,6 +58,7 @@ const Hero = () => {
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
+                    aria-hidden="true"
                   >
                     <path
                       strokeLinecap="round"
@@ -68,6 +75,7 @@ const Hero = () => {
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
+                    aria-hidden="true"
                   >
                     <path
                       strokeLinecap="round"
@@ -105,13 +113,16 @@ const Hero = () => {
             <div className="relative order-first md:order-last">
               <div className="relative rounded-3xl overflow-hidden shadow-none border-0">
                 <img
-                  src="https://codia-f2c.s3.us-west-1.amazonaws.com/image/2025-08-12/1pyELBTywW.png"
+                  src="/HomePage/Hero-Image.avif"
                   alt="Viajero explorando destinos increíbles"
                   className="w-full h-auto sm:h-80 md:h-[24rem] lg:h-auto max-h-[70vh] md:max-h-[60vh] object-contain object-center sm:object-contain md:object-contain border-0 shadow-none ring-0 outline-none mx-auto"
                 />
 
                 {/* Overlay gradient para mobile (transparente) */}
-                <div className="absolute inset-0 bg-transparent lg:hidden pointer-events-none"></div>
+                <div
+                  className="absolute inset-0 bg-transparent lg:hidden pointer-events-none"
+                  aria-hidden="true"
+                ></div>
               </div>
 
               {/* Stats móviles - Tarjetas flotantes */}

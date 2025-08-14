@@ -233,7 +233,7 @@ const RegisterPage = () => {
 
         {/* Contenido principal - Optimizado para desktop */}
         <div className="flex-1 flex items-center justify-center min-h-[calc(100vh-80px)] md:min-h-0">
-          <div className="w-full max-w-3xl p-4 md:p-6">
+          <div className="w-full max-w-3xl sm:max-w-2xl md:max-w-3xl lg:max-w-4xl p-4 md:p-6 lg:p-8">
             {/* Cabecera para móvil */}
             <div className="md:hidden mb-6 text-center">
               <div className="flex justify-center mb-4">
@@ -274,6 +274,8 @@ const RegisterPage = () => {
                 {/* Mensaje de estado */}
                 {message && (
                   <div
+                    role="alert"
+                    aria-live="polite"
                     className={`p-4 rounded-xl mb-6 flex items-start gap-3 animate-fade-in ${
                       isSuccessMessage
                         ? "bg-green-50 border border-green-200 text-green-700"
@@ -291,18 +293,19 @@ const RegisterPage = () => {
 
                 <form onSubmit={handleSubmit} className="space-y-5">
                   {/* Campos en grid de 2 columnas para desktop */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                     {/* Columna izquierda */}
                     <div className="space-y-5">
                       {/* Campo Usuario */}
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <label htmlFor="usuario" className="block text-sm font-medium text-gray-700 mb-2">
                           <div className="flex items-center gap-2">
                             <FiUser className="w-4 h-4 text-indigo-600" />
                             <span>Usuario</span>
                           </div>
                         </label>
                         <input
+                          id="usuario"
                           type="text"
                           name="usuario"
                           value={formData.usuario}
@@ -314,9 +317,11 @@ const RegisterPage = () => {
                           }`}
                           placeholder="Ej: juan_perez"
                           disabled={isLoading}
+                          aria-invalid={Boolean(errors.usuario)}
+                          aria-describedby={errors.usuario ? "usuario-error" : undefined}
                         />
                         {errors.usuario && (
-                          <p className="text-red-600 text-sm mt-2 flex items-center gap-2">
+                          <p id="usuario-error" className="text-red-600 text-sm mt-2 flex items-center gap-2">
                             <FiAlertCircle className="w-4 h-4" />
                             {errors.usuario}
                           </p>
@@ -325,13 +330,14 @@ const RegisterPage = () => {
 
                       {/* Campo Email */}
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <label htmlFor="correo" className="block text-sm font-medium text-gray-700 mb-2">
                           <div className="flex items-center gap-2">
                             <FiMail className="w-4 h-4 text-indigo-600" />
                             <span>Email</span>
                           </div>
                         </label>
                         <input
+                          id="correo"
                           type="email"
                           name="correo"
                           value={formData.correo}
@@ -343,9 +349,11 @@ const RegisterPage = () => {
                           }`}
                           placeholder="tu@email.com"
                           disabled={isLoading}
+                          aria-invalid={Boolean(errors.correo)}
+                          aria-describedby={errors.correo ? "correo-error" : undefined}
                         />
                         {errors.correo && (
-                          <p className="text-red-600 text-sm mt-2 flex items-center gap-2">
+                          <p id="correo-error" className="text-red-600 text-sm mt-2 flex items-center gap-2">
                             <FiAlertCircle className="w-4 h-4" />
                             {errors.correo}
                           </p>
@@ -357,7 +365,7 @@ const RegisterPage = () => {
                     <div className="space-y-5">
                       {/* Campo Contraseña */}
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <label htmlFor="contrasena" className="block text-sm font-medium text-gray-700 mb-2">
                           <div className="flex items-center gap-2">
                             <FiLock className="w-4 h-4 text-indigo-600" />
                             <span>Contraseña</span>
@@ -365,6 +373,7 @@ const RegisterPage = () => {
                         </label>
                         <div className="relative">
                           <input
+                            id="contrasena"
                             type={showPassword ? "text" : "password"}
                             name="contrasena"
                             value={formData.contrasena}
@@ -376,12 +385,15 @@ const RegisterPage = () => {
                             }`}
                             placeholder="Mínimo 6 caracteres"
                             disabled={isLoading}
+                            aria-invalid={Boolean(errors.contrasena)}
+                            aria-describedby={errors.contrasena ? "contrasena-error" : undefined}
                           />
                           <button
                             type="button"
                             onClick={() => setShowPassword(!showPassword)}
                             className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
                             disabled={isLoading}
+                            aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
                           >
                             {showPassword ? (
                               <FiEyeOff className="w-5 h-5" />
@@ -393,8 +405,8 @@ const RegisterPage = () => {
 
                         {/* Indicador de fuerza de contraseña */}
                         {formData.contrasena && (
-                          <div className="mt-2">
-                            <div className="w-full bg-gray-200 rounded-full h-1.5 mb-1">
+                          <div className="mt-2" aria-live="polite">
+                            <div className="w-full bg-gray-200 rounded-full h-1.5 mb-1" aria-hidden="true">
                               <div
                                 className={`h-1.5 rounded-full ${getPasswordStrengthColor()}`}
                                 style={{ width: `${passwordStrength}%` }}
@@ -410,7 +422,7 @@ const RegisterPage = () => {
                         )}
 
                         {errors.contrasena && (
-                          <p className="text-red-600 text-sm mt-2 flex items-center gap-2">
+                          <p id="contrasena-error" className="text-red-600 text-sm mt-2 flex items-center gap-2">
                             <FiAlertCircle className="w-4 h-4" />
                             {errors.contrasena}
                           </p>
@@ -419,7 +431,7 @@ const RegisterPage = () => {
 
                       {/* Campo Confirmar Contraseña */}
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <label htmlFor="confirmarContrasena" className="block text-sm font-medium text-gray-700 mb-2">
                           <div className="flex items-center gap-2">
                             <FiLock className="w-4 h-4 text-indigo-600" />
                             <span>Confirmar Contraseña</span>
@@ -427,6 +439,7 @@ const RegisterPage = () => {
                         </label>
                         <div className="relative">
                           <input
+                            id="confirmarContrasena"
                             type={showConfirmPassword ? "text" : "password"}
                             name="confirmarContrasena"
                             value={formData.confirmarContrasena}
@@ -438,6 +451,8 @@ const RegisterPage = () => {
                             }`}
                             placeholder="Confirma tu contraseña"
                             disabled={isLoading}
+                            aria-invalid={Boolean(errors.confirmarContrasena)}
+                            aria-describedby={errors.confirmarContrasena ? "confirmar-error" : undefined}
                           />
                           <button
                             type="button"
@@ -446,6 +461,7 @@ const RegisterPage = () => {
                             }
                             className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
                             disabled={isLoading}
+                            aria-label={showConfirmPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
                           >
                             {showConfirmPassword ? (
                               <FiEyeOff className="w-5 h-5" />
@@ -455,7 +471,7 @@ const RegisterPage = () => {
                           </button>
                         </div>
                         {errors.confirmarContrasena && (
-                          <p className="text-red-600 text-sm mt-2 flex items-center gap-2">
+                          <p id="confirmar-error" className="text-red-600 text-sm mt-2 flex items-center gap-2">
                             <FiAlertCircle className="w-4 h-4" />
                             {errors.confirmarContrasena}
                           </p>
@@ -466,13 +482,14 @@ const RegisterPage = () => {
 
                   {/* Campo Nombre completo - Ancho completo */}
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label htmlFor="nombre" className="block text-sm font-medium text-gray-700 mb-2">
                       <div className="flex items-center gap-2">
                         <FiUser className="w-4 h-4 text-indigo-600" />
                         <span>Nombre completo (opcional)</span>
                       </div>
                     </label>
                     <input
+                      id="nombre"
                       type="text"
                       name="nombre"
                       value={formData.nombre}
@@ -493,6 +510,8 @@ const RegisterPage = () => {
                         checked={acceptedTerms}
                         onChange={(e) => setAcceptedTerms(e.target.checked)}
                         className="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded"
+                        aria-invalid={Boolean(errors.terms)}
+                        aria-describedby={errors.terms ? "terms-error" : undefined}
                       />
                     </div>
                     <div className="ml-3 text-sm">
@@ -513,7 +532,7 @@ const RegisterPage = () => {
                         </Link>
                       </label>
                       {errors.terms && (
-                        <p className="text-red-600 text-sm mt-1 flex items-center gap-2">
+                        <p id="terms-error" className="text-red-600 text-sm mt-1 flex items-center gap-2">
                           <FiAlertCircle className="w-4 h-4" />
                           {errors.terms}
                         </p>
@@ -525,11 +544,12 @@ const RegisterPage = () => {
                   <button
                     type="submit"
                     disabled={isLoading}
+                    aria-busy={isLoading}
                     className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-medium py-3.5 px-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none group"
                   >
                     {isLoading ? (
                       <div className="flex items-center justify-center gap-2">
-                        <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                        <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" aria-hidden="true"></div>
                         <span>Creando cuenta...</span>
                       </div>
                     ) : (

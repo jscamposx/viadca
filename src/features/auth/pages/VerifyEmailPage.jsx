@@ -52,7 +52,7 @@ const VerifyEmailPage = () => {
     switch (status) {
       case "loading":
         return {
-          icon: <FiLoader className="w-16 h-16 text-indigo-600 animate-spin" />,
+          icon: <FiLoader className="w-16 h-16 text-indigo-600 animate-spin" aria-hidden="true" />,
           bg: "from-indigo-50 to-blue-50",
           card: "border-indigo-200 bg-white",
           text: "text-indigo-700",
@@ -63,7 +63,7 @@ const VerifyEmailPage = () => {
         };
       case "success":
         return {
-          icon: <FiCheckCircle className="w-16 h-16 text-green-600" />,
+          icon: <FiCheckCircle className="w-16 h-16 text-green-600" aria-hidden="true" />,
           bg: "from-green-50 to-emerald-50",
           card: "border-green-200 bg-white",
           text: "text-green-700",
@@ -74,7 +74,7 @@ const VerifyEmailPage = () => {
         };
       case "error":
         return {
-          icon: <FiAlertCircle className="w-16 h-16 text-red-600" />,
+          icon: <FiAlertCircle className="w-16 h-16 text-red-600" aria-hidden="true" />,
           bg: "from-red-50 to-rose-50",
           card: "border-red-200 bg-white",
           text: "text-red-700",
@@ -85,7 +85,7 @@ const VerifyEmailPage = () => {
         };
       default:
         return {
-          icon: <FiMail className="w-16 h-16 text-gray-600" />,
+          icon: <FiMail className="w-16 h-16 text-gray-600" aria-hidden="true" />,
           bg: "from-gray-50 to-slate-50",
           card: "border-gray-200 bg-white",
           text: "text-gray-600",
@@ -109,21 +109,21 @@ const VerifyEmailPage = () => {
             <div className="absolute bottom-20 left-20 w-80 h-80 bg-indigo-500/20 rounded-full blur-3xl"></div>
             <div className="absolute top-1/3 left-1/4 w-64 h-64 bg-white/10 rounded-full blur-2xl"></div>
 
-            <div className="absolute inset-0 opacity-20">
+            <div className="absolute inset-0 opacity-20" aria-hidden="true">
               <div className="absolute top-10 left-10 w-16 h-16 rounded-lg border-2 border-white rotate-45"></div>
               <div className="absolute top-40 right-20 w-24 h-24 rounded-lg border-2 border-white rotate-12"></div>
               <div className="absolute bottom-20 left-1/3 w-20 h-20 rounded-lg border-2 border-white rotate-30"></div>
             </div>
           </div>
 
-          <div className="relative z-10 h-full flex flex-col justify-between p-12 text-white">
+          <div className="relative z-10 h-full flex flex-col justify-between p-10 lg:p-12 text-white">
             <div>
               <div className="mb-6">
                 <div className="text-3xl font-bold">VIADCA</div>
                 <div className="text-blue-200 text-sm">by Zafiro Tours</div>
               </div>
 
-              <div className="mt-16 max-w-md">
+              <div className="mt-12 lg:mt-16 max-w-md">
                 <h2 className="text-3xl md:text-4xl font-bold mb-4">
                   Verificación de cuenta
                 </h2>
@@ -137,11 +137,11 @@ const VerifyEmailPage = () => {
 
             <div className="flex flex-col gap-3">
               <div className="flex items-center gap-2 text-blue-200">
-                <FiShield className="w-5 h-5" />
+                <FiShield className="w-5 h-5" aria-hidden="true" />
                 <span>Protección de datos garantizada</span>
               </div>
               <div className="flex items-center gap-2 text-blue-200">
-                <div className="w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
+                <div className="w-3 h-3 bg-green-400 rounded-full animate-pulse" aria-hidden="true"></div>
                 <span>+50,000 viajeros satisfechos</span>
               </div>
             </div>
@@ -150,14 +150,14 @@ const VerifyEmailPage = () => {
 
         {/* Contenido principal */}
         <div className="flex-1 flex items-center justify-center min-h-[calc(100vh-80px)] md:min-h-0">
-          <div className="w-full max-w-md p-4 md:p-6">
+          <div className="w-full max-w-[28rem] sm:max-w-md md:max-w-lg p-4 md:p-6">
             {/* Volver al inicio - Mobile */}
             <div className="md:hidden mb-6">
               <Link
                 to="/"
                 className="inline-flex items-center gap-2 text-indigo-600 hover:text-indigo-800 transition-colors font-medium group"
               >
-                <FiArrowLeft className="w-5 h-5 transition-transform group-hover:-translate-x-1" />
+                <FiArrowLeft className="w-5 h-5 transition-transform group-hover:-translate-x-1" aria-hidden="true" />
                 <span>Volver al inicio</span>
               </Link>
             </div>
@@ -168,11 +168,11 @@ const VerifyEmailPage = () => {
             >
               {/* Cabecera con gradiente */}
               <div
-                className={`bg-gradient-to-r ${statusConfig.gradient} py-6 px-8`}
+                className={`bg-gradient-to-r ${statusConfig.gradient} py-6 px-6 sm:px-8`}
               >
                 <div className="flex items-center justify-center mb-4">
                   <div className="bg-white/20 p-3 rounded-full">
-                    <FiUserCheck className="w-8 h-8 text-white" />
+                    <FiUserCheck className="w-8 h-8 text-white" aria-hidden="true" />
                   </div>
                 </div>
                 <h1 className="text-2xl font-bold text-white text-center">
@@ -197,6 +197,8 @@ const VerifyEmailPage = () => {
                 {/* Mensaje */}
                 <p
                   className={`text-center text-base md:text-lg mb-8 ${statusConfig.text}`}
+                  role={status === "error" ? "alert" : "status"}
+                  aria-live={status === "error" ? "assertive" : "polite"}
                 >
                   {message}
                 </p>
@@ -269,7 +271,7 @@ const VerifyEmailPage = () => {
               <div className="mt-6 p-4 bg-white rounded-xl border border-green-200 shadow-sm">
                 <div className="flex items-start gap-3">
                   <div className="bg-green-100 p-2 rounded-full">
-                    <FiCheckCircle className="w-5 h-5 text-green-600" />
+                    <FiCheckCircle className="w-5 h-5 text-green-600" aria-hidden="true" />
                   </div>
                   <div>
                     <h3 className="font-semibold text-green-800 mb-1">
@@ -286,10 +288,10 @@ const VerifyEmailPage = () => {
             )}
 
             {status === "error" && (
-              <div className="mt-6 p-4 bg-white rounded-xl border border-red-200 shadow-sm">
+              <div className="mt-6 p-4 bg-white rounded-xl border border-red-200 shadow-sm" role="note">
                 <div className="flex items-start gap-3">
                   <div className="bg-red-100 p-2 rounded-full">
-                    <FiHelpCircle className="w-5 h-5 text-red-600" />
+                    <FiHelpCircle className="w-5 h-5 text-red-600" aria-hidden="true" />
                   </div>
                   <div>
                     <h3 className="font-semibold text-red-800 mb-1">

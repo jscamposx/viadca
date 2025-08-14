@@ -121,14 +121,14 @@ const ResetPasswordPage = () => {
   if (!token) {
     return (
       <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-red-50 via-pink-50 to-rose-50">
-        <div className="w-full max-w-md">
+        <div className="w-full max-w-[28rem] sm:max-w-md md:max-w-lg">
           {/* Volver al inicio - Mobile */}
           <div className="sm:hidden mb-6">
             <Link
               to="/"
               className="inline-flex items-center gap-2 text-indigo-600 hover:text-indigo-800 transition-colors"
             >
-              <FiArrowLeft className="w-5 h-5" />
+              <FiArrowLeft className="w-5 h-5" aria-hidden="true" />
               <span className="font-medium">Volver al inicio</span>
             </Link>
           </div>
@@ -136,10 +136,10 @@ const ResetPasswordPage = () => {
           {/* Tarjeta de error */}
           <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100">
             {/* Cabecera con gradiente */}
-            <div className="bg-gradient-to-r from-red-600 to-rose-600 py-6 px-8">
+            <div className="bg-gradient-to-r from-red-600 to-rose-600 py-6 px-6 sm:px-8">
               <div className="flex items-center justify-center mb-4">
                 <div className="bg-white/20 p-3 rounded-full">
-                  <FiAlertCircle className="w-8 h-8 text-white" />
+                  <FiAlertCircle className="w-8 h-8 text-white" aria-hidden="true" />
                 </div>
               </div>
               <h1 className="text-2xl font-bold text-white text-center">
@@ -153,7 +153,7 @@ const ResetPasswordPage = () => {
             {/* Contenido */}
             <div className="p-6 sm:p-8">
               <div className="text-center">
-                <p className="text-gray-700 mb-8 leading-relaxed">
+                <p className="text-gray-700 mb-8 leading-relaxed" role="alert" aria-live="assertive">
                   Por favor, solicita un nuevo enlace de recuperación para
                   restablecer tu contraseña.
                 </p>
@@ -183,7 +183,7 @@ const ResetPasswordPage = () => {
               to="/"
               className="text-gray-600 hover:text-gray-800 transition-colors font-medium inline-flex items-center gap-1"
             >
-              <FiArrowLeft className="w-4 h-4" />
+              <FiArrowLeft className="w-4 h-4" aria-hidden="true" />
               <span>Volver al inicio</span>
             </Link>
           </div>
@@ -196,14 +196,14 @@ const ResetPasswordPage = () => {
   if (isSuccess) {
     return (
       <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50">
-        <div className="w-full max-w-md">
+        <div className="w-full max-w-[28rem] sm:max-w-md md:max-w-lg">
           {/* Volver al inicio - Mobile */}
           <div className="sm:hidden mb-6">
             <Link
               to="/"
               className="inline-flex items-center gap-2 text-indigo-600 hover:text-indigo-800 transition-colors"
             >
-              <FiArrowLeft className="w-5 h-5" />
+              <FiArrowLeft className="w-5 h-5" aria-hidden="true" />
               <span className="font-medium">Volver al inicio</span>
             </Link>
           </div>
@@ -211,10 +211,10 @@ const ResetPasswordPage = () => {
           {/* Tarjeta de éxito */}
           <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100">
             {/* Cabecera con gradiente */}
-            <div className="bg-gradient-to-r from-green-600 to-emerald-600 py-6 px-8">
+            <div className="bg-gradient-to-r from-green-600 to-emerald-600 py-6 px-6 sm:px-8">
               <div className="flex items-center justify-center mb-4">
                 <div className="bg-white/20 p-3 rounded-full">
-                  <FiCheckCircle className="w-8 h-8 text-white" />
+                  <FiCheckCircle className="w-8 h-8 text-white" aria-hidden="true" />
                 </div>
               </div>
               <h1 className="text-2xl font-bold text-white text-center">
@@ -228,7 +228,7 @@ const ResetPasswordPage = () => {
             {/* Contenido */}
             <div className="p-6 sm:p-8">
               <div className="text-center">
-                <p className="text-gray-700 mb-8 leading-relaxed">{message}</p>
+                <p className="text-gray-700 mb-8 leading-relaxed" role="status" aria-live="polite">{message}</p>
 
                 <Link
                   to="/login"
@@ -246,7 +246,7 @@ const ResetPasswordPage = () => {
               to="/"
               className="text-gray-600 hover:text-gray-800 transition-colors font-medium inline-flex items-center gap-1"
             >
-              <FiArrowLeft className="w-4 h-4" />
+              <FiArrowLeft className="w-4 h-4" aria-hidden="true" />
               <span>Volver al inicio</span>
             </Link>
           </div>
@@ -259,14 +259,14 @@ const ResetPasswordPage = () => {
   return (
     <PageTransition>
       <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-indigo-50 via-blue-50 to-purple-50">
-        <div className="w-full max-w-md">
+        <div className="w-full max-w-[28rem] sm:max-w-md md:max-w-lg">
           {/* Volver al inicio - Mobile */}
           <div className="sm:hidden mb-6">
             <Link
               to="/"
               className="inline-flex items-center gap-2 text-indigo-600 hover:text-indigo-800 transition-colors"
             >
-              <FiArrowLeft className="w-5 h-5" />
+              <FiArrowLeft className="w-5 h-5" aria-hidden="true" />
               <span className="font-medium">Volver al inicio</span>
             </Link>
           </div>
@@ -274,10 +274,10 @@ const ResetPasswordPage = () => {
           {/* Tarjeta principal */}
           <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100">
             {/* Cabecera con gradiente */}
-            <div className="bg-gradient-to-r from-indigo-600 to-blue-600 py-6 px-8">
+            <div className="bg-gradient-to-r from-indigo-600 to-blue-600 py-6 px-6 sm:px-8">
               <div className="flex items-center justify-center mb-4">
                 <div className="bg-white/20 p-3 rounded-full">
-                  <FiShield className="w-8 h-8 text-white" />
+                  <FiShield className="w-8 h-8 text-white" aria-hidden="true" />
                 </div>
               </div>
               <h1 className="text-2xl font-bold text-white text-center">
@@ -292,8 +292,8 @@ const ResetPasswordPage = () => {
             <div className="p-6 sm:p-8">
               {/* Mensaje de estado */}
               {message && (
-                <div className="p-4 rounded-xl mb-6 flex items-start gap-3 bg-red-50 border border-red-200 text-red-700">
-                  <FiAlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5" />
+                <div className="p-4 rounded-xl mb-6 flex items-start gap-3 bg-red-50 border border-red-200 text-red-700" role="alert" aria-live="assertive">
+                  <FiAlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5" aria-hidden="true" />
                   <span className="text-sm font-medium">{message}</span>
                 </div>
               )}
@@ -306,7 +306,7 @@ const ResetPasswordPage = () => {
                     className="block text-sm font-medium text-gray-700 mb-2"
                   >
                     <div className="flex items-center gap-2">
-                      <FiLock className="w-4 h-4 text-indigo-600" />
+                      <FiLock className="w-4 h-4 text-indigo-600" aria-hidden="true" />
                       <span>Nueva Contraseña</span>
                     </div>
                   </label>
@@ -324,23 +324,29 @@ const ResetPasswordPage = () => {
                       }`}
                       placeholder="Mínimo 6 caracteres"
                       disabled={isLoading}
+                      autoComplete="new-password"
+                      required
+                      aria-invalid={Boolean(errors.password)}
+                      aria-describedby={errors.password ? "password-error" : undefined}
                     />
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
                       className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
                       disabled={isLoading}
+                      aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
+                      aria-pressed={showPassword}
                     >
                       {showPassword ? (
-                        <FiEyeOff className="w-5 h-5" />
+                        <FiEyeOff className="w-5 h-5" aria-hidden="true" />
                       ) : (
-                        <FiEye className="w-5 h-5" />
+                        <FiEye className="w-5 h-5" aria-hidden="true" />
                       )}
                     </button>
                   </div>
                   {errors.password && (
-                    <p className="text-red-600 text-sm mt-2 flex items-center gap-2">
-                      <FiAlertCircle className="w-4 h-4" />
+                    <p id="password-error" className="text-red-600 text-sm mt-2 flex items-center gap-2" role="alert">
+                      <FiAlertCircle className="w-4 h-4" aria-hidden="true" />
                       {errors.password}
                     </p>
                   )}
@@ -353,7 +359,7 @@ const ResetPasswordPage = () => {
                     className="block text-sm font-medium text-gray-700 mb-2"
                   >
                     <div className="flex items-center gap-2">
-                      <FiLock className="w-4 h-4 text-indigo-600" />
+                      <FiLock className="w-4 h-4 text-indigo-600" aria-hidden="true" />
                       <span>Confirmar Contraseña</span>
                     </div>
                   </label>
@@ -371,6 +377,12 @@ const ResetPasswordPage = () => {
                       }`}
                       placeholder="Confirma tu nueva contraseña"
                       disabled={isLoading}
+                      autoComplete="new-password"
+                      required
+                      aria-invalid={Boolean(errors.confirmPassword)}
+                      aria-describedby={
+                        errors.confirmPassword ? "confirmPassword-error" : undefined
+                      }
                     />
                     <button
                       type="button"
@@ -379,17 +391,19 @@ const ResetPasswordPage = () => {
                       }
                       className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
                       disabled={isLoading}
+                      aria-label={showConfirmPassword ? "Ocultar confirmación" : "Mostrar confirmación"}
+                      aria-pressed={showConfirmPassword}
                     >
                       {showConfirmPassword ? (
-                        <FiEyeOff className="w-5 h-5" />
+                        <FiEyeOff className="w-5 h-5" aria-hidden="true" />
                       ) : (
-                        <FiEye className="w-5 h-5" />
+                        <FiEye className="w-5 h-5" aria-hidden="true" />
                       )}
                     </button>
                   </div>
                   {errors.confirmPassword && (
-                    <p className="text-red-600 text-sm mt-2 flex items-center gap-2">
-                      <FiAlertCircle className="w-4 h-4" />
+                    <p id="confirmPassword-error" className="text-red-600 text-sm mt-2 flex items-center gap-2" role="alert">
+                      <FiAlertCircle className="w-4 h-4" aria-hidden="true" />
                       {errors.confirmPassword}
                     </p>
                   )}
@@ -398,13 +412,13 @@ const ResetPasswordPage = () => {
                 {/* Consejos de seguridad */}
                 <div className="p-4 bg-indigo-50 rounded-lg border border-indigo-200">
                   <h3 className="font-semibold text-indigo-800 mb-2 flex items-center gap-2">
-                    <FiShield className="w-4 h-4" />
+                    <FiShield className="w-4 h-4" aria-hidden="true" />
                     Consejos de Seguridad
                   </h3>
                   <ul className="text-sm text-indigo-700 space-y-1">
-                    <li>• Usa al menos 6 caracteres</li>
-                    <li>• Combina letras, números y símbolos</li>
-                    <li>• Evita información personal o patrones simples</li>
+                    <li className="flex items-start gap-2"><span className="mt-0.5">•</span><span>Usa al menos 6 caracteres</span></li>
+                    <li className="flex items-start gap-2"><span className="mt-0.5">•</span><span>Combina letras, números y símbolos</span></li>
+                    <li className="flex items-start gap-2"><span className="mt-0.5">•</span><span>Evita información personal o patrones simples</span></li>
                   </ul>
                 </div>
 
@@ -413,15 +427,16 @@ const ResetPasswordPage = () => {
                   type="submit"
                   disabled={isLoading}
                   className="w-full bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-700 hover:to-blue-700 text-white font-semibold py-3 px-6 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+                  aria-busy={isLoading}
                 >
                   {isLoading ? (
                     <div className="flex items-center justify-center gap-2">
-                      <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                      <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" aria-hidden="true"></div>
                       <span>Restableciendo...</span>
                     </div>
                   ) : (
                     <div className="flex items-center justify-center gap-2">
-                      <FiSave className="w-5 h-5" />
+                      <FiSave className="w-5 h-5" aria-hidden="true" />
                       <span>Restablecer Contraseña</span>
                     </div>
                   )}
@@ -446,7 +461,7 @@ const ResetPasswordPage = () => {
               to="/"
               className="text-gray-600 hover:text-gray-800 transition-colors font-medium inline-flex items-center gap-1"
             >
-              <FiArrowLeft className="w-4 h-4" />
+              <FiArrowLeft className="w-4 h-4" aria-hidden="true" />
               <span>Volver al inicio</span>
             </Link>
           </div>
