@@ -61,12 +61,12 @@ const SlideCard = ({ t, state }) => {
 			aria-hidden={state !== 0}
 			role={state === 0 ? "article" : undefined}
 		>
-			<div className="relative overflow-hidden rounded-2xl bg-white/90 backdrop-blur shadow-2xl ring-1 ring-slate-900/5 p-5 sm:p-8">
+			<div className="relative overflow-hidden rounded-2xl bg-white/90 backdrop-blur shadow-2xl ring-1 ring-slate-900/5 p-4 sm:p-6 md:p-7 lg:p-8">
 				<div
 					className={`absolute top-0 left-0 right-0 h-1 bg-gradient-to-r ${t.accentFrom} ${t.accentTo}`}
 					aria-hidden="true"
 				/>
-				<div className="flex items-center gap-4 mb-5">
+				<div className="flex items-center gap-3 sm:gap-4 mb-4 sm:mb-5">
 					<img
 						src={t.avatar}
 						alt={t.name}
@@ -150,14 +150,14 @@ const Testimonials = () => {
 	return (
 		<section
 			id="testimonios"
-			className="py-20 px-4 sm:px-6 lg:px-8 scroll-mt-32"
+			className="py-14 md:py-18 lg:py-20 px-4 sm:px-6 lg:px-8 scroll-mt-32"
 			aria-labelledby="testimonios-heading"
 			onMouseEnter={() => setPaused(true)}
 			onMouseLeave={() => setPaused(false)}
 		>
-			<div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-16 items-center">
+			<div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-10 md:gap-12 xl:gap-16 items-center">
 				{/* Left content */}
-				<div className="space-y-8">
+				<div className="space-y-6 md:space-y-8">
 					<p className="text-text-gray font-semibold text-lg uppercase tracking-wide">
 						Testimonios
 					</p>
@@ -180,7 +180,7 @@ const Testimonials = () => {
 
 				{/* Right: carrusel dinámico */}
 				<div
-					className="relative h-[340px] sm:h-[420px] md:h-[440px] transform-gpu"
+					className="relative h-[320px] sm:h-[360px] md:h-[400px] lg:h-[420px] xl:h-[460px] transform-gpu"
 					role="region"
 					aria-label="Carrusel de testimonios"
 				>
@@ -202,66 +202,76 @@ const Testimonials = () => {
 						})}
 					</div>
 
-					{/* Controles */}
-					<div className="absolute inset-x-0 -bottom-2 sm:-bottom-3 flex items-center justify-between px-2 sm:px-4">
-						<button
-							type="button"
-							onClick={prev}
-							className="group inline-flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white/90 backdrop-blur ring-1 ring-slate-900/5 shadow-md hover:shadow-lg hover:bg-white text-slate-700 transition-all"
-							aria-label="Testimonio anterior"
-						>
-							<svg
-								className="w-5 h-5 transition-transform group-hover:-translate-x-0.5"
-								viewBox="0 0 24 24"
-								fill="none"
-								stroke="currentColor"
-								strokeWidth="2"
+					{/* Controles mejorados (pill centrado) */}
+					<div className="absolute left-1/2 bottom-2 sm:bottom-3 -translate-x-1/2 z-20">
+						<div className="flex items-center gap-2 sm:gap-3 rounded-full bg-white/80 backdrop-blur-md ring-1 ring-slate-900/10 shadow-lg px-2 py-1 sm:px-3 sm:py-1.5">
+							<button
+								type="button"
+								onClick={prev}
+								className="group inline-flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-white/90 ring-1 ring-slate-900/5 shadow hover:shadow-md hover:bg-white text-slate-700 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-secondary"
+								aria-label="Testimonio anterior"
 							>
-								<path
-									strokeLinecap="round"
-									strokeLinejoin="round"
-									d="M15 19l-7-7 7-7"
-								/>
-							</svg>
-						</button>
+								<svg
+									className="w-5 h-5 transition-transform group-hover:-translate-x-0.5"
+									viewBox="0 0 24 24"
+									fill="none"
+									stroke="currentColor"
+									strokeWidth="2"
+								>
+									<path
+										strokeLinecap="round"
+										strokeLinejoin="round"
+										d="M15 19l-7-7 7-7"
+									/>
+								</svg>
+							</button>
 
-						{/* Dots */}
-						<div className="flex items-center gap-2">
-							{testimonialsData.map((_, i) => (
-								<button
-									key={i}
-									onClick={() => goTo(i)}
-									className={`rounded-full transition-all ${
-										i === index
-											? "h-2 w-5 sm:h-2.5 sm:w-6 bg-secondary"
-											: "h-2 w-2 sm:h-2.5 sm:w-2.5 bg-slate-300 hover:bg-slate-400"
+							<div className="flex items-center gap-2">
+								{testimonialsData.map((t, i) => (
+									<button
+										key={i}
+										onClick={() => goTo(i)}
+										className={`relative grid place-items-center rounded-full transition-all duration-300 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-1 focus-visible:ring-secondary/70 ${
+											i === index
+												? `p-[1.5px] bg-gradient-to-r ${t.accentFrom} ${t.accentTo}`
+												: "p-[1px] bg-slate-300/70 hover:bg-slate-400/70"
 										}`}
-									aria-label={`Ir al testimonio ${i + 1}`}
-									aria-current={i === index}
-								/>
-							))}
-						</div>
+										aria-label={`Ir al testimonio ${i + 1}`}
+										aria-current={i === index}
+									>
+										<span
+											className={`block rounded-full ${
+												i === index
+													? "h-2.5 w-2.5 sm:h-2.5 sm:w-2.5 bg-white/95"
+													: "h-2 w-2 sm:h-2 sm:w-2 bg-white/85"
+											}`}
+											aria-hidden="true"
+										/>
+									</button>
+								))}
+							</div>
 
-						<button
-							type="button"
-							onClick={next}
-							className="group inline-flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white/90 backdrop-blur ring-1 ring-slate-900/5 shadow-md hover:shadow-lg hover:bg-white text-slate-700 transition-all"
-							aria-label="Siguiente testimonio"
-						>
-							<svg
-								className="w-5 h-5 transition-transform group-hover:translate-x-0.5"
-								viewBox="0 0 24 24"
-								fill="none"
-								stroke="currentColor"
-								strokeWidth="2"
+							<button
+								type="button"
+								onClick={next}
+								className="group inline-flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-white/90 ring-1 ring-slate-900/5 shadow hover:shadow-md hover:bg-white text-slate-700 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-secondary"
+								aria-label="Siguiente testimonio"
 							>
-								<path
-									strokeLinecap="round"
-									strokeLinejoin="round"
-									d="M9 5l7 7-7 7"
-								/>
-							</svg>
-						</button>
+								<svg
+									className="w-5 h-5 transition-transform group-hover:translate-x-0.5"
+									viewBox="0 0 24 24"
+									fill="none"
+									stroke="currentColor"
+									strokeWidth="2"
+								>
+									<path
+										strokeLinecap="round"
+										strokeLinejoin="round"
+										d="M9 5l7 7-7 7"
+									/>
+								</svg>
+							</button>
+						</div>
 					</div>
 				</div>
 			</div>
