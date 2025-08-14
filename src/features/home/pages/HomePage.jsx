@@ -156,28 +156,38 @@ const Home = () => {
       {
         src: "https://codia-f2c.s3.us-west-1.amazonaws.com/image/2025-08-12/De1PjNgdS5.png",
         alt: "Partner 1",
-        h: "h-24",
+        h: "h-24", // 96px
+        width: 240,
+        height: 96,
       },
       {
         src: "https://codia-f2c.s3.us-west-1.amazonaws.com/image/2025-08-12/t0MtADoBfm.png",
         alt: "Partner 2",
-        h: "h-24",
+        h: "h-24", // 96px
+        width: 240,
+        height: 96,
       },
       {
         src: "https://codia-f2c.s3.us-west-1.amazonaws.com/image/2025-08-12/KQ9JLYeVaR.png",
         alt: "Partner 3",
-        h: "h-24",
+        h: "h-24", // 96px
         boxed: true,
+        width: 180,
+        height: 96,
       },
       {
         src: "https://codia-f2c.s3.us-west-1.amazonaws.com/image/2025-08-12/zDib26LXd7.png",
         alt: "Partner 4",
-        h: "h-14",
+        h: "h-14", // 56px
+        width: 168,
+        height: 56,
       },
       {
         src: "https://codia-f2c.s3.us-west-1.amazonaws.com/image/2025-08-12/nW9CCvp1eD.png",
         alt: "Partner 5",
-        h: "h-12",
+        h: "h-12", // 48px
+        width: 144,
+        height: 48,
       },
     ],
     [],

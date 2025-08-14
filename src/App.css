@@ -42,10 +42,11 @@
 
 @keyframes logo-marquee {
   0% {
-    transform: translateX(0);
+    transform: translate3d(0, 0, 0);
   }
   100% {
-    transform: translateX(-50%);
+    /* Con contenido duplicado, media pista (-50%) produce bucle perfecto */
+    transform: translate3d(-50%, 0, 0);
   }
 }
 
@@ -74,6 +75,9 @@
 
 .animate-logo-marquee {
   animation: logo-marquee 25s linear infinite;
+  will-change: transform;
+  backface-visibility: hidden;
+  transform: translateZ(0);
 }
 
 .animate-reverse {
