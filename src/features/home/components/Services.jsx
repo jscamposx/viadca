@@ -93,10 +93,7 @@ const Services = () => (
           role="article"
           aria-labelledby="svc-paquetes-title"
         >
-          <div
-            className="absolute -bottom-6 -left-6 lg:-bottom-8 lg:-left-8 w-20 h-20 lg:w-24 lg:h-24 bg-blue-600 rounded-3xl opacity-20"
-            aria-hidden="true"
-          ></div>
+       
           <div
             className="w-14 h-14 lg:w-16 lg:h-16 bg-blue-200 rounded-2xl flex items-center justify-center mx-auto mb-4 lg:mb-6 relative z-10 group-hover:bg-blue-300 transition-colors duration-300 group-hover:scale-110 transform"
             aria-hidden="true"
