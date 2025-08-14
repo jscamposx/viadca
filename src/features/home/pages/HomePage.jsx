@@ -355,7 +355,10 @@ const Home = () => {
                     aria-controls="user-menu"
                     type="button"
                   >
-                    <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white text-sm font-bold" aria-hidden="true">
+                    <div
+                      className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white text-sm font-bold"
+                      aria-hidden="true"
+                    >
                       {userInitial}
                     </div>
                     <span>{displayName}</span>
@@ -375,10 +378,18 @@ const Home = () => {
                     </svg>
                   </button>
                   {isUserMenuOpen && (
-                    <div className="absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-xl border border-blue-100 py-2 z-50" id="user-menu" role="menu" aria-label="Menú de usuario">
+                    <div
+                      className="absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-xl border border-blue-100 py-2 z-50"
+                      id="user-menu"
+                      role="menu"
+                      aria-label="Menú de usuario"
+                    >
                       <div className="px-4 py-3 border-b border-blue-100">
                         <div className="flex items-center space-x-3">
-                          <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center text-white text-sm font-bold" aria-hidden="true">
+                          <div
+                            className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center text-white text-sm font-bold"
+                            aria-hidden="true"
+                          >
                             {userInitial}
                           </div>
                           <div>
@@ -619,12 +630,17 @@ const Home = () => {
                         ? "slideInFromLeft 0.3s ease-out forwards"
                         : "none",
                     }}
-                    aria-current={activeSection === link.id ? "true" : undefined}
+                    aria-current={
+                      activeSection === link.id ? "true" : undefined
+                    }
                   >
                     {link.icon}
                     <span className="font-medium">{link.label}</span>
                     {activeSection === link.id && (
-                      <div className="ml-auto w-2 h-2 bg-blue-600 rounded-full animate-pulse" aria-hidden="true"></div>
+                      <div
+                        className="ml-auto w-2 h-2 bg-blue-600 rounded-full animate-pulse"
+                        aria-hidden="true"
+                      ></div>
                     )}
                   </a>
                 ))}
@@ -639,9 +655,16 @@ const Home = () => {
                 {isAuthenticated() ? (
                   // Usuario autenticado en móvil - Rediseñado
                   <>
-                    <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-4 rounded-xl border border-blue-200 shadow-sm" aria-label="Información rápida de usuario" role="group">
+                    <div
+                      className="bg-gradient-to-r from-blue-50 to-indigo-50 p-4 rounded-xl border border-blue-200 shadow-sm"
+                      aria-label="Información rápida de usuario"
+                      role="group"
+                    >
                       <div className="flex items-center space-x-3">
-                        <div className="w-12 h-12 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full flex items-center justify-center text-white text-lg font-bold shadow-md" aria-hidden="true">
+                        <div
+                          className="w-12 h-12 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full flex items-center justify-center text-white text-lg font-bold shadow-md"
+                          aria-hidden="true"
+                        >
                           {userInitial}
                         </div>
                         <div className="flex-1 min-w-0">
@@ -652,7 +675,10 @@ const Home = () => {
                             {displayEmail || "Sin email"}
                           </p>
                         </div>
-                        <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse" aria-hidden="true"></div>
+                        <div
+                          className="w-3 h-3 bg-green-500 rounded-full animate-pulse"
+                          aria-hidden="true"
+                        ></div>
                       </div>
                     </div>
 

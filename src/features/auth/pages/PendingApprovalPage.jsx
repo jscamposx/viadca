@@ -81,7 +81,10 @@ const PendingApprovalPage = () => {
                 <span>Proceso de verificación seguro</span>
               </div>
               <div className="flex items-center gap-2 text-amber-200">
-                <div className="w-3 h-3 bg-green-400 rounded-full animate-pulse" aria-hidden="true"></div>
+                <div
+                  className="w-3 h-3 bg-green-400 rounded-full animate-pulse"
+                  aria-hidden="true"
+                ></div>
                 <span>+50,000 viajeros satisfechos</span>
               </div>
             </div>
@@ -97,7 +100,10 @@ const PendingApprovalPage = () => {
                 to="/"
                 className="inline-flex items-center gap-2 text-amber-600 hover:text-amber-800 transition-colors font-medium group"
               >
-                <FiArrowLeft className="w-5 h-5 transition-transform group-hover:-translate-x-1" aria-hidden="true" />
+                <FiArrowLeft
+                  className="w-5 h-5 transition-transform group-hover:-translate-x-1"
+                  aria-hidden="true"
+                />
                 <span>Volver al inicio</span>
               </Link>
             </div>
@@ -108,7 +114,10 @@ const PendingApprovalPage = () => {
               <div className="bg-gradient-to-r from-amber-500 to-orange-600 py-6 px-6 sm:px-8 text-center">
                 <div className="flex items-center justify-center mb-4">
                   <div className="bg-white/20 p-3 rounded-full">
-                    <FiClock className="w-8 h-8 text-white" aria-hidden="true" />
+                    <FiClock
+                      className="w-8 h-8 text-white"
+                      aria-hidden="true"
+                    />
                   </div>
                 </div>
                 <h1 className="text-2xl font-bold text-white mb-2">
@@ -125,7 +134,10 @@ const PendingApprovalPage = () => {
                 <div className="bg-gradient-to-r from-amber-50 to-orange-50 rounded-xl p-5 mb-6 border border-amber-200">
                   <div className="flex items-center gap-3 mb-4">
                     <div className="bg-amber-500 p-2 rounded-lg">
-                      <FiUser className="w-5 h-5 text-white" aria-hidden="true" />
+                      <FiUser
+                        className="w-5 h-5 text-white"
+                        aria-hidden="true"
+                      />
                     </div>
                     <div>
                       <h3 className="font-semibold text-amber-800">
@@ -140,7 +152,10 @@ const PendingApprovalPage = () => {
                   <div className="grid grid-cols-1 gap-3">
                     <div className="bg-white p-3 rounded-lg border border-amber-200">
                       <div className="flex items-center gap-2 mb-1">
-                        <FiUser className="w-4 h-4 text-amber-600" aria-hidden="true" />
+                        <FiUser
+                          className="w-4 h-4 text-amber-600"
+                          aria-hidden="true"
+                        />
                         <span className="text-gray-600 font-medium">
                           Usuario:
                         </span>
@@ -152,7 +167,10 @@ const PendingApprovalPage = () => {
 
                     <div className="bg-white p-3 rounded-lg border border-amber-200">
                       <div className="flex items-center gap-2 mb-1">
-                        <FiMail className="w-4 h-4 text-amber-600" aria-hidden="true" />
+                        <FiMail
+                          className="w-4 h-4 text-amber-600"
+                          aria-hidden="true"
+                        />
                         <span className="text-gray-600 font-medium">
                           Email:
                         </span>
@@ -165,7 +183,10 @@ const PendingApprovalPage = () => {
                     <div className="grid grid-cols-2 gap-3">
                       <div className="bg-white p-3 rounded-lg border border-amber-200">
                         <div className="flex items-center gap-2 mb-1">
-                          <FiAlertTriangle className="w-4 h-4 text-amber-600" aria-hidden="true" />
+                          <FiAlertTriangle
+                            className="w-4 h-4 text-amber-600"
+                            aria-hidden="true"
+                          />
                           <span className="text-gray-600 font-medium">
                             Estado:
                           </span>
@@ -177,7 +198,10 @@ const PendingApprovalPage = () => {
 
                       <div className="bg-white p-3 rounded-lg border border-amber-200">
                         <div className="flex items-center gap-2 mb-1">
-                          <FiCheckCircle className="w-4 h-4 text-green-600" aria-hidden="true" />
+                          <FiCheckCircle
+                            className="w-4 h-4 text-green-600"
+                            aria-hidden="true"
+                          />
                           <span className="text-gray-600 font-medium">
                             Email:
                           </span>
@@ -192,7 +216,10 @@ const PendingApprovalPage = () => {
                 <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-6 mb-6 border border-blue-200">
                   <div className="flex flex-col items-center text-center">
                     <div className="bg-blue-100 p-3 rounded-full mb-4">
-                      <FiShield className="w-8 h-8 text-blue-600" aria-hidden="true" />
+                      <FiShield
+                        className="w-8 h-8 text-blue-600"
+                        aria-hidden="true"
+                      />
                     </div>
                     <h2 className="text-xl font-bold text-gray-800 mb-3">
                       ¡Gracias por registrarte!
@@ -211,13 +238,19 @@ const PendingApprovalPage = () => {
                     </h3>
                     <ul className="text-sm text-blue-700 space-y-2">
                       <li className="flex items-start gap-2">
-                        <div className="bg-blue-100 p-1 rounded-full mt-0.5" aria-hidden="true">
+                        <div
+                          className="bg-blue-100 p-1 rounded-full mt-0.5"
+                          aria-hidden="true"
+                        >
                           <FiChevronRight className="w-3 h-3 text-blue-600" />
                         </div>
                         <span>Un administrador revisará tu solicitud</span>
                       </li>
                       <li className="flex items-start gap-2">
-                        <div className="bg-blue-100 p-1 rounded-full mt-0.5" aria-hidden="true">
+                        <div
+                          className="bg-blue-100 p-1 rounded-full mt-0.5"
+                          aria-hidden="true"
+                        >
                           <FiChevronRight className="w-3 h-3 text-blue-600" />
                         </div>
                         <span>
@@ -225,7 +258,10 @@ const PendingApprovalPage = () => {
                         </span>
                       </li>
                       <li className="flex items-start gap-2">
-                        <div className="bg-blue-100 p-1 rounded-full mt-0.5" aria-hidden="true">
+                        <div
+                          className="bg-blue-100 p-1 rounded-full mt-0.5"
+                          aria-hidden="true"
+                        >
                           <FiChevronRight className="w-3 h-3 text-blue-600" />
                         </div>
                         <span>
@@ -237,13 +273,19 @@ const PendingApprovalPage = () => {
                 </div>
 
                 {/* Estado de progreso */}
-                <div className="mb-6" aria-label="Estado del proceso de aprobación">
+                <div
+                  className="mb-6"
+                  aria-label="Estado del proceso de aprobación"
+                >
                   <h3 className="font-semibold text-gray-800 mb-4 text-center">
                     Estado del Proceso
                   </h3>
 
                   <div className="relative mb-1">
-                    <div className="absolute top-1/2 transform -translate-y-1/2 w-full h-1.5 bg-gray-200 rounded-full" aria-hidden="true"></div>
+                    <div
+                      className="absolute top-1/2 transform -translate-y-1/2 w-full h-1.5 bg-gray-200 rounded-full"
+                      aria-hidden="true"
+                    ></div>
                     <div
                       className="absolute top-1/2 transform -translate-y-1/2 h-1.5 bg-gradient-to-r from-green-500 via-blue-500 to-amber-500 rounded-full"
                       style={{ width: "66%" }}
@@ -251,28 +293,46 @@ const PendingApprovalPage = () => {
                     <div className="relative flex justify-between">
                       <div className="z-10">
                         <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
-                          <FiCheckCircle className="w-4 h-4 text-white" aria-hidden="true" />
+                          <FiCheckCircle
+                            className="w-4 h-4 text-white"
+                            aria-hidden="true"
+                          />
                         </div>
                       </div>
                       <div className="z-10">
                         <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
-                          <FiCheckCircle className="w-4 h-4 text-white" aria-hidden="true" />
+                          <FiCheckCircle
+                            className="w-4 h-4 text-white"
+                            aria-hidden="true"
+                          />
                         </div>
                       </div>
                       <div className="z-10">
-                        <div className="w-8 h-8 bg-amber-500 rounded-full flex items-center justify-center animate-pulse" aria-live="polite">
-                          <FiClock className="w-4 h-4 text-white" aria-hidden="true" />
+                        <div
+                          className="w-8 h-8 bg-amber-500 rounded-full flex items-center justify-center animate-pulse"
+                          aria-live="polite"
+                        >
+                          <FiClock
+                            className="w-4 h-4 text-white"
+                            aria-hidden="true"
+                          />
                         </div>
                       </div>
                       <div className="z-10">
                         <div className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center">
-                          <FiClock className="w-4 h-4 text-white" aria-hidden="true" />
+                          <FiClock
+                            className="w-4 h-4 text-white"
+                            aria-hidden="true"
+                          />
                         </div>
                       </div>
                     </div>
                   </div>
 
-                  <div className="flex justify-between mt-4 text-center" aria-hidden="true">
+                  <div
+                    className="flex justify-between mt-4 text-center"
+                    aria-hidden="true"
+                  >
                     <div className="flex flex-col items-center">
                       <span className="text-xs text-green-600 font-medium">
                         Registro
@@ -311,7 +371,10 @@ const PendingApprovalPage = () => {
                 {/* Tiempo estimado */}
                 <div className="bg-gradient-to-r from-gray-50 to-blue-50 rounded-xl p-4 mb-6 border border-gray-200 flex items-start gap-4">
                   <div className="bg-blue-100 p-2 rounded-lg">
-                    <FiClock className="w-6 h-6 text-blue-600" aria-hidden="true" />
+                    <FiClock
+                      className="w-6 h-6 text-blue-600"
+                      aria-hidden="true"
+                    />
                   </div>
                   <div>
                     <h4 className="font-semibold text-gray-800 mb-1">
@@ -363,7 +426,10 @@ const PendingApprovalPage = () => {
             <div className="mt-6 p-4 bg-white rounded-xl border border-amber-200 shadow-sm">
               <div className="flex items-start gap-3">
                 <div className="bg-amber-100 p-2 rounded-full">
-                  <FiMail className="w-5 h-5 text-amber-600" aria-hidden="true" />
+                  <FiMail
+                    className="w-5 h-5 text-amber-600"
+                    aria-hidden="true"
+                  />
                 </div>
                 <div>
                   <h3 className="font-semibold text-gray-800 mb-1">

@@ -4,6 +4,7 @@ const Steps = () => (
   <section
     id="pasos"
     className="py-12 sm:py-16 lg:py-20 px-4 sm:px-6 lg:px-8 scroll-mt-32 bg-gradient-to-b from-white to-blue-50"
+    aria-labelledby="pasos-heading"
   >
     <div className="max-w-7xl mx-auto">
       <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
@@ -14,7 +15,10 @@ const Steps = () => (
               Proceso simple
             </p>
 
-            <h2 className="font-volkhov font-bold text-3xl sm:text-4xl lg:text-5xl text-slate-800 leading-tight">
+            <h2
+              id="pasos-heading"
+              className="font-volkhov font-bold text-3xl sm:text-4xl lg:text-5xl text-slate-800 leading-tight"
+            >
               Reserva con VIADCA
               <br />
               en 3 pasos sencillos
@@ -29,12 +33,16 @@ const Steps = () => (
           <div className="space-y-6 lg:space-y-8">
             {/* Step 1 - Mejorado */}
             <div className="flex items-start space-x-4 lg:space-x-6 group">
-              <div className="w-14 h-14 lg:w-16 lg:h-16 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-lg group-hover:scale-110 transition-transform duration-300">
+              <div
+                className="w-14 h-14 lg:w-16 lg:h-16 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-lg group-hover:scale-110 transition-transform duration-300"
+                aria-hidden="true"
+              >
                 <svg
                   className="w-7 h-7 lg:w-8 lg:h-8 text-white"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
+                  aria-hidden="true"
                 >
                   <path
                     strokeLinecap="round"
@@ -49,7 +57,7 @@ const Steps = () => (
                   <h3 className="font-bold text-lg lg:text-xl text-slate-800">
                     Consulta personalizada
                   </h3>
-                  <span className="bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full text-xs font-medium">
+                  <span className="bg-yellow-100 text-yellow-900 px-2 py-1 rounded-full text-xs font-medium">
                     Paso 1
                   </span>
                 </div>
@@ -64,6 +72,7 @@ const Steps = () => (
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
+                      aria-hidden="true"
                     >
                       <path
                         strokeLinecap="round"
@@ -82,12 +91,16 @@ const Steps = () => (
 
             {/* Step 2 - Mejorado */}
             <div className="flex items-start space-x-4 lg:space-x-6 group">
-              <div className="w-14 h-14 lg:w-16 lg:h-16 bg-gradient-to-r from-red-400 to-pink-500 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-lg group-hover:scale-110 transition-transform duration-300">
+              <div
+                className="w-14 h-14 lg:w-16 lg:h-16 bg-gradient-to-r from-red-400 to-pink-500 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-lg group-hover:scale-110 transition-transform duration-300"
+                aria-hidden="true"
+              >
                 <svg
                   className="w-7 h-7 lg:w-8 lg:h-8 text-white"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
+                  aria-hidden="true"
                 >
                   <path
                     strokeLinecap="round"
@@ -102,7 +115,7 @@ const Steps = () => (
                   <h3 className="font-bold text-lg lg:text-xl text-slate-800">
                     Cotización y reserva
                   </h3>
-                  <span className="bg-red-100 text-red-800 px-2 py-1 rounded-full text-xs font-medium">
+                  <span className="bg-red-100 text-red-900 px-2 py-1 rounded-full text-xs font-medium">
                     Paso 2
                   </span>
                 </div>
@@ -117,6 +130,7 @@ const Steps = () => (
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
+                      aria-hidden="true"
                     >
                       <path
                         strokeLinecap="round"
@@ -135,12 +149,16 @@ const Steps = () => (
 
             {/* Step 3 - Mejorado */}
             <div className="flex items-start space-x-4 lg:space-x-6 group">
-              <div className="w-14 h-14 lg:w-16 lg:h-16 bg-gradient-to-r from-teal-400 to-green-500 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-lg group-hover:scale-110 transition-transform duration-300">
+              <div
+                className="w-14 h-14 lg:w-16 lg:h-16 bg-gradient-to-r from-teal-400 to-green-500 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-lg group-hover:scale-110 transition-transform duration-300"
+                aria-hidden="true"
+              >
                 <svg
                   className="w-7 h-7 lg:w-8 lg:h-8 text-white"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
+                  aria-hidden="true"
                 >
                   <path
                     strokeLinecap="round"
@@ -155,7 +173,7 @@ const Steps = () => (
                   <h3 className="font-bold text-lg lg:text-xl text-slate-800">
                     ¡Disfruta tu experiencia!
                   </h3>
-                  <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs font-medium">
+                  <span className="bg-green-100 text-green-900 px-2 py-1 rounded-full text-xs font-medium">
                     Paso 3
                   </span>
                 </div>
@@ -170,6 +188,7 @@ const Steps = () => (
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
+                      aria-hidden="true"
                     >
                       <path
                         strokeLinecap="round"
@@ -189,12 +208,17 @@ const Steps = () => (
 
           {/* CTA móvil */}
           <div className="lg:hidden pt-6">
-            <button className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-8 py-4 rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all duration-300 font-semibold hover:shadow-lg transform hover:scale-105 flex items-center justify-center gap-3">
+            <button
+              className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-8 py-4 rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all duration-300 font-semibold hover:shadow-lg transform hover:scale-105 flex items-center justify-center gap-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-blue-600"
+              type="button"
+              aria-label="Comenzar mi viaje"
+            >
               <svg
                 className="w-5 h-5"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
+                aria-hidden="true"
               >
                 <path
                   strokeLinecap="round"
@@ -211,7 +235,10 @@ const Steps = () => (
         {/* Right Content - Trip Card mejorado para mobile */}
         <div className="relative order-1 lg:order-2">
           {/* Background Decoration - Solo desktop */}
-          <div className="hidden lg:block absolute top-0 right-0 w-96 h-96 bg-blue-200 rounded-full opacity-40"></div>
+          <div
+            className="hidden lg:block absolute top-0 right-0 w-96 h-96 bg-blue-200 rounded-full opacity-40"
+            aria-hidden="true"
+          ></div>
 
           {/* Main Trip Card - Responsivo */}
           <div className="relative bg-white rounded-3xl p-4 sm:p-6 shadow-xl border border-blue-100 max-w-md mx-auto hover:shadow-2xl transition-shadow duration-300">
@@ -222,11 +249,12 @@ const Steps = () => (
                 className="w-full h-40 sm:h-48 object-cover"
               />
               <div className="absolute top-3 right-3">
-                <span className="bg-green-500 text-white px-2 py-1 rounded-full text-xs font-bold flex items-center gap-1">
+                <span className="bg-green-600 text-white px-2 py-1 rounded-full text-xs font-bold flex items-center gap-1">
                   <svg
                     className="w-3 h-3"
                     fill="currentColor"
                     viewBox="0 0 20 20"
+                    aria-hidden="true"
                   >
                     <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                   </svg>
@@ -246,6 +274,7 @@ const Steps = () => (
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
+                  aria-hidden="true"
                 >
                   <path
                     strokeLinecap="round"
@@ -256,13 +285,16 @@ const Steps = () => (
                 </svg>
                 Salidas: Sábados
               </span>
-              <span className="hidden sm:block">|</span>
+              <span className="hidden sm:block" aria-hidden="true">
+                |
+              </span>
               <span className="flex items-center gap-1">
                 <svg
                   className="w-4 h-4"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
+                  aria-hidden="true"
                 >
                   <path
                     strokeLinecap="round"
@@ -278,12 +310,16 @@ const Steps = () => (
             {/* Iconos de servicios incluidos */}
             <div className="flex items-center justify-center sm:justify-start gap-3 sm:gap-4 mb-4 sm:mb-6">
               <div className="flex flex-col items-center">
-                <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                <div
+                  className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center"
+                  aria-hidden="true"
+                >
                   <svg
                     className="w-5 h-5 text-blue-600"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
+                    aria-hidden="true"
                   >
                     <path
                       strokeLinecap="round"
@@ -302,12 +338,16 @@ const Steps = () => (
                 <span className="text-xs text-slate-600 mt-1">Transporte</span>
               </div>
               <div className="flex flex-col items-center">
-                <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
+                <div
+                  className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center"
+                  aria-hidden="true"
+                >
                   <svg
                     className="w-5 h-5 text-green-600"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
+                    aria-hidden="true"
                   >
                     <path
                       strokeLinecap="round"
@@ -320,12 +360,16 @@ const Steps = () => (
                 <span className="text-xs text-slate-600 mt-1">Comidas</span>
               </div>
               <div className="flex flex-col items-center">
-                <div className="w-10 h-10 bg-orange-100 rounded-full flex items-center justify-center">
+                <div
+                  className="w-10 h-10 bg-orange-100 rounded-full flex items-center justify-center"
+                  aria-hidden="true"
+                >
                   <svg
                     className="w-5 h-5 text-orange-600"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
+                    aria-hidden="true"
                   >
                     <path
                       strokeLinecap="round"
@@ -346,6 +390,7 @@ const Steps = () => (
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
+                  aria-hidden="true"
                 >
                   <path
                     strokeLinecap="round"
@@ -381,7 +426,10 @@ const Steps = () => (
                 <p className="text-slate-600 text-sm">Disponible todo el año</p>
               </div>
             </div>
-            <div className="w-full bg-gray-200 rounded-full h-2">
+            <div
+              className="w-full bg-gray-200 rounded-full h-2"
+              aria-hidden="true"
+            >
               <div className="bg-blue-600 h-2 rounded-full w-4/5"></div>
             </div>
           </div>

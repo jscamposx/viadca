@@ -298,7 +298,10 @@ const RegisterPage = () => {
                     <div className="space-y-5">
                       {/* Campo Usuario */}
                       <div>
-                        <label htmlFor="usuario" className="block text-sm font-medium text-gray-700 mb-2">
+                        <label
+                          htmlFor="usuario"
+                          className="block text-sm font-medium text-gray-700 mb-2"
+                        >
                           <div className="flex items-center gap-2">
                             <FiUser className="w-4 h-4 text-indigo-600" />
                             <span>Usuario</span>
@@ -318,10 +321,15 @@ const RegisterPage = () => {
                           placeholder="Ej: juan_perez"
                           disabled={isLoading}
                           aria-invalid={Boolean(errors.usuario)}
-                          aria-describedby={errors.usuario ? "usuario-error" : undefined}
+                          aria-describedby={
+                            errors.usuario ? "usuario-error" : undefined
+                          }
                         />
                         {errors.usuario && (
-                          <p id="usuario-error" className="text-red-600 text-sm mt-2 flex items-center gap-2">
+                          <p
+                            id="usuario-error"
+                            className="text-red-600 text-sm mt-2 flex items-center gap-2"
+                          >
                             <FiAlertCircle className="w-4 h-4" />
                             {errors.usuario}
                           </p>
@@ -330,7 +338,10 @@ const RegisterPage = () => {
 
                       {/* Campo Email */}
                       <div>
-                        <label htmlFor="correo" className="block text-sm font-medium text-gray-700 mb-2">
+                        <label
+                          htmlFor="correo"
+                          className="block text-sm font-medium text-gray-700 mb-2"
+                        >
                           <div className="flex items-center gap-2">
                             <FiMail className="w-4 h-4 text-indigo-600" />
                             <span>Email</span>
@@ -350,10 +361,15 @@ const RegisterPage = () => {
                           placeholder="tu@email.com"
                           disabled={isLoading}
                           aria-invalid={Boolean(errors.correo)}
-                          aria-describedby={errors.correo ? "correo-error" : undefined}
+                          aria-describedby={
+                            errors.correo ? "correo-error" : undefined
+                          }
                         />
                         {errors.correo && (
-                          <p id="correo-error" className="text-red-600 text-sm mt-2 flex items-center gap-2">
+                          <p
+                            id="correo-error"
+                            className="text-red-600 text-sm mt-2 flex items-center gap-2"
+                          >
                             <FiAlertCircle className="w-4 h-4" />
                             {errors.correo}
                           </p>
@@ -365,7 +381,10 @@ const RegisterPage = () => {
                     <div className="space-y-5">
                       {/* Campo Contraseña */}
                       <div>
-                        <label htmlFor="contrasena" className="block text-sm font-medium text-gray-700 mb-2">
+                        <label
+                          htmlFor="contrasena"
+                          className="block text-sm font-medium text-gray-700 mb-2"
+                        >
                           <div className="flex items-center gap-2">
                             <FiLock className="w-4 h-4 text-indigo-600" />
                             <span>Contraseña</span>
@@ -386,14 +405,20 @@ const RegisterPage = () => {
                             placeholder="Mínimo 6 caracteres"
                             disabled={isLoading}
                             aria-invalid={Boolean(errors.contrasena)}
-                            aria-describedby={errors.contrasena ? "contrasena-error" : undefined}
+                            aria-describedby={
+                              errors.contrasena ? "contrasena-error" : undefined
+                            }
                           />
                           <button
                             type="button"
                             onClick={() => setShowPassword(!showPassword)}
                             className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
                             disabled={isLoading}
-                            aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
+                            aria-label={
+                              showPassword
+                                ? "Ocultar contraseña"
+                                : "Mostrar contraseña"
+                            }
                           >
                             {showPassword ? (
                               <FiEyeOff className="w-5 h-5" />
@@ -406,7 +431,10 @@ const RegisterPage = () => {
                         {/* Indicador de fuerza de contraseña */}
                         {formData.contrasena && (
                           <div className="mt-2" aria-live="polite">
-                            <div className="w-full bg-gray-200 rounded-full h-1.5 mb-1" aria-hidden="true">
+                            <div
+                              className="w-full bg-gray-200 rounded-full h-1.5 mb-1"
+                              aria-hidden="true"
+                            >
                               <div
                                 className={`h-1.5 rounded-full ${getPasswordStrengthColor()}`}
                                 style={{ width: `${passwordStrength}%` }}
@@ -422,7 +450,10 @@ const RegisterPage = () => {
                         )}
 
                         {errors.contrasena && (
-                          <p id="contrasena-error" className="text-red-600 text-sm mt-2 flex items-center gap-2">
+                          <p
+                            id="contrasena-error"
+                            className="text-red-600 text-sm mt-2 flex items-center gap-2"
+                          >
                             <FiAlertCircle className="w-4 h-4" />
                             {errors.contrasena}
                           </p>
@@ -431,7 +462,10 @@ const RegisterPage = () => {
 
                       {/* Campo Confirmar Contraseña */}
                       <div>
-                        <label htmlFor="confirmarContrasena" className="block text-sm font-medium text-gray-700 mb-2">
+                        <label
+                          htmlFor="confirmarContrasena"
+                          className="block text-sm font-medium text-gray-700 mb-2"
+                        >
                           <div className="flex items-center gap-2">
                             <FiLock className="w-4 h-4 text-indigo-600" />
                             <span>Confirmar Contraseña</span>
@@ -452,7 +486,11 @@ const RegisterPage = () => {
                             placeholder="Confirma tu contraseña"
                             disabled={isLoading}
                             aria-invalid={Boolean(errors.confirmarContrasena)}
-                            aria-describedby={errors.confirmarContrasena ? "confirmar-error" : undefined}
+                            aria-describedby={
+                              errors.confirmarContrasena
+                                ? "confirmar-error"
+                                : undefined
+                            }
                           />
                           <button
                             type="button"
@@ -461,7 +499,11 @@ const RegisterPage = () => {
                             }
                             className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
                             disabled={isLoading}
-                            aria-label={showConfirmPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
+                            aria-label={
+                              showConfirmPassword
+                                ? "Ocultar contraseña"
+                                : "Mostrar contraseña"
+                            }
                           >
                             {showConfirmPassword ? (
                               <FiEyeOff className="w-5 h-5" />
@@ -471,7 +513,10 @@ const RegisterPage = () => {
                           </button>
                         </div>
                         {errors.confirmarContrasena && (
-                          <p id="confirmar-error" className="text-red-600 text-sm mt-2 flex items-center gap-2">
+                          <p
+                            id="confirmar-error"
+                            className="text-red-600 text-sm mt-2 flex items-center gap-2"
+                          >
                             <FiAlertCircle className="w-4 h-4" />
                             {errors.confirmarContrasena}
                           </p>
@@ -482,7 +527,10 @@ const RegisterPage = () => {
 
                   {/* Campo Nombre completo - Ancho completo */}
                   <div>
-                    <label htmlFor="nombre" className="block text-sm font-medium text-gray-700 mb-2">
+                    <label
+                      htmlFor="nombre"
+                      className="block text-sm font-medium text-gray-700 mb-2"
+                    >
                       <div className="flex items-center gap-2">
                         <FiUser className="w-4 h-4 text-indigo-600" />
                         <span>Nombre completo (opcional)</span>
@@ -511,7 +559,9 @@ const RegisterPage = () => {
                         onChange={(e) => setAcceptedTerms(e.target.checked)}
                         className="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded"
                         aria-invalid={Boolean(errors.terms)}
-                        aria-describedby={errors.terms ? "terms-error" : undefined}
+                        aria-describedby={
+                          errors.terms ? "terms-error" : undefined
+                        }
                       />
                     </div>
                     <div className="ml-3 text-sm">
@@ -532,7 +582,10 @@ const RegisterPage = () => {
                         </Link>
                       </label>
                       {errors.terms && (
-                        <p id="terms-error" className="text-red-600 text-sm mt-1 flex items-center gap-2">
+                        <p
+                          id="terms-error"
+                          className="text-red-600 text-sm mt-1 flex items-center gap-2"
+                        >
                           <FiAlertCircle className="w-4 h-4" />
                           {errors.terms}
                         </p>
@@ -549,7 +602,10 @@ const RegisterPage = () => {
                   >
                     {isLoading ? (
                       <div className="flex items-center justify-center gap-2">
-                        <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" aria-hidden="true"></div>
+                        <div
+                          className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"
+                          aria-hidden="true"
+                        ></div>
                         <span>Creando cuenta...</span>
                       </div>
                     ) : (

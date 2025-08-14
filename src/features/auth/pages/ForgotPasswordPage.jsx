@@ -147,7 +147,11 @@ const ForgotPasswordPage = () => {
                 </div>
 
                 {/* Mensaje */}
-                <div className="p-4 rounded-xl mb-6 flex items-start gap-3 bg-green-50 border border-green-200 text-green-700" role="alert" aria-live="polite">
+                <div
+                  className="p-4 rounded-xl mb-6 flex items-start gap-3 bg-green-50 border border-green-200 text-green-700"
+                  role="alert"
+                  aria-live="polite"
+                >
                   <FiCheckCircle className="w-5 h-5 flex-shrink-0 mt-0.5" />
                   <span className="text-sm font-medium">{message}</span>
                 </div>
@@ -295,7 +299,11 @@ const ForgotPasswordPage = () => {
 
                 {/* Mensaje de error */}
                 {error && (
-                  <div className="p-4 rounded-xl mb-6 flex items-start gap-3 bg-red-50 border border-red-200 text-red-700" role="alert" aria-live="assertive">
+                  <div
+                    className="p-4 rounded-xl mb-6 flex items-start gap-3 bg-red-50 border border-red-200 text-red-700"
+                    role="alert"
+                    aria-live="assertive"
+                  >
                     <FiAlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5" />
                     <span className="text-sm font-medium">{error}</span>
                   </div>
@@ -304,7 +312,10 @@ const ForgotPasswordPage = () => {
                 <form onSubmit={handleSubmit} className="space-y-6">
                   {/* Campo Email */}
                   <div>
-                    <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+                    <label
+                      htmlFor="email"
+                      className="block text-sm font-medium text-gray-700 mb-2"
+                    >
                       Email
                     </label>
                     <div className="relative">
@@ -329,7 +340,10 @@ const ForgotPasswordPage = () => {
                       />
                     </div>
                     {error && (
-                      <p id="email-error" className="text-red-600 text-sm mt-2 flex items-center gap-2">
+                      <p
+                        id="email-error"
+                        className="text-red-600 text-sm mt-2 flex items-center gap-2"
+                      >
                         <FiAlertCircle className="w-4 h-4" />
                         {error}
                       </p>
@@ -346,7 +360,10 @@ const ForgotPasswordPage = () => {
                     <div className="flex items-center justify-center gap-3">
                       {isLoading ? (
                         <>
-                          <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" aria-hidden="true"></div>
+                          <div
+                            className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"
+                            aria-hidden="true"
+                          ></div>
                           <span>Enviando...</span>
                         </>
                       ) : (

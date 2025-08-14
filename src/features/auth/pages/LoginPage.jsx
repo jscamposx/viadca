@@ -239,14 +239,19 @@ const LoginPage = () => {
                     ) : (
                       <FiAlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5" />
                     )}
-                    <span className="text-sm font-medium">{displayMessage}</span>
+                    <span className="text-sm font-medium">
+                      {displayMessage}
+                    </span>
                   </div>
                 )}
 
                 <form onSubmit={handleSubmit} className="space-y-6">
                   {/* Campo Usuario */}
                   <div>
-                    <label htmlFor="usuario" className="block text-sm font-medium text-gray-700 mb-2">
+                    <label
+                      htmlFor="usuario"
+                      className="block text-sm font-medium text-gray-700 mb-2"
+                    >
                       Usuario o correo electrónico
                     </label>
                     <div className="relative">
@@ -267,11 +272,16 @@ const LoginPage = () => {
                         placeholder="usuario@ejemplo.com"
                         disabled={isDisabled}
                         aria-invalid={Boolean(errors.usuario)}
-                        aria-describedby={errors.usuario ? "usuario-error" : undefined}
+                        aria-describedby={
+                          errors.usuario ? "usuario-error" : undefined
+                        }
                       />
                     </div>
                     {errors.usuario && (
-                      <p id="usuario-error" className="text-red-600 text-sm mt-2 flex items-center gap-2">
+                      <p
+                        id="usuario-error"
+                        className="text-red-600 text-sm mt-2 flex items-center gap-2"
+                      >
                         <FiAlertCircle className="w-4 h-4" />
                         {errors.usuario}
                       </p>
@@ -280,7 +290,10 @@ const LoginPage = () => {
 
                   {/* Campo Contraseña */}
                   <div>
-                    <label htmlFor="contrasena" className="block text-sm font-medium text-gray-700 mb-2">
+                    <label
+                      htmlFor="contrasena"
+                      className="block text-sm font-medium text-gray-700 mb-2"
+                    >
                       Contraseña
                     </label>
                     <div className="relative">
@@ -301,14 +314,20 @@ const LoginPage = () => {
                         placeholder="••••••••"
                         disabled={isDisabled}
                         aria-invalid={Boolean(errors.contrasena)}
-                        aria-describedby={errors.contrasena ? "contrasena-error" : undefined}
+                        aria-describedby={
+                          errors.contrasena ? "contrasena-error" : undefined
+                        }
                       />
                       <button
                         type="button"
                         onClick={() => setShowPassword(!showPassword)}
                         className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
                         disabled={isDisabled}
-                        aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
+                        aria-label={
+                          showPassword
+                            ? "Ocultar contraseña"
+                            : "Mostrar contraseña"
+                        }
                       >
                         {showPassword ? (
                           <FiEyeOff className="w-5 h-5" />
@@ -318,7 +337,10 @@ const LoginPage = () => {
                       </button>
                     </div>
                     {errors.contrasena && (
-                      <p id="contrasena-error" className="text-red-600 text-sm mt-2 flex items-center gap-2">
+                      <p
+                        id="contrasena-error"
+                        className="text-red-600 text-sm mt-2 flex items-center gap-2"
+                      >
                         <FiAlertCircle className="w-4 h-4" />
                         {errors.contrasena}
                       </p>
@@ -359,7 +381,10 @@ const LoginPage = () => {
                     <div className="flex items-center justify-center gap-3">
                       {isLoading ? (
                         <>
-                          <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" aria-hidden="true"></div>
+                          <div
+                            className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"
+                            aria-hidden="true"
+                          ></div>
                           <span>Iniciando sesión...</span>
                         </>
                       ) : cooldown > 0 ? (

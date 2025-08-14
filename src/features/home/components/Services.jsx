@@ -4,9 +4,13 @@ const Services = () => (
   <section
     id="servicios"
     className="py-12 sm:py-16 lg:py-20 px-4 sm:px-6 lg:px-8 relative scroll-mt-32"
+    aria-labelledby="servicios-heading"
   >
     {/* Background Decoration - Oculto en mobile */}
-    <div className="absolute top-0 right-0 opacity-20 hidden lg:grid lg:grid-cols-5 lg:gap-4">
+    <div
+      className="absolute top-0 right-0 opacity-20 hidden lg:grid lg:grid-cols-5 lg:gap-4"
+      aria-hidden="true"
+    >
       {Array.from({ length: 25 }).map((_, i) => (
         <div
           key={i}
@@ -22,7 +26,10 @@ const Services = () => (
         <p className="text-slate-600 font-semibold text-base sm:text-lg uppercase tracking-wide mb-3 lg:mb-4">
           NUESTROS SERVICIOS
         </p>
-        <h2 className="font-volkhov font-bold text-3xl sm:text-4xl lg:text-5xl text-slate-800 leading-tight">
+        <h2
+          id="servicios-heading"
+          className="font-volkhov font-bold text-3xl sm:text-4xl lg:text-5xl text-slate-800 leading-tight"
+        >
           Te ofrecemos experiencias completas
         </h2>
         <p className="text-slate-600 text-base sm:text-lg mt-4 max-w-2xl mx-auto">
@@ -33,13 +40,21 @@ const Services = () => (
 
       <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
         {/* Tours Personalizados */}
-        <article className="bg-white p-6 lg:p-8 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-2 border border-blue-100 hover:border-blue-300 group">
-          <div className="w-14 h-14 lg:w-16 lg:h-16 bg-orange-200 rounded-2xl flex items-center justify-center mx-auto mb-4 lg:mb-6 group-hover:bg-orange-300 transition-colors duration-300 group-hover:scale-110 transform">
+        <article
+          className="bg-white p-6 lg:p-8 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-2 border border-blue-100 hover:border-blue-300 group"
+          role="article"
+          aria-labelledby="svc-tours-title"
+        >
+          <div
+            className="w-14 h-14 lg:w-16 lg:h-16 bg-orange-200 rounded-2xl flex items-center justify-center mx-auto mb-4 lg:mb-6 group-hover:bg-orange-300 transition-colors duration-300 group-hover:scale-110 transform"
+            aria-hidden="true"
+          >
             <svg
               className="w-7 h-7 lg:w-8 lg:h-8 text-orange-600"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
+              aria-hidden="true"
             >
               <path
                 strokeLinecap="round"
@@ -55,7 +70,10 @@ const Services = () => (
               />
             </svg>
           </div>
-          <h3 className="font-open-sans font-semibold text-lg lg:text-xl text-slate-800 mb-3 lg:mb-4 text-center">
+          <h3
+            id="svc-tours-title"
+            className="font-open-sans font-semibold text-lg lg:text-xl text-slate-800 mb-3 lg:mb-4 text-center"
+          >
             Tours Personalizados
           </h3>
           <p className="text-slate-600 leading-relaxed text-sm lg:text-base text-center">
@@ -63,21 +81,32 @@ const Services = () => (
             tiempo disponible.
           </p>
           <div className="mt-4 flex justify-center">
-            <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-800">
+            <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-900">
               Personalizado
             </span>
           </div>
         </article>
 
         {/* Paquetes Nacionales e Internacionales */}
-        <article className="bg-white p-6 lg:p-8 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-2 border border-blue-100 hover:border-blue-300 relative group">
-          <div className="absolute -bottom-6 -left-6 lg:-bottom-8 lg:-left-8 w-20 h-20 lg:w-24 lg:h-24 bg-blue-600 rounded-3xl opacity-20"></div>
-          <div className="w-14 h-14 lg:w-16 lg:h-16 bg-blue-200 rounded-2xl flex items-center justify-center mx-auto mb-4 lg:mb-6 relative z-10 group-hover:bg-blue-300 transition-colors duration-300 group-hover:scale-110 transform">
+        <article
+          className="bg-white p-6 lg:p-8 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-2 border border-blue-100 hover:border-blue-300 relative group"
+          role="article"
+          aria-labelledby="svc-paquetes-title"
+        >
+          <div
+            className="absolute -bottom-6 -left-6 lg:-bottom-8 lg:-left-8 w-20 h-20 lg:w-24 lg:h-24 bg-blue-600 rounded-3xl opacity-20"
+            aria-hidden="true"
+          ></div>
+          <div
+            className="w-14 h-14 lg:w-16 lg:h-16 bg-blue-200 rounded-2xl flex items-center justify-center mx-auto mb-4 lg:mb-6 relative z-10 group-hover:bg-blue-300 transition-colors duration-300 group-hover:scale-110 transform"
+            aria-hidden="true"
+          >
             <svg
               className="w-7 h-7 lg:w-8 lg:h-8 text-blue-600"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
+              aria-hidden="true"
             >
               <path
                 strokeLinecap="round"
@@ -87,7 +116,10 @@ const Services = () => (
               />
             </svg>
           </div>
-          <h3 className="font-open-sans font-semibold text-lg lg:text-xl text-slate-800 mb-3 lg:mb-4 text-center">
+          <h3
+            id="svc-paquetes-title"
+            className="font-open-sans font-semibold text-lg lg:text-xl text-slate-800 mb-3 lg:mb-4 text-center"
+          >
             Destinos Nacionales e Internacionales
           </h3>
           <p className="text-slate-600 leading-relaxed text-sm lg:text-base text-center">
@@ -95,30 +127,41 @@ const Services = () => (
             incluyen vuelos, hospedaje y actividades.
           </p>
           <div className="mt-4 flex justify-center">
-            <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+            <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-900">
               Nacional / Internacional
             </span>
           </div>
         </article>
 
         {/* Viajes de Negocios */}
-        <article className="bg-white p-6 lg:p-8 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-2 border border-blue-100 hover:border-blue-300 group">
-          <div className="w-14 h-14 lg:w-16 lg:h-16 bg-green-200 rounded-2xl flex items-center justify-center mx-auto mb-4 lg:mb-6 group-hover:bg-green-300 transition-colors duration-300 group-hover:scale-110 transform">
+        <article
+          className="bg-white p-6 lg:p-8 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-2 border border-blue-100 hover:border-blue-300 group"
+          role="article"
+          aria-labelledby="svc-corp-title"
+        >
+          <div
+            className="w-14 h-14 lg:w-16 lg:h-16 bg-green-200 rounded-2xl flex items-center justify-center mx-auto mb-4 lg:mb-6 group-hover:bg-green-300 transition-colors duration-300 group-hover:scale-110 transform"
+            aria-hidden="true"
+          >
             <svg
               className="w-7 h-7 lg:w-8 lg:h-8 text-green-600"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
+              aria-hidden="true"
             >
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
                 strokeWidth={2}
-                d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2-2v2m8 0V6a2 2 0 012 2v6a2 2 0 01-2 2H6a2 2 0 01-2-2V8a2 2 0 012-2V6z"
+                d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m8 0V6a2 2 0 012 2v6a2 2 0 01-2 2H6a2 2 0 01-2-2V8a2 2 0 012-2V6z"
               />
             </svg>
           </div>
-          <h3 className="font-open-sans font-semibold text-lg lg:text-xl text-slate-800 mb-3 lg:mb-4 text-center">
+          <h3
+            id="svc-corp-title"
+            className="font-open-sans font-semibold text-lg lg:text-xl text-slate-800 mb-3 lg:mb-4 text-center"
+          >
             Viajes Corporativos
           </h3>
           <p className="text-slate-600 leading-relaxed text-sm lg:text-base text-center">
@@ -126,20 +169,28 @@ const Services = () => (
             eventos corporativos.
           </p>
           <div className="mt-4 flex justify-center">
-            <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+            <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-900">
               Empresarial
             </span>
           </div>
         </article>
 
         {/* Asesoría Especializada */}
-        <article className="bg-white p-6 lg:p-8 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-2 border border-blue-100 hover:border-blue-300 group">
-          <div className="w-14 h-14 lg:w-16 lg:h-16 bg-purple-200 rounded-2xl flex items-center justify-center mx-auto mb-4 lg:mb-6 group-hover:bg-purple-300 transition-colors duration-300 group-hover:scale-110 transform">
+        <article
+          className="bg-white p-6 lg:p-8 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-2 border border-blue-100 hover:border-blue-300 group"
+          role="article"
+          aria-labelledby="svc-asesoria-title"
+        >
+          <div
+            className="w-14 h-14 lg:w-16 lg:h-16 bg-purple-200 rounded-2xl flex items-center justify-center mx-auto mb-4 lg:mb-6 group-hover:bg-purple-300 transition-colors duration-300 group-hover:scale-110 transform"
+            aria-hidden="true"
+          >
             <svg
               className="w-7 h-7 lg:w-8 lg:h-8 text-purple-600"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
+              aria-hidden="true"
             >
               <path
                 strokeLinecap="round"
@@ -149,7 +200,10 @@ const Services = () => (
               />
             </svg>
           </div>
-          <h3 className="font-open-sans font-semibold text-lg lg:text-xl text-slate-800 mb-3 lg:mb-4 text-center">
+          <h3
+            id="svc-asesoria-title"
+            className="font-open-sans font-semibold text-lg lg:text-xl text-slate-800 mb-3 lg:mb-4 text-center"
+          >
             Asesoría Especializada
           </h3>
           <p className="text-slate-600 leading-relaxed text-sm lg:text-base text-center">
@@ -157,7 +211,7 @@ const Services = () => (
             asesoría y recomendaciones.
           </p>
           <div className="mt-4 flex justify-center">
-            <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+            <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-900">
               Expertos
             </span>
           </div>
@@ -175,12 +229,17 @@ const Services = () => (
             viaje perfecto
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <button className="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-8 py-3 rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all duration-300 font-semibold hover:shadow-lg hover:scale-105 transform flex items-center justify-center gap-2">
+            <button
+              className="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-8 py-3 rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all duration-300 font-semibold hover:shadow-lg hover:scale-105 transform flex items-center justify-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-blue-600"
+              type="button"
+              aria-label="Contactar al equipo"
+            >
               <svg
                 className="w-5 h-5"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
+                aria-hidden="true"
               >
                 <path
                   strokeLinecap="round"
@@ -191,12 +250,17 @@ const Services = () => (
               </svg>
               <span>Contáctanos</span>
             </button>
-            <button className="w-full sm:w-auto border-2 border-blue-600 text-blue-600 px-8 py-3 rounded-xl hover:bg-blue-600 hover:text-white transition-all duration-300 font-semibold hover:shadow-lg hover:scale-105 transform flex items-center justify-center gap-2">
+            <button
+              className="w-full sm:w-auto border-2 border-blue-600 text-blue-700 px-8 py-3 rounded-xl hover:bg-blue-600 hover:text-white transition-all duration-300 font-semibold hover:shadow-lg hover:scale-105 transform flex items-center justify-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2"
+              type="button"
+              aria-label="Abrir chat en línea"
+            >
               <svg
                 className="w-5 h-5"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
+                aria-hidden="true"
               >
                 <path
                   strokeLinecap="round"

@@ -4,6 +4,7 @@ const Hero = () => {
   return (
     <section
       id="hero"
+      aria-labelledby="hero-heading"
       className="relative min-h-[100svh] md:min-h-[78svh] lg:min-h-[100svh] bg-gradient-to-br from-blue-50 to-orange-50 scroll-mt-32"
     >
       {/* Fondo superior SOLO mobile: transparente */}
@@ -36,7 +37,7 @@ const Hero = () => {
                 </p>
               </div>
 
-              <h1 className="font-volkhov font-bold text-4xl sm:text-5xl lg:text-6xl xl:text-7xl leading-tight text-slate-800">
+              <h1 id="hero-heading" className="font-volkhov font-bold text-4xl sm:text-5xl lg:text-6xl xl:text-7xl leading-tight text-slate-800">
                 <span className="block">Vive experiencias</span>
                 <span className="block bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
                   extraordinarias,
@@ -52,7 +53,10 @@ const Hero = () => {
 
               {/* CTA Buttons - Mejorados para mobile */}
               <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 pt-4">
-                <button className="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-8 py-4 rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all duration-300 font-semibold hover:shadow-xl hover:scale-105 transform flex items-center justify-center gap-3">
+                <button
+                  type="button"
+                  className="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-8 py-4 rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all duration-300 font-semibold hover:shadow-xl hover:scale-105 transform flex items-center justify-center gap-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-600"
+                >
                   <svg
                     className="w-5 h-5"
                     fill="none"
@@ -69,7 +73,10 @@ const Hero = () => {
                   </svg>
                   <span>Planifica tu viaje</span>
                 </button>
-                <button className="w-full sm:w-auto border-2 border-slate-300 text-slate-700 px-8 py-4 rounded-xl hover:border-blue-600 hover:text-blue-600 hover:bg-blue-50 transition-all duration-300 font-semibold hover:shadow-lg hover:scale-105 transform flex items-center justify-center gap-3">
+                <button
+                  type="button"
+                  className="w-full sm:w-auto border-2 border-slate-300 text-slate-800 px-8 py-4 rounded-xl hover:border-blue-600 hover:text-blue-700 hover:bg-blue-50 transition-all duration-300 font-semibold hover:shadow-lg hover:scale-105 transform flex items-center justify-center gap-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-600"
+                >
                   <svg
                     className="w-5 h-5"
                     fill="none"
@@ -116,6 +123,7 @@ const Hero = () => {
                   src="/HomePage/Hero-Image.avif"
                   alt="Viajero explorando destinos increíbles"
                   className="w-full h-auto sm:h-80 md:h-[24rem] lg:h-auto max-h-[70vh] md:max-h-[60vh] object-contain object-center sm:object-contain md:object-contain border-0 shadow-none ring-0 outline-none mx-auto"
+                  decoding="async"
                 />
 
                 {/* Overlay gradient para mobile (transparente) */}

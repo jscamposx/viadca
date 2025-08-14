@@ -52,7 +52,12 @@ const VerifyEmailPage = () => {
     switch (status) {
       case "loading":
         return {
-          icon: <FiLoader className="w-16 h-16 text-indigo-600 animate-spin" aria-hidden="true" />,
+          icon: (
+            <FiLoader
+              className="w-16 h-16 text-indigo-600 animate-spin"
+              aria-hidden="true"
+            />
+          ),
           bg: "from-indigo-50 to-blue-50",
           card: "border-indigo-200 bg-white",
           text: "text-indigo-700",
@@ -63,7 +68,12 @@ const VerifyEmailPage = () => {
         };
       case "success":
         return {
-          icon: <FiCheckCircle className="w-16 h-16 text-green-600" aria-hidden="true" />,
+          icon: (
+            <FiCheckCircle
+              className="w-16 h-16 text-green-600"
+              aria-hidden="true"
+            />
+          ),
           bg: "from-green-50 to-emerald-50",
           card: "border-green-200 bg-white",
           text: "text-green-700",
@@ -74,7 +84,12 @@ const VerifyEmailPage = () => {
         };
       case "error":
         return {
-          icon: <FiAlertCircle className="w-16 h-16 text-red-600" aria-hidden="true" />,
+          icon: (
+            <FiAlertCircle
+              className="w-16 h-16 text-red-600"
+              aria-hidden="true"
+            />
+          ),
           bg: "from-red-50 to-rose-50",
           card: "border-red-200 bg-white",
           text: "text-red-700",
@@ -85,7 +100,9 @@ const VerifyEmailPage = () => {
         };
       default:
         return {
-          icon: <FiMail className="w-16 h-16 text-gray-600" aria-hidden="true" />,
+          icon: (
+            <FiMail className="w-16 h-16 text-gray-600" aria-hidden="true" />
+          ),
           bg: "from-gray-50 to-slate-50",
           card: "border-gray-200 bg-white",
           text: "text-gray-600",
@@ -141,7 +158,10 @@ const VerifyEmailPage = () => {
                 <span>Protección de datos garantizada</span>
               </div>
               <div className="flex items-center gap-2 text-blue-200">
-                <div className="w-3 h-3 bg-green-400 rounded-full animate-pulse" aria-hidden="true"></div>
+                <div
+                  className="w-3 h-3 bg-green-400 rounded-full animate-pulse"
+                  aria-hidden="true"
+                ></div>
                 <span>+50,000 viajeros satisfechos</span>
               </div>
             </div>
@@ -157,7 +177,10 @@ const VerifyEmailPage = () => {
                 to="/"
                 className="inline-flex items-center gap-2 text-indigo-600 hover:text-indigo-800 transition-colors font-medium group"
               >
-                <FiArrowLeft className="w-5 h-5 transition-transform group-hover:-translate-x-1" aria-hidden="true" />
+                <FiArrowLeft
+                  className="w-5 h-5 transition-transform group-hover:-translate-x-1"
+                  aria-hidden="true"
+                />
                 <span>Volver al inicio</span>
               </Link>
             </div>
@@ -172,7 +195,10 @@ const VerifyEmailPage = () => {
               >
                 <div className="flex items-center justify-center mb-4">
                   <div className="bg-white/20 p-3 rounded-full">
-                    <FiUserCheck className="w-8 h-8 text-white" aria-hidden="true" />
+                    <FiUserCheck
+                      className="w-8 h-8 text-white"
+                      aria-hidden="true"
+                    />
                   </div>
                 </div>
                 <h1 className="text-2xl font-bold text-white text-center">
@@ -271,7 +297,10 @@ const VerifyEmailPage = () => {
               <div className="mt-6 p-4 bg-white rounded-xl border border-green-200 shadow-sm">
                 <div className="flex items-start gap-3">
                   <div className="bg-green-100 p-2 rounded-full">
-                    <FiCheckCircle className="w-5 h-5 text-green-600" aria-hidden="true" />
+                    <FiCheckCircle
+                      className="w-5 h-5 text-green-600"
+                      aria-hidden="true"
+                    />
                   </div>
                   <div>
                     <h3 className="font-semibold text-green-800 mb-1">
@@ -288,10 +317,16 @@ const VerifyEmailPage = () => {
             )}
 
             {status === "error" && (
-              <div className="mt-6 p-4 bg-white rounded-xl border border-red-200 shadow-sm" role="note">
+              <div
+                className="mt-6 p-4 bg-white rounded-xl border border-red-200 shadow-sm"
+                role="note"
+              >
                 <div className="flex items-start gap-3">
                   <div className="bg-red-100 p-2 rounded-full">
-                    <FiHelpCircle className="w-5 h-5 text-red-600" aria-hidden="true" />
+                    <FiHelpCircle
+                      className="w-5 h-5 text-red-600"
+                      aria-hidden="true"
+                    />
                   </div>
                   <div>
                     <h3 className="font-semibold text-red-800 mb-1">
