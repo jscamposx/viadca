@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../../../contexts/AuthContext'
 import { useContactInfo } from '../../../hooks/useContactInfo'
+import PageTransition from '../../../components/ui/PageTransition'
 
 import Hero from '../components/Hero'
 import Services from '../components/Services'
@@ -150,36 +151,38 @@ const Home = () => {
   }
 
   return (
-    <div className="min-h-screen bg-white overflow-x-hidden">
-      <Hero
-        isScrolled={isScrolled}
-        isAuthenticated={isAuthenticated}
-        isAdmin={isAdmin}
-        displayName={displayName}
-        displayEmail={displayEmail}
-        userInitial={userInitial}
-        activeSection={activeSection}
-        handleNavClick={handleNavClick}
-        logos={logos}
-        handlers={{
-          setIsMobileMenuOpen,
-          isMobileMenuOpen,
-          setIsUserMenuOpen,
-          isUserMenuOpen,
-          closeMobileMenu,
-          closeUserMenu,
-          handleLogout,
-        }}
-      />
+    <PageTransition>
+      <div className="min-h-screen bg-white overflow-x-hidden">
+        <Hero
+          isScrolled={isScrolled}
+          isAuthenticated={isAuthenticated}
+          isAdmin={isAdmin}
+          displayName={displayName}
+          displayEmail={displayEmail}
+          userInitial={userInitial}
+          activeSection={activeSection}
+          handleNavClick={handleNavClick}
+          logos={logos}
+          handlers={{
+            setIsMobileMenuOpen,
+            isMobileMenuOpen,
+            setIsUserMenuOpen,
+            isUserMenuOpen,
+            closeMobileMenu,
+            closeUserMenu,
+            handleLogout,
+          }}
+        />
 
-      <Services />
-      <Destinations />
-      <Steps />
-      <Testimonials />
-      <Logos logos={logos} />
+        <Services />
+        <Destinations />
+        <Steps />
+        <Testimonials />
+        <Logos logos={logos} />
 
-      <Footer contactInfo={contactInfo} contactLoading={contactLoading} currentYear={currentYear} />
-    </div>
+        <Footer contactInfo={contactInfo} contactLoading={contactLoading} currentYear={currentYear} />
+      </div>
+    </PageTransition>
   )
 }
 

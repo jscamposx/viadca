@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../../contexts/AuthContext';
+import PageTransition from '../../../components/ui/PageTransition';
 import {
   FiUser,
   FiLock,
@@ -132,9 +133,10 @@ const LoginPage = () => {
   const isDisabled = isLoading || cooldown > 0;
 
   return (
-    <div className="min-h-screen flex flex-col md:flex-row bg-gradient-to-br from-gray-50 to-gray-100 overflow-hidden">
+    <PageTransition>
+      <div className="min-h-screen flex flex-col md:flex-row bg-gradient-to-br from-gray-50 to-gray-100 overflow-hidden">
       {/* Panel visual para escritorio */}
-      <div className="hidden md:flex md:w-1/2 h-screen relative bg-gradient-to-br from-indigo-600 to-purple-700 overflow-hidden">
+      <div className="hidden md:flex md:w-1/2 min-h-screen relative bg-gradient-to-br from-indigo-600 to-purple-700 overflow-hidden">
         <div className="absolute inset-0">
           <div className="absolute top-0 right-0 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl"></div>
           <div className="absolute bottom-20 left-20 w-80 h-80 bg-indigo-500/20 rounded-full blur-3xl"></div>
@@ -173,11 +175,11 @@ const LoginPage = () => {
         </div>
       </div>
 
-      {/* Contenido principal */}
-      <div className="flex-1 flex items-center justify-center p-4 md:p-8">
-        <div className="w-full max-w-md">
+      {/* Contenido principal - Adaptable a cualquier altura */}
+      <div className="flex-1 flex items-center justify-center min-h-[calc(100vh-80px)] md:min-h-0">
+        <div className="w-full max-w-md p-4 md:p-6">
           {/* Cabecera para móvil */}
-          <div className="md:hidden mb-8 text-center">
+          <div className="md:hidden mb-6 text-center">
             <div className="flex justify-center mb-4">
               <div className="bg-gradient-to-r from-indigo-600 to-purple-600 p-3 rounded-full inline-flex">
                 <FiLogIn className="w-8 h-8 text-white" />
@@ -198,7 +200,7 @@ const LoginPage = () => {
             </Link>
           </div>
 
-          {/* Contenedor del formulario */}
+          {/* Contenedor del formulario con altura adaptable */}
           <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
             <div className="p-6 md:p-8">
               {/* Título para escritorio */}
@@ -209,7 +211,7 @@ const LoginPage = () => {
 
               {/* Mensaje de estado */}
               {displayMessage && (
-                <div className={`p-4 rounded-xl mb-6 flex items-start gap-3 ${
+                <div className={`p-4 rounded-xl mb-6 flex items-start gap-3 animate-fade-in ${
                   isSuccessMessage
                     ? 'bg-green-50 border border-green-200 text-green-700'
                     : 'bg-red-50 border border-red-200 text-red-700'
@@ -343,7 +345,7 @@ const LoginPage = () => {
               </form>
 
               {/* Separador */}
-              <div className="relative my-8">
+              <div className="relative my-6">
                 <div className="absolute inset-0 flex items-center">
                   <div className="w-full border-t border-gray-200"></div>
                 </div>
@@ -370,7 +372,7 @@ const LoginPage = () => {
           </div>
           
           {/* Pie de página móvil */}
-          <div className="mt-8 text-center text-gray-500 text-sm md:hidden">
+          <div className="mt-4 text-center text-gray-500 text-sm md:hidden">
             © {new Date().getFullYear()} VIADCA by Zafiro Tours
           </div>
         </div>
@@ -380,7 +382,8 @@ const LoginPage = () => {
       <div className="hidden md:block absolute bottom-0 right-0 p-6 text-gray-500 text-sm">
         © {new Date().getFullYear()} VIADCA by Zafiro Tours. Todos los derechos reservados.
       </div>
-    </div>
+      </div>
+    </PageTransition>
   );
 };
 

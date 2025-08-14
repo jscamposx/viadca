@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../contexts/AuthContext';
+import PageTransition from '../../../components/ui/PageTransition';
 import {
   FiUser,
   FiMail,
@@ -138,10 +139,11 @@ const RegisterPage = () => {
                           message.includes('Bienvenido');
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-indigo-50 via-blue-50 to-purple-50">
-      <div className="w-full max-w-md">
-        {/* Volver al inicio - Mobile First */}
-        <div className="sm:hidden mb-6">
+    <PageTransition animationType="zoom">
+      <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-indigo-50 via-blue-50 to-purple-50">
+        <div className="w-full max-w-md">
+          {/* Volver al inicio - Mobile First */}
+          <div className="sm:hidden mb-6">
           <Link 
             to="/" 
             className="inline-flex items-center gap-2 text-indigo-600 hover:text-indigo-800 transition-colors"
@@ -422,8 +424,9 @@ const RegisterPage = () => {
             <span>Volver al inicio</span>
           </Link>
         </div>
+        </div>
       </div>
-    </div>
+    </PageTransition>
   );
 };
 

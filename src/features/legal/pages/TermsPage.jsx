@@ -1,11 +1,13 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import PageTransition from "../../../components/ui/PageTransition";
 
 const TermsPage = () => {
   const lastUpdate = "Agosto 2025";
   
   return (
-    <main className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/20 to-orange-50/10 relative overflow-hidden">
+    <PageTransition animationType="slide-right">
+      <main className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/20 to-orange-50/10 relative overflow-hidden">
       {/* Fondo decorativo mejorado */}
       <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
         <div className="absolute -top-20 -left-32 w-64 h-64 rounded-full bg-orange-200/20 blur-3xl animate-pulse-slow" />
@@ -209,7 +211,7 @@ const TermsPage = () => {
                 <h2 className="flex items-center gap-3">
                   <span className="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center">
                     <svg className="w-4 h-4 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c-1.657 0-3-4.03-3-9s1.343-9 3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
                     </svg>
                   </span>
                   Uso del sitio
@@ -369,7 +371,8 @@ const TermsPage = () => {
           animation-delay: 2000ms;
         }
       `}</style>
-    </main>
+      </main>
+    </PageTransition>
   );
 };
 

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import { useAuth } from '../../../contexts/AuthContext';
+import PageTransition from '../../../components/ui/PageTransition';
 import {
   FiMail,
   FiCheckCircle,
@@ -85,10 +86,11 @@ const VerifyEmailPage = () => {
   const statusConfig = getStatusConfig();
 
   return (
-    <div className={`min-h-screen bg-gradient-to-br ${statusConfig.bg} flex items-center justify-center p-4`}>
-      <div className="w-full max-w-md">
-        {/* Volver al inicio - Mobile */}
-        <div className="sm:hidden mb-6">
+    <PageTransition>
+      <div className={`min-h-screen bg-gradient-to-br ${statusConfig.bg} flex items-center justify-center p-4`}>
+        <div className="w-full max-w-md">
+          {/* Volver al inicio - Mobile */}
+          <div className="sm:hidden mb-6">
           <Link 
             to="/" 
             className="inline-flex items-center gap-2 text-indigo-600 hover:text-indigo-800 transition-colors"
@@ -236,8 +238,9 @@ const VerifyEmailPage = () => {
             <span>Volver al inicio</span>
           </Link>
         </div>
+        </div>
       </div>
-    </div>
+    </PageTransition>
   );
 };
 

@@ -1,5 +1,6 @@
 import "./App.css";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, useLocation } from "react-router-dom";
+import { AnimatePresence } from "framer-motion";
 import PaqueteDetalle from "./features/package/pages/PackageViewPage";
 import AdminDashboard from "./features/admin/pages/AdminDashboardPage";
 import AdminPaquetes from "./features/admin/pages/AdminPackagesPage";
@@ -29,10 +30,12 @@ import PrivacyPage from "./features/legal/pages/PrivacyPage";
 import TermsPage from "./features/legal/pages/TermsPage";
 import CookiesPage from "./features/legal/pages/CookiesPage";
 
-function App() {
+function AppRoutes() {
+  const location = useLocation();
+  
   return (
-    <AuthProvider>
-      <Routes>
+    <AnimatePresence mode="wait" initial={false}>
+      <Routes location={location} key={location.pathname}>
         {/* Rutas públicas */}
         <Route path="/" element={<Home />} />
         <Route path="/paquetes/:url" element={<PaqueteDetalle />} />
@@ -75,6 +78,14 @@ function App() {
           <Route path="configuracion" element={<AdminConfigPage />} />
         </Route>
       </Routes>
+    </AnimatePresence>
+  );
+}
+
+function App() {
+  return (
+    <AuthProvider>
+      <AppRoutes />
     </AuthProvider>
   );
 }

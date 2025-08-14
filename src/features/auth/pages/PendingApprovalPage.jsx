@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../contexts/AuthContext';
+import PageTransition from '../../../components/ui/PageTransition';
 import {
   FiClock,
   FiMail,
@@ -39,10 +40,11 @@ const PendingApprovalPage = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50">
-      <div className="w-full max-w-2xl">
-        {/* Volver al inicio - Mobile */}
-        <div className="sm:hidden mb-6">
+    <PageTransition>
+      <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50">
+        <div className="w-full max-w-2xl">
+          {/* Volver al inicio - Mobile */}
+          <div className="sm:hidden mb-6">
           <Link 
             to="/" 
             className="inline-flex items-center gap-2 text-amber-600 hover:text-amber-800 transition-colors"
@@ -286,8 +288,9 @@ const PendingApprovalPage = () => {
             <span>Volver al inicio</span>
           </Link>
         </div>
+        </div>
       </div>
-    </div>
+    </PageTransition>
   );
 };
 

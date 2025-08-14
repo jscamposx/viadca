@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useSearchParams, Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../contexts/AuthContext';
+import PageTransition from '../../../components/ui/PageTransition';
 import {
   FiLock,
   FiEye,
@@ -253,10 +254,11 @@ const ResetPasswordPage = () => {
 
   // Vista del formulario
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-indigo-50 via-blue-50 to-purple-50">
-      <div className="w-full max-w-md">
-        {/* Volver al inicio - Mobile */}
-        <div className="sm:hidden mb-6">
+    <PageTransition>
+      <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-indigo-50 via-blue-50 to-purple-50">
+        <div className="w-full max-w-md">
+          {/* Volver al inicio - Mobile */}
+          <div className="sm:hidden mb-6">
           <Link 
             to="/" 
             className="inline-flex items-center gap-2 text-indigo-600 hover:text-indigo-800 transition-colors"
@@ -427,8 +429,9 @@ const ResetPasswordPage = () => {
             <span>Volver al inicio</span>
           </Link>
         </div>
+        </div>
       </div>
-    </div>
+    </PageTransition>
   );
 };
 

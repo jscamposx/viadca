@@ -1,11 +1,13 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import PageTransition from "../../../components/ui/PageTransition";
 
 const PrivacyPage = () => {
   const lastUpdate = "Agosto 2025";
   
   return (
-    <main className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/20 to-orange-50/10 relative overflow-hidden">
+    <PageTransition animationType="slide-right">
+      <main className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/20 to-orange-50/10 relative overflow-hidden">
       {/* Fondo decorativo mejorado */}
       <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
         <div className="absolute -top-20 -left-32 w-64 h-64 rounded-full bg-blue-200/20 blur-3xl animate-pulse-slow" />
@@ -376,7 +378,8 @@ const PrivacyPage = () => {
           animation-delay: 2000ms;
         }
       `}</style>
-    </main>
+      </main>
+    </PageTransition>
   );
 };
 
