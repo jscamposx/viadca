@@ -359,11 +359,11 @@ const RegisterPage = () => {
                 <div className="ml-3 text-sm">
                   <label htmlFor="terms" className="text-gray-600">
                     Al registrarme, acepto los{' '}
-                    <Link to="/terms" className="text-indigo-600 hover:text-indigo-800 font-medium">
+                    <Link to="/terminos" className="text-indigo-600 hover:text-indigo-800 font-medium">
                       Términos y Condiciones
                     </Link>{' '}
                     y la{' '}
-                    <Link to="/privacy" className="text-indigo-600 hover:text-indigo-800 font-medium">
+                    <Link to="/privacidad" className="text-indigo-600 hover:text-indigo-800 font-medium">
                       Política de Privacidad
                     </Link>
                   </label>

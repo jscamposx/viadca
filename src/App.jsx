@@ -24,6 +24,11 @@ import ResetPasswordPage from "./features/auth/pages/ResetPasswordPage";
 import PendingApprovalPage from "./features/auth/pages/PendingApprovalPage";
 import ProtectedUserProfilePage from "./features/profile/pages/UserProfilePage";
 
+// Páginas legales
+import PrivacyPage from "./features/legal/pages/PrivacyPage";
+import TermsPage from "./features/legal/pages/TermsPage";
+import CookiesPage from "./features/legal/pages/CookiesPage";
+
 function App() {
   return (
     <AuthProvider>
@@ -31,6 +36,10 @@ function App() {
         {/* Rutas públicas */}
         <Route path="/" element={<Home />} />
         <Route path="/paquetes/:url" element={<PaqueteDetalle />} />
+        {/* Páginas legales */}
+        <Route path="/privacidad" element={<PrivacyPage />} />
+        <Route path="/terminos" element={<TermsPage />} />
+        <Route path="/cookies" element={<CookiesPage />} />
         
         {/* Rutas de autenticación */}
         <Route path="/login" element={<LoginPage />} />
