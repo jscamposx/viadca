@@ -197,10 +197,10 @@ const Home = () => {
   useEffect(() => {
     const sectionIds = [
       "hero",
-      "servicios",
       "destinos",
       "pasos",
       "testimonios",
+      "servicios",
     ];
 
     let ticking = false;
@@ -362,10 +362,10 @@ const Home = () => {
             <div className="hidden lg:flex items-center justify-center space-x-6 xl:space-x-8 flex-1 min-w-0 px-4">
               {[
                 { id: "hero", label: "Inicio" },
-                { id: "servicios", label: "Servicios" },
                 { id: "destinos", label: "Destinos" },
                 { id: "pasos", label: "Cómo Reservar" },
                 { id: "testimonios", label: "Testimonios" },
+                { id: "servicios", label: "Servicios" },
               ].map((link) => (
                 <a
                   key={link.id}
@@ -661,26 +661,6 @@ const Home = () => {
                     ),
                   },
                   {
-                    id: "servicios",
-                    label: "Servicios",
-                    icon: (
-                      <svg
-                        className="w-5 h-5"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                        aria-hidden="true"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2-2v2m8 0V6a2 2 0 012 2v6a2 2 0 01-2 2H6a2 2 0 01-2-2V8a2 2 0 012-2V6z"
-                        />
-                      </svg>
-                    ),
-                  },
-                  {
                     id: "destinos",
                     label: "Destinos",
                     icon: (
@@ -736,6 +716,26 @@ const Home = () => {
                           strokeLinejoin="round"
                           strokeWidth={2}
                           d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
+                        />
+                      </svg>
+                    ),
+                  },
+                  {
+                    id: "servicios",
+                    label: "Servicios",
+                    icon: (
+                      <svg
+                        className="w-5 h-5"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                        aria-hidden="true"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2-2v2m8 0V6a2 2 0 012 2v6a2 2 0 01-2 2H6a2 2 0 01-2-2V8a2 2 0 012-2V6z"
                         />
                       </svg>
                     ),
@@ -949,10 +949,11 @@ const Home = () => {
           {/* Contenido principal */}
           <Hero />
 
-          <Services />
+          {/* Reordenado según solicitud: Destinos, Pasos, Testimonios, Servicios, Logos, Footer */}
           <Destinations />
           <Steps />
           <Testimonials />
+          <Services />
           <Logos logos={logos} />
 
           <Footer

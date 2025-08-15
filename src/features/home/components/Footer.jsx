@@ -216,10 +216,7 @@ const Footer = ({ contactInfo, contactLoading, currentYear }) => (
         <div className="lg:col-span-1 space-y-6">
           <div>
             <h3 className="text-lg font-bold text-slate-900 mb-6 flex items-center gap-2">
-              <div
-                className="w-2 h-6 bg-gradient-to-b from-blue-600 to-orange-600 rounded-full"
-                aria-hidden="true"
-              ></div>
+            
               Contacto
             </h3>
 
@@ -406,10 +403,7 @@ const Footer = ({ contactInfo, contactLoading, currentYear }) => (
         <div className="lg:col-span-1 space-y-6">
           <div>
             <h3 className="text-lg font-bold text-slate-900 mb-6 flex items-center gap-2">
-              <div
-                className="w-2 h-6 bg-gradient-to-b from-blue-600 to-orange-600 rounded-full"
-                aria-hidden="true"
-              ></div>
+           
               Ubicación
             </h3>
 
