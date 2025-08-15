@@ -128,7 +128,7 @@ const AdminNav = ({ isOpen, setIsOpen }) => {
 
   const handleLogout = () => {
     logout();
-    navigate("/login");
+    navigate("/iniciar-sesion");
   };
 
   const userLinks = [

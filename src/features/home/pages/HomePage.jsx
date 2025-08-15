@@ -508,7 +508,7 @@ const Home = () => {
                           </Link>
                         )}
                         <Link
-                          to="/profile"
+                          to="/perfil"
                           onClick={closeUserMenu}
                           className="group flex items-center gap-3 rounded-xl px-3 py-2.5 text-slate-700 hover:text-blue-700 hover:bg-blue-50/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600/60 transition-all"
                           role="menuitem"
@@ -530,7 +530,7 @@ const Home = () => {
                           <span className="font-medium">Mi Perfil</span>
                         </Link>
                       </div>
-                      <div className="px-2 py-2">
+                      <div className="px-2">
                         <hr className="border-blue-100/70" />
                       </div>
                       <div className="px-2 pb-2">
@@ -563,13 +563,13 @@ const Home = () => {
               ) : (
                 <>
                   <Link
-                    to="/login"
+                    to="/iniciar-sesion"
                     className="relative text-slate-700 hover:text-blue-600 transition-all duration-300 font-medium hover:scale-105 after:content-[''] after:absolute after:w-0 after:h-0.5 after:bg-blue-600 after:left-0 after:-bottom-1 after:transition-all after:duration-300 hover:after:w-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-600"
                   >
                     Iniciar sesión
                   </Link>
                   <Link
-                    to="/register"
+                    to="/registro"
                     className="border-2 border-slate-700 text-slate-700 px-6 py-3 rounded-lg hover:bg-blue-600 hover:border-blue-600 hover:text-white hover:shadow-lg hover:scale-105 transition-all duration-300 font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-600"
                   >
                     Registrarse
@@ -839,7 +839,7 @@ const Home = () => {
                         </Link>
                       )}
                       <Link
-                        to="/profile"
+                        to="/perfil"
                         onClick={closeMobileMenu}
                         className="flex items-center gap-3 text-slate-700 hover:text-blue-600 hover:bg-blue-50 transition-all duration-300 py-3 px-4 rounded-xl font-medium transform hover:scale-[1.02]"
                       >
@@ -889,7 +889,7 @@ const Home = () => {
                   // Usuario no autenticado en móvil - Rediseñado
                   <div className="space-y-3">
                     <Link
-                      to="/login"
+                      to="/iniciar-sesion"
                       onClick={closeMobileMenu}
                       className="flex items-center justify-center gap-3 text-slate-700 hover:text-blue-600 hover:bg-blue-50 transition-all duration-300 py-3 px-4 rounded-xl font-medium border border-slate-200 hover:border-blue-300 transform hover:scale-[1.02]"
                     >
@@ -910,7 +910,7 @@ const Home = () => {
                       <span>Iniciar sesión</span>
                     </Link>
                     <Link
-                      to="/register"
+                      to="/registro"
                       onClick={closeMobileMenu}
                       className="flex items-center justify-center gap-3 w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-6 py-4 rounded-xl hover:from-blue-700 hover:to-indigo-700 hover:shadow-lg transition-all duration-300 font-semibold transform hover:scale-[1.02]"
                     >

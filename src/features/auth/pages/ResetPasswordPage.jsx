@@ -97,7 +97,7 @@ const ResetPasswordPage = () => {
 
       // Redirigir después de un momento
       setTimeout(() => {
-        navigate("/login", {
+        navigate("/iniciar-sesion", {
           state: {
             message:
               "Contraseña restablecida. Puedes iniciar sesión con tu nueva contraseña.",
@@ -167,14 +167,14 @@ const ResetPasswordPage = () => {
 
                 <div className="space-y-4">
                   <Link
-                    to="/forgot-password"
+                    to="/recuperar-contraseña"
                     className="w-full inline-block bg-gradient-to-r from-red-600 to-rose-700 hover:from-red-700 hover:to-rose-800 text-white font-semibold py-3 px-6 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-0.5"
                   >
                     Solicitar Nuevo Enlace
                   </Link>
 
                   <Link
-                    to="/login"
+                    to="/iniciar-sesion"
                     className="inline-block text-indigo-600 hover:text-indigo-800 font-medium transition-colors"
                   >
                     Volver al inicio de sesión
@@ -247,7 +247,7 @@ const ResetPasswordPage = () => {
                 </p>
 
                 <Link
-                  to="/login"
+                  to="/iniciar-sesion"
                   className="w-full inline-block bg-gradient-to-r from-green-600 to-emerald-700 hover:from-green-700 hover:to-emerald-800 text-white font-semibold py-3 px-6 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-0.5"
                 >
                   Iniciar Sesión
@@ -507,7 +507,7 @@ const ResetPasswordPage = () => {
               {/* Enlace para volver al login */}
               <div className="text-center mt-6">
                 <Link
-                  to="/login"
+                  to="/iniciar-sesion"
                   className="text-indigo-600 hover:text-indigo-800 font-medium transition-colors"
                 >
                   Volver al inicio de sesión

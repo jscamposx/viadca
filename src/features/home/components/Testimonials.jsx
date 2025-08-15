@@ -152,8 +152,6 @@ const Testimonials = () => {
 			id="testimonios"
 			className="py-14 md:py-18 lg:py-20 px-4 sm:px-6 lg:px-8 scroll-mt-32"
 			aria-labelledby="testimonios-heading"
-			onMouseEnter={() => setPaused(true)}
-			onMouseLeave={() => setPaused(false)}
 		>
 			<div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-10 md:gap-12 xl:gap-16 items-center">
 				{/* Left content */}
@@ -183,6 +181,10 @@ const Testimonials = () => {
 					className="relative h-[320px] sm:h-[360px] md:h-[400px] lg:h-[420px] xl:h-[460px] transform-gpu"
 					role="region"
 					aria-label="Carrusel de testimonios"
+					onMouseEnter={() => setPaused(true)}
+					onMouseLeave={() => setPaused(false)}
+					onFocus={() => setPaused(true)}
+					onBlur={() => setPaused(false)}
 				>
 					{/* Deck de tarjetas */}
 					<div

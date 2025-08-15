@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../../../contexts/AuthContext";
 import PageTransition from "../../../components/ui/PageTransition";
 import {
@@ -17,6 +17,7 @@ import {
 
 const RegisterPage = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { register, login } = useAuth();
 
   const [formData, setFormData] = useState({
@@ -49,6 +50,13 @@ const RegisterPage = () => {
 
     setPasswordStrength(strength);
   }, [formData.contrasena]);
+
+  // Si se llega desde una página legal con state { fromRegister: true }, ir arriba y enfocar el título
+  useEffect(() => {
+    if (location.state?.fromRegisterBack) {
+      window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+    }
+  }, [location.state]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -248,7 +256,7 @@ const RegisterPage = () => {
             </div>
 
             {/* Volver al inicio */}
-            <div className="mb-6">
+            <div className="mb-6 flex items-center gap-4 flex-wrap">
               <Link
                 to="/"
                 className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors font-medium group"
@@ -566,16 +574,22 @@ const RegisterPage = () => {
                     </div>
                     <div className="ml-3 text-sm">
                       <label htmlFor="terms" className="text-gray-600">
-                        Acepto los{" "}
+                        Acepto los {" "}
                         <Link
-                          to="/terminos"
+                          to={{ pathname: "/terminos" }}
+                          state={{ from: "/registro" }}
+                          target="_blank"
+                          rel="noopener noreferrer"
                           className="text-indigo-600 hover:text-indigo-800 font-medium"
                         >
                           Términos y Condiciones
                         </Link>{" "}
-                        y la{" "}
+                        y la {" "}
                         <Link
-                          to="/privacidad"
+                          to={{ pathname: "/privacidad" }}
+                          state={{ from: "/registro" }}
+                          target="_blank"
+                          rel="noopener noreferrer"
                           className="text-indigo-600 hover:text-indigo-800 font-medium"
                         >
                           Política de Privacidad
@@ -632,7 +646,7 @@ const RegisterPage = () => {
                 {/* Iniciar sesión */}
                 <div>
                   <Link
-                    to="/login"
+                    to="/iniciar-sesion"
                     className="w-full block text-center bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400 font-medium py-3.5 px-6 rounded-xl shadow-sm transition-all duration-300 group"
                   >
                     <div className="flex items-center justify-center gap-2">

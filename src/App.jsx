@@ -27,12 +27,15 @@ import ProtectedUserProfilePage from "./features/profile/pages/UserProfilePage";
 import PrivacyPage from "./features/legal/pages/PrivacyPage";
 import TermsPage from "./features/legal/pages/TermsPage";
 import CookiesPage from "./features/legal/pages/CookiesPage";
+import ScrollToTop from "./components/ui/ScrollToTop";
 
 function AppRoutes() {
   const location = useLocation();
 
   return (
     <AnimatePresence mode="wait" initial={false}>
+      {/* Asegura que cada navegación coloque el scroll arriba */}
+      <ScrollToTop />
       <Routes location={location} key={location.pathname}>
         {/* Rutas públicas */}
         <Route path="/" element={<Home />} />
@@ -42,20 +45,14 @@ function AppRoutes() {
         <Route path="/terminos" element={<TermsPage />} />
         <Route path="/cookies" element={<CookiesPage />} />
 
-        {/* Rutas de autenticación */}
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/register" element={<RegisterPage />} />
-        <Route path="/verify-email" element={<VerifyEmailPage />} />
-        <Route path="/verificar-email" element={<VerifyEmailPage />} />
-        <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-        <Route path="/reset-password" element={<ResetPasswordPage />} />
+        {/* Rutas de autenticación (ES) */}
+        <Route path="/iniciar-sesion" element={<LoginPage />} />
+        <Route path="/registro" element={<RegisterPage />} />
+        <Route path="/verificar-correo" element={<VerifyEmailPage />} />
+        <Route path="/recuperar-contraseña" element={<ForgotPasswordPage />} />
         <Route path="/restablecer-contraseña" element={<ResetPasswordPage />} />
-        <Route
-          path="/restablecer-contrase%c3%b1a"
-          element={<ResetPasswordPage />}
-        />
-        <Route path="/pending-approval" element={<PendingApprovalPage />} />
-        <Route path="/profile" element={<ProtectedUserProfilePage />} />
+        <Route path="/aprobacion-pendiente" element={<PendingApprovalPage />} />
+        <Route path="/perfil" element={<ProtectedUserProfilePage />} />
 
         {/* Rutas protegidas de administración */}
         <Route

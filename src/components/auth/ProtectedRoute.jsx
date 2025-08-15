@@ -49,15 +49,15 @@ const ProtectedRoute = ({ children, requiredRole = null }) => {
 
   if (!isAuthenticated()) {
     // Redirigir al login guardando la ubicación actual
-    return <Navigate to="/login" state={{ from: location }} replace />;
+    return <Navigate to="/iniciar-sesion" state={{ from: location }} replace />;
   }
 
   // Verificar si el usuario está pre-autorizado - redirigir a página de espera
   if (
     user?.rol === "pre-autorizado" &&
-    location.pathname !== "/pending-approval"
+    location.pathname !== "/aprobacion-pendiente"
   ) {
-    return <Navigate to="/pending-approval" replace />;
+    return <Navigate to="/aprobacion-pendiente" replace />;
   }
 
   // Verificar rol si es requerido

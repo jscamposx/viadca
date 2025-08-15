@@ -364,7 +364,7 @@ const LoginPage = () => {
                       </label>
                     </div>
                     <Link
-                      to="/forgot-password"
+                      to="/recuperar-contraseña"
                       className="text-sm text-indigo-600 hover:text-indigo-800 transition-colors font-medium"
                     >
                       ¿Olvidaste contraseña?
@@ -417,7 +417,7 @@ const LoginPage = () => {
                 {/* Crear cuenta */}
                 <div>
                   <Link
-                    to="/register"
+                    to="/registro"
                     className="w-full block text-center bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400 font-medium py-3.5 px-6 rounded-xl shadow-sm transition-all duration-300 group"
                   >
                     <div className="flex items-center justify-center gap-2">

@@ -233,7 +233,7 @@ const VerifyEmailPage = () => {
                 {status === "success" && (
                   <div className="space-y-4">
                     <Link
-                      to="/login"
+                      to="/iniciar-sesion"
                       className={`w-full inline-block bg-gradient-to-r ${statusConfig.button} text-white font-semibold py-3.5 px-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-0.5 text-center`}
                     >
                       Iniciar Sesión
@@ -253,13 +253,13 @@ const VerifyEmailPage = () => {
                   <div className="space-y-4">
                     <div className="flex flex-col gap-4">
                       <Link
-                        to="/register"
+                        to="/registro"
                         className={`text-center bg-gradient-to-r ${statusConfig.button} text-white font-semibold py-3.5 px-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300`}
                       >
                         Registrarse de Nuevo
                       </Link>
                       <Link
-                        to="/login"
+                        to="/iniciar-sesion"
                         className="text-center bg-white border border-indigo-600 text-indigo-600 hover:bg-indigo-50 font-semibold py-3.5 px-6 rounded-xl shadow-sm transition-colors"
                       >
                         Intentar Iniciar Sesión

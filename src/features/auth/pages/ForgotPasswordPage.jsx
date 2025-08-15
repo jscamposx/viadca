@@ -158,7 +158,7 @@ const ForgotPasswordPage = () => {
 
                 <div className="space-y-6">
                   <Link
-                    to="/login"
+                    to="/iniciar-sesion"
                     className="w-full inline-block text-center bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-semibold py-3.5 px-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-0.5"
                   >
                     Volver al Login
@@ -380,14 +380,14 @@ const ForgotPasswordPage = () => {
                 <div className="mt-8 pt-5 border-t border-gray-200">
                   <div className="flex flex-col sm:flex-row justify-between gap-4 text-sm">
                     <Link
-                      to="/login"
+                      to="/iniciar-sesion"
                       className="text-indigo-600 hover:text-indigo-800 font-medium transition-colors inline-flex items-center gap-2"
                     >
                       <FiArrowLeft className="w-4 h-4" />
                       <span>Volver al Login</span>
                     </Link>
                     <Link
-                      to="/register"
+                      to="/registro"
                       className="text-gray-600 hover:text-gray-800 transition-colors"
                     >
                       ¿No tienes cuenta? Regístrate
