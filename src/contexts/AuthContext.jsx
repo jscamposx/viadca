@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect, useRef } from "react";
 import authService from "../api/authService";
+import { setAccessToken, clearAccessToken } from "../api/tokenManager";
 
 const AuthContext = createContext();
 
@@ -30,6 +31,8 @@ export const AuthProvider = ({ children }) => {
     setIsProfileLoaded(true);
     localStorage.removeItem("auth_user");
     localStorage.removeItem("mock_user_role");
+    // limpia bearer en memoria
+    clearAccessToken();
   };
 
   // Guardar usuario en storage (opcional) y estado
@@ -87,8 +90,11 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const login = async (credentials) => {
-    // Backend setea cookie; luego consultamos el perfil deduplicado
-    await authService.login(credentials);
+    // Backend setea cookie; además puede devolver access_token como fallback
+    const loginRes = await authService.login(credentials);
+    if (loginRes?.access_token) {
+      setAccessToken(loginRes.access_token);
+    }
     const userData = await fetchProfileOnce();
     return { usuario: userData };
   };

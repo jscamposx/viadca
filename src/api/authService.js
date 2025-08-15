@@ -1,4 +1,5 @@
 import api from "./axiosConfig";
+import { setAccessToken, clearAccessToken } from "./tokenManager";
 
 const authService = {
   // Endpoints públicos
@@ -8,15 +9,24 @@ const authService = {
   },
 
   login: async (credentials) => {
-    // El backend setea cookie HttpOnly access_token; no guardamos el token
+    // El backend setea cookie HttpOnly y además devuelve access_token como fallback
     const response = await api.post("/usuarios/login", credentials);
+    // Guardar token en memoria si llega (para Safari / ITP)
+    if (response?.data?.access_token) {
+      setAccessToken(response.data.access_token);
+    }
     return response.data;
   },
 
   logout: async () => {
-    // Limpia la cookie HttpOnly en el backend
-    const response = await api.post("/usuarios/logout");
-    return response.data;
+    try {
+      // Limpia la cookie HttpOnly en el backend
+      const response = await api.post("/usuarios/logout");
+      return response.data;
+    } finally {
+      // Siempre limpiar token en memoria
+      clearAccessToken();
+    }
   },
 
   verifyEmail: async (token) => {

@@ -1,4 +1,5 @@
 import axios from "axios";
+import { getAccessToken } from "./tokenManager";
 
 // Obtener la URL base con fallback
 const getBaseURL = () => {
@@ -44,17 +45,34 @@ const apiClient = axios.create({
   withCredentials: true,
 });
 
-// Interceptor para logs de request (solo en desarrollo)
+// Interceptor para logs de request (solo en desarrollo) y para adjuntar Authorization si hay token en memoria
 apiClient.interceptors.request.use(
   (config) => {
+    // Adjuntar Bearer token si está disponible (fallback Safari/iOS cuando cookies no se envían)
+    try {
+      const token = getAccessToken?.();
+      if (token && !config.headers?.Authorization) {
+        config.headers = config.headers || {};
+        config.headers.Authorization = `Bearer ${token}`;
+      }
+    } catch (_) {
+      // noop
+    }
+
     if (import.meta.env.DEV) {
+      // Enmascarar datos sensibles en logs
+      const sanitizedHeaders = { ...(config.headers || {}) };
+      if (sanitizedHeaders.Authorization) {
+        sanitizedHeaders.Authorization = "Bearer ***";
+      }
+
       console.log("🔄 API Request:", {
         method: config.method?.toUpperCase(),
         url: config.url,
         baseURL: config.baseURL,
         fullURL: `${config.baseURL}${config.url}`,
         data: config.data,
-        headers: config.headers,
+        headers: sanitizedHeaders,
         withCredentials: config.withCredentials,
       });
     }
@@ -72,11 +90,25 @@ apiClient.interceptors.request.use(
 apiClient.interceptors.response.use(
   (response) => {
     if (import.meta.env.DEV) {
+      // Evitar loguear tokens
+      let dataLog = response.data;
+      try {
+        if (
+          dataLog &&
+          typeof dataLog === "object" &&
+          Object.prototype.hasOwnProperty.call(dataLog, "access_token")
+        ) {
+          dataLog = { ...dataLog, access_token: "***" };
+        }
+      } catch (_) {
+        // noop
+      }
+
       console.log("✅ API Response:", {
         status: response.status,
         statusText: response.statusText,
         url: response.config.url,
-        data: response.data,
+        data: dataLog,
       });
     }
     return response;
@@ -88,6 +120,11 @@ apiClient.interceptors.response.use(
       const logLevel = isAuthError ? "log" : "error";
       const emoji = isAuthError ? "🔒" : "❌";
 
+      const sanitizedHeaders = { ...(error.config?.headers || {}) };
+      if (sanitizedHeaders.Authorization) {
+        sanitizedHeaders.Authorization = "Bearer ***";
+      }
+
       console[logLevel](
         `${emoji} API Response ${isAuthError ? "(Auth required)" : "Error"}:`,
         {
@@ -96,7 +133,7 @@ apiClient.interceptors.response.use(
           statusText: error.response?.statusText,
           url: error.config?.url,
           data: error.response?.data,
-          headers: error.response?.headers,
+          headers: sanitizedHeaders,
         },
       );
     }
