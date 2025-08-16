@@ -35,7 +35,9 @@
     "@eslint/js": "^9.29.0",
     "@types/react": "^19.1.8",
     "@types/react-dom": "^19.1.6",
+    "@vitejs/plugin-legacy": "^7.2.1",
     "@vitejs/plugin-react-swc": "^3.10.2",
+    "autoprefixer": "^10.4.20",
     "eslint": "^9.29.0",
     "eslint-config-prettier": "^10.1.5",
     "eslint-plugin-react-hooks": "^5.2.0",
@@ -45,5 +47,12 @@
     "terser": "^5.43.1",
     "vite": "^7.0.0",
     "vite-plugin-compression": "^0.5.1"
-  }
+  },
+  "browserslist": [
+    ">0.2%",
+    "not dead",
+    "not op_mini all",
+    "iOS >= 12",
+    "Safari >= 13"
+  ]
 }

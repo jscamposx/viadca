@@ -2,12 +2,23 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import tailwindcss from "@tailwindcss/vite";
 import viteCompression from "vite-plugin-compression";
+import legacy from "@vitejs/plugin-legacy";
 
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [
     react(),
     tailwindcss(),
+    legacy({
+      targets: [
+        ">0.2%",
+        "not dead",
+        "not op_mini all",
+        "iOS >= 12",
+        "Safari >= 13"
+      ],
+      modernPolyfills: true,
+    }),
     // Plugin de compresión gzip
     viteCompression({
       algorithm: "gzip",
