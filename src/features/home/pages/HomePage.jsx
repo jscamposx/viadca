@@ -3,7 +3,8 @@ import { Link } from "react-router-dom";
 import { useAuth } from "../../../contexts/AuthContext";
 import { useContactInfo } from "../../../hooks/useContactInfo";
 import PageTransition from "../../../components/ui/PageTransition";
-
+import { FiGrid } from "react-icons/fi";
+import { computePosition, offset, flip, shift, size, autoUpdate } from "@floating-ui/dom";
 import Hero from "../components/Hero";
 import Services from "../components/Services";
 import Destinations from "../components/Destinations";
@@ -38,6 +39,8 @@ const Home = () => {
   const { contactInfo, loading: contactLoading } = useContactInfo();
   const [activeSection, setActiveSection] = useState("hero");
   const [scrollProgress, setScrollProgress] = useState(0);
+  const userBtnRef = useRef(null);
+  const dropdownRef = useRef(null);
 
   const displayName = useMemo(() => {
     if (!user) return "Usuario";
@@ -126,7 +129,44 @@ const Home = () => {
   // Actualiza altura cuando cambian estados que sí afectan el alto del nav (no el menú móvil desplegado)
   useEffect(() => {
     setHeaderHeight(navRef.current?.offsetHeight || 90);
-  }, [isUserMenuOpen, isScrolled]);
+  }, [isScrolled]);
+
+  // Reposicionar el menú con Floating UI (Popper-like)
+  useEffect(() => {
+    if (!isUserMenuOpen) return;
+    const reference = userBtnRef.current;
+    const floating = dropdownRef.current;
+    if (!reference || !floating) return;
+
+    // ocultar hasta tener la primera posición calculada
+    floating.style.opacity = "0";
+    let shown = false;
+
+    const cleanupAuto = autoUpdate(reference, floating, async () => {
+      await computePosition(reference, floating, {
+        placement: "bottom-end",
+        middleware: [offset(8), flip({ fallbackAxisSideDirection: "end" }), shift({ padding: 8 }), size({
+          apply({ availableWidth, availableHeight, elements }) {
+            Object.assign(elements.floating.style, {
+              maxWidth: `${Math.min(availableWidth, 400)}px`,
+              maxHeight: `${Math.min(availableHeight - 16, 600)}px`,
+            });
+          },
+        })],
+      }).then(({ x, y }) => {
+        Object.assign(floating.style, {
+          left: `${x}px`,
+          top: `${y}px`,
+        });
+        if (!shown) {
+          floating.style.opacity = "1";
+          shown = true;
+        }
+      });
+    });
+
+    return () => cleanupAuto();
+  }, [isUserMenuOpen]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -338,7 +378,7 @@ const Home = () => {
             ? "bg-white/95 shadow-md border-b border-blue-200/60 lg:backdrop-blur-lg"
             : "bg-white/80 lg:bg-gradient-to-br lg:from-blue-50/90 lg:to-orange-50/90"
         }`}
-        style={{ willChange: "transform, opacity" }}
+        style={{ willChange: "transform, opacity", "--header-h": `${headerHeight}px` }}
       >
         <nav
           ref={navRef}
@@ -387,6 +427,7 @@ const Home = () => {
               {isAuthenticated() ? (
                 <div className="relative user-menu-container">
                   <button
+                    ref={userBtnRef}
                     onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
                     className={`group flex items-center gap-2.5 rounded-full px-2.5 py-2 transition-all duration-300 border border-transparent hover:border-blue-200/70 hover:bg-white/70 hover:shadow-sm ${
                       isUserMenuOpen
@@ -437,11 +478,12 @@ const Home = () => {
                   </button>
                   {isUserMenuOpen && (
                     <div
-                      className="absolute right-0 mt-3 w-72 sm:w-80 overflow-hidden rounded-2xl border border-slate-200/70 bg-white/90 backdrop-blur-xl shadow-2xl ring-1 ring-slate-900/5 transform origin-top-right animate-in transition-all duration-200 ease-out"
+                      ref={dropdownRef}
+                      className="fixed w-72 sm:w-80 overflow-hidden rounded-2xl border border-slate-200/70 bg-white shadow-2xl ring-1 ring-slate-900/5 will-change-transform will-change-opacity transition-opacity duration-150 ease-out z-[10000]"
                       id="user-menu"
                       role="menu"
                       aria-label="Menú de usuario"
-                      style={{ willChange: "transform, opacity" }}
+                      style={{ opacity: 0 }}
                     >
                       <div
                         className="h-1 w-full bg-gradient-to-r from-blue-500 via-indigo-500 to-cyan-500"
@@ -724,20 +766,7 @@ const Home = () => {
                     id: "servicios",
                     label: "Servicios",
                     icon: (
-                      <svg
-                        className="w-5 h-5"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                        aria-hidden="true"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2-2v2m8 0V6a2 2 0 012 2v6a2 2 0 01-2 2H6a2 2 0 01-2-2V8a2 2 0 012-2V6z"
-                        />
-                      </svg>
+                      <FiGrid className="w-5 h-5" aria-hidden="true" />
                     ),
                   },
                 ].map((link, index) => (
