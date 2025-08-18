@@ -45,7 +45,6 @@
     transform: translate3d(0, 0, 0);
   }
   100% {
-    /* Con contenido duplicado, media pista (-50%) produce bucle perfecto */
     transform: translate3d(-50%, 0, 0);
   }
 }

@@ -2,7 +2,8 @@
 // Persistimos solo en iOS (cualquier navegador WebKit) y Safari en macOS.
 let accessToken = null;
 
-const isBrowser = typeof window !== "undefined" && typeof navigator !== "undefined";
+const isBrowser =
+  typeof window !== "undefined" && typeof navigator !== "undefined";
 
 const isIOSLike = () => {
   if (!isBrowser) return false;

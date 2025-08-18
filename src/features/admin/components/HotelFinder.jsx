@@ -284,7 +284,7 @@ const HotelFinder = ({ destination, onHotelSelect, selectedHotel }) => {
         if (photosToUse.length > 0) {
           const imageUrls = [];
 
-          for (let i = 0; i < Math.min(photosToUse.length, 3); i++) {
+          for (let i = 0; i < Math.min(photosToUse.length, 10); i++) {
             try {
               const photo = photosToUse[i];
 
@@ -339,7 +339,7 @@ const HotelFinder = ({ destination, onHotelSelect, selectedHotel }) => {
           try {
             const fallbackImages = [];
 
-            for (let i = 0; i < Math.min(hotel.googlePhotos.length, 3); i++) {
+            for (let i = 0; i < Math.min(hotel.googlePhotos.length, 10); i++) {
               try {
                 const photo = hotel.googlePhotos[i];
                 const photoUrl = photo.getUrl({

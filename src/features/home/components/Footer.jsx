@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 
 const Footer = ({ contactInfo, contactLoading, currentYear }) => (
   <footer
+    id="footer"
     role="contentinfo"
     aria-labelledby="footer-heading"
     className="relative bg-gradient-to-br from-slate-50 via-blue-50/30 to-orange-50/20 text-slate-700 pt-20 pb-8 overflow-hidden"
@@ -216,7 +217,6 @@ const Footer = ({ contactInfo, contactLoading, currentYear }) => (
         <div className="lg:col-span-1 space-y-6">
           <div>
             <h3 className="text-lg font-bold text-slate-900 mb-6 flex items-center gap-2">
-            
               Contacto
             </h3>
 
@@ -403,7 +403,6 @@ const Footer = ({ contactInfo, contactLoading, currentYear }) => (
         <div className="lg:col-span-1 space-y-6">
           <div>
             <h3 className="text-lg font-bold text-slate-900 mb-6 flex items-center gap-2">
-           
               Ubicación
             </h3>
 

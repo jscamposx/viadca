@@ -7,7 +7,6 @@ const Pagination = ({
   totalItems,
   itemsPerPage,
   onPageChange,
-  onItemsPerPageChange,
 }) => {
   if (totalPages <= 1) return null;
 
@@ -33,28 +32,20 @@ const Pagination = ({
 
   const visiblePages = getVisiblePages();
 
+  const start = (currentPage - 1) * itemsPerPage + 1;
+  const end = Math.min(
+    currentPage * itemsPerPage,
+    totalItems || currentPage * itemsPerPage,
+  );
+
   return (
     <div className="flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0 mt-8">
       {/* Información de elementos */}
       <div className="text-sm text-gray-600">
-        Mostrando {(currentPage - 1) * itemsPerPage + 1} -{" "}
-        {Math.min(currentPage * itemsPerPage, totalItems)} de {totalItems}{" "}
-        elementos
+        Mostrando {start} - {end} de {totalItems || end} elementos
       </div>
 
       <div className="flex items-center space-x-4">
-        {/* Selector de elementos por página */}
-        <select
-          value={itemsPerPage}
-          onChange={(e) => onItemsPerPageChange(parseInt(e.target.value))}
-          className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-        >
-          <option value={5}>5 por página</option>
-          <option value={10}>10 por página</option>
-          <option value={20}>20 por página</option>
-          <option value={50}>50 por página</option>
-        </select>
-
         {/* Controles de paginación */}
         <div className="flex items-center space-x-2">
           <button

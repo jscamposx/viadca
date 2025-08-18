@@ -2,7 +2,14 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import apiClient from "../../../api/axiosConfig";
 import { formatPrecio, sanitizeMoneda } from "../../../utils/priceUtils";
-import { FiMapPin, FiSend, FiHome, FiGlobe, FiArrowRight, FiCheckCircle } from "react-icons/fi";
+import {
+  FiMapPin,
+  FiSend,
+  FiHome,
+  FiGlobe,
+  FiArrowRight,
+  FiCheckCircle,
+} from "react-icons/fi";
 
 const Destinations = () => {
   const [items, setItems] = useState([]);
@@ -62,116 +69,127 @@ const Destinations = () => {
         )}
 
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
-          {loading && [0, 1, 2].map((i) => (
-            <article
-              key={`skeleton-${i}`}
-              className="bg-white rounded-2xl shadow-lg overflow-hidden border border-blue-100 animate-pulse"
-              aria-hidden="true"
-            >
-              <div className="relative overflow-hidden">
-                <div className="w-full h-48 sm:h-56 lg:h-64 bg-slate-200" />
-              </div>
-              <div className="p-5 lg:p-6">
-                <div className="flex justify-between items-start mb-3">
-                  <div className="h-6 w-40 bg-slate-200 rounded" />
-                  <div className="h-6 w-20 bg-slate-200 rounded" />
-                </div>
-                <div className="h-4 w-32 bg-slate-200 rounded mb-4" />
-                <div className="flex items-center justify-between">
-                  <div className="h-4 w-24 bg-slate-200 rounded" />
-                  <div className="h-4 w-20 bg-slate-200 rounded" />
-                </div>
-              </div>
-            </article>
-          ))}
-
-          {!loading && items.map((p) => {
-            const img = p?.primera_imagen ||
-              "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1200&q=80&auto=format&fit=crop";
-            const moneda = sanitizeMoneda(p?.moneda);
-            const precio = formatPrecio(p?.precio_total, moneda);
-            const duracion = p?.duracion_dias ? `${p.duracion_dias} días` : "";
-            const destinoTxt = p?.destinos_nombres || "Destino";
-            const url = `/paquetes/${p?.codigoUrl}`;
-
-            return (
+          {loading &&
+            [0, 1, 2].map((i) => (
               <article
-                key={p?.codigoUrl || p?.titulo}
-                className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-2 overflow-hidden border border-blue-100 hover:border-blue-300 group"
+                key={`skeleton-${i}`}
+                className="bg-white rounded-2xl shadow-lg overflow-hidden border border-blue-100 animate-pulse"
+                aria-hidden="true"
               >
                 <div className="relative overflow-hidden">
-                  <img
-                    src={img}
-                    alt={p?.titulo || destinoTxt}
-                    className="w-full h-48 sm:h-56 lg:h-64 object-cover group-hover:scale-110 transition-transform duration-500"
-                  />
-                  <div
-                    className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                    aria-hidden="true"
-                  ></div>
-                  <div className="absolute top-4 right-4">
-                    <span className="bg-green-600 text-white px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1">
-                      <FiCheckCircle className="w-3 h-3" aria-hidden="true" />
-                      Activo
-                    </span>
-                  </div>
-                  <div className="absolute bottom-4 left-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                    <span className="bg-white/90 backdrop-blur-sm text-slate-800 px-3 py-2 rounded-lg text-sm font-medium flex items-center gap-1">
-                      <FiMapPin className="w-4 h-4 text-blue-600" aria-hidden="true" />
-                      {destinoTxt}
-                    </span>
-                  </div>
+                  <div className="w-full h-48 sm:h-56 lg:h-64 bg-slate-200" />
                 </div>
                 <div className="p-5 lg:p-6">
                   <div className="flex justify-between items-start mb-3">
-                    <h3 className="font-semibold text-lg lg:text-xl text-slate-800 group-hover:text-blue-600 transition-colors">
-                      {p?.titulo || "Paquete"}
-                    </h3>
-                    <div className="text-right">
-                      <span className="text-sm text-slate-500">Desde</span>
-                      <div className="flex items-center gap-2 justify-end">
-                        <div className="font-bold text-lg lg:text-xl text-green-600">
-                          {precio || "—"}
-                        </div>
-                        {moneda && (
-                          <span
-                            className="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-slate-100 text-slate-600 border border-slate-200"
-                            title={`Moneda: ${moneda}`}
-                            aria-label={`Moneda ${moneda}`}
-                          >
-                            {moneda}
-                          </span>
-                        )}
-                      </div>
-                    </div>
+                    <div className="h-6 w-40 bg-slate-200 rounded" />
+                    <div className="h-6 w-20 bg-slate-200 rounded" />
                   </div>
-                  <div className="flex items-center text-slate-600 mb-4">
-                    <FiMapPin className="w-4 h-4 mr-2 text-blue-500" aria-hidden="true" />
-                    <span className="text-sm">{duracion || destinoTxt}</span>
-                  </div>
+                  <div className="h-4 w-32 bg-slate-200 rounded mb-4" />
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-4 text-xs text-slate-500">
-                      <span className="flex items-center gap-1">
-                        <FiSend className="w-3 h-3" aria-hidden="true" />
-                        Vuelos
-                      </span>
-                      <span className="flex items-center gap-1">
-                        <FiHome className="w-3 h-3" aria-hidden="true" />
-                        Hotel 4★
-                      </span>
-                    </div>
-                    <Link
-                      to={url}
-                      className="text-blue-600 hover:text-blue-700 font-medium text-sm hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2 rounded"
-                      aria-label={`Ver detalles de ${p?.titulo || "paquete"}`}
-                    >
-                      Ver detalles →
-                    </Link>
+                    <div className="h-4 w-24 bg-slate-200 rounded" />
+                    <div className="h-4 w-20 bg-slate-200 rounded" />
                   </div>
                 </div>
               </article>
-            );
-          })}
+            ))}
+
+          {!loading &&
+            items.map((p) => {
+              const img =
+                p?.primera_imagen ||
+                "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1200&q=80&auto=format&fit=crop";
+              const moneda = sanitizeMoneda(p?.moneda);
+              const precio = formatPrecio(p?.precio_total, moneda);
+              const duracion = p?.duracion_dias
+                ? `${p.duracion_dias} días`
+                : "";
+              const destinoTxt = p?.destinos_nombres || "Destino";
+              const url = `/paquetes/${p?.codigoUrl}`;
+
+              return (
+                <article
+                  key={p?.codigoUrl || p?.titulo}
+                  className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-2 overflow-hidden border border-blue-100 hover:border-blue-300 group"
+                >
+                  <div className="relative overflow-hidden">
+                    <img
+                      src={img}
+                      alt={p?.titulo || destinoTxt}
+                      className="w-full h-48 sm:h-56 lg:h-64 object-cover group-hover:scale-110 transition-transform duration-500"
+                    />
+                    <div
+                      className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                      aria-hidden="true"
+                    ></div>
+                    <div className="absolute top-4 right-4">
+                      <span className="bg-green-600 text-white px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1">
+                        <FiCheckCircle className="w-3 h-3" aria-hidden="true" />
+                        Activo
+                      </span>
+                    </div>
+                    <div className="absolute bottom-4 left-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                      <span className="bg-white/90 backdrop-blur-sm text-slate-800 px-3 py-2 rounded-lg text-sm font-medium flex items-center gap-1">
+                        <FiMapPin
+                          className="w-4 h-4 text-blue-600"
+                          aria-hidden="true"
+                        />
+                        {destinoTxt}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="p-5 lg:p-6">
+                    <div className="flex justify-between items-start mb-3">
+                      <h3 className="font-semibold text-lg lg:text-xl text-slate-800 group-hover:text-blue-600 transition-colors">
+                        {p?.titulo || "Paquete"}
+                      </h3>
+                      <div className="text-right">
+                        <span className="text-sm text-slate-500">Desde</span>
+                        <div className="flex items-center gap-2 justify-end">
+                          <div className="font-bold text-lg lg:text-xl text-green-600">
+                            {precio || "—"}
+                          </div>
+                          {moneda && (
+                            <span
+                              className="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-slate-100 text-slate-600 border border-slate-200"
+                              title={`Moneda: ${moneda}`}
+                              aria-label={`Moneda ${moneda}`}
+                            >
+                              {moneda}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex items-center text-slate-600 mb-4">
+                      <FiMapPin
+                        className="w-4 h-4 mr-2 text-blue-500"
+                        aria-hidden="true"
+                      />
+                      <span className="text-sm">{duracion || destinoTxt}</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-4 text-xs text-slate-500">
+                        <span className="flex items-center gap-1">
+                          <FiSend className="w-3 h-3" aria-hidden="true" />
+                          Vuelos
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <FiHome className="w-3 h-3" aria-hidden="true" />
+                          Hotel 4★
+                        </span>
+                      </div>
+                      <Link
+                        to={url}
+                        className="text-blue-600 hover:text-blue-700 font-medium text-sm hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2 rounded"
+                        aria-label={`Ver detalles de ${p?.titulo || "paquete"}`}
+                      >
+                        Ver detalles →
+                      </Link>
+                    </div>
+                  </div>
+                </article>
+              );
+            })}
         </div>
 
         {/* Ver más destinos */}

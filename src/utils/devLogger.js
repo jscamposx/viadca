@@ -1,4 +1,3 @@
-// Utilidad para logs de desarrollo más limpia
 export const devLog = {
   info: (message, data = null) => {
     if (import.meta.env.DEV) {

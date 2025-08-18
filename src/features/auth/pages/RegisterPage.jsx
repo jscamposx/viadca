@@ -574,7 +574,7 @@ const RegisterPage = () => {
                     </div>
                     <div className="ml-3 text-sm">
                       <label htmlFor="terms" className="text-gray-600">
-                        Acepto los {" "}
+                        Acepto los{" "}
                         <Link
                           to={{ pathname: "/terminos" }}
                           state={{ from: "/registro" }}
@@ -584,7 +584,7 @@ const RegisterPage = () => {
                         >
                           Términos y Condiciones
                         </Link>{" "}
-                        y la {" "}
+                        y la{" "}
                         <Link
                           to={{ pathname: "/privacidad" }}
                           state={{ from: "/registro" }}

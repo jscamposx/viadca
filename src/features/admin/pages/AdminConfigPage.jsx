@@ -2,9 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import {
   FiSave,
   FiRefreshCw,
-  FiTrash2,
-  FiEdit2,
-  FiDatabase,
+  FiSettings,
   FiPhone,
   FiMail,
   FiMapPin,
@@ -12,6 +10,11 @@ import {
   FiInstagram,
   FiFacebook,
   FiYoutube,
+  FiLink,
+  FiInfo,
+  FiCheckCircle,
+  FiAlertCircle,
+  FiEye,
 } from "react-icons/fi";
 import contactService from "../../../api/contactService";
 
@@ -87,7 +90,7 @@ const fieldMeta = [
   {
     key: "tiktok",
     label: "TikTok",
-    icon: FiEdit2,
+    icon: FiLink,
     type: "url",
     placeholder: "https://tiktok.com/@viadca",
     group: "redes",
@@ -184,32 +187,10 @@ const AdminConfigPage = () => {
     }
   };
 
-  const handleClear = async () => {
-    if (
-      !window.confirm(
-        "¿Estás seguro de que deseas limpiar todos los campos? Esta acción no se puede deshacer.",
-      )
-    )
-      return;
-    setSaving(true);
-    setMessage({ text: "", type: "" });
-    try {
-      const res = await contactService.clearContacto();
-      const normalized = Object.fromEntries(
-        Object.entries(res).map(([k, v]) => [k, v ?? ""]),
-      );
-      setInitial({ ...EMPTY, ...normalized });
-      setData({ ...EMPTY, ...normalized });
-      setMessage({
-        text: "Todos los campos fueron limpiados",
-        type: "success",
-      });
-    } catch (e) {
-      setMessage({ text: "Error al limpiar los campos", type: "error" });
-      console.error(e);
-    } finally {
-      setSaving(false);
-    }
+  // Reemplaza "Limpiar" por vista previa del sitio (footer) en nueva pestaña
+  const handlePreview = () => {
+    const url = `${window.location.origin}/#footer`;
+    window.open(url, "_blank", "noopener,noreferrer");
   };
 
   // Agrupar campos por categoría
@@ -220,30 +201,31 @@ const AdminConfigPage = () => {
   }, {});
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4 sm:p-6 lg:p-8">
+    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 p-4 sm:p-6 lg:p-8">
       <div className="max-w-5xl mx-auto">
         {/* Header */}
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 mb-6">
-          <div className="flex flex-col sm:flex-row justify-between gap-4 sm:items-center">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 text-white flex items-center justify-center shadow">
-                <FiDatabase className="w-6 h-6" />
+        <div className="bg-white rounded-xl shadow-lg border border-gray-200 p-4 sm:p-6 mb-6">
+          <div className="flex flex-col sm:flex-row justify-between gap-3 sm:gap-4 sm:items-center">
+            <div className="flex items-center gap-3 sm:gap-4">
+              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 text-white flex items-center justify-center shadow-lg ring-1 ring-white/70 shrink-0">
+                <FiSettings className="w-5 h-5 sm:w-6 sm:h-6 flex-none" />
               </div>
-              <div>
-                <h1 className="text-2xl font-bold text-gray-800">
+              <div className="min-w-0">
+                <h1 className="text-lg sm:text-2xl font-bold text-gray-800 leading-tight">
                   Configuración de Contacto
                 </h1>
-                <p className="text-gray-600">
+                <p className="text-gray-600 text-sm sm:text-base">
                   Administra la información de contacto pública
                 </p>
               </div>
             </div>
 
-            <div className="flex flex-wrap gap-3">
+            {/* Botones: mejor responsive en móvil */}
+            <div className="grid grid-cols-2 w-full gap-2 sm:w-auto sm:flex sm:flex-wrap sm:justify-center sm:gap-3">
               <button
                 onClick={() => fetchData(true)}
                 disabled={loading || saving}
-                className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="col-span-1 w-full sm:w-auto flex items-center justify-center gap-2 px-3 sm:px-4 py-2.5 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
               >
                 <FiRefreshCw
                   className={`w-4 h-4 ${loading ? "animate-spin" : ""}`}
@@ -251,28 +233,29 @@ const AdminConfigPage = () => {
                 <span>Recargar</span>
               </button>
               <button
-                onClick={handleClear}
+                onClick={handlePreview}
                 disabled={saving || loading}
-                className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-red-50 hover:bg-red-100 text-red-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="col-span-1 w-full sm:w-auto flex items-center justify-center gap-2 px-3 sm:px-4 py-2.5 rounded-lg bg-white hover:bg-blue-50 text-blue-600 border border-blue-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
+                title="Abrir vista previa del footer en una nueva pestaña"
               >
-                <FiTrash2 className="w-4 h-4" />
-                <span>Limpiar todo</span>
+                <FiEye className="w-4 h-4" />
+                <span>Vista previa</span>
               </button>
               <button
                 onClick={handleSave}
                 disabled={!dirty || saving || loading}
-                className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white shadow-sm transition-all disabled:opacity-70 disabled:cursor-not-allowed"
+                className="col-span-2 w-full sm:w-auto flex items-center justify-center gap-2 px-3 sm:px-4 py-2.5 rounded-lg bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white shadow-sm transition-all disabled:opacity-70 disabled:cursor-not-allowed text-sm sm:text-base"
               >
                 <FiSave
                   className={`w-4 h-4 ${saving ? "animate-pulse" : ""}`}
                 />
-                <span>Guardar cambios</span>
+                <span>Guardar</span>
               </button>
             </div>
           </div>
 
           {/* Status Bar */}
-          <div className="mt-6 pt-5 border-t border-gray-100 flex justify-between items-center">
+          <div className="mt-5 pt-4 border-t border-gray-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
             <div className="flex items-center gap-2">
               <div
                 className={`w-3 h-3 rounded-full ${
@@ -294,12 +277,17 @@ const AdminConfigPage = () => {
 
             {message.text && (
               <div
-                className={`px-3 py-2 rounded-lg text-sm font-medium ${
+                className={`px-3 py-2 rounded-lg text-sm font-medium flex items-center gap-2 ${
                   message.type === "error"
                     ? "bg-red-100 text-red-700"
                     : "bg-green-100 text-green-700"
                 }`}
               >
+                {message.type === "error" ? (
+                  <FiAlertCircle className="w-5 h-5" />
+                ) : (
+                  <FiCheckCircle className="w-5 h-5" />
+                )}
                 {message.text}
               </div>
             )}
@@ -307,20 +295,20 @@ const AdminConfigPage = () => {
         </div>
 
         {/* Form Sections */}
-        <div className="space-y-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Sección de Contacto */}
-          <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
-            <div className="mb-5 pb-3 border-b border-gray-100">
+          <div className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
+            <div className="bg-gradient-to-r from-blue-50 to-indigo-50 px-6 py-4 border-b border-gray-200">
               <h2 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
                 <FiPhone className="text-blue-500" />
                 Información de Contacto
               </h2>
               <p className="text-sm text-gray-600 mt-1">
-                Detalles principales para que los clientes puedan contactarte
+                Detalles para que los clientes puedan contactarte
               </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <div className="p-6 grid grid-cols-1 gap-5">
               {groupedFields.contacto.map(
                 ({ key, label, icon: Icon, type, placeholder }) => (
                   <div key={key} className="space-y-2">
@@ -352,8 +340,8 @@ const AdminConfigPage = () => {
           </div>
 
           {/* Sección de Redes Sociales */}
-          <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
-            <div className="mb-5 pb-3 border-b border-gray-100">
+          <div className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
+            <div className="bg-gradient-to-r from-purple-50 to-pink-50 px-6 py-4 border-b border-gray-200">
               <h2 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
                 <FiInstagram className="text-purple-500" />
                 Redes Sociales
@@ -363,7 +351,7 @@ const AdminConfigPage = () => {
               </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <div className="p-6 grid grid-cols-1 gap-5">
               {groupedFields.redes.map(
                 ({ key, label, icon: Icon, type, placeholder }) => (
                   <div key={key} className="space-y-2">
@@ -396,27 +384,15 @@ const AdminConfigPage = () => {
         </div>
 
         {/* Nota informativa */}
-        <div className="mt-6 bg-blue-50 border border-blue-100 rounded-xl p-4">
-          <div className="flex items-start gap-3">
-            <div className="mt-0.5">
-              <svg
-                className="w-5 h-5 text-blue-500"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
-                  clipRule="evenodd"
-                />
-              </svg>
-            </div>
-            <p className="text-sm text-blue-700">
-              Todos los campos son opcionales. Los cambios se aplicarán
-              inmediatamente después de guardar. Las URLs deben incluir el
-              protocolo (ej: https://).
-            </p>
+        <div className="mt-6 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-100 rounded-xl p-4 flex items-start gap-3">
+          <div className="mt-1">
+            <FiInfo className="w-5 h-5 text-blue-500" />
           </div>
+          <p className="text-sm text-blue-700">
+            Todos los campos son opcionales. Los cambios se aplicarán
+            inmediatamente después de guardar. Las URLs deben incluir el
+            protocolo (ej: https://).
+          </p>
         </div>
       </div>
     </div>

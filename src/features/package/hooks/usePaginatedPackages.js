@@ -1,16 +1,17 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import api from "../../../api";
 
-// Caché e in-flight por combinación page|limit a nivel de módulo
+// Caché e in-flight por combinación page|limit|search a nivel de módulo
 const paquetesCache = new Map(); // key -> { data, totalPages, totalItems }
 const paquetesInFlight = new Map(); // key -> Promise<{ data, totalPages, totalItems }>
 
-export const usePaginatedPackages = (initialPage = 1, initialLimit = 10) => {
+export const usePaginatedPackages = (initialPage = 1, initialLimit = 6) => {
   const [page, setPage] = useState(initialPage);
   const [limit, setLimit] = useState(initialLimit);
+  const [search, setSearch] = useState("");
 
-  const keyRef = useRef(`${initialPage}|${initialLimit}`);
-  const getKey = (p = page, l = limit) => `${p}|${l}`;
+  const getKey = (p = page, l = limit, s = search) => `${p}|${l}|${s || ""}`;
+  const keyRef = useRef(getKey(initialPage, initialLimit, ""));
 
   // Inicializar desde caché si existe
   const cached = paquetesCache.get(keyRef.current);
@@ -41,8 +42,13 @@ export const usePaginatedPackages = (initialPage = 1, initialLimit = 10) => {
   };
 
   const fetchPaquetes = useCallback(
-    async (currentPage = page, currentLimit = limit, force = false) => {
-      const reqKey = getKey(currentPage, currentLimit);
+    async (
+      currentPage = page,
+      currentLimit = limit,
+      currentSearch = search,
+      force = false,
+    ) => {
+      const reqKey = getKey(currentPage, currentLimit, currentSearch);
       keyRef.current = reqKey;
 
       try {
@@ -75,7 +81,7 @@ export const usePaginatedPackages = (initialPage = 1, initialLimit = 10) => {
         // Lanzar nueva petición y deduplicar concurrentes
         setLoading(true);
         const promise = api.packages
-          .getPaquetes(currentPage, currentLimit)
+          .getPaquetes(currentPage, currentLimit, currentSearch)
           .then(normalizeResponse)
           .then((result) => {
             paquetesCache.set(reqKey, result);
@@ -100,17 +106,19 @@ export const usePaginatedPackages = (initialPage = 1, initialLimit = 10) => {
         setPaquetes([]);
         throw err;
       } finally {
-        if (keyRef.current === getKey(currentPage, currentLimit)) {
+        if (
+          keyRef.current === getKey(currentPage, currentLimit, currentSearch)
+        ) {
           setLoading(false);
         }
       }
     },
-    [page, limit],
+    [page, limit, search],
   );
 
   useEffect(() => {
-    fetchPaquetes(page, limit);
-  }, [page, limit, fetchPaquetes]);
+    fetchPaquetes(page, limit, search);
+  }, [page, limit, search, fetchPaquetes]);
 
   const goToPage = (newPage) => {
     if (newPage >= 1 && (totalPages === 0 || newPage <= totalPages)) {
@@ -135,7 +143,12 @@ export const usePaginatedPackages = (initialPage = 1, initialLimit = 10) => {
     setPage(1); // Reset to first page when changing limit
   };
 
-  const refetch = (force = false) => fetchPaquetes(page, limit, force);
+  const setSearchQuery = useCallback((newSearch) => {
+    setSearch(newSearch || "");
+    setPage(1); // Reiniciar a la primera página al cambiar búsqueda
+  }, []);
+
+  const refetch = (force = false) => fetchPaquetes(page, limit, search, force);
 
   return {
     paquetes,
@@ -151,5 +164,8 @@ export const usePaginatedPackages = (initialPage = 1, initialLimit = 10) => {
     prevPage,
     setItemsPerPage,
     refetch,
+    // búsqueda
+    search,
+    setSearch: setSearchQuery,
   };
 };

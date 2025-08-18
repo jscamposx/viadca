@@ -1,8 +1,9 @@
 import apiClient from "./axiosConfig";
+import { buildPaginatedParams } from "./params";
 
-export const getPaquetes = (page = 1, limit = 10) => {
+export const getPaquetes = (page = 1, limit = 6, search) => {
   return apiClient.get("/admin/paquetes", {
-    params: { page, limit },
+    params: buildPaginatedParams({ page, limit, search }),
   });
 };
 
@@ -34,4 +35,9 @@ export const exportToExcel = (id) => {
   return apiClient.get(`/admin/paquetes/excel/${id}`, {
     responseType: "blob",
   });
+};
+
+// Stats overview: { total, paquetes, activos, inactivos }
+export const getPaquetesStatsOverview = () => {
+  return apiClient.get("/admin/paquetes/stats/overview");
 };

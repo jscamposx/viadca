@@ -9,9 +9,10 @@ import {
 } from "react";
 import { useUsers } from "../../../hooks/useUsers";
 import { useAuth } from "../../../contexts/AuthContext";
-import { useNotification } from "./AdminLayout";
+import { useNotifications } from "../hooks/useNotifications";
 const ConfirmDialog = lazy(() => import("../components/ConfirmDialog"));
 const UserCard = lazy(() => import("../components/UserCard"));
+import Pagination from "../../../components/ui/Pagination";
 
 import {
   FiUsers,
@@ -36,7 +37,7 @@ import {
 
 const AdminUsersPage = () => {
   const { user: currentUser } = useAuth();
-  const { addNotification } = useNotification();
+  const { notify } = useNotifications();
   const {
     users,
     stats,
@@ -47,6 +48,16 @@ const AdminUsersPage = () => {
     updateUserRole,
     deleteUser,
     refresh,
+    // Paginación
+    page,
+    limit,
+    totalPages,
+    totalItems,
+    goToPage,
+    setItemsPerPage,
+    // búsqueda backend
+    search,
+    setSearch,
   } = useUsers();
 
   // Evitar doble montaje/llamadas en StrictMode (dev) para la carga inicial
@@ -197,11 +208,8 @@ const AdminUsersPage = () => {
   const filteredUsers = useMemo(() => {
     const list = users
       .filter((user) => {
-        const matchesSearch =
-          deferredSearch === "" ||
-          user.usuario?.toLowerCase().includes(deferredSearch.toLowerCase()) ||
-          user.correo?.toLowerCase().includes(deferredSearch.toLowerCase()) ||
-          user.rol?.toLowerCase().includes(deferredSearch.toLowerCase());
+        // La búsqueda se delega al backend, no filtrar por deferredSearch aquí.
+        const matchesSearch = true;
 
         const matchesRole = roleFilter === "todos" || user.rol === roleFilter;
 
@@ -237,22 +245,33 @@ const AdminUsersPage = () => {
       });
 
     return list;
-  }, [users, deferredSearch, roleFilter, verificationFilter, sortConfig]);
+  }, [users, /*deferredSearch,*/ roleFilter, verificationFilter, sortConfig]);
 
   const confirmRoleChange = async () => {
     try {
       if (!confirmDialog.user?.id || !confirmDialog.newRole) {
         throw new Error("Datos de usuario o rol inválidos");
       }
-      await updateUserRole(confirmDialog.user.id, confirmDialog.newRole);
+
+      await notify.operation(
+        () => updateUserRole(confirmDialog.user.id, confirmDialog.newRole),
+        {
+          loadingMessage: `Actualizando rol de "${confirmDialog.user.usuario}" a ${confirmDialog.newRole}...`,
+          successMessage: `Rol de "${confirmDialog.user.usuario}" actualizado a ${confirmDialog.newRole}`,
+          errorMessage: "Error al cambiar el rol del usuario",
+          loadingTitle: "Actualizando usuario",
+          successTitle: "Usuario actualizado",
+          errorTitle: "Error al actualizar",
+        },
+      );
+
       setConfirmDialog({ isOpen: false, type: "", user: null, newRole: null });
       setShowActionMenu(null);
       // Actualizar estadísticas después del cambio
       fetchStats();
-      addNotification(`Rol actualizado a ${confirmDialog.newRole}`, "success");
     } catch (error) {
       console.error("Error al cambiar el rol del usuario:", error);
-      addNotification("Error al cambiar el rol del usuario", "error");
+      // El error ya se maneja en notify.operation
     }
   };
 
@@ -260,13 +279,13 @@ const AdminUsersPage = () => {
     // Validación de datos
     if (!user || !user.id) {
       console.error("Usuario inválido o sin ID:", user);
-      addNotification("Error: Usuario inválido", "error");
+      notify.error("Error: Usuario inválido", { title: "Error de validación" });
       return;
     }
 
     if (!newRole) {
       console.error("Rol inválido:", newRole);
-      addNotification("Error: Rol inválido", "error");
+      notify.error("Error: Rol inválido", { title: "Error de validación" });
       return;
     }
 
@@ -279,30 +298,47 @@ const AdminUsersPage = () => {
       });
     } else {
       // Para otros roles, hacer el cambio directamente usando los parámetros
-      updateUserRole(user.id, newRole)
+      notify
+        .operation(() => updateUserRole(user.id, newRole), {
+          loadingMessage: `Actualizando rol de "${user.usuario}" a ${newRole}...`,
+          successMessage: `Rol de "${user.usuario}" actualizado a ${newRole}`,
+          errorMessage: "Error al cambiar el rol del usuario",
+          loadingTitle: "Actualizando usuario",
+          successTitle: "Usuario actualizado",
+          errorTitle: "Error al actualizar",
+        })
         .then(() => {
           setShowActionMenu(null);
           fetchStats();
-          addNotification(`Rol actualizado a ${newRole}`, "success");
         })
         .catch((error) => {
           console.error("Error al cambiar el rol del usuario:", error);
-          addNotification("Error al cambiar el rol del usuario", "error");
+          // El error ya se maneja en notify.operation
         });
     }
   };
 
   const handleDeleteUser = async (userId) => {
     try {
-      await deleteUser(userId);
+      const userToDelete = users.find((u) => u.id === userId);
+      const userName = userToDelete?.usuario || "usuario";
+
+      await notify.operation(() => deleteUser(userId), {
+        loadingMessage: `Moviendo "${userName}" a la papelera...`,
+        successMessage: `"${userName}" movido a la papelera`,
+        errorMessage: "Error al eliminar usuario",
+        loadingTitle: "Eliminando usuario",
+        successTitle: "Usuario eliminado",
+        errorTitle: "Error al eliminar",
+      });
+
       setConfirmDialog({ isOpen: false, type: "", user: null, newRole: null });
       setShowActionMenu(null);
       // Actualizar estadísticas después de la eliminación
       fetchStats();
-      addNotification("Usuario movido a papelera", "success");
     } catch (error) {
       console.error("Error al eliminar usuario:", error);
-      addNotification("Error al eliminar usuario", "error");
+      // El error ya se maneja en notify.operation
     }
   };
 
@@ -328,6 +364,10 @@ const AdminUsersPage = () => {
     }
   };
 
+  useEffect(() => {
+    setSearch(deferredSearch || "");
+  }, [deferredSearch, setSearch]);
+
   return (
     <div className="min-h-screen bg-gray-50 p-2 sm:p-4 md:p-5 lg:p-6 xl:p-8">
       <div className="max-w-7xl mx-auto">
@@ -351,7 +391,7 @@ const AdminUsersPage = () => {
 
             <button
               onClick={() => {
-                refresh(); // Forzar actualización unificada
+                refresh(); // Forzar actualización unificada (sin notificaciones)
               }}
               className="w-full sm:w-auto lg:w-auto flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-purple-700 hover:from-blue-700 hover:to-purple-800 text-white font-semibold py-3 px-5 rounded-xl shadow-lg transition-all duration-300 ease-in-out transform hover:-translate-y-0.5 hover:shadow-xl text-sm sm:text-base whitespace-nowrap"
               disabled={loading}
@@ -928,24 +968,35 @@ const AdminUsersPage = () => {
           {isInitialLoading ? (
             renderSkeletonCards(10)
           ) : filteredUsers.length > 0 ? (
-            <Suspense fallback={renderSkeletonCards(8)}>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4 sm:gap-5 lg:gap-6 [content-visibility:auto] [contain-intrinsic-size:600px_900px]">
-                {filteredUsers.map((user) => (
-                  <UserCard
-                    key={user.id}
-                    user={user}
-                    currentUser={currentUser}
-                    showActionMenu={showActionMenu}
-                    setShowActionMenu={setShowActionMenu}
-                    handleRoleChange={handleRoleChange}
-                    setConfirmDialog={setConfirmDialog}
-                    getRoleColor={getRoleColor}
-                    getRoleIcon={getRoleIcon}
-                    loading={loading}
-                  />
-                ))}
-              </div>
-            </Suspense>
+            <>
+              <Suspense fallback={renderSkeletonCards(8)}>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4 sm:gap-5 lg:gap-6 [content-visibility:auto] [contain-intrinsic-size:600px_900px]">
+                  {filteredUsers.map((user) => (
+                    <UserCard
+                      key={user.id}
+                      user={user}
+                      currentUser={currentUser}
+                      showActionMenu={showActionMenu}
+                      setShowActionMenu={setShowActionMenu}
+                      handleRoleChange={handleRoleChange}
+                      setConfirmDialog={setConfirmDialog}
+                      getRoleColor={getRoleColor}
+                      getRoleIcon={getRoleIcon}
+                      loading={loading}
+                    />
+                  ))}
+                </div>
+              </Suspense>
+
+              {/* Paginación */}
+              <Pagination
+                currentPage={page}
+                totalPages={totalPages}
+                totalItems={totalItems || users.length}
+                itemsPerPage={limit}
+                onPageChange={goToPage}
+              />
+            </>
           ) : (
             <div className="bg-gradient-to-br from-white via-gray-50 to-white rounded-2xl sm:rounded-3xl shadow-xl p-6 sm:p-8 lg:p-12 text-center border border-gray-200">
               <div className="max-w-md mx-auto">
@@ -1026,7 +1077,7 @@ const AdminUsersPage = () => {
 
                   <button
                     onClick={() => {
-                      refresh();
+                      refresh(); // Actualizar lista sin notificaciones
                     }}
                     className="group px-4 sm:px-6 py-2.5 sm:py-3 bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white font-semibold rounded-xl sm:rounded-2xl shadow-lg hover:shadow-xl transición-all duración-300 transform hover:-translate-y-1 text-sm sm:text-base"
                   >

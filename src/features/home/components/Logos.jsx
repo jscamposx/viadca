@@ -43,7 +43,8 @@ const Logos = ({ logos }) => {
   // Animación con rAF: desplazamiento continuo sin saltos usando módulo
   React.useEffect(() => {
     const prefersReduced =
-      window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      window.matchMedia &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (prefersReduced) return; // respeta preferencias del usuario
 
     const speed = 60; // px/segundo (ajusta al gusto)
@@ -65,7 +66,9 @@ const Logos = ({ logos }) => {
         const visual = ((offsetRef.current % seqWidth) + seqWidth) % seqWidth;
         const x = -visual;
         // Suaviza subpíxeles para evitar jitter
-        const snapped = Math.round(x * (window.devicePixelRatio || 1)) / (window.devicePixelRatio || 1);
+        const snapped =
+          Math.round(x * (window.devicePixelRatio || 1)) /
+          (window.devicePixelRatio || 1);
         trackRef.current.style.transform = `translate3d(${snapped}px, 0, 0)`;
       }
 

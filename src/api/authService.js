@@ -1,17 +1,16 @@
 import api from "./axiosConfig";
 import { setAccessToken, clearAccessToken } from "./tokenManager";
+import { buildPaginatedParams } from "./params";
 
 const authService = {
-  // Endpoints públicos
   register: async (userData) => {
     const response = await api.post("/usuarios/register", userData);
     return response.data;
   },
 
   login: async (credentials) => {
-    // El backend setea cookie HttpOnly y además devuelve access_token como fallback
     const response = await api.post("/usuarios/login", credentials);
-    // Guardar token en memoria si llega (para Safari / ITP)
+
     if (response?.data?.access_token) {
       setAccessToken(response.data.access_token);
     }
@@ -20,11 +19,9 @@ const authService = {
 
   logout: async () => {
     try {
-      // Limpia la cookie HttpOnly en el backend
       const response = await api.post("/usuarios/logout");
       return response.data;
     } finally {
-      // Siempre limpiar token en memoria
       clearAccessToken();
     }
   },
@@ -49,7 +46,6 @@ const authService = {
     return response.data;
   },
 
-  // Endpoints autenticados (definitivo: /usuarios/profile)
   getProfile: async () => {
     const res = await api.get("/usuarios/profile");
     return res.data;
@@ -60,9 +56,10 @@ const authService = {
     return res.data;
   },
 
-  // Endpoints de administración
   getAllUsers: async (params = {}) => {
-    const response = await api.get("/admin/usuarios", { params });
+    const response = await api.get("/admin/usuarios", {
+      params: buildPaginatedParams(params),
+    });
     return response.data;
   },
 

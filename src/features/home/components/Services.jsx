@@ -1,5 +1,12 @@
 import React from "react";
-import { FiMapPin, FiGlobe, FiBriefcase, FiCompass, FiPhoneCall, FiMessageSquare } from "react-icons/fi";
+import {
+  FiMapPin,
+  FiGlobe,
+  FiBriefcase,
+  FiCompass,
+  FiPhoneCall,
+  FiMessageSquare,
+} from "react-icons/fi";
 
 const Services = () => (
   <section
@@ -23,8 +30,14 @@ const Services = () => (
     </div>
 
     {/* Blobs decorativos sutiles para profundidad */}
-    <div className="pointer-events-none absolute -top-24 -right-24 h-72 w-72 rounded-full bg-gradient-to-br from-blue-200/60 to-indigo-200/60 blur-3xl opacity-50" aria-hidden="true" />
-    <div className="pointer-events-none absolute -bottom-24 -left-24 h-72 w-72 rounded-full bg-gradient-to-br from-orange-200/50 to-rose-200/50 blur-3xl opacity-40" aria-hidden="true" />
+    <div
+      className="pointer-events-none absolute -top-24 -right-24 h-72 w-72 rounded-full bg-gradient-to-br from-blue-200/60 to-indigo-200/60 blur-3xl opacity-50"
+      aria-hidden="true"
+    />
+    <div
+      className="pointer-events-none absolute -bottom-24 -left-24 h-72 w-72 rounded-full bg-gradient-to-br from-orange-200/50 to-rose-200/50 blur-3xl opacity-40"
+      aria-hidden="true"
+    />
 
     <div className="max-w-7xl mx-auto relative">
       <div className="text-center mb-12 lg:mb-16">
@@ -37,7 +50,10 @@ const Services = () => (
         >
           Te ofrecemos experiencias completas
         </h2>
-        <div className="mx-auto mt-3 h-1 w-24 rounded-full bg-gradient-to-r from-blue-400 to-indigo-500" aria-hidden="true" />
+        <div
+          className="mx-auto mt-3 h-1 w-24 rounded-full bg-gradient-to-r from-blue-400 to-indigo-500"
+          aria-hidden="true"
+        />
         <p className="text-slate-600 text-base sm:text-lg mt-4 max-w-2xl mx-auto">
           Descubre nuestros servicios especializados diseñados para hacer de tu
           viaje una experiencia inolvidable
@@ -52,15 +68,24 @@ const Services = () => (
           aria-labelledby="svc-tours-title"
         >
           {/* Glow suave */}
-          <span className="pointer-events-none absolute -inset-16 bg-gradient-to-br from-orange-200/0 via-orange-200/20 to-transparent opacity-0 group-hover:opacity-100 blur-2xl transition-opacity duration-500" aria-hidden="true" />
+          <span
+            className="pointer-events-none absolute -inset-16 bg-gradient-to-br from-orange-200/0 via-orange-200/20 to-transparent opacity-0 group-hover:opacity-100 blur-2xl transition-opacity duration-500"
+            aria-hidden="true"
+          />
           {/* Blob de acento */}
-          <span className="pointer-events-none absolute -top-10 -right-6 h-24 w-24 rounded-full bg-gradient-to-tr from-orange-200 to-amber-200 blur-2xl opacity-40 group-hover:opacity-60 transition" aria-hidden="true" />
+          <span
+            className="pointer-events-none absolute -top-10 -right-6 h-24 w-24 rounded-full bg-gradient-to-tr from-orange-200 to-amber-200 blur-2xl opacity-40 group-hover:opacity-60 transition"
+            aria-hidden="true"
+          />
 
           <div
             className="w-14 h-14 lg:w-16 lg:h-16 bg-orange-200 rounded-2xl flex items-center justify-center mx-auto mb-4 lg:mb-6 group-hover:bg-orange-300 transition-colors duration-300 group-hover:scale-110 transform ring-1 ring-orange-300/40"
             aria-hidden="true"
           >
-            <FiCompass className="w-7 h-7 lg:w-8 lg:h-8 text-orange-600" aria-hidden="true" />
+            <FiCompass
+              className="w-7 h-7 lg:w-8 lg:h-8 text-orange-600"
+              aria-hidden="true"
+            />
           </div>
           <h3
             id="svc-tours-title"
@@ -73,8 +98,12 @@ const Services = () => (
             tiempo disponible.
           </p>
           <div className="mt-4 flex flex-wrap items-center justify-center gap-2">
-            <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-900">Personalizado</span>
-            <span className="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-medium bg-orange-50 text-orange-700 border border-orange-200">Flexibilidad</span>
+            <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-900">
+              Personalizado
+            </span>
+            <span className="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-medium bg-orange-50 text-orange-700 border border-orange-200">
+              Flexibilidad
+            </span>
           </div>
         </article>
 
@@ -84,14 +113,23 @@ const Services = () => (
           role="article"
           aria-labelledby="svc-paquetes-title"
         >
-          <span className="pointer-events-none absolute -inset-16 bg-gradient-to-br from-blue-200/0 via-blue-200/20 to-transparent opacity-0 group-hover:opacity-100 blur-2xl transition-opacity duration-500" aria-hidden="true" />
-          <span className="pointer-events-none absolute -top-10 -right-6 h-24 w-24 rounded-full bg-gradient-to-tr from-blue-200 to-indigo-200 blur-2xl opacity-40 group-hover:opacity-60 transition" aria-hidden="true" />
+          <span
+            className="pointer-events-none absolute -inset-16 bg-gradient-to-br from-blue-200/0 via-blue-200/20 to-transparent opacity-0 group-hover:opacity-100 blur-2xl transition-opacity duration-500"
+            aria-hidden="true"
+          />
+          <span
+            className="pointer-events-none absolute -top-10 -right-6 h-24 w-24 rounded-full bg-gradient-to-tr from-blue-200 to-indigo-200 blur-2xl opacity-40 group-hover:opacity-60 transition"
+            aria-hidden="true"
+          />
 
           <div
             className="w-14 h-14 lg:w-16 lg:h-16 bg-blue-200 rounded-2xl flex items-center justify-center mx-auto mb-4 lg:mb-6 group-hover:bg-blue-300 transition-colors duration-300 group-hover:scale-110 transform ring-1 ring-blue-300/40"
             aria-hidden="true"
           >
-            <FiGlobe className="w-7 h-7 lg:w-8 lg:h-8 text-blue-600" aria-hidden="true" />
+            <FiGlobe
+              className="w-7 h-7 lg:w-8 lg:h-8 text-blue-600"
+              aria-hidden="true"
+            />
           </div>
           <h3
             id="svc-paquetes-title"
@@ -104,8 +142,12 @@ const Services = () => (
             incluyen vuelos, hospedaje y actividades.
           </p>
           <div className="mt-4 flex flex-wrap items-center justify-center gap-2">
-            <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-900">Nacional / Internacional</span>
-            <span className="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-medium bg-blue-50 text-blue-700 border border-blue-200">Todo incluido</span>
+            <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-900">
+              Nacional / Internacional
+            </span>
+            <span className="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-medium bg-blue-50 text-blue-700 border border-blue-200">
+              Todo incluido
+            </span>
           </div>
         </article>
 
@@ -115,14 +157,23 @@ const Services = () => (
           role="article"
           aria-labelledby="svc-corp-title"
         >
-          <span className="pointer-events-none absolute -inset-16 bg-gradient-to-br from-green-200/0 via-green-200/20 to-transparent opacity-0 group-hover:opacity-100 blur-2xl transition-opacity duration-500" aria-hidden="true" />
-          <span className="pointer-events-none absolute -top-10 -right-6 h-24 w-24 rounded-full bg-gradient-to-tr from-green-200 to-emerald-200 blur-2xl opacity-40 group-hover:opacity-60 transition" aria-hidden="true" />
+          <span
+            className="pointer-events-none absolute -inset-16 bg-gradient-to-br from-green-200/0 via-green-200/20 to-transparent opacity-0 group-hover:opacity-100 blur-2xl transition-opacity duration-500"
+            aria-hidden="true"
+          />
+          <span
+            className="pointer-events-none absolute -top-10 -right-6 h-24 w-24 rounded-full bg-gradient-to-tr from-green-200 to-emerald-200 blur-2xl opacity-40 group-hover:opacity-60 transition"
+            aria-hidden="true"
+          />
 
           <div
             className="w-14 h-14 lg:w-16 lg:h-16 bg-green-200 rounded-2xl flex items-center justify-center mx-auto mb-4 lg:mb-6 group-hover:bg-green-300 transition-colors duration-300 group-hover:scale-110 transform ring-1 ring-green-300/40"
             aria-hidden="true"
           >
-            <FiBriefcase className="w-7 h-7 lg:w-8 lg:h-8 text-green-600" aria-hidden="true" />
+            <FiBriefcase
+              className="w-7 h-7 lg:w-8 lg:h-8 text-green-600"
+              aria-hidden="true"
+            />
           </div>
           <h3
             id="svc-corp-title"
@@ -135,8 +186,12 @@ const Services = () => (
             eventos corporativos.
           </p>
           <div className="mt-4 flex flex-wrap items-center justify-center gap-2">
-            <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-900">Empresarial</span>
-            <span className="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-medium bg-green-50 text-green-700 border border-green-200">Optimización</span>
+            <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-900">
+              Empresarial
+            </span>
+            <span className="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-medium bg-green-50 text-green-700 border border-green-200">
+              Optimización
+            </span>
           </div>
         </article>
 
@@ -146,14 +201,23 @@ const Services = () => (
           role="article"
           aria-labelledby="svc-asesoria-title"
         >
-          <span className="pointer-events-none absolute -inset-16 bg-gradient-to-br from-purple-200/0 via-purple-200/20 to-transparent opacity-0 group-hover:opacity-100 blur-2xl transition-opacity duration-500" aria-hidden="true" />
-          <span className="pointer-events-none absolute -top-10 -right-6 h-24 w-24 rounded-full bg-gradient-to-tr from-purple-200 to-fuchsia-200 blur-2xl opacity-40 group-hover:opacity-60 transition" aria-hidden="true" />
+          <span
+            className="pointer-events-none absolute -inset-16 bg-gradient-to-br from-purple-200/0 via-purple-200/20 to-transparent opacity-0 group-hover:opacity-100 blur-2xl transition-opacity duration-500"
+            aria-hidden="true"
+          />
+          <span
+            className="pointer-events-none absolute -top-10 -right-6 h-24 w-24 rounded-full bg-gradient-to-tr from-purple-200 to-fuchsia-200 blur-2xl opacity-40 group-hover:opacity-60 transition"
+            aria-hidden="true"
+          />
 
           <div
             className="w-14 h-14 lg:w-16 lg:h-16 bg-purple-200 rounded-2xl flex items-center justify-center mx-auto mb-4 lg:mb-6 group-hover:bg-purple-300 transition-colors duration-300 group-hover:scale-110 transform ring-1 ring-purple-300/40"
             aria-hidden="true"
           >
-            <FiMapPin className="w-7 h-7 lg:w-8 lg:h-8 text-purple-600" aria-hidden="true" />
+            <FiMapPin
+              className="w-7 h-7 lg:w-8 lg:h-8 text-purple-600"
+              aria-hidden="true"
+            />
           </div>
           <h3
             id="svc-asesoria-title"
@@ -166,8 +230,12 @@ const Services = () => (
             asesoría y recomendaciones.
           </p>
           <div className="mt-4 flex flex-wrap items-center justify-center gap-2">
-            <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-900">Expertos</span>
-            <span className="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-medium bg-purple-50 text-purple-700 border border-purple-200">Confianza</span>
+            <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-900">
+              Expertos
+            </span>
+            <span className="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-medium bg-purple-50 text-purple-700 border border-purple-200">
+              Confianza
+            </span>
           </div>
         </article>
       </div>
@@ -176,7 +244,10 @@ const Services = () => (
       <div className="mt-12 lg:mt-16 text-center">
         <div className="relative overflow-hidden bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-6 lg:p-8 border border-blue-200">
           {/* brillo sutil */}
-          <span className="pointer-events-none absolute -inset-16 bg-gradient-to-br from-blue-200/0 via-indigo-200/20 to-transparent blur-3xl opacity-70" aria-hidden="true" />
+          <span
+            className="pointer-events-none absolute -inset-16 bg-gradient-to-br from-blue-200/0 via-indigo-200/20 to-transparent blur-3xl opacity-70"
+            aria-hidden="true"
+          />
 
           <h3 className="relative font-semibold text-xl lg:text-2xl text-slate-800 mb-3 lg:mb-4">
             ¿Listo para tu próxima aventura?
@@ -203,7 +274,9 @@ const Services = () => (
               <span>Chat en línea</span>
             </button>
           </div>
-          <p className="relative mt-3 text-xs text-slate-500">Respuesta en minutos • Atención personalizada</p>
+          <p className="relative mt-3 text-xs text-slate-500">
+            Respuesta en minutos • Atención personalizada
+          </p>
         </div>
       </div>
     </div>

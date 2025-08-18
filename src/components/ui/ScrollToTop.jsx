@@ -8,7 +8,7 @@ export default function ScrollToTop() {
   useEffect(() => {
     // Si hay ancla en la URL, intenta desplazar hacia ese elemento
     if (hash) {
-      const id = hash.replace('#', '');
+      const id = hash.replace("#", "");
       const el = document.getElementById(id);
       if (el) {
         el.scrollIntoView({ behavior: "smooth", block: "start" });

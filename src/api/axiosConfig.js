@@ -1,11 +1,9 @@
 import axios from "axios";
 import { getAccessToken } from "./tokenManager";
 
-// Obtener la URL base con fallback
 const getBaseURL = () => {
   const envURL = import.meta.env.VITE_API_BASE_URL;
 
-  // Solo mostrar logs en desarrollo
   if (import.meta.env.DEV) {
     console.log("🔧 Variables de entorno:", {
       VITE_API_BASE_URL: envURL,
@@ -15,12 +13,10 @@ const getBaseURL = () => {
     });
   }
 
-  // Fallback basado en el entorno
   if (envURL) {
     return envURL;
   }
 
-  // Fallbacks por entorno
   if (import.meta.env.DEV) {
     return "http://localhost:3000";
   } else {
@@ -30,7 +26,6 @@ const getBaseURL = () => {
 
 const baseURL = getBaseURL();
 
-// Solo mostrar logs en desarrollo
 if (import.meta.env.DEV) {
   console.log("🌐 URL base de API configurada:", baseURL);
 }

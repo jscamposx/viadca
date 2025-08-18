@@ -16,12 +16,11 @@ export const useContactInfo = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // Guardas para StrictMode y deduplicación
   const didInitRef = useRef(false);
   const inFlightRef = useRef(null);
 
   useEffect(() => {
-    if (didInitRef.current) return; // evita doble ejecución en StrictMode
+    if (didInitRef.current) return;
     didInitRef.current = true;
 
     const fetchContactInfo = async () => {
@@ -29,7 +28,6 @@ export const useContactInfo = () => {
         setLoading(true);
         setError(null);
 
-        // Reutilizar promesa en vuelo para evitar duplicados
         if (!inFlightRef.current) {
           inFlightRef.current = contactService.getContacto().finally(() => {
             inFlightRef.current = null;
@@ -37,7 +35,6 @@ export const useContactInfo = () => {
         }
         const data = await inFlightRef.current;
 
-        // Filtrar valores null y usar fallbacks
         const processedData = {
           telefono: data.telefono || "+526181658730",
           email: data.email || "jscamposx@gmail.com",
@@ -54,7 +51,6 @@ export const useContactInfo = () => {
       } catch (err) {
         console.error("Error al cargar información de contacto:", err);
         setError(err);
-        // Mantener los datos por defecto en caso de error
       } finally {
         setLoading(false);
       }

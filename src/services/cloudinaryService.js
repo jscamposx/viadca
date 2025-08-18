@@ -1,8 +1,3 @@
-/**
- * Servicio para manejo de imágenes con Cloudinary
- * Proporciona funciones para subir, optimizar y gestionar imágenes
- */
-
 import apiClient from "../api/axiosConfig";
 
 class CloudinaryService {
@@ -10,19 +5,12 @@ class CloudinaryService {
     this.cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME || "dsh8njsiu"; // Usar variable de entorno
     this.baseUrl = `https://res.cloudinary.com/${this.cloudName}`;
 
-    // Debug log para verificar la configuración
     console.log("🔧 CloudinaryService initialized:", {
       cloudName: this.cloudName,
       baseUrl: this.baseUrl,
     });
   }
 
-  /**
-   * Sube una imagen individual a Cloudinary a través del backend
-   * @param {File} file - Archivo de imagen
-   * @param {string} folder - Carpeta de destino (opcional)
-   * @returns {Promise<Object>} Respuesta con URL y public_id
-   */
   async uploadImage(file, folder = "viajes_app") {
     try {
       const formData = new FormData();
@@ -42,12 +30,6 @@ class CloudinaryService {
     }
   }
 
-  /**
-   * Sube múltiples imágenes a Cloudinary
-   * @param {FileList|Array} files - Lista de archivos
-   * @param {string} folder - Carpeta de destino (opcional)
-   * @returns {Promise<Array>} Array con respuestas de cada imagen
-   */
   async uploadMultipleImages(files, folder = "viajes_app") {
     try {
       const formData = new FormData();
@@ -70,11 +52,6 @@ class CloudinaryService {
     }
   }
 
-  /**
-   * Elimina una imagen de Cloudinary
-   * @param {string} publicId - ID público de la imagen en Cloudinary
-   * @returns {Promise<Object>} Respuesta de eliminación
-   */
   async deleteImage(publicId) {
     try {
       const encodedPublicId = encodeURIComponent(publicId);
@@ -88,12 +65,6 @@ class CloudinaryService {
     }
   }
 
-  /**
-   * Obtiene una URL optimizada de Cloudinary con transformaciones
-   * @param {string} publicId - ID público de la imagen
-   * @param {Object} options - Opciones de transformación
-   * @returns {string} URL optimizada
-   */
   getOptimizedImageUrl(publicId, options = {}) {
     if (!publicId) return "https://via.placeholder.com/600x400?text=Sin+Imagen";
 
@@ -111,20 +82,16 @@ class CloudinaryService {
 
     let transformations = [];
 
-    // Dimensiones
     if (width !== "auto" || height !== "auto") {
       transformations.push(`w_${width},h_${height}`);
     }
 
-    // Recorte y gravedad
     if (crop) transformations.push(`c_${crop}`);
     if (gravity && gravity !== "auto") transformations.push(`g_${gravity}`);
 
-    // Calidad y formato
     if (quality) transformations.push(`q_${quality}`);
     if (format && format !== "auto") transformations.push(`f_${format}`);
 
-    // Efectos adicionales
     if (radius) transformations.push(`r_${radius}`);
     if (effect) transformations.push(`e_${effect}`);
     if (overlay) transformations.push(`l_${overlay}`);
@@ -135,11 +102,6 @@ class CloudinaryService {
     return `${this.baseUrl}/image/upload${transformationString}/${publicId}`;
   }
 
-  /**
-   * Obtiene múltiples URLs optimizadas para diferentes tamaños
-   * @param {string} publicId - ID público de la imagen
-   * @returns {Object} Objeto con URLs para diferentes tamaños
-   */
   getResponsiveImageUrls(publicId) {
     if (!publicId) {
       const placeholder = "https://via.placeholder.com/";
@@ -181,54 +143,32 @@ class CloudinaryService {
     };
   }
 
-  /**
-   * Procesa una imagen del backend para mostrarla correctamente
-   * Detecta si es Cloudinary o URL externa y devuelve la URL apropiada
-   * @param {Object} image - Objeto imagen del backend
-   * @param {Object} options - Opciones de optimización
-   * @returns {string} URL procesada
-   */
   processImageUrl(image, options = {}) {
     if (!image) return "https://via.placeholder.com/600x400?text=Sin+Imagen";
 
     const { tipo, contenido, cloudinary_public_id, cloudinary_url } = image;
 
-    // Si es una imagen de Cloudinary
     if (tipo === "cloudinary" && cloudinary_public_id) {
       return this.getOptimizedImageUrl(cloudinary_public_id, options);
     }
 
-    // Si tiene URL de Cloudinary pero no public_id (para compatibilidad)
     if (cloudinary_url) {
       return cloudinary_url;
     }
 
-    // Para URLs externas (Google Places, etc.)
     if (tipo === "url" || tipo === "google_places_url") {
       if (contenido?.startsWith("http")) {
         return contenido;
       }
     }
 
-    // Fallback
     return "https://via.placeholder.com/600x400?text=Imagen+No+Disponible";
   }
 
-  /**
-   * Procesa una lista de imágenes del backend
-   * @param {Array} images - Array de objetos imagen
-   * @param {Object} options - Opciones de optimización
-   * @returns {Array} Array de URLs procesadas
-   */
   processImageUrls(images = [], options = {}) {
     return images.map((img) => this.processImageUrl(img, options));
   }
 
-  /**
-   * Valida si un archivo es una imagen válida
-   * @param {File} file - Archivo a validar
-   * @returns {boolean} True si es válido
-   */
   validateImageFile(file) {
     if (!file) return false;
 
@@ -240,17 +180,11 @@ class CloudinaryService {
       "image/gif",
     ];
 
-    const maxSize = 10 * 1024 * 1024; // 10MB
+    const maxSize = 10 * 1024 * 1024;
 
     return allowedTypes.includes(file.type) && file.size <= maxSize;
   }
 
-  /**
-   * Redimensiona una imagen en el cliente antes de subirla
-   * @param {File} file - Archivo original
-   * @param {Object} options - Opciones de redimensionado
-   * @returns {Promise<File>} Archivo redimensionado
-   */
   async resizeImage(file, options = {}) {
     const { maxWidth = 1920, maxHeight = 1080, quality = 0.8 } = options;
 
@@ -260,7 +194,6 @@ class CloudinaryService {
       const img = new Image();
 
       img.onload = () => {
-        // Calcular nuevas dimensiones manteniendo aspect ratio
         let { width, height } = img;
 
         if (width > maxWidth) {
@@ -276,10 +209,8 @@ class CloudinaryService {
         canvas.width = width;
         canvas.height = height;
 
-        // Dibujar imagen redimensionada
         ctx.drawImage(img, 0, 0, width, height);
 
-        // Convertir a blob
         canvas.toBlob(
           (blob) => {
             const resizedFile = new File([blob], file.name, {
@@ -297,16 +228,10 @@ class CloudinaryService {
     });
   }
 
-  /**
-   * Extrae el public_id de una URL de Cloudinary
-   * @param {string} url - URL de Cloudinary
-   * @returns {string|null} Public ID extraído
-   */
   extractPublicId(url) {
     if (!url || !url.includes("cloudinary.com")) return null;
 
     try {
-      // Patrón para URLs de Cloudinary: .../image/upload/v123456/folder/image.ext
       const match = url.match(/\/image\/upload\/(?:v\d+\/)?(.+?)(?:\.[^.]+)?$/);
       return match ? match[1] : null;
     } catch (error) {
@@ -315,11 +240,6 @@ class CloudinaryService {
     }
   }
 
-  /**
-   * Genera un srcSet para imágenes responsivas
-   * @param {string} publicId - ID público de la imagen
-   * @returns {string} String srcSet para uso en <img>
-   */
   generateSrcSet(publicId) {
     if (!publicId) return "";
 
@@ -338,6 +258,5 @@ class CloudinaryService {
   }
 }
 
-// Instancia singleton
 export const cloudinaryService = new CloudinaryService();
 export default cloudinaryService;

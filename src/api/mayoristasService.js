@@ -1,7 +1,10 @@
 import apiClient from "./axiosConfig";
+import { buildPaginatedParams } from "./params";
 
-export const getMayoristas = () => {
-  return apiClient.get("/admin/mayoristas");
+export const getMayoristas = (page = 1, limit = 6, search) => {
+  return apiClient.get("/admin/mayoristas", {
+    params: buildPaginatedParams({ page, limit, search }),
+  });
 };
 
 export const getMayoristaById = (id) => {
@@ -29,4 +32,9 @@ export const updateMayorista = (id, mayoristaData) => {
 
 export const deleteMayorista = (id) => {
   return apiClient.delete(`/admin/mayoristas/${id}`);
+};
+
+// Stats overview: { total, mayoristas, tipos }
+export const getMayoristasStatsOverview = () => {
+  return apiClient.get("/admin/mayoristas/stats/overview");
 };

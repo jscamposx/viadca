@@ -1,14 +1,13 @@
 import { useState, useEffect, useRef } from "react";
 import authService from "../api/authService";
 
-// Caché y promesas en vuelo a nivel de módulo para deduplicar entre montajes/componentes
-let usersCache = null; // Array de usuarios
-let usersCacheKey = null; // Key JSON.stringify(params)
-let usersInFlight = null; // Promise
-let usersInFlightKey = null; // Key asociada a la promesa
+let usersCache = null;
+let usersCacheKey = null;
+let usersInFlight = null;
+let usersInFlightKey = null;
 
-let statsCache = null; // Objeto de estadísticas
-let statsInFlight = null; // Promise
+let statsCache = null;
+let statsInFlight = null;
 
 const setCacheUsers = (data, key) => {
   usersCache = Array.isArray(data) ? data : [];
@@ -20,6 +19,28 @@ const setCacheStats = (data) => {
 };
 const clearStatsCache = () => setCacheStats(null);
 
+const normalizeUsersResult = (resp) => {
+  let list = [];
+  let totalPages = 0;
+  let totalItems = 0;
+
+  if (Array.isArray(resp)) {
+    list = resp;
+  } else if (resp && typeof resp === "object") {
+    if (Array.isArray(resp.data)) {
+      list = resp.data;
+      if (resp.pagination) {
+        totalPages = Number(resp.pagination.totalPages) || 0;
+        totalItems = Number(resp.pagination.totalItems) || 0;
+      }
+    } else if (Array.isArray(resp.users)) {
+      list = resp.users;
+    }
+  }
+
+  return { list, totalPages, totalItems };
+};
+
 export const useUsers = () => {
   const [users, setUsers] = useState([]);
   const [stats, setStats] = useState(null);
@@ -27,36 +48,52 @@ export const useUsers = () => {
   const [error, setError] = useState(null);
   const [isInitialized, setIsInitialized] = useState(false);
 
-  // Deduplicación de peticiones en vuelo por instancia (respaldo)
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(6);
+  const [totalPages, setTotalPages] = useState(0);
+  const [totalItems, setTotalItems] = useState(0);
+  const [search, setSearch] = useState("");
+
   const inFlightUsersRef = useRef(null);
   const inFlightUsersKeyRef = useRef(null);
   const inFlightStatsRef = useRef(null);
 
-  // Obtener todos los usuarios con caché global y promesa en vuelo
-  const fetchUsers = async (params = {}, force = false) => {
-    const key = JSON.stringify(params || {});
+  const keyRef = useRef(JSON.stringify({ page: 1, limit: 6, search: "" }));
 
-    // Si hay caché global válida y no es forzado, úsala
+  const fetchUsers = async (params = {}, force = false) => {
+    const effectiveParams = Object.keys(params || {}).length
+      ? params
+      : { page, limit, search };
+    const key = JSON.stringify(effectiveParams);
+    keyRef.current = key;
+
     if (!force && usersCache && usersCacheKey === key) {
       if (!isInitialized) setIsInitialized(true);
-      // sincroniza estado local sin disparar nueva petición
       setUsers(usersCache);
       return usersCache;
     }
 
-    // Reutilizar promesa en vuelo global si coincide la key y no es forzado
     if (!force && usersInFlight && usersInFlightKey === key) {
       try {
         const data = await usersInFlight;
-        setUsers(data);
-        if (!isInitialized) setIsInitialized(true);
-        return data;
-      } catch (_) {
-        // caer al flujo de abajo
-      }
+        let {
+          list,
+          totalPages: tp,
+          totalItems: ti,
+        } = normalizeUsersResult(data);
+
+        if (!tp && ti)
+          tp = Math.ceil(ti / (effectiveParams.limit || limit || 1));
+        if (keyRef.current === key) {
+          setUsers(list);
+          setTotalPages(tp);
+          setTotalItems(ti);
+          if (!isInitialized) setIsInitialized(true);
+        }
+        return list;
+      } catch (_) {}
     }
 
-    // Respaldo: reutilizar promesa en vuelo por instancia si coincide la key y no es forzado
     if (
       !force &&
       inFlightUsersRef.current &&
@@ -64,31 +101,51 @@ export const useUsers = () => {
     ) {
       try {
         const data = await inFlightUsersRef.current;
-        setUsers(data);
-        if (!isInitialized) setIsInitialized(true);
-        return data;
-      } catch (_) {
-        // seguirá flujo de abajo si falla
-      }
+        let {
+          list,
+          totalPages: tp,
+          totalItems: ti,
+        } = normalizeUsersResult(data);
+        if (!tp && ti)
+          tp = Math.ceil(ti / (effectiveParams.limit || limit || 1));
+        if (keyRef.current === key) {
+          setUsers(list);
+          setTotalPages(tp);
+          setTotalItems(ti);
+          if (!isInitialized) setIsInitialized(true);
+        }
+        return list;
+      } catch (_) {}
     }
 
     try {
       setLoading(true);
       setError(null);
-      const promise = authService.getAllUsers(params);
-      // Guardar promesa en vuelo global e instancia
+      const promise = authService.getAllUsers(effectiveParams);
+
       usersInFlight = promise;
       usersInFlightKey = key;
       inFlightUsersRef.current = promise;
       inFlightUsersKeyRef.current = key;
 
       const data = await promise;
-      setCacheUsers(data, key);
-      setUsers(data);
-      if (Object.keys(params).length === 0) {
-        setIsInitialized(true);
+      let { list, totalPages: tp, totalItems: ti } = normalizeUsersResult(data);
+      if (!tp && ti) tp = Math.ceil(ti / (effectiveParams.limit || limit || 1));
+      setCacheUsers(list, key);
+      if (keyRef.current === key) {
+        setUsers(list);
+        setTotalPages(tp);
+        setTotalItems(ti);
+        if (
+          Object.keys(effectiveParams).length === 0 ||
+          (effectiveParams.page === 1 &&
+            effectiveParams.limit === 6 &&
+            (effectiveParams.search ?? "") === "")
+        ) {
+          setIsInitialized(true);
+        }
       }
-      return data;
+      return list;
     } catch (error) {
       console.error("Error al obtener usuarios:", error);
       const errorMessage =
@@ -104,41 +161,37 @@ export const useUsers = () => {
     }
   };
 
-  // Obtener estadísticas con caché global y promesa en vuelo
+  useEffect(() => {
+    fetchUsers({ page, limit, search });
+  }, [page, limit, search]);
+
   const fetchStats = async (force = false) => {
-    // Usar caché si existe y no es forzado
     if (!force && statsCache) {
       setStats(statsCache);
       return statsCache;
     }
 
-    // Reutilizar promesa en vuelo global si existe y no es forzado
     if (!force && statsInFlight) {
       try {
         const data = await statsInFlight;
         setStats(data);
         return data;
-      } catch (_) {
-        // continuar
-      }
+      } catch (_) {}
     }
 
-    // Respaldo por instancia
     if (!force && inFlightStatsRef.current) {
       try {
         const data = await inFlightStatsRef.current;
         setStats(data);
         return data;
-      } catch (_) {
-        // continuar
-      }
+      } catch (_) {}
     }
 
     try {
       setLoading(true);
       setError(null);
       const promise = authService.getUserStats();
-      // Guardar promesa en vuelo global e instancia
+
       statsInFlight = promise;
       inFlightStatsRef.current = promise;
       const data = await promise;
@@ -158,12 +211,11 @@ export const useUsers = () => {
     }
   };
 
-  // Obtener usuario por ID (opcionalmente usar caché local si está)
   const getUserById = async (id) => {
     try {
       setLoading(true);
       setError(null);
-      // Intentar resolver desde caché primero
+
       const fromCache = Array.isArray(usersCache)
         ? usersCache.find((u) => u.id === id)
         : null;
@@ -182,27 +234,25 @@ export const useUsers = () => {
     }
   };
 
-  // Actualizar rol de usuario
   const updateUserRole = async (id, role) => {
     try {
       setLoading(true);
       setError(null);
       const data = await authService.updateUserRole(id, role);
 
-      // Actualizar en la lista local
       setUsers((prevUsers) =>
         prevUsers.map((user) =>
           user.id === id ? { ...user, rol: role } : user,
         ),
       );
-      // Actualizar caché global
+
       if (Array.isArray(usersCache)) {
         setCacheUsers(
           usersCache.map((u) => (u.id === id ? { ...u, rol: role } : u)),
           usersCacheKey,
         );
       }
-      // Invalidar estadísticas (se recomputarán en siguiente fetch)
+
       clearStatsCache();
 
       return data;
@@ -217,23 +267,21 @@ export const useUsers = () => {
     }
   };
 
-  // Eliminar usuario (soft delete)
   const deleteUser = async (id) => {
     try {
       setLoading(true);
       setError(null);
       const data = await authService.softDeleteUser(id);
 
-      // Remover de la lista local
       setUsers((prevUsers) => prevUsers.filter((user) => user.id !== id));
-      // Remover de la caché global
+
       if (Array.isArray(usersCache)) {
         setCacheUsers(
           usersCache.filter((u) => u.id !== id),
           usersCacheKey,
         );
       }
-      // Invalidar estadísticas
+
       clearStatsCache();
 
       return data;
@@ -248,13 +296,36 @@ export const useUsers = () => {
     }
   };
 
-  // Refrescar datos
   const refresh = async () => {
     try {
-      await Promise.all([fetchUsers({}, true), fetchStats(true)]);
+      await Promise.all([
+        fetchUsers({ page, limit, search }, true),
+        fetchStats(true),
+      ]);
     } catch (error) {
       console.error("Error al refrescar datos:", error);
     }
+  };
+
+  const goToPage = (newPage) => {
+    if (newPage >= 1 && (totalPages === 0 || newPage <= totalPages)) {
+      setPage(newPage);
+    }
+  };
+  const nextPage = () => {
+    if (totalPages === 0 || page < totalPages) setPage((p) => p + 1);
+  };
+  const prevPage = () => {
+    if (page > 1) setPage((p) => p - 1);
+  };
+  const setItemsPerPage = (newLimit) => {
+    setLimit(newLimit);
+    setPage(1);
+  };
+
+  const setSearchQuery = (value) => {
+    setSearch(value || "");
+    setPage(1);
   };
 
   return {
@@ -262,11 +333,21 @@ export const useUsers = () => {
     stats,
     loading,
     error,
+    page,
+    limit,
+    totalPages,
+    totalItems,
     fetchUsers,
     fetchStats,
     getUserById,
     updateUserRole,
     deleteUser,
     refresh,
+    goToPage,
+    nextPage,
+    prevPage,
+    setItemsPerPage,
+    search,
+    setSearch: setSearchQuery,
   };
 };

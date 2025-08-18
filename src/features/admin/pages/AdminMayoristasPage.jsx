@@ -1,12 +1,14 @@
 import {
   useState,
-  /* useEffect, */ useDeferredValue,
+  useEffect,
+  useDeferredValue,
   useMemo,
   useCallback,
   lazy,
   Suspense,
+  useRef,
 } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { useMayoristas } from "../hooks/useMayoristas";
 import {
   FiArrowUp,
@@ -22,15 +24,30 @@ import {
 // import ConfirmDialog from "../components/ConfirmDialog";
 const ConfirmDialog = lazy(() => import("../components/ConfirmDialog"));
 const MayoristaCard = lazy(() => import("../components/MayoristaCard"));
-import { useNotification } from "./AdminLayout";
+import { useNotifications } from "../hooks/useNotifications";
+import Pagination from "../../../components/ui/Pagination";
+import api from "../../../api";
+import { getOperation, clearOperation } from "../utils/operationBus";
 
 const AdminMayoristasPage = () => {
+  const location = useLocation();
+  const processedLocationKey = useRef(null);
   const {
     mayoristas,
     /* setMayoristas, */ loading,
     error,
     deleteMayorista,
     refetch,
+    // Controles de paginación del hook
+    page,
+    limit,
+    totalPages,
+    totalItems,
+    goToPage,
+    setItemsPerPage,
+    // búsqueda backend
+    search,
+    setSearch,
   } = useMayoristas();
   const [searchTerm, setSearchTerm] = useState("");
   const deferredSearchTerm = useDeferredValue(searchTerm);
@@ -47,12 +64,134 @@ const AdminMayoristasPage = () => {
     mayoristaId: null,
     mayoristaName: "",
   });
-  const { addNotification } = useNotification();
+  const { notify } = useNotifications();
   const [isRefreshing, setIsRefreshing] = useState(false);
+
+  // Stats overview para chips y totales
+  const [stats, setStats] = useState(null);
+  const [statsLoading, setStatsLoading] = useState(true);
 
   // Indica si es la primera carga (para no bloquear el layout y mejorar LCP)
   const isInitialLoading =
     loading && (!Array.isArray(mayoristas) || mayoristas.length === 0);
+
+  // Cargar stats
+  useEffect(() => {
+    let mounted = true;
+    const loadStats = async () => {
+      try {
+        const resp = await api.mayoristas.getMayoristasStatsOverview();
+        const data = resp?.data ?? resp;
+        if (mounted) setStats(data);
+      } catch (e) {
+        if (import.meta.env.DEV)
+          console.error("Error cargando stats mayoristas:", e);
+      } finally {
+        if (mounted) setStatsLoading(false);
+      }
+    };
+    loadStats();
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  // Sincronizar búsqueda con backend (consulta global/paginada)
+  useEffect(() => {
+    setSearch(deferredSearchTerm || "");
+  }, [deferredSearchTerm, setSearch]);
+
+  // Manejar operaciones pendientes de creación/edición iniciadas en NewMayoristaPage
+  useEffect(() => {
+    if (
+      location.state?.pendingOperation &&
+      location.key !== processedLocationKey.current
+    ) {
+      const { operationType, mayoristaName, opKey } = location.state;
+      processedLocationKey.current = location.key;
+
+      const loadingId = notify.loading(
+        operationType === "update"
+          ? `Actualizando "${mayoristaName}"...`
+          : `Creando "${mayoristaName}"...`,
+        {
+          title:
+            operationType === "update"
+              ? "Actualizando mayorista"
+              : "Creando mayorista",
+          persistent: true,
+        },
+      );
+
+      const doneSuccess = () =>
+        notify.updateLoadingNotification(
+          loadingId,
+          "success",
+          operationType === "update"
+            ? `"${mayoristaName}" actualizado exitosamente`
+            : `"${mayoristaName}" creado exitosamente`,
+          {
+            title:
+              operationType === "update"
+                ? "Mayorista actualizado"
+                : "Mayorista creado",
+            duration: 5000,
+          },
+        );
+
+      const doneError = (err) =>
+        notify.updateLoadingNotification(
+          loadingId,
+          "error",
+          `Error: ${err?.response?.data?.message || err?.message || "Ocurrió un error"}`,
+          {
+            title:
+              operationType === "update"
+                ? "Error al actualizar"
+                : "Error al crear",
+            duration: 5000,
+          },
+        );
+
+      const promise = opKey ? getOperation(opKey) : null;
+      if (promise && typeof promise.then === "function") {
+        promise
+          .then(async () => {
+            await refetch(true);
+            doneSuccess();
+          })
+          .catch((err) => {
+            doneError(err);
+          })
+          .finally(() => {
+            if (opKey) clearOperation(opKey);
+          });
+      } else {
+        // Fallback con polling si no se encuentra la promesa compartida
+        const start = Date.now();
+        const MAX_WAIT = 20000;
+        const INTERVAL = 1500;
+        const poll = async () => {
+          try {
+            await refetch(true);
+            doneSuccess();
+          } catch (err) {
+            if (Date.now() - start < MAX_WAIT) {
+              setTimeout(poll, INTERVAL);
+            } else {
+              doneError(err);
+            }
+          }
+        };
+        poll();
+      }
+
+      // Limpiar el state de la navegación para evitar reprocesos
+      setTimeout(() => {
+        window.history.replaceState({}, document.title);
+      }, 100);
+    }
+  }, [location.state?.pendingOperation, location.key, notify, refetch]);
 
   const handleDelete = useCallback((mayoristaId, mayoristaName) => {
     setConfirmDialog({
@@ -64,14 +203,19 @@ const AdminMayoristasPage = () => {
 
   const confirmDelete = async () => {
     try {
-      await deleteMayorista(confirmDialog.mayoristaId);
-      addNotification(
-        "Mayorista movido a la papelera. Puedes restaurarlo desde la sección de papelera.",
-        "success",
-      );
+      await notify.operation(() => deleteMayorista(confirmDialog.mayoristaId), {
+        loadingMessage: `Moviendo "${confirmDialog.mayoristaName}" a la papelera...`,
+        successMessage: `"${confirmDialog.mayoristaName}" movido a la papelera. Puedes restaurarlo desde la sección de papelera.`,
+        errorMessage: "Error al mover el mayorista a la papelera",
+        loadingTitle: "Eliminando mayorista",
+        successTitle: "Mayorista eliminado",
+        errorTitle: "Error al eliminar",
+      });
     } catch (error) {
       console.error("Error al eliminar mayorista:", error);
-      addNotification("Error al mover el mayorista a la papelera", "error");
+      // El error ya se maneja en notify.operation
+    } finally {
+      closeConfirmDialog();
     }
   };
 
@@ -102,9 +246,10 @@ const AdminMayoristasPage = () => {
     try {
       setIsRefreshing(true);
       await refetch(true);
-      addNotification("Lista de mayoristas actualizada", "success");
+      // Notificaciones removidas para el botón de actualizar
     } catch (e) {
-      addNotification("No se pudo actualizar la lista", "error");
+      // Silenciar notificaciones en errores de actualización; solo registrar en consola
+      console.error("Error al actualizar la lista de mayoristas:", e);
     } finally {
       setIsRefreshing(false);
     }
@@ -116,20 +261,7 @@ const AdminMayoristasPage = () => {
 
     let filtered = [...mayoristas];
 
-    if (deferredSearchTerm) {
-      filtered = filtered.filter(
-        (mayorista) =>
-          mayorista.nombre
-            ?.toLowerCase()
-            .includes(deferredSearchTerm.toLowerCase()) ||
-          mayorista.clave
-            ?.toLowerCase()
-            .includes(deferredSearchTerm.toLowerCase()) ||
-          mayorista.tipo_producto
-            ?.toLowerCase()
-            .includes(deferredSearchTerm.toLowerCase()),
-      );
-    }
+    // La búsqueda ahora se hace en el backend (no filtrar por deferredSearchTerm aquí)
 
     if (tipoFilter) {
       filtered = filtered.filter(
@@ -158,7 +290,7 @@ const AdminMayoristasPage = () => {
     }
 
     return filtered;
-  }, [mayoristas, deferredSearchTerm, tipoFilter, sortConfig]);
+  }, [mayoristas, /*deferredSearchTerm,*/ tipoFilter, sortConfig]);
 
   const tiposUnicos = useMemo(
     () =>
@@ -231,7 +363,8 @@ const AdminMayoristasPage = () => {
               ) : (
                 <p className="text-gray-600 mt-1 sm:mt-2 text-sm sm:text-base">
                   Administra todos tus mayoristas en un solo lugar (
-                  {Array.isArray(mayoristas) ? mayoristas.length : 0} total)
+                  {(stats?.total ?? stats?.mayoristas ?? totalItems) || 0}{" "}
+                  total)
                 </p>
               )}
             </div>
@@ -280,7 +413,6 @@ const AdminMayoristasPage = () => {
                 className="w-full pl-10 sm:pl-12 pr-3 sm:pr-4 py-3 sm:py-4 rounded-lg sm:rounded-xl border border-purple-200 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-sm bg-purple-50/50 font-medium shadow-md focus:shadow-lg transition-all duración-200"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                disabled={loading}
               />
             </div>
 
@@ -328,10 +460,10 @@ const AdminMayoristasPage = () => {
                     <span className="text-xs font-medium">Mayoristas</span>
                   </div>
                   <div className="mt-1 text-2xl font-extrabold leading-none">
-                    {isInitialLoading ? (
+                    {statsLoading ? (
                       <div className="h-7 w-8 bg-white/30 rounded animate-pulse" />
                     ) : (
-                      filteredMayoristas.length
+                      (stats?.total ?? stats?.mayoristas ?? 0)
                     )}
                   </div>
                 </div>
@@ -347,10 +479,10 @@ const AdminMayoristasPage = () => {
                     </span>
                   </div>
                   <div className="mt-1 text-2xl font-extrabold leading-none">
-                    {isInitialLoading ? (
+                    {statsLoading ? (
                       <div className="h-7 w-8 bg-white/30 rounded animate-pulse" />
                     ) : (
-                      tiposUnicos.length
+                      (stats?.tipos ?? 0)
                     )}
                   </div>
                 </div>
@@ -392,10 +524,10 @@ const AdminMayoristasPage = () => {
                   <div className="bg-gradient-to-r from-purple-500 to-indigo-600 text-white py-2.5 px-4 rounded-xl font-medium text-sm flex items-center gap-2 shadow-md">
                     <div className="w-2 h-2 bg-white rounded-full"></div>
                     <span className="font-bold">
-                      {isInitialLoading ? (
+                      {statsLoading ? (
                         <span className="inline-block h-4 w-6 bg-white/40 rounded animate-pulse" />
                       ) : (
-                        filteredMayoristas.length
+                        (stats?.total ?? stats?.mayoristas ?? 0)
                       )}
                     </span>
                     <span>mayoristas</span>
@@ -404,10 +536,10 @@ const AdminMayoristasPage = () => {
                   <div className="bg-gradient-to-r from-teal-500 to-cyan-600 text-white py-2.5 px-4 rounded-xl font-medium text-sm flex items-center gap-2 shadow-md">
                     <FiTag className="w-4 h-4" />
                     <span className="font-bold">
-                      {isInitialLoading ? (
+                      {statsLoading ? (
                         <span className="inline-block h-4 w-6 bg-white/40 rounded animate-pulse" />
                       ) : (
-                        tiposUnicos.length
+                        (stats?.tipos ?? 0)
                       )}
                     </span>
                     <span>tipos</span>
@@ -614,21 +746,32 @@ const AdminMayoristasPage = () => {
         {isInitialLoading ? (
           renderSkeletonCards()
         ) : filteredMayoristas.length > 0 ? (
-          <Suspense
-            fallback={renderSkeletonCards(
-              Math.min(filteredMayoristas.length || 0, 9),
-            )}
-          >
-            <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6 items-stretch [content-visibility:auto] [contain-intrinsic-size:600px_900px]">
-              {filteredMayoristas.map((mayorista) => (
-                <MayoristaCard
-                  key={mayorista.id}
-                  mayorista={mayorista}
-                  onDelete={handleDelete}
-                />
-              ))}
-            </div>
-          </Suspense>
+          <>
+            <Suspense
+              fallback={renderSkeletonCards(
+                Math.min(filteredMayoristas.length || 0, 9),
+              )}
+            >
+              <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6 items-stretch [content-visibility:auto] [contain-intrinsic-size:600px_900px]">
+                {filteredMayoristas.map((mayorista) => (
+                  <MayoristaCard
+                    key={mayorista.id}
+                    mayorista={mayorista}
+                    onDelete={handleDelete}
+                  />
+                ))}
+              </div>
+            </Suspense>
+
+            {/* Paginación */}
+            <Pagination
+              currentPage={page}
+              totalPages={totalPages}
+              totalItems={totalItems || mayoristas.length}
+              itemsPerPage={limit}
+              onPageChange={goToPage}
+            />
+          </>
         ) : (
           <div className="bg-gradient-to-br from-white via-gray-50 to-white rounded-2xl sm:rounded-3xl shadow-xl p-6 sm:p-8 lg:p-12 text-center border border-gray-200">
             <div className="max-w-md mx-auto">

@@ -27,16 +27,14 @@ import MayoristasForm from "../components/MayoristasForm";
 import ConfigurationForm from "../components/ConfigurationForm";
 import Loading from "../../package/components/Loading";
 import Error from "../../package/components/Error";
-import { useNotification } from "./AdminLayout";
-import { useNotifications } from "../hooks/useNotifications";
 import PatchPreview from "../components/PatchPreview";
+import { setOperation } from "../utils/operationBus";
 
 const NuevoPaquete = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [activeSection, setActiveSection] = useState("basicos");
-  const { notify, removeNotification, clearAll } = useNotifications();
 
   const { paquete, loading, error } = usePackage(id, true);
 
@@ -65,9 +63,7 @@ const NuevoPaquete = () => {
       await handleHotelSelected(hotel);
     } catch (error) {
       console.error("Error seleccionando hotel:", error);
-      notify.error("Error al procesar las imágenes del hotel", {
-        title: "Error de procesamiento",
-      });
+      // Notificaciones deshabilitadas en esta página
     }
   };
 
@@ -76,74 +72,34 @@ const NuevoPaquete = () => {
     setIsSubmitting(true);
 
     try {
-      // Ejecutar en modo background para obtener la promesa
       const result = await formSubmitHandler(
         e,
-        (message, type) => {
-          if (type === "error") {
-            notify.error(message, { title: "Error", persistent: true });
-          }
-        },
-        true,
-      ); // backgroundMode = true
+        () => {}, // sin notificaciones aquí
+        true, // backgroundMode = true
+      );
 
       if (result && result.operation) {
-        // Mostrar notificación de progreso
-        const progressId = notify.loading(
-          id
-            ? `Actualizando "${result.packageTitle}"...`
-            : `Creando "${result.packageTitle}"...`,
-          {
-            title: "Procesando en segundo plano",
-            persistent: true,
-          },
-        );
+        const opKey = `package:${result.isEdit ? "update" : "create"}:${Date.now()}`;
+        setOperation(opKey, result.operation);
 
-        // Navegar inmediatamente
         navigate("/admin/paquetes", {
           state: {
-            backgroundOperation: true,
+            pendingOperation: true,
             operationType: result.isEdit ? "update" : "create",
             packageTitle: result.packageTitle,
+            opKey,
           },
         });
 
-        // Continuar la operación en segundo plano
-        result.operation
-          .then((operationResult) => {
-            // Remover notificación de progreso
-            removeNotification(progressId);
-
-            // Mostrar notificación de éxito
-            const successMessage = result.isEdit
-              ? `"${result.packageTitle}" actualizado exitosamente`
-              : `"${result.packageTitle}" creado exitosamente`;
-
-            notify.success(successMessage, {
-              title: "Operación completada",
-              persistent: true,
-              duration: 5000,
-            });
-          })
-          .catch((error) => {
-            // Remover notificación de progreso
-            removeNotification(progressId);
-
-            // Mostrar notificación de error
-            const errorMessage =
-              error.response?.data?.message || "Ocurrió un error inesperado.";
-            notify.error(`Error: ${errorMessage}`, {
-              title: "Error en operación en segundo plano",
-              persistent: true,
-            });
-          });
+        // Continuar la operación en segundo plano (sin notificar aquí)
+        result.operation.catch((err) => {
+          if (import.meta.env.DEV)
+            console.error("Error en operación paquete:", err);
+        });
       }
     } catch (err) {
-      console.error("Error inesperado en el componente de envío:", err);
-      notify.error("Ocurrió un error inesperado al enviar el formulario.", {
-        title: "Error inesperado",
-        persistent: true,
-      });
+      console.error("Error inesperado en el envío del paquete:", err);
+      // Notificaciones deshabilitadas en esta página
     } finally {
       setIsSubmitting(false);
     }

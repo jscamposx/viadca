@@ -244,7 +244,7 @@ const Steps = () => (
           <div className="relative bg-white rounded-3xl p-4 sm:p-6 shadow-xl border border-blue-100 max-w-md mx-auto hover:shadow-2xl transition-shadow duration-300">
             <div className="relative overflow-hidden rounded-2xl mb-4 sm:mb-6">
               <img
-                src="https://codia-f2c.s3.us-west-1.amazonaws.com/image/2025-08-12/TV4baWkhQk.png"
+                src="/HomePage/como-reservar-card1.avif"
                 alt="Tour a las Pirámides"
                 className="w-full h-40 sm:h-48 object-cover"
               />
@@ -414,7 +414,7 @@ const Steps = () => (
           <div className="hidden lg:block absolute -bottom-8 -right-8 bg-white rounded-3xl p-6 shadow-xl border border-blue-100 w-80">
             <div className="flex items-center space-x-4 mb-4">
               <img
-                src="https://codia-f2c.s3.us-west-1.amazonaws.com/image/2025-08-12/7K2Xap5m0S.png"
+                src="/HomePage/como-reservar-card2.avif"
                 alt="Cancún"
                 className="w-12 h-12 rounded-full object-cover"
               />

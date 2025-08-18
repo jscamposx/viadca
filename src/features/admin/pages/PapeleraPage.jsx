@@ -31,7 +31,7 @@ import {
   FiHome,
   FiPlus,
 } from "react-icons/fi";
-import { useNotification } from "./AdminLayout";
+import { useNotifications } from "../hooks/useNotifications";
 const OptimizedImage = lazy(
   () => import("../../../components/ui/OptimizedImage"),
 );
@@ -41,7 +41,7 @@ import Pagination from "../../../components/ui/Pagination";
 import usePapelera from "../hooks/usePapelera";
 
 const PapeleraPage = () => {
-  const { addNotification } = useNotification();
+  const { notify } = useNotifications();
 
   // Hook personalizado para gestionar la papelera
   const {
@@ -142,72 +142,128 @@ const PapeleraPage = () => {
 
   // Funciones de acción
   const handleRestore = async (item) => {
-    const success = await restoreItem(item.id, item.type);
-
-    if (success) {
-      const itemTypeText =
-        item.type === "paquete"
-          ? "Paquete"
-          : item.type === "mayorista"
-            ? "Mayorista"
-            : "Usuario";
-      addNotification(
-        `${itemTypeText} "${item.name}" restaurado correctamente`,
-        "success",
+    try {
+      await notify.operation(
+        async () => {
+          const ok = await restoreItem(item.id, item.type);
+          if (!ok) {
+            throw new Error(
+              `Error al restaurar ${
+                item.type === "paquete"
+                  ? "el paquete"
+                  : item.type === "mayorista"
+                    ? "el mayorista"
+                    : "el usuario"
+              }`,
+            );
+          }
+        },
+        {
+          loadingMessage: `Restaurando ${
+            item.type === "paquete"
+              ? "paquete"
+              : item.type === "mayorista"
+                ? "mayorista"
+                : "usuario"
+          }...`,
+          successMessage: `${
+            item.type === "paquete"
+              ? "Paquete"
+              : item.type === "mayorista"
+                ? "Mayorista"
+                : "Usuario"
+          } "${item.name}" restaurado correctamente`,
+          errorMessage: `Error al restaurar ${
+            item.type === "paquete"
+              ? "el paquete"
+              : item.type === "mayorista"
+                ? "el mayorista"
+                : "el usuario"
+          }`,
+          loadingTitle: "Restaurando",
+          successTitle: "Restaurado",
+          errorTitle: "Error al restaurar",
+        },
       );
-    } else {
-      const itemTypeText =
-        item.type === "paquete"
-          ? "el paquete"
-          : item.type === "mayorista"
-            ? "el mayorista"
-            : "el usuario";
-      addNotification(`Error al restaurar ${itemTypeText}`, "error");
+    } catch (e) {
+      // El error ya fue notificado
+    } finally {
+      closeConfirmDialog();
     }
-
-    closeConfirmDialog();
   };
 
   const handleHardDelete = async (item) => {
-    const success = await hardDeleteItem(item.id, item.type);
-
-    if (success) {
-      const itemTypeText =
-        item.type === "paquete"
-          ? "Paquete"
-          : item.type === "mayorista"
-            ? "Mayorista"
-            : "Usuario";
-      addNotification(
-        `${itemTypeText} "${item.name}" eliminado permanentemente`,
-        "success",
+    try {
+      await notify.operation(
+        async () => {
+          const ok = await hardDeleteItem(item.id, item.type);
+          if (!ok) {
+            throw new Error(
+              `Error al eliminar permanentemente ${
+                item.type === "paquete"
+                  ? "el paquete"
+                  : item.type === "mayorista"
+                    ? "el mayorista"
+                    : "el usuario"
+              }`,
+            );
+          }
+        },
+        {
+          loadingMessage: `Eliminando permanentemente ${
+            item.type === "paquete"
+              ? "paquete"
+              : item.type === "mayorista"
+                ? "mayorista"
+                : "usuario"
+          }...`,
+          successMessage: `${
+            item.type === "paquete"
+              ? "Paquete"
+              : item.type === "mayorista"
+                ? "Mayorista"
+                : "Usuario"
+          } "${item.name}" eliminado permanentemente`,
+          errorMessage: `Error al eliminar permanentemente ${
+            item.type === "paquete"
+              ? "el paquete"
+              : item.type === "mayorista"
+                ? "el mayorista"
+                : "el usuario"
+          }`,
+          loadingTitle: "Eliminando",
+          successTitle: "Eliminado",
+          errorTitle: "Error al eliminar",
+        },
       );
-    } else {
-      const itemTypeText =
-        item.type === "paquete"
-          ? "el paquete"
-          : item.type === "mayorista"
-            ? "el mayorista"
-            : "el usuario";
-      addNotification(
-        `Error al eliminar permanentemente ${itemTypeText}`,
-        "error",
-      );
+    } catch (e) {
+      // Error ya notificado
+    } finally {
+      closeConfirmDialog();
     }
-
-    closeConfirmDialog();
   };
 
   const handleEmptyTrash = async () => {
-    const success = await emptyTrash();
-
-    if (success) {
-      addNotification("Papelera vaciada correctamente", "success");
-    } else {
-      addNotification("Error al vaciar la papelera", "error");
+    try {
+      await notify.operation(
+        async () => {
+          const ok = await emptyTrash();
+          if (!ok) throw new Error("Error al vaciar la papelera");
+        },
+        {
+          loadingMessage: "Vaciando papelera...",
+          successMessage: "Papelera vaciada correctamente",
+          errorMessage: "Error al vaciar la papelera",
+          loadingTitle: "Vaciando papelera",
+          successTitle: "Papelera vaciada",
+          errorTitle: "Error al vaciar",
+        },
+      );
+    } catch (e) {
+      // Error ya notificado
+    } finally {
+      closeConfirmDialog();
     }
-
-    closeConfirmDialog();
   };
 
   const openConfirmDialog = (type, item) => {
@@ -880,7 +936,6 @@ const PapeleraPage = () => {
                   itemsPerPage={itemsPerPage}
                   totalItems={totalItems}
                   onPageChange={setCurrentPage}
-                  onItemsPerPageChange={setItemsPerPage}
                 />
               </div>
             )}

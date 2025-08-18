@@ -15,7 +15,7 @@ export default defineConfig({
         "not dead",
         "not op_mini all",
         "iOS >= 12",
-        "Safari >= 13"
+        "Safari >= 13",
       ],
       modernPolyfills: true,
     }),

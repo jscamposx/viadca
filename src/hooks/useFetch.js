@@ -1,7 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 
-// Caché de promesas en vuelo por (apiFunc, paramsKey)
-const INFLIGHT = new WeakMap(); // apiFunc => Map(paramsKey => Promise)
+const INFLIGHT = new WeakMap();
 
 export function useFetch(apiFunc, params = []) {
   const [data, setData] = useState(null);
@@ -36,7 +35,6 @@ export function useFetch(apiFunc, params = []) {
       setLoading(true);
       setError(null);
 
-      // Reutilizar promesa en vuelo si existe
       let promise = innerMap.get(paramsKey);
       if (!promise) {
         promise = (async () => {
@@ -44,11 +42,9 @@ export function useFetch(apiFunc, params = []) {
           return response;
         })()
           .catch((err) => {
-            // Propagar error tal cual
             throw err;
           })
           .finally(() => {
-            // Limpiar entrada cuando termina (éxito/error)
             innerMap.delete(paramsKey);
           });
         innerMap.set(paramsKey, promise);
@@ -57,7 +53,6 @@ export function useFetch(apiFunc, params = []) {
       try {
         const response = await promise;
         if (mountedRef.current) {
-          // Compatibilidad: si apiFunc ya devuelve .data, usa eso; si no, intenta response.data
           const payload =
             response?.data !== undefined ? response.data : response;
           setData(payload);

@@ -34,28 +34,33 @@ function AppRoutes() {
 
   return (
     <>
-      {/* Asegura que cada navegación coloque el scroll arriba */}
       <ScrollToTop />
       <AnimatePresence mode="wait" initial={false}>
         <Routes location={location} key={location.pathname}>
-          {/* Rutas públicas */}
           <Route path="/" element={<Home />} />
           <Route path="/paquetes/:url" element={<PaqueteDetalle />} />
-          {/* Páginas legales */}
+
           <Route path="/privacidad" element={<PrivacyPage />} />
           <Route path="/terminos" element={<TermsPage />} />
           <Route path="/cookies" element={<CookiesPage />} />
 
-          {/* Rutas de autenticación (ES) */}
           <Route path="/iniciar-sesion" element={<LoginPage />} />
           <Route path="/registro" element={<RegisterPage />} />
           <Route path="/verificar-correo" element={<VerifyEmailPage />} />
-          <Route path="/recuperar-contraseña" element={<ForgotPasswordPage />} />
-          <Route path="/restablecer-contraseña" element={<ResetPasswordPage />} />
-          <Route path="/aprobacion-pendiente" element={<PendingApprovalPage />} />
+          <Route
+            path="/recuperar-contraseña"
+            element={<ForgotPasswordPage />}
+          />
+          <Route
+            path="/restablecer-contraseña"
+            element={<ResetPasswordPage />}
+          />
+          <Route
+            path="/aprobacion-pendiente"
+            element={<PendingApprovalPage />}
+          />
           <Route path="/perfil" element={<ProtectedUserProfilePage />} />
 
-          {/* Rutas protegidas de administración */}
           <Route
             path="/admin"
             element={
@@ -70,7 +75,10 @@ function AppRoutes() {
             <Route path="paquetes/editar/:id" element={<NuevoPaquete />} />
             <Route path="mayoristas" element={<AdminMayoristasPage />} />
             <Route path="mayoristas/nuevo" element={<NewMayoristaPage />} />
-            <Route path="mayoristas/editar/:id" element={<NewMayoristaPage />} />
+            <Route
+              path="mayoristas/editar/:id"
+              element={<NewMayoristaPage />}
+            />
             <Route path="usuarios" element={<AdminUsersPage />} />
             <Route path="papelera" element={<PapeleraPage />} />
             <Route path="perfil" element={<AdminProfilePage />} />

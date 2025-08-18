@@ -2,32 +2,35 @@ import React, { useEffect, useState } from "react";
 import {
   FiUser,
   FiMail,
-  FiShield,
   FiEdit,
   FiSave,
   FiX,
   FiCheckCircle,
   FiClock,
   FiLock,
-  FiHome,
   FiRefreshCw,
+  FiKey,
+  FiSettings,
+  FiShield,
+  FiLogOut,
+  FiGlobe,
+  FiBell
 } from "react-icons/fi";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../../contexts/AuthContext";
 import authService from "../../../api/authService";
-import ProtectedRoute from "../../../components/auth/ProtectedRoute";
 import PageTransition from "../../../components/ui/PageTransition";
 
-// Página de perfil para cualquier usuario autenticado (no sólo admin)
-// Reglas PATCH /usuarios/profile: sólo nombre y email; cambiar email => re-verificación
 const UserProfilePage = () => {
-  const { user, updateProfile } = useAuth();
+  const { user, updateProfile, logout } = useAuth();
+  const navigate = useNavigate();
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({ nombre: "", correo: "" });
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState(null);
   const [pwdLoading, setPwdLoading] = useState(false);
   const [pwdMsg, setPwdMsg] = useState(null);
+  const [activeTab, setActiveTab] = useState("profile");
 
   useEffect(() => {
     if (user) {
@@ -126,12 +129,14 @@ const UserProfilePage = () => {
     }
   };
 
-  // Actualiza los datos del perfil desde el servidor (sin cambios locales)
   const refreshProfile = async () => {
     setLoading(true);
     try {
       await updateProfile();
-      setMessage({ type: "success", text: "Perfil sincronizado con el servidor" });
+      setMessage({
+        type: "success",
+        text: "Perfil sincronizado con el servidor",
+      });
     } catch (e) {
       setMessage({ type: "error", text: "No se pudo sincronizar el perfil" });
     } finally {
@@ -148,64 +153,139 @@ const UserProfilePage = () => {
 
   return (
     <PageTransition>
-      <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-sky-50 to-rose-50 p-4 sm:p-6 lg:p-10">
-        <div className="max-w-6xl mx-auto">
-          {/* Hero con gradiente y formas decorativas */}
-          <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 text-white p-6 sm:p-8 shadow-2xl border border-white/10 mb-8">
-            <div className="absolute inset-0 opacity-30 pointer-events-none">
-              <div className="absolute -top-10 -right-10 w-72 h-72 bg-white/20 rounded-full blur-3xl"></div>
-              <div className="absolute bottom-0 left-10 w-64 h-64 bg-white/10 rounded-full blur-2xl"></div>
-              <div className="absolute top-1/2 right-1/3 -translate-y-1/2 w-40 h-40 border-2 border-white/20 rotate-45 rounded-xl"></div>
-            </div>
-            <div className="relative flex flex-col sm:flex-row items-start sm:items-center gap-6">
-              <div className="flex items-center gap-4">
-                <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center text-white text-3xl font-bold ring-4 ring-white/20 shadow-lg">
-                  {isInitialLoading
-                    ? "..."
-                    : getInitials(
-                        user?.nombre ||
-                          user?.nombre_completo ||
-                          user?.nombreCompleto ||
-                          user?.usuario,
-                      )}
+      <div className="min-h-screen bg-gray-50">
+        {/* Header estilo moderno */}
+        <header className="bg-white shadow-sm">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex justify-between items-center py-4">
+              <div className="flex items-center">
+                <button 
+                  onClick={() => navigate(-1)}
+                  className="flex items-center text-gray-600 hover:text-gray-900 mr-4"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clipRule="evenodd" />
+                  </svg>
+                </button>
+                <h1 className="text-xl font-bold text-gray-900">MiApp</h1>
+              </div>
+              <div className="flex items-center space-x-4">
+                <button className="p-2 rounded-full hover:bg-gray-100 text-gray-600">
+                  <FiBell className="w-5 h-5" />
+                </button>
+                <button className="p-2 rounded-full hover:bg-gray-100 text-gray-600">
+                  <FiSettings className="w-5 h-5" />
+                </button>
+                <div className="w-8 h-8 rounded-full bg-blue-500 text-white flex items-center justify-center text-sm font-medium">
+                  {getInitials(user?.nombre || "U")}
                 </div>
-                <div>
-                  <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight">
-                    Tu Perfil
-                  </h1>
-                  <p className="text-white/85">Gestiona tu información personal</p>
-                  <div className="mt-2 flex flex-wrap gap-2">
-                    <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-white/15 border border-white/20">
-                      {(user?.rol || "usuario").toString().toUpperCase()}
-                    </span>
-                    <span
-                      className={`px-2.5 py-1 rounded-full text-xs font-semibold border ${isVerified ? "bg-emerald-500/20 border-emerald-300 text-emerald-100" : "bg-amber-500/20 border-amber-300 text-amber-100"}`}
-                    >
-                      {isVerified ? "Verificado" : "Verificación pendiente"}
-                    </span>
+              </div>
+            </div>
+          </div>
+        </header>
+
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          {/* Encabezado del perfil */}
+          <div className="bg-white rounded-xl shadow overflow-hidden">
+            <div className="relative h-48 bg-gradient-to-r from-blue-500 to-indigo-600">
+              <div className="absolute -bottom-16 left-8">
+                <div className="bg-white p-1 rounded-full shadow-lg">
+                  <div className="w-28 h-28 rounded-full bg-gray-200 border-4 border-white flex items-center justify-center text-4xl font-bold text-gray-600">
+                    {isInitialLoading
+                      ? "..."
+                      : getInitials(
+                          user?.nombre ||
+                            user?.nombre_completo ||
+                            user?.nombreCompleto ||
+                            user?.usuario,
+                        )}
                   </div>
                 </div>
               </div>
-              <div className="ml-auto">
-                <Link
-                  to="/"
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white/10 hover:bg-white/20 text-white text-sm font-medium transition border border-white/20"
+              <div className="absolute right-6 top-6">
+                <button
+                  onClick={() => setIsEditing(true)}
+                  className="flex items-center px-4 py-2 bg-white/20 backdrop-blur-sm rounded-lg text-white hover:bg-white/30 transition"
                 >
-                  <FiHome className="w-4 h-4" /> Volver al inicio
-                </Link>
+                  <FiEdit className="mr-2" /> Editar perfil
+                </button>
+              </div>
+            </div>
+            <div className="pt-20 px-8 pb-6">
+              <div>
+                <h1 className="text-2xl font-bold text-gray-900">
+                  {user?.nombre || user?.nombre_completo || "Tu Perfil"}
+                </h1>
+                <div className="flex items-center mt-2 space-x-3">
+                  <span className="text-gray-600 flex items-center">
+                    <FiMail className="mr-1.5 h-4 w-4" />
+                    {user?.correo || user?.email}
+                  </span>
+                  {isVerified ? (
+                    <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                      <FiCheckCircle className="mr-1.5 h-4 w-4" /> Verificado
+                    </span>
+                  ) : (
+                    <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                      <FiClock className="mr-1.5 h-4 w-4" /> No verificado
+                    </span>
+                  )}
+                  <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                    <FiUser className="mr-1.5 h-4 w-4" />
+                    {(user?.rol || "usuario").toString().toUpperCase()}
+                  </span>
+                </div>
               </div>
             </div>
           </div>
 
-          {/* Mensajes globales */}
+          {/* Tabs de navegación */}
+          <div className="mt-8">
+            <div className="border-b border-gray-200">
+              <nav className="flex space-x-8">
+                <button
+                  onClick={() => setActiveTab("profile")}
+                  className={`py-4 px-1 border-b-2 font-medium text-sm ${
+                    activeTab === "profile"
+                      ? "border-blue-500 text-blue-600"
+                      : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                  }`}
+                >
+                  Información personal
+                </button>
+                <button
+                  onClick={() => setActiveTab("security")}
+                  className={`py-4 px-1 border-b-2 font-medium text-sm ${
+                    activeTab === "security"
+                      ? "border-blue-500 text-blue-600"
+                      : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                  }`}
+                >
+                  Seguridad
+                </button>
+                <button
+                  onClick={() => setActiveTab("settings")}
+                  className={`py-4 px-1 border-b-2 font-medium text-sm ${
+                    activeTab === "settings"
+                      ? "border-blue-500 text-blue-600"
+                      : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                  }`}
+                >
+                  Configuración
+                </button>
+              </nav>
+            </div>
+          </div>
+
+          {/* Mensajes */}
           {message && (
             <div
-              className={`mb-6 p-4 rounded-xl border text-sm font-medium shadow-sm ${
+              className={`mt-6 p-4 rounded-lg ${
                 message.type === "success"
-                  ? "bg-green-50 border-green-200 text-green-700"
+                  ? "bg-green-50 border border-green-200 text-green-800"
                   : message.type === "error"
-                    ? "bg-red-50 border-red-200 text-red-700"
-                    : "bg-blue-50 border-blue-200 text-blue-700"
+                  ? "bg-red-50 border border-red-200 text-red-800"
+                  : "bg-blue-50 border border-blue-200 text-blue-800"
               }`}
             >
               {message.text}
@@ -213,250 +293,345 @@ const UserProfilePage = () => {
           )}
           {pwdMsg && (
             <div
-              className={`mb-6 p-4 rounded-xl text-sm font-medium border ${pwdMsg.type === "success" ? "bg-green-50 border-green-200 text-green-700" : "bg-red-50 border-red-200 text-red-700"}`}
+              className={`mt-6 p-4 rounded-lg ${
+                pwdMsg.type === "success"
+                  ? "bg-green-50 border border-green-200 text-green-800"
+                  : "bg-red-50 border border-red-200 text-red-800"
+              }`}
             >
               {pwdMsg.text}
             </div>
           )}
 
-          {/* Layout principal */}
-          <div className="grid lg:grid-cols-3 gap-6">
-            {/* Columna izquierda: Información del perfil */}
-            <div className="lg:col-span-2">
-              <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-slate-200 overflow-hidden">
-                <div className="p-6 border-b border-slate-200 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-gradient-to-r from-indigo-50 to-purple-50">
-                  <div>
-                    <h2 className="text-xl font-bold text-slate-800">
-                      Información del perfil
-                    </h2>
-                    <p className="text-slate-600 text-sm mt-1">
-                      Actualiza tu nombre o correo electrónico
-                    </p>
-                  </div>
-                  {!isEditing ? (
-                    <button
-                      onClick={() => setIsEditing(true)}
-                      disabled={isInitialLoading}
-                      className="px-5 py-2.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-medium shadow disabled:opacity-60 transition"
-                    >
-                      <FiEdit className="inline-block mr-2" /> Editar
-                    </button>
-                  ) : (
-                    <div className="flex gap-2">
+          {/* Contenido de la pestaña activa */}
+          {activeTab === "profile" ? (
+            <div className="mt-6 bg-white rounded-xl shadow overflow-hidden">
+              <div className="px-8 py-6">
+                {isEditing ? (
+                  <form onSubmit={handleSubmit} className="space-y-6 max-w-2xl">
+                    <div className="grid grid-cols-1 gap-y-6 gap-x-8 sm:grid-cols-6">
+                      <div className="sm:col-span-6">
+                        <label htmlFor="nombre" className="block text-sm font-medium text-gray-700 mb-2">
+                          Nombre completo
+                        </label>
+                        <div className="relative">
+                          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
+                            <FiUser className="h-5 w-5" />
+                          </div>
+                          <input
+                            type="text"
+                            name="nombre"
+                            id="nombre"
+                            value={formData.nombre}
+                            onChange={handleChange}
+                            className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                            placeholder="Ingresa tu nombre completo"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="sm:col-span-6">
+                        <label htmlFor="correo" className="block text-sm font-medium text-gray-700 mb-2">
+                          Correo electrónico
+                        </label>
+                        <div className="relative">
+                          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
+                            <FiMail className="h-5 w-5" />
+                          </div>
+                          <input
+                            type="email"
+                            name="correo"
+                            id="correo"
+                            value={formData.correo}
+                            onChange={handleChange}
+                            className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                            placeholder="Ingresa tu correo electrónico"
+                          />
+                        </div>
+                        {formData.correo !==
+                          (user?.correo || user?.email) && (
+                          <p className="mt-3 text-sm text-yellow-600 bg-yellow-50 p-2 rounded-lg flex items-start">
+                            <FiClock className="mr-2 mt-0.5 flex-shrink-0" /> 
+                            Al guardar, deberás verificar este nuevo correo.
+                          </p>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="pt-5 flex justify-end space-x-3">
                       <button
+                        type="button"
                         onClick={handleCancel}
-                        disabled={loading}
-                        className="px-5 py-2.5 rounded-lg bg-slate-200 hover:bg-slate-300 font-medium text-slate-800 shadow-sm disabled:opacity-60 transition"
+                        className="bg-white py-2.5 px-5 border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                       >
-                        <FiX className="inline-block mr-1" /> Cancelar
+                        Cancelar
                       </button>
                       <button
-                        onClick={handleSubmit}
+                        type="submit"
                         disabled={loading}
-                        className="px-5 py-2.5 rounded-lg bg-green-600 hover:bg-green-700 text-white font-medium shadow disabled:opacity-60 transition"
+                        className="inline-flex justify-center py-2.5 px-5 border border-transparent shadow-sm text-sm font-medium rounded-lg text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
                       >
-                        <FiSave className="inline-block mr-1" /> {loading ? "Guardando..." : "Guardar"}
+                        {loading ? (
+                          <>
+                            <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                            Guardando...
+                          </>
+                        ) : (
+                          "Guardar cambios"
+                        )}
                       </button>
                     </div>
-                  )}
-                </div>
-
-                <div className="p-6">
-                  {isEditing ? (
-                    <form onSubmit={handleSubmit} className="space-y-6">
-                      <div className="grid sm:grid-cols-2 gap-6">
-                        <div className="space-y-2">
-                          <label
-                            htmlFor="nombre"
-                            className="text-sm font-medium text-slate-700 flex items-center gap-2"
-                          >
-                            Nombre completo
-                            <span className="text-[10px] uppercase bg-blue-100 text-blue-600 px-2 py-0.5 rounded">
-                              Editable
-                            </span>
-                          </label>
-                          <div className="relative">
-                            <FiUser className="absolute left-4 top-1/2 -translate-y-1/2 text-blue-500" />
-                            <input
-                              id="nombre"
-                              name="nombre"
-                              value={formData.nombre}
-                              onChange={handleChange}
-                              disabled={loading}
-                              placeholder="Ingresa tu nombre"
-                              className="w-full pl-11 pr-4 py-3 rounded-lg border border-slate-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition"
-                            />
-                          </div>
-                        </div>
-                        <div className="space-y-2">
-                          <label
-                            htmlFor="correo"
-                            className="text-sm font-medium text-slate-700 flex items-center gap-2"
-                          >
-                            Correo electrónico
-                            <span className="text-[10px] uppercase bg-blue-100 text-blue-600 px-2 py-0.5 rounded">
-                              Editable
-                            </span>
-                          </label>
-                          <div className="relative">
-                            <FiMail className="absolute left-4 top-1/2 -translate-y-1/2 text-blue-500" />
-                            <input
-                              id="correo"
-                              name="correo"
-                              type="email"
-                              value={formData.correo}
-                              onChange={handleChange}
-                              disabled={loading}
-                              placeholder="Ingresa tu correo"
-                              className="w-full pl-11 pr-4 py-3 rounded-lg border border-slate-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition"
-                            />
-                          </div>
-                          {formData.correo !== (user?.correo || user?.email) && (
-                            <p className="text-xs text-amber-600 mt-1">
-                              Al guardar, deberás verificar este nuevo correo.
+                  </form>
+                ) : (
+                  <div className="max-w-3xl">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                      <div className="p-5 bg-gray-50 rounded-xl">
+                        <h3 className="text-lg font-medium text-gray-900 mb-4 flex items-center">
+                          <FiUser className="mr-2 text-blue-500" />
+                          Información personal
+                        </h3>
+                        <div className="space-y-4">
+                          <div>
+                            <p className="text-sm text-gray-500">Nombre completo</p>
+                            <p className="text-gray-900 font-medium mt-1">
+                              {formData.nombre || "—"}
                             </p>
-                          )}
+                          </div>
+                          <div>
+                            <p className="text-sm text-gray-500">Correo electrónico</p>
+                            <p className="text-gray-900 font-medium mt-1">
+                              {formData.correo || "—"}
+                            </p>
+                          </div>
                         </div>
                       </div>
 
-                      <div className="pt-2">
-                        <button
-                          type="submit"
-                          disabled={loading}
-                          className="px-6 py-3 rounded-lg bg-green-600 hover:bg-green-700 disabled:opacity-60 text-white font-medium shadow hover:shadow-lg transition-all"
-                        >
-                          {loading ? "Guardando..." : "Guardar cambios"}
-                        </button>
-                        <button
-                          type="button"
-                          onClick={handleCancel}
-                          disabled={loading}
-                          className="ml-4 px-6 py-3 rounded-lg bg-slate-200 hover:bg-slate-300 disabled:opacity-60 text-slate-800 font-medium shadow-sm transition-all"
-                        >
-                          Cancelar
-                        </button>
-                      </div>
-                    </form>
-                  ) : (
-                    <div className="grid sm:grid-cols-2 gap-6">
-                      <div className="p-4 rounded-lg bg-slate-50 border border-slate-200 flex items-center gap-3">
-                        <div className="w-12 h-12 rounded-lg bg-indigo-600 text-white flex items-center justify-center shadow">
-                          <FiUser className="w-6 h-6" />
-                        </div>
-                        <div>
-                          <p className="text-xs uppercase tracking-wide text-slate-500 font-semibold">
-                            Nombre
-                          </p>
-                          <p className="font-medium text-slate-800">
-                            {formData.nombre || "—"}
-                          </p>
-                        </div>
-                      </div>
-                      <div className="p-4 rounded-lg bg-slate-50 border border-slate-200 flex items-center gap-3">
-                        <div className="w-12 h-12 rounded-lg bg-pink-500 text-white flex items-center justify-center shadow">
-                          <FiMail className="w-6 h-6" />
-                        </div>
-                        <div>
-                          <p className="text-xs uppercase tracking-wide text-slate-500 font-semibold">
-                            Correo
-                          </p>
-                          <p className="font-medium text-slate-800 break-all">
-                            {formData.correo || "—"}
-                          </p>
+                      <div className="p-5 bg-gray-50 rounded-xl">
+                        <h3 className="text-lg font-medium text-gray-900 mb-4 flex items-center">
+                          <FiShield className="mr-2 text-blue-500" />
+                          Estado de la cuenta
+                        </h3>
+                        <div className="space-y-4">
+                          <div>
+                            <p className="text-sm text-gray-500">Verificación</p>
+                            <div className="mt-1">
+                              {isVerified ? (
+                                <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
+                                  <FiCheckCircle className="mr-1.5 h-4 w-4" /> Verificada
+                                </span>
+                              ) : (
+                                <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-yellow-100 text-yellow-800">
+                                  <FiClock className="mr-1.5 h-4 w-4" /> Pendiente de verificación
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                          <div>
+                            <p className="text-sm text-gray-500">Rol</p>
+                            <div className="mt-1">
+                              <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
+                                <FiUser className="mr-1.5 h-4 w-4" />
+                                {(user?.rol || "usuario").toString().toUpperCase()}
+                              </span>
+                            </div>
+                          </div>
                         </div>
                       </div>
                     </div>
-                  )}
-
-                  <div className="mt-10 text-xs text-slate-500 space-y-1">
-                    <p>
-                      <span className="font-semibold">Nota:</span> Sólo puedes
-                      actualizar nombre y correo desde aquí.
-                    </p>
-                    <p>
-                      Al cambiar el correo, se enviará un nuevo email de verificación
-                      y tu cuenta quedará no verificada hasta confirmarlo.
-                    </p>
-                    <p>
-                      No puedes modificar: usuario, rol, estado, contraseña o
-                      identificadores internos.
-                    </p>
+                    
+                    <div className="mt-8 bg-blue-50 p-4 rounded-xl border border-blue-100">
+                      <p className="text-sm text-blue-700 flex items-start">
+                        <FiKey className="mr-2 mt-0.5 flex-shrink-0" />
+                        <span>
+                          <span className="font-medium">Nota:</span> Solo puedes actualizar tu nombre y correo electrónico. 
+                          Al cambiar el correo, se enviará un nuevo email de verificación y tu cuenta quedará no verificada hasta confirmarlo.
+                        </span>
+                      </p>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          ) : activeTab === "security" ? (
+            <div className="mt-6 bg-white rounded-xl shadow overflow-hidden">
+              <div className="px-8 py-6">
+                <div className="max-w-3xl space-y-6">
+                  <div className="p-6 bg-gray-50 rounded-xl hover:bg-white transition-all duration-300 border border-gray-200">
+                    <div className="flex items-start">
+                      <div className="flex-shrink-0 p-2 bg-blue-100 rounded-lg text-blue-600">
+                        <FiLock className="h-6 w-6" />
+                      </div>
+                      <div className="ml-5 flex-1">
+                        <h3 className="text-lg font-medium text-gray-900">Restablecer contraseña</h3>
+                        <p className="mt-2 text-sm text-gray-600">
+                          Te enviaremos un enlace a tu correo electrónico para restablecer tu contraseña.
+                        </p>
+                        <div className="mt-4">
+                          <button
+                            onClick={sendPasswordReset}
+                            disabled={pwdLoading}
+                            className="inline-flex items-center px-4 py-2.5 border border-transparent text-sm font-medium rounded-lg shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
+                          >
+                            {pwdLoading ? (
+                              <>
+                                <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
+                                Enviando...
+                              </>
+                            ) : (
+                              "Enviar enlace de restablecimiento"
+                            )}
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="p-6 bg-gray-50 rounded-xl hover:bg-white transition-all duration-300 border border-gray-200">
+                    <div className="flex items-start">
+                      <div className="flex-shrink-0 p-2 bg-green-100 rounded-lg text-green-600">
+                        <FiShield className="h-6 w-6" />
+                      </div>
+                      <div className="ml-5 flex-1">
+                        <h3 className="text-lg font-medium text-gray-900">Verificación de correo</h3>
+                        <p className="mt-2 text-sm text-gray-600">
+                          {isVerified
+                            ? "Tu correo electrónico está verificado."
+                            : "Tu correo electrónico aún no está verificado. Revisa tu bandeja de entrada y la carpeta de spam."}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="p-6 bg-gray-50 rounded-xl hover:bg-white transition-all duration-300 border border-gray-200">
+                    <div className="flex items-start">
+                      <div className="flex-shrink-0 p-2 bg-indigo-100 rounded-lg text-indigo-600">
+                        <FiRefreshCw className="h-6 w-6" />
+                      </div>
+                      <div className="ml-5 flex-1">
+                        <h3 className="text-lg font-medium text-gray-900">Sincronizar perfil</h3>
+                        <p className="mt-2 text-sm text-gray-600">
+                          Vuelve a cargar tus datos desde el servidor para asegurarte de tener la información más reciente.
+                        </p>
+                        <div className="mt-4">
+                          <button
+                            onClick={refreshProfile}
+                            disabled={loading}
+                            className="inline-flex items-center px-4 py-2.5 border border-gray-300 shadow-sm text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
+                          >
+                            {loading ? (
+                              <>
+                                <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-gray-700" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
+                                Sincronizando...
+                              </>
+                            ) : (
+                              "Actualizar datos ahora"
+                            )}
+                          </button>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
-
-            {/* Columna derecha: Seguridad y estado */}
-            <div className="space-y-6">
-              <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-slate-200 overflow-hidden">
-                <div className="p-6 border-b border-slate-200 bg-gradient-to-r from-rose-50 to-orange-50">
-                  <h3 className="text-lg font-bold text-slate-800 flex items-center gap-2">
-                    <FiShield className="text-rose-500" /> Seguridad
-                  </h3>
-                  <p className="text-slate-600 text-sm mt-1">
-                    Gestiona opciones relacionadas con tu cuenta
-                  </p>
-                </div>
-                <div className="p-6 space-y-4">
-                  <div className="flex items-start gap-3 p-3 rounded-lg border border-slate-200 bg-slate-50">
-                    <div className="mt-0.5">
-                      <FiLock className="w-5 h-5 text-slate-600" />
-                    </div>
-                    <div className="flex-1">
-                      <p className="font-medium text-slate-800">Restablecer contraseña</p>
-                      <p className="text-sm text-slate-600">
-                        Te enviaremos un enlace a {user?.correo || user?.email || "tu correo"}.
+          ) : (
+            <div className="mt-6 bg-white rounded-xl shadow overflow-hidden">
+              <div className="px-8 py-6">
+                <div className="max-w-3xl">
+                  <h2 className="text-xl font-medium text-gray-900 mb-6">Configuración de la cuenta</h2>
+                  
+                  <div className="space-y-6">
+                    <div className="p-5 bg-gray-50 rounded-xl border border-gray-200">
+                      <h3 className="text-lg font-medium text-gray-900 mb-3 flex items-center">
+                        <FiGlobe className="mr-2 text-blue-500" />
+                        Preferencias de idioma
+                      </h3>
+                      <p className="text-sm text-gray-600 mb-4">
+                        Selecciona tu idioma preferido para la interfaz de usuario.
                       </p>
+                      <div className="relative">
+                        <select className="block w-full pl-3 pr-10 py-3 text-base border border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-lg">
+                          <option>Español</option>
+                          <option>English</option>
+                          <option>Português</option>
+                          <option>Français</option>
+                        </select>
+                      </div>
                     </div>
-                    <button
-                      onClick={sendPasswordReset}
-                      disabled={pwdLoading || isInitialLoading}
-                      className="px-3 py-2 rounded-md bg-slate-900 text-white text-sm hover:bg-slate-800 disabled:opacity-60"
-                    >
-                      {pwdLoading ? "Enviando..." : "Enviar"}
-                    </button>
-                  </div>
-
-                  <div className={`flex items-start gap-3 p-3 rounded-lg border ${isVerified ? "border-emerald-200 bg-emerald-50" : "border-amber-200 bg-amber-50"}`}>
-                    <div className="mt-0.5">
-                      {isVerified ? (
-                        <FiCheckCircle className="w-5 h-5 text-emerald-600" />
-                      ) : (
-                        <FiClock className="w-5 h-5 text-amber-600" />
-                      )}
-                    </div>
-                    <div className="flex-1">
-                      <p className="font-medium text-slate-800">Verificación de correo</p>
-                      <p className="text-sm text-slate-600">
-                        {isVerified
-                          ? "Tu correo está verificado."
-                          : "Tu correo aún no está verificado. Revisa tu bandeja y la carpeta de spam."}
+                    
+                    <div className="p-5 bg-gray-50 rounded-xl border border-gray-200">
+                      <h3 className="text-lg font-medium text-gray-900 mb-3 flex items-center">
+                        <FiBell className="mr-2 text-blue-500" />
+                        Notificaciones
+                      </h3>
+                      <p className="text-sm text-gray-600 mb-4">
+                        Controla cómo y cuándo recibes notificaciones.
                       </p>
+                      <div className="space-y-4">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="text-sm font-medium text-gray-900">Notificaciones por correo</p>
+                            <p className="text-sm text-gray-500">Recibe notificaciones importantes por correo electrónico</p>
+                          </div>
+                          <button className="relative inline-flex flex-shrink-0 h-6 w-11 border-2 border-transparent rounded-full cursor-pointer transition-colors ease-in-out duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 bg-blue-600">
+                            <span className="translate-x-5 pointer-events-none inline-block h-5 w-5 rounded-full bg-white shadow transform ring-0 transition ease-in-out duration-200"></span>
+                          </button>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="text-sm font-medium text-gray-900">Notificaciones push</p>
+                            <p className="text-sm text-gray-500">Recibe notificaciones en este dispositivo</p>
+                          </div>
+                          <button className="relative inline-flex flex-shrink-0 h-6 w-11 border-2 border-transparent rounded-full cursor-pointer transition-colors ease-in-out duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 bg-gray-200">
+                            <span className="translate-x-0 pointer-events-none inline-block h-5 w-5 rounded-full bg-white shadow transform ring-0 transition ease-in-out duration-200"></span>
+                          </button>
+                        </div>
+                      </div>
                     </div>
-                  </div>
-
-                  <div className="flex items-start gap-3 p-3 rounded-lg border border-slate-200">
-                    <div className="mt-0.5">
-                      <FiRefreshCw className="w-5 h-5 text-indigo-600" />
-                    </div>
-                    <div className="flex-1">
-                      <p className="font-medium text-slate-800">Sincronizar perfil</p>
-                      <p className="text-sm text-slate-600">
-                        Vuelve a cargar tus datos desde el servidor.
+                    
+                    <div className="p-5 bg-gray-50 rounded-xl border border-gray-200">
+                      <h3 className="text-lg font-medium text-gray-900 mb-3 flex items-center">
+                        <FiShield className="mr-2 text-blue-500" />
+                        Privacidad
+                      </h3>
+                      <p className="text-sm text-gray-600 mb-4">
+                        Controla cómo otros usuarios ven tu información.
                       </p>
+                      <div className="space-y-4">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="text-sm font-medium text-gray-900">Perfil público</p>
+                            <p className="text-sm text-gray-500">Permite que otros usuarios vean tu perfil</p>
+                          </div>
+                          <button className="relative inline-flex flex-shrink-0 h-6 w-11 border-2 border-transparent rounded-full cursor-pointer transition-colors ease-in-out duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 bg-blue-600">
+                            <span className="translate-x-5 pointer-events-none inline-block h-5 w-5 rounded-full bg-white shadow transform ring-0 transition ease-in-out duration-200"></span>
+                          </button>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="text-sm font-medium text-gray-900">Mostrar actividad</p>
+                            <p className="text-sm text-gray-500">Permite que otros vean tu actividad reciente</p>
+                          </div>
+                          <button className="relative inline-flex flex-shrink-0 h-6 w-11 border-2 border-transparent rounded-full cursor-pointer transition-colors ease-in-out duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 bg-gray-200">
+                            <span className="translate-x-0 pointer-events-none inline-block h-5 w-5 rounded-full bg-white shadow transform ring-0 transition ease-in-out duration-200"></span>
+                          </button>
+                        </div>
+                      </div>
                     </div>
-                    <button
-                      onClick={refreshProfile}
-                      disabled={loading}
-                      className="px-3 py-2 rounded-md bg-indigo-600 text-white text-sm hover:bg-indigo-700 disabled:opacity-60"
-                    >
-                      {loading ? "Sincronizando..." : "Actualizar"}
-                    </button>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
     </PageTransition>

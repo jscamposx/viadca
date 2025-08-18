@@ -4,7 +4,14 @@ import { useAuth } from "../../../contexts/AuthContext";
 import { useContactInfo } from "../../../hooks/useContactInfo";
 import PageTransition from "../../../components/ui/PageTransition";
 import { FiGrid } from "react-icons/fi";
-import { computePosition, offset, flip, shift, size, autoUpdate } from "@floating-ui/dom";
+import {
+  computePosition,
+  offset,
+  flip,
+  shift,
+  size,
+  autoUpdate,
+} from "@floating-ui/dom";
 import Hero from "../components/Hero";
 import Services from "../components/Services";
 import Destinations from "../components/Destinations";
@@ -145,14 +152,19 @@ const Home = () => {
     const cleanupAuto = autoUpdate(reference, floating, async () => {
       await computePosition(reference, floating, {
         placement: "bottom-end",
-        middleware: [offset(8), flip({ fallbackAxisSideDirection: "end" }), shift({ padding: 8 }), size({
-          apply({ availableWidth, availableHeight, elements }) {
-            Object.assign(elements.floating.style, {
-              maxWidth: `${Math.min(availableWidth, 400)}px`,
-              maxHeight: `${Math.min(availableHeight - 16, 600)}px`,
-            });
-          },
-        })],
+        middleware: [
+          offset(8),
+          flip({ fallbackAxisSideDirection: "end" }),
+          shift({ padding: 8 }),
+          size({
+            apply({ availableWidth, availableHeight, elements }) {
+              Object.assign(elements.floating.style, {
+                maxWidth: `${Math.min(availableWidth, 400)}px`,
+                maxHeight: `${Math.min(availableHeight - 16, 600)}px`,
+              });
+            },
+          }),
+        ],
       }).then(({ x, y }) => {
         Object.assign(floating.style, {
           left: `${x}px`,
@@ -194,21 +206,21 @@ const Home = () => {
   const logos = useMemo(
     () => [
       {
-        src: "https://codia-f2c.s3.us-west-1.amazonaws.com/image/2025-08-12/De1PjNgdS5.png",
+        src: "/HomePage/logo1.avif",
         alt: "Partner 1",
         h: "h-24", // 96px
         width: 240,
         height: 96,
       },
       {
-        src: "https://codia-f2c.s3.us-west-1.amazonaws.com/image/2025-08-12/t0MtADoBfm.png",
+        src: "/HomePage/logo2.avif",
         alt: "Partner 2",
         h: "h-24", // 96px
         width: 240,
         height: 96,
       },
       {
-        src: "https://codia-f2c.s3.us-west-1.amazonaws.com/image/2025-08-12/KQ9JLYeVaR.png",
+        src: "/HomePage/logo3.avif",
         alt: "Partner 3",
         h: "h-24", // 96px
         boxed: true,
@@ -216,14 +228,14 @@ const Home = () => {
         height: 96,
       },
       {
-        src: "https://codia-f2c.s3.us-west-1.amazonaws.com/image/2025-08-12/zDib26LXd7.png",
+        src: "/HomePage/logo7.avif",
         alt: "Partner 4",
         h: "h-14", // 56px
         width: 168,
         height: 56,
       },
       {
-        src: "https://codia-f2c.s3.us-west-1.amazonaws.com/image/2025-08-12/nW9CCvp1eD.png",
+        src: "/HomePage/logo6.avif",
         alt: "Partner 5",
         h: "h-12", // 48px
         width: 144,
@@ -378,7 +390,10 @@ const Home = () => {
             ? "bg-white/95 shadow-md border-b border-blue-200/60 lg:backdrop-blur-lg"
             : "bg-white/80 lg:bg-gradient-to-br lg:from-blue-50/90 lg:to-orange-50/90"
         }`}
-        style={{ willChange: "transform, opacity", "--header-h": `${headerHeight}px` }}
+        style={{
+          willChange: "transform, opacity",
+          "--header-h": `${headerHeight}px`,
+        }}
       >
         <nav
           ref={navRef}
@@ -765,9 +780,7 @@ const Home = () => {
                   {
                     id: "servicios",
                     label: "Servicios",
-                    icon: (
-                      <FiGrid className="w-5 h-5" aria-hidden="true" />
-                    ),
+                    icon: <FiGrid className="w-5 h-5" aria-hidden="true" />,
                   },
                 ].map((link, index) => (
                   <a

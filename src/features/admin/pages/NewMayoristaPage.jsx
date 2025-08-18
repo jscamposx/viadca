@@ -1,8 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useMayoristas } from "../hooks/useMayoristas";
-import { useNotification } from "./AdminLayout";
-import api from "../../../api";
+// import { useNotifications } from "../hooks/useNotifications";
 import {
   FiSave,
   FiArrowLeft,
@@ -20,7 +19,7 @@ const NewMayoristaPage = () => {
   const isEditing = Boolean(id);
   const { createMayorista, updateMayorista, getMayoristaById } =
     useMayoristas();
-  const { addNotification } = useNotification();
+  // const { notify } = useNotifications();
 
   const [formData, setFormData] = useState({
     nombre: "",
@@ -56,7 +55,7 @@ const NewMayoristaPage = () => {
           if (import.meta.env.DEV) {
             console.error("Error al cargar mayorista:", error);
           }
-          addNotification("Error al cargar los datos del mayorista", "error");
+          // Notificaciones deshabilitadas en esta página
           navigate("/admin/mayoristas");
         } finally {
           setIsLoadingData(false);
@@ -64,7 +63,7 @@ const NewMayoristaPage = () => {
       };
       loadMayorista();
     }
-  }, [isEditing, id]);
+  }, [isEditing, id, navigate]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -113,75 +112,28 @@ const NewMayoristaPage = () => {
         tipo_producto: formData.tipo_producto,
       };
 
-      if (import.meta.env.DEV) {
-        console.log(
-          "🚀 Iniciando proceso de creación/actualización de mayorista:",
-          {
-            isEditing,
-            mayoristData,
-            id,
-            environment: import.meta.env.MODE,
-            apiUrl: import.meta.env.VITE_API_BASE_URL,
-          },
-        );
-      }
-
+      let opPromise;
       if (isEditing) {
-        if (import.meta.env.DEV) {
-          console.log("📝 Actualizando mayorista existente...");
-        }
-        await updateMayorista(id, mayoristData);
-        addNotification("Mayorista actualizado correctamente", "success");
+        opPromise = updateMayorista(id, mayoristData);
       } else {
-        if (import.meta.env.DEV) {
-          console.log("✨ Creando nuevo mayorista...");
-        }
-        const result = await createMayorista(mayoristData);
-        if (import.meta.env.DEV) {
-          console.log("✅ Mayorista creado exitosamente:", result);
-        }
-        addNotification("Mayorista creado correctamente", "success");
+        opPromise = createMayorista(mayoristData);
       }
 
-      navigate("/admin/mayoristas");
+      const { setOperation } = await import("../utils/operationBus");
+      const opKey = `mayorista:${isEditing ? "update" : "create"}:${Date.now()}`;
+      setOperation(opKey, opPromise);
+
+      navigate("/admin/mayoristas", {
+        state: {
+          pendingOperation: true,
+          operationType: isEditing ? "update" : "create",
+          mayoristaName: mayoristData.nombre,
+          opKey,
+        },
+      });
     } catch (error) {
       if (import.meta.env.DEV) {
-        console.error("❌ Error completo al guardar mayorista:", {
-          error,
-          message: error.message,
-          response: error.response,
-          status: error.response?.status,
-          statusText: error.response?.statusText,
-          data: error.response?.data,
-          config: error.config,
-          isAxiosError: error.isAxiosError,
-          code: error.code,
-        });
-      }
-
-      if (error.response?.data?.message) {
-        addNotification(error.response.data.message, "error");
-      } else if (
-        error.code === "NETWORK_ERROR" ||
-        error.message.includes("Network Error")
-      ) {
-        addNotification(
-          "Error de conexión. Verifica tu conexión a internet.",
-          "error",
-        );
-      } else if (
-        error.code === "TIMEOUT" ||
-        error.message.includes("timeout")
-      ) {
-        addNotification(
-          "La solicitud tardó demasiado. Intenta de nuevo.",
-          "error",
-        );
-      } else {
-        addNotification(
-          `Error al ${isEditing ? "actualizar" : "crear"} el mayorista: ${error.message}`,
-          "error",
-        );
+        console.error("❌ Error al guardar mayorista:", error);
       }
     } finally {
       setIsLoading(false);

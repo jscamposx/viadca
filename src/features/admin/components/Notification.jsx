@@ -49,7 +49,10 @@ const Notification = ({
     ),
     loading: (
       <div className="flex items-center justify-center w-10 h-10 rounded-full bg-purple-100 ring-2 ring-purple-200">
-        <FiClock className="w-5 h-5 text-purple-600 animate-spin" />
+        <div className="relative">
+          <div className="w-5 h-5 border-2 border-purple-300 border-t-purple-600 rounded-full animate-spin"></div>
+          <div className="absolute inset-0 w-5 h-5 border border-purple-200 rounded-full animate-pulse"></div>
+        </div>
       </div>
     ),
     urgent: (
@@ -110,7 +113,8 @@ const Notification = ({
   useEffect(() => {
     setVisible(true);
 
-    if (persistent) return;
+    // Para notificaciones de loading, no iniciar el timer de desaparición automática
+    if (persistent || type === "loading") return;
 
     const startTime = Date.now();
     progressInterval.current = setInterval(() => {
@@ -127,7 +131,7 @@ const Notification = ({
       clearTimeout(timer);
       clearInterval(progressInterval.current);
     };
-  }, [duration, persistent]);
+  }, [duration, persistent, type]);
 
   const handleDismiss = () => {
     if (animationRef.current) {
@@ -158,7 +162,7 @@ const Notification = ({
           rounded-xl shadow-2xl backdrop-blur-sm border border-white/20 overflow-hidden
           transform transition-all duration-300 hover:scale-[1.02] hover:shadow-2xl`}
       >
-        {!persistent && (
+        {!persistent && type !== "loading" && (
           <div className="h-1 w-full bg-white/30">
             <div
               className={`h-full transition-all duration-75 linear ${
@@ -242,6 +246,25 @@ const Notification = ({
                           : "bg-blue-400"
               }`}
             />
+          </div>
+        )}
+
+        {type === "loading" && (
+          <div className="absolute top-3 right-12">
+            <div className="flex space-x-1">
+              <div
+                className="w-1 h-1 bg-purple-400 rounded-full animate-bounce"
+                style={{ animationDelay: "0ms" }}
+              ></div>
+              <div
+                className="w-1 h-1 bg-purple-400 rounded-full animate-bounce"
+                style={{ animationDelay: "150ms" }}
+              ></div>
+              <div
+                className="w-1 h-1 bg-purple-400 rounded-full animate-bounce"
+                style={{ animationDelay: "300ms" }}
+              ></div>
+            </div>
           </div>
         )}
       </div>

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   FiUser,
   FiMail,
@@ -11,7 +11,9 @@ import {
   FiClock,
   FiKey,
   FiLock,
+  FiCamera,
 } from "react-icons/fi";
+import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "../../../contexts/AuthContext";
 import authService from "../../../api/authService";
 
@@ -25,7 +27,7 @@ const AdminProfilePage = () => {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState(null);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (user) {
       setFormData({
         nombre: user.nombre || user.nombre_completo || "",
@@ -34,7 +36,7 @@ const AdminProfilePage = () => {
     }
   }, [user]);
 
-  const isInitialLoading = !user; // Mejora LCP: no bloquear layout
+  const isInitialLoading = !user;
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -46,7 +48,7 @@ const AdminProfilePage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (isInitialLoading) return; // Evitar enviar si aún no hay usuario
+    if (isInitialLoading) return;
     setLoading(true);
     setMessage(null);
 
@@ -116,11 +118,11 @@ const AdminProfilePage = () => {
   const getRoleColor = (role) => {
     switch (role) {
       case "admin":
-        return "bg-gradient-to-br from-red-500 to-red-600";
+        return "from-red-500 to-red-600";
       case "pre-autorizado":
-        return "bg-gradient-to-br from-amber-500 to-amber-600";
+        return "from-amber-500 to-amber-600";
       default:
-        return "bg-gradient-to-br from-indigo-500 to-indigo-600";
+        return "from-indigo-500 to-indigo-600";
     }
   };
 
@@ -144,266 +146,255 @@ const AdminProfilePage = () => {
   );
 
   return (
-    <div className="min-h-screen bg-white p-4 sm:p-6 lg:p-8">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 p-4 sm:p-6 lg:p-8">
       <div className="max-w-4xl mx-auto">
-        {/* Header con avatar - siempre visible, usa skeletons en carga */}
-        <div className="bg-white rounded-2xl shadow-xl border border-gray-100 p-6 mb-6 flex flex-col sm:flex-row items-center gap-6">
-          <div className="relative">
-            <div className="w-24 h-24 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg">
-              {isInitialLoading ? (
-                <div className="w-12 h-12 bg-white/30 rounded-xl animate-pulse" />
-              ) : (
-                <span className="text-white font-bold text-3xl">
-                  {getInitials(
-                    user?.nombre || user?.nombre_completo || user?.usuario,
-                  )}
-                </span>
-              )}
-            </div>
-            <div
-              className={`absolute -bottom-2 -right-2 w-10 h-10 rounded-full flex items-center justify-center shadow-lg ${getRoleColor(user?.rol)}`}
+        {/* Header Section */}
+        <div className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-2xl shadow-slate-200/50 p-6 sm:p-8 mb-6">
+          <div className="flex flex-col sm:flex-row items-center gap-6">
+            {/* Avatar with hover effect removed */}
+            <div 
+              className="relative group"
             >
-              <FiShield className="w-5 h-5 text-white" />
-            </div>
-          </div>
-          <div className="text-center sm:text-left flex-1">
-            {isInitialLoading ? (
-              <div className="h-7 w-48 bg-gray-200 rounded animate-pulse mx-auto sm:mx-0 mb-2" />
-            ) : (
-              <h1 className="text-3xl font-bold text-gray-900 mb-1">
-                {user?.nombre || user?.nombre_completo || user?.usuario}
-              </h1>
-            )}
-            <div className="flex flex-wrap justify-center sm:justify-start gap-2 mt-2 min-h-[36px]">
-              {isInitialLoading ? (
-                <>
-                  <div className="h-8 w-32 bg-gray-200 rounded-full animate-pulse" />
-                  <div className="h-8 w-28 bg-gray-200 rounded-full animate-pulse" />
-                </>
-              ) : (
-                <>
-                  <span
-                    className={`px-3 py-1 rounded-full text-sm font-medium ${getRoleColor(user?.rol)} text-white shadow-sm`}
-                  >
-                    {getRoleLabel(user?.rol)}
-                  </span>
-                  <span
-                    className={`px-3 py-1 rounded-full text-sm font-medium ${
-                      isVerified
-                        ? "bg-gradient-to-br from-green-500 to-green-600"
-                        : "bg-gradient-to-br from-amber-500 to-amber-600"
-                    } text-white shadow-sm flex items-center gap-1`}
-                  >
-                    {isVerified ? (
-                      <FiCheckCircle className="w-4 h-4" />
-                    ) : (
-                      <FiClock className="w-4 h-4" />
+              <div 
+                className={`w-24 h-24 sm:w-32 sm:h-32 bg-gradient-to-br ${getRoleColor(user?.rol)} rounded-full flex items-center justify-center shadow-xl`}
+              >
+                {isInitialLoading ? (
+                  <div className="w-16 h-16 bg-white/30 rounded-full animate-pulse" />
+                ) : (
+                  <span className="text-white font-bold text-3xl sm:text-4xl">
+                    {getInitials(
+                      user?.nombre || user?.nombre_completo || user?.usuario,
                     )}
-                    {isVerified ? "Verificado" : "Pendiente"}
                   </span>
+                )}
+              </div>
+              
+              {/* Camera overlay (static, no animation) */}
+              <div 
+                className="absolute inset-0 bg-black/60 rounded-full flex items-center justify-center opacity-0 cursor-pointer"
+              >
+                <FiCamera className="w-8 h-8 text-white" />
+              </div>
+
+              {/* Role badge */}
+              <div className={`absolute -bottom-2 -right-2 w-10 h-10 rounded-full bg-gradient-to-br ${getRoleColor(user?.rol)} shadow-lg flex items-center justify-center`}>
+                <FiShield className="w-5 h-5 text-white" />
+              </div>
+            </div>
+
+            {/* User Info */}
+            <div className="text-center sm:text-left flex-1">
+              {isInitialLoading ? (
+                <>
+                  <div className="h-8 w-48 bg-gray-200 rounded-full animate-pulse mx-auto sm:mx-0 mb-2" />
+                  <div className="h-4 w-32 bg-gray-200 rounded-full animate-pulse mx-auto sm:mx-0" />
                 </>
+              ) : (
+                <>
+                  <h1 
+                    className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent"
+                  >
+                    {user?.nombre || user?.nombre_completo || user?.usuario}
+                  </h1>
+                  <p 
+                    className="text-slate-600 mt-1"
+                  >
+                    @{user?.usuario}
+                  </p>
+                </>
+              )}
+
+              {/* Badges */}
+              <div className="flex flex-wrap justify-center sm:justify-start gap-2 mt-4">
+                {isInitialLoading ? (
+                  <div className="h-8 w-32 bg-gray-200 rounded-full animate-pulse" />
+                ) : (
+                  <>
+                    <span className={`px-3 py-1.5 rounded-full text-sm font-semibold text-white shadow-md bg-gradient-to-r ${getRoleColor(user?.rol)}`}>
+                      {getRoleLabel(user?.rol)}
+                    </span>
+                    <span className={`px-3 py-1.5 rounded-full text-sm font-semibold shadow-md flex items-center gap-1.5 ${
+                      isVerified 
+                        ? 'bg-gradient-to-r from-green-500 to-emerald-600 text-white' 
+                        : 'bg-gradient-to-r from-amber-500 to-orange-600 text-white'
+                    }`}>
+                      {isVerified ? (
+                        <>
+                          <FiCheckCircle className="w-4 h-4" />
+                          Verificado
+                        </>
+                      ) : (
+                        <>
+                          <FiClock className="w-4 h-4" />
+                          Pendiente
+                        </>
+                      )}
+                    </span>
+                  </>
+                )}
+              </div>
+            </div>
+
+            {/* Action Button */}
+            <div className="w-full sm:w-auto">
+              {!isEditing ? (
+                <button
+                  onClick={() => !isInitialLoading && setIsEditing(true)}
+                  disabled={isInitialLoading}
+                  className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 disabled:opacity-60 disabled:cursor-not-allowed"
+                >
+                  <FiEdit className="w-5 h-5" />
+                  <span>Editar perfil</span>
+                </button>
+              ) : (
+                <div className="flex gap-3">
+                  <button
+                    onClick={handleCancel}
+                    className="flex items-center justify-center gap-2 px-5 py-2.5 bg-gradient-to-r from-slate-600 to-slate-700 text-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300"
+                  >
+                    <FiX className="w-5 h-5" />
+                    <span>Cancelar</span>
+                  </button>
+                  <button
+                    onClick={handleSubmit}
+                    disabled={loading || isInitialLoading}
+                    className="flex items-center justify-center gap-2 px-5 py-2.5 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 disabled:opacity-60 disabled:cursor-not-allowed"
+                  >
+                    <FiSave className="w-5 h-5" />
+                    <span>{loading ? "Guardando..." : "Guardar"}</span>
+                  </button>
+                </div>
               )}
             </div>
           </div>
-          {!isEditing ? (
-            <button
-              onClick={() => !isInitialLoading && setIsEditing(true)}
-              className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-blue-600 to-purple-700 hover:from-blue-700 hover:to-purple-800 text-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-0.5 disabled:opacity-60 disabled:cursor-not-allowed"
-              disabled={isInitialLoading}
-            >
-              <FiEdit className="w-4 h-4" />
-              <span>Editar perfil</span>
-            </button>
-          ) : (
-            <div className="flex gap-2">
-              <button
-                onClick={handleCancel}
-                className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-gray-600 to-gray-700 text-white rounded-xl hover:shadow-lg transition-all duration-300 disabled:opacity-60 disabled:cursor-not-allowed"
-                disabled={loading}
-              >
-                <FiX className="w-4 h-4" />
-                <span>Cancelar</span>
-              </button>
-              <button
-                onClick={handleSubmit}
-                className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-xl hover:shadow-lg transition-all duration-300 hover:scale-[1.02] disabled:opacity-60 disabled:cursor-not-allowed"
-                disabled={loading || isInitialLoading}
-              >
-                <FiSave className="w-4 h-4" />
-                <span>{loading ? "Guardando..." : "Guardar cambios"}</span>
-              </button>
-            </div>
-          )}
         </div>
 
-        {/* Mensaje de estado */}
-        {message && (
-          <div
-            className={`mb-6 p-4 rounded-xl border ${
-              message.type === "success"
-                ? "bg-gradient-to-r from-green-50 to-green-100 border-green-200 text-green-800"
-                : message.type === "error"
-                  ? "bg-gradient-to-r from-red-50 to-red-100 border-red-200 text-red-800"
-                  : "bg-gradient-to-r from-blue-50 to-blue-100 border-blue-200 text-blue-800"
-            } shadow-sm transition-all duration-300 animate-fadeIn`}
-          >
-            <div className="flex items-center gap-3">
-              {message.type === "success" && (
-                <FiCheckCircle className="w-6 h-6 flex-shrink-0" />
-              )}
-              {message.type === "error" && (
-                <FiX className="w-6 h-6 flex-shrink-0" />
-              )}
-              {message.type === "info" && (
-                <FiClock className="w-6 h-6 flex-shrink-0" />
-              )}
-              <span className="font-medium">{message.text}</span>
-            </div>
-          </div>
-        )}
+        {/* Status Message (keep update animations) */}
+        <AnimatePresence>
+          {message && (
+            <motion.div
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              className={`mb-6 p-5 rounded-2xl shadow-lg ${
+                message.type === "success"
+                  ? "bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 text-green-800"
+                  : message.type === "error"
+                    ? "bg-gradient-to-r from-red-50 to-pink-50 border border-red-200 text-red-800"
+                    : "bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 text-blue-800"
+              }`}
+            >
+              <div className="flex items-center gap-3">
+                {message.type === "success" && <FiCheckCircle className="w-6 h-6" />}
+                {message.type === "error" && <FiX className="w-6 h-6" />}
+                {message.type === "info" && <FiClock className="w-6 h-6" />}
+                <span className="font-medium">{message.text}</span>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
-        {/* Panel principal */}
-        <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
-          {/* Encabezado del panel */}
-          <div className="bg-gradient-to-r from-white via-blue-50 to-purple-50 border-b border-indigo-100/50 p-4 sm:p-5 lg:p-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-            <div>
-              <h2 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                Información del perfil
-              </h2>
-              <p className="text-gray-600 mt-1 sm:mt-2 text-sm sm:text-base">
-                Gestiona tu información personal
-              </p>
-            </div>
-            {/* Botones de acción ya están en el header superior */}
+        {/* Main Content */}
+        <div 
+          className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-2xl shadow-slate-200/50 overflow-hidden"
+        >
+          <div className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 p-6">
+            <h2 className="text-xl sm:text-2xl font-bold text-white">
+              Información del perfil
+            </h2>
+            <p className="text-white/80 mt-1">
+              Gestiona tu información personal
+            </p>
           </div>
-          {/* Contenido */}
-          <div className="p-5">
+
+          <div className="p-6 sm:p-8">
             {isEditing ? (
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {/* Nombre (editable) */}
-                  <div className="space-y-2">
-                    <label
-                      htmlFor="nombre"
-                      className="text-sm font-medium text-gray-700 flex items-center gap-1"
-                    >
-                      <FiUser className="w-4 h-4" />
-                      <span>Nombre completo</span>
-                      <span className="ml-2 text-[10px] font-semibold uppercase tracking-wide text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded">
-                        Editable
-                      </span>
+                  {/* Editable Fields */}
+                  <div 
+                    className="space-y-3"
+                  >
+                    <label className="text-sm font-semibold text-slate-700 flex items-center gap-2">
+                      <FiUser className="w-5 h-5 text-indigo-600" />
+                      Nombre completo
                     </label>
-                    <div className="relative">
-                      <input
-                        type="text"
-                        id="nombre"
-                        name="nombre"
-                        value={formData.nombre}
-                        onChange={handleInputChange}
-                        className="w-full p-3.5 pl-12 bg-white rounded-xl border border-indigo-200 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition-all duration-300 shadow-sm disabled:opacity-60"
-                        placeholder="Ingresa tu nombre completo"
-                        disabled={isInitialLoading || loading}
-                      />
-                      <FiUser className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-indigo-500" />
-                    </div>
+                    <input
+                      type="text"
+                      name="nombre"
+                      value={formData.nombre}
+                      onChange={handleInputChange}
+                      className="w-full p-4 bg-white rounded-2xl border-2 border-indigo-100 focus:border-indigo-400 focus:ring-4 focus:ring-indigo-100 outline-none transition-all duration-300 shadow-sm"
+                      placeholder="Ingresa tu nombre completo"
+                      disabled={isInitialLoading || loading}
+                    />
                   </div>
 
-                  {/* Email (editable) */}
-                  <div className="space-y-2">
-                    <label
-                      htmlFor="correo"
-                      className="text-sm font-medium text-gray-700 flex items-center gap-1"
-                    >
-                      <FiMail className="w-4 h-4" />
-                      <span>Correo electrónico</span>
-                      <span className="ml-2 text-[10px] font-semibold uppercase tracking-wide text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded">
-                        Editable
-                      </span>
+                  <div 
+                    className="space-y-3"
+                  >
+                    <label className="text-sm font-semibold text-slate-700 flex items-center gap-2">
+                      <FiMail className="w-5 h-5 text-indigo-600" />
+                      Correo electrónico
                     </label>
-                    <div className="relative">
-                      <input
-                        type="email"
-                        id="correo"
-                        name="correo"
-                        value={formData.correo}
-                        onChange={handleInputChange}
-                        className="w-full p-3.5 pl-12 bg-white rounded-xl border border-indigo-200 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition-all duration-300 shadow-sm disabled:opacity-60"
-                        placeholder="Ingresa tu correo electrónico"
-                        disabled={isInitialLoading || loading}
-                      />
-                      <FiMail className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-indigo-500" />
-                    </div>
+                    <input
+                      type="email"
+                      name="correo"
+                      value={formData.correo}
+                      onChange={handleInputChange}
+                      className="w-full p-4 bg-white rounded-2xl border-2 border-indigo-100 focus:border-indigo-400 focus:ring-4 focus:ring-indigo-100 outline-none transition-all duration-300 shadow-sm"
+                      placeholder="Ingresa tu correo electrónico"
+                      disabled={isInitialLoading || loading}
+                    />
                   </div>
 
-                  {/* Rol (solo lectura) */}
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-gray-700 flex items-center gap-1">
-                      <FiShield className="w-4 h-4" />
-                      <span>Rol</span>
-                      <span className="ml-2 text-[10px] font-semibold uppercase tracking-wide text-gray-500 bg-gray-100 px-2 py-0.5 rounded flex items-center gap-1">
-                        <FiLock className="w-3 h-3" /> No editable
-                      </span>
+                  {/* Read-only Fields */}
+                  <div className="space-y-3 opacity-75">
+                    <label className="text-sm font-semibold text-slate-700 flex items-center gap-2">
+                      <FiShield className="w-5 h-5 text-slate-500" />
+                      Rol del sistema
                     </label>
-                    <div
-                      className="relative p-3.5 bg-gray-100 rounded-xl border border-gray-200 flex items-center gap-3 cursor-not-allowed select-none"
-                      aria-readonly="true"
-                    >
-                      <div
-                        className={`w-10 h-10 rounded-lg flex items-center justify-center ${getRoleColor(user?.rol)}`}
-                      >
-                        <FiShield className="w-5 h-5 text-white" />
+                    <div className="p-4 bg-slate-50 rounded-2xl border-2 border-slate-200">
+                      <div className="flex items-center gap-3">
+                        <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${getRoleColor(user?.rol)} flex items-center justify-center`}>
+                          <FiShield className="w-5 h-5 text-white" />
+                        </div>
+                        <span className="font-medium text-slate-700">
+                          {getRoleLabel(user?.rol)}
+                        </span>
                       </div>
-                      <span className="font-medium text-gray-700">
-                        {getRoleLabel(user?.rol)}
-                      </span>
-                      <FiLock className="absolute top-2 right-2 w-4 h-4 text-gray-400" />
                     </div>
                   </div>
 
-                  {/* Usuario (solo lectura) */}
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-gray-700 flex items-center gap-1">
-                      <FiKey className="w-4 h-4" />
-                      <span>Nombre de usuario</span>
-                      <span className="ml-2 text-[10px] font-semibold uppercase tracking-wide text-gray-500 bg-gray-100 px-2 py-0.5 rounded flex items-center gap-1">
-                        <FiLock className="w-3 h-3" /> No editable
-                      </span>
+                  <div className="space-y-3 opacity-75">
+                    <label className="text-sm font-semibold text-slate-700 flex items-center gap-2">
+                      <FiKey className="w-5 h-5 text-slate-500" />
+                      Nombre de usuario
                     </label>
-                    <div
-                      className="relative p-3.5 bg-gray-100 rounded-xl border border-gray-200 flex items-center gap-3 cursor-not-allowed select-none"
-                      aria-readonly="true"
-                    >
-                      <div className="w-10 h-10 rounded-lg bg-gray-300 flex items-center justify-center">
-                        <FiUser className="w-5 h-5 text-gray-600" />
+                    <div className="p-4 bg-slate-50 rounded-2xl border-2 border-slate-200">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-xl bg-slate-300 flex items-center justify-center">
+                          <FiUser className="w-5 h-5 text-slate-600" />
+                        </div>
+                        <span className="font-medium text-slate-700">
+                          {user?.usuario || "No disponible"}
+                        </span>
                       </div>
-                      <span className="font-medium text-gray-700">
-                        {user?.usuario || (isInitialLoading ? "—" : "")}
-                      </span>
-                      <FiLock className="absolute top-2 right-2 w-4 h-4 text-gray-400" />
                     </div>
                   </div>
 
-                  {/* Miembro desde (solo lectura) */}
-                  <div className="space-y-2 md:col-span-2">
-                    <label className="text-sm font-medium text-gray-700 flex items-center gap-1">
-                      <FiCalendar className="w-4 h-4" />
-                      <span>Miembro desde</span>
-                      <span className="ml-2 text-[10px] font-semibold uppercase tracking-wide text-gray-500 bg-gray-100 px-2 py-0.5 rounded flex items-center gap-1">
-                        <FiLock className="w-3 h-3" /> No editable
-                      </span>
+                  <div className="space-y-3 md:col-span-2 opacity-75">
+                    <label className="text-sm font-semibold text-slate-700 flex items-center gap-2">
+                      <FiCalendar className="w-5 h-5 text-slate-500" />
+                      Miembro desde
                     </label>
-                    <div
-                      className="relative p-4 bg-gray-100 rounded-xl border border-gray-200 flex items-center gap-3 cursor-not-allowed select-none"
-                      aria-readonly="true"
-                    >
-                      <div className="w-12 h-12 rounded-xl bg-purple-200 flex items-center justify-center">
-                        <FiCalendar className="w-6 h-6 text-purple-600" />
-                      </div>
-                      <div>
-                        {isInitialLoading ? (
-                          <div className="h-5 w-44 bg-gray-200 rounded animate-pulse" />
-                        ) : (
-                          <p className="text-sm font-semibold text-gray-800">
+                    <div className="p-4 bg-slate-50 rounded-2xl border-2 border-slate-200">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-xl bg-purple-100 flex items-center justify-center">
+                          <FiCalendar className="w-5 h-5 text-purple-600" />
+                        </div>
+                        <div>
+                          <p className="font-medium text-slate-700">
                             {formatDate(
                               user?.creadoEn ||
                                 user?.createdAt ||
@@ -411,187 +402,145 @@ const AdminProfilePage = () => {
                                 user?.fechaCreacion ||
                                 user?.fecha_creacion ||
                                 user?.fechaRegistro,
-                            )}
+                            ) || "No disponible"}
                           </p>
-                        )}
-                        <p className="text-xs text-gray-500">
-                          Fecha de registro (no editable)
-                        </p>
+                          <p className="text-sm text-slate-500">
+                            Fecha de registro
+                          </p>
+                        </div>
                       </div>
-                      <FiLock className="absolute top-2 right-2 w-4 h-4 text-gray-400" />
                     </div>
                   </div>
                 </div>
               </form>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {/* Nombre */}
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-gray-700 flex items-center gap-1">
-                    <FiUser className="w-4 h-4" />
-                    <span>Nombre completo</span>
+                {/* Display Mode */}
+                <div 
+                  className="space-y-3"
+                >
+                  <label className="text-sm font-semibold text-slate-700 flex items-center gap-2">
+                    <FiUser className="w-5 h-5 text-indigo-600" />
+                    Nombre completo
                   </label>
-                  <div className="p-3.5 bg-gray-50 rounded-xl border border-gray-200 flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-lg bg-indigo-100 flex items-center justify-center">
-                      <FiUser className="w-5 h-5 text-indigo-600" />
-                    </div>
-                    {isInitialLoading ? (
-                      <div className="h-5 w-44 bg-gray-200 rounded animate-pulse" />
-                    ) : (
-                      <span className="font-medium text-gray-900">
-                        {user?.nombre ||
-                          user?.nombre_completo ||
-                          "No especificado"}
-                      </span>
-                    )}
+                  <div className="p-4 bg-gradient-to-r from-indigo-50 to-blue-50 rounded-2xl border border-indigo-200">
+                    <p className="font-medium text-slate-800">
+                      {user?.nombre || user?.nombre_completo || "No especificado"}
+                    </p>
                   </div>
                 </div>
 
-                {/* Email */}
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-gray-700 flex items-center gap-1">
-                    <FiMail className="w-4 h-4" />
-                    <span>Correo electrónico</span>
+                <div 
+                  className="space-y-3"
+                >
+                  <label className="text-sm font-semibold text-slate-700 flex items-center gap-2">
+                    <FiMail className="w-5 h-5 text-indigo-600" />
+                    Correo electrónico
                   </label>
-                  <div className="p-3.5 bg-gray-50 rounded-xl border border-gray-200 flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center">
-                      <FiMail className="w-5 h-5 text-blue-600" />
-                    </div>
-                    {isInitialLoading ? (
-                      <div className="h-5 w-56 bg-gray-200 rounded animate-pulse" />
-                    ) : (
-                      <span className="font-medium text-gray-900">
-                        {user?.correo || user?.email}
-                      </span>
-                    )}
+                  <div className="p-4 bg-gradient-to-r from-blue-50 to-cyan-50 rounded-2xl border border-blue-200">
+                    <p className="font-medium text-slate-800">
+                      {user?.correo || user?.email || "No disponible"}
+                    </p>
                   </div>
                 </div>
 
-                {/* Rol */}
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-gray-700 flex items-center gap-1">
-                    <FiShield className="w-4 h-4" />
-                    <span>Rol</span>
+                <div 
+                  className="space-y-3"
+                >
+                  <label className="text-sm font-semibold text-slate-700 flex items-center gap-2">
+                    <FiShield className="w-5 h-5 text-indigo-600" />
+                    Rol del sistema
                   </label>
-                  <div className="p-3.5 bg-gray-50 rounded-xl border border-gray-200 flex items-center gap-3">
-                    <div
-                      className={`w-10 h-10 rounded-lg flex items-center justify-center ${getRoleColor(user?.rol)}`}
-                    >
-                      <FiShield className="w-5 h-5 text-white" />
-                    </div>
-                    {isInitialLoading ? (
-                      <div className="h-5 w-36 bg-gray-200 rounded animate-pulse" />
-                    ) : (
-                      <span className="font-medium text-gray-900">
-                        {getRoleLabel(user?.rol)}
-                      </span>
-                    )}
+                  <div className="p-4 bg-gradient-to-r from-purple-50 to-pink-50 rounded-2xl border border-purple-200">
+                    <p className="font-medium text-slate-800">
+                      {getRoleLabel(user?.rol)}
+                    </p>
                   </div>
                 </div>
 
-                {/* Usuario */}
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-gray-700 flex items-center gap-1">
-                    <FiKey className="w-4 h-4" />
-                    <span>Nombre de usuario</span>
+                <div 
+                  className="space-y-3"
+                >
+                  <label className="text-sm font-semibold text-slate-700 flex items-center gap-2">
+                    <FiKey className="w-5 h-5 text-indigo-600" />
+                    Nombre de usuario
                   </label>
-                  <div className="p-3.5 bg-gray-50 rounded-xl border border-gray-200 flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-lg bg-gray-200 flex items-center justify-center">
-                      <FiUser className="w-5 h-5 text-gray-700" />
-                    </div>
-                    {isInitialLoading ? (
-                      <div className="h-5 w-40 bg-gray-200 rounded animate-pulse" />
-                    ) : (
-                      <span className="font-medium text-gray-900">
-                        {user?.usuario}
-                      </span>
-                    )}
+                  <div className="p-4 bg-gradient-to-r from-slate-100 to-gray-100 rounded-2xl border border-slate-300">
+                    <p className="font-medium text-slate-800">
+                      {user?.usuario || "No disponible"}
+                    </p>
                   </div>
                 </div>
 
-                {/* Fecha de registro */}
-                <div className="space-y-2 md:col-span-2">
-                  <label className="text-sm font-medium text-gray-700 flex items-center gap-1">
-                    <FiCalendar className="w-4 h-4" />
-                    <span>Miembro desde</span>
+                <div 
+                  className="space-y-3 md:col-span-2"
+                >
+                  <label className="text-sm font-semibold text-slate-700 flex items-center gap-2">
+                    <FiCalendar className="w-5 h-5 text-indigo-600" />
+                    Miembro desde
                   </label>
-                  <div className="p-3.5 bg-gray-50 rounded-xl border border-gray-200 flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-lg bg-purple-100 flex items-center justify-center">
-                      <FiCalendar className="w-5 h-5 text-purple-600" />
-                    </div>
-                    {isInitialLoading ? (
-                      <div className="h-5 w-48 bg-gray-200 rounded animate-pulse" />
-                    ) : (
-                      <span className="font-medium text-gray-900">
-                        {formatDate(
-                          user?.creadoEn ||
-                            user?.createdAt ||
-                            user?.created_at ||
-                            user?.fechaCreacion ||
-                            user?.fecha_creacion ||
-                            user?.fechaRegistro,
-                        )}
-                      </span>
-                    )}
+                  <div className="p-4 bg-gradient-to-r from-purple-50 to-indigo-50 rounded-2xl border border-purple-200">
+                    <p className="font-medium text-slate-800">
+                      {formatDate(
+                        user?.creadoEn ||
+                          user?.createdAt ||
+                          user?.created_at ||
+                          user?.fechaCreacion ||
+                          user?.fecha_creacion ||
+                          user?.fechaRegistro,
+                      ) || "No disponible"}
+                    </p>
                   </div>
                 </div>
               </div>
             )}
 
-            {/* Estado de verificación */}
-            <div
-              className={`mt-8 p-5 rounded-xl border ${
+            {/* Verification Status (static, no entrance animation) */}
+            <div 
+              className={`mt-8 p-6 rounded-2xl shadow-lg ${
                 isVerified && formData.correo === (user.correo || user.email)
-                  ? "bg-gradient-to-r from-green-50 to-green-100 border-green-200"
-                  : "bg-gradient-to-r from-amber-50 to-amber-100 border-amber-200"
+                  ? "bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200"
+                  : "bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200"
               }`}
             >
-              <div className="flex items-center sm:items-start gap-3">
+              <div className="flex items-center gap-4">
                 <div
-                  className={`w-9 h-9 sm:w-8 sm:h-8 rounded-full flex items-center justify-center shrink-0 shadow ${
-                    isVerified &&
-                    formData.correo === (user.correo || user.email)
-                      ? "bg-green-500"
-                      : "bg-amber-500"
+                  className={`w-12 h-12 rounded-xl flex items-center justify-center shadow-md shrink-0 sm:shrink ${
+                    isVerified && formData.correo === (user.correo || user.email)
+                      ? "bg-gradient-to-br from-green-500 to-emerald-600"
+                      : "bg-gradient-to-br from-amber-500 to-orange-600"
                   }`}
                 >
-                  {isVerified &&
-                  formData.correo === (user.correo || user.email) ? (
-                    <FiCheckCircle className="w-5 h-5 sm:w-4 sm:h-4 text-white" />
+                  {isVerified && formData.correo === (user.correo || user.email) ? (
+                    <FiCheckCircle className="w-6 h-6 text-white shrink-0" />
                   ) : (
-                    <FiClock className="w-5 h-5 sm:w-4 sm:h-4 text-white" />
+                    <FiClock className="w-6 h-6 text-white shrink-0" />
                   )}
                 </div>
-                <div className="min-w-0">
+                <div>
                   <h3
-                    className={`font-bold ${
-                      isVerified &&
-                      formData.correo === (user.correo || user.email)
+                    className={`font-bold text-lg ${
+                      isVerified && formData.correo === (user.correo || user.email)
                         ? "text-green-800"
                         : "text-amber-800"
                     }`}
                   >
-                    {isVerified &&
-                    formData.correo === (user.correo || user.email)
+                    {isVerified && formData.correo === (user.correo || user.email)
                       ? "Cuenta verificada"
-                      : isEditing &&
-                          formData.correo !== (user.correo || user.email)
+                      : isEditing && formData.correo !== (user.correo || user.email)
                         ? "Verificación requerida"
                         : "Verificación pendiente"}
                   </h3>
                   <p
                     className={`mt-1 ${
-                      isVerified &&
-                      formData.correo === (user.correo || user.email)
+                      isVerified && formData.correo === (user.correo || user.email)
                         ? "text-green-700"
                         : "text-amber-700"
                     }`}
                   >
-                    {isVerified &&
-                    formData.correo === (user.correo || user.email)
+                    {isVerified && formData.correo === (user.correo || user.email)
                       ? "Tu cuenta ha sido verificada correctamente"
-                      : isEditing &&
-                          formData.correo !== (user.correo || user.email)
+                      : isEditing && formData.correo !== (user.correo || user.email)
                         ? "Al cambiar tu correo electrónico, necesitarás verificar la nueva dirección"
                         : "Tu cuenta está pendiente de verificación. Por favor revisa tu correo."}
                   </p>
