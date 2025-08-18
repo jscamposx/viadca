@@ -82,7 +82,7 @@ const Footer = ({ contactInfo, contactLoading, currentYear }) => (
           <div className="space-y-4">
             <div className="flex items-center gap-3">
               <img
-                src="/viadcalogo.webp"
+                src="/viadcalogo.avif"
                 alt="Logo Viadca"
                 className="h-16 w-auto drop-shadow-sm hover:scale-105 transition-transform duration-300"
                 decoding="async"

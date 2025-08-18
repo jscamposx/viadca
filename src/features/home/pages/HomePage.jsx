@@ -406,7 +406,7 @@ const Home = () => {
             {/* Logo - Optimizado para mobile */}
             <div className="flex items-center shrink-0">
               <img
-                src="/viadcalogo.webp"
+                src="/viadcalogo.avif"
                 alt="VIADCA by Zafiro Tours"
                 className={`w-auto hover:scale-105 transition-transform duration-300 drop-shadow-sm ${
                   isScrolled ? "h-10 sm:h-12" : "h-11 sm:h-12"

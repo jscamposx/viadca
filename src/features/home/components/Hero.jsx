@@ -127,6 +127,8 @@ const Hero = () => {
                   alt="Viajero explorando destinos increíbles"
                   className="w-full h-auto sm:h-80 md:h-[24rem] lg:h-auto max-h-[70vh] md:max-h-[60vh] object-contain object-center sm:object-contain md:object-contain border-0 shadow-none ring-0 outline-none mx-auto"
                   decoding="async"
+                  fetchpriority="high"
+                  loading="eager"
                 />
 
                 {/* Overlay gradient para mobile (transparente) */}
