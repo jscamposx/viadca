@@ -122,7 +122,7 @@ const Destinations = () => {
                       aria-hidden="true"
                     ></div>
                     <div className="absolute top-4 right-4">
-                      <span className="bg-green-600 text-white px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1">
+                      <span className="bg-green-700 text-white px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1">
                         <FiCheckCircle className="w-3 h-3" aria-hidden="true" />
                         Activo
                       </span>
@@ -180,7 +180,7 @@ const Destinations = () => {
                       </div>
                       <Link
                         to={url}
-                        className="text-blue-600 hover:text-blue-700 font-medium text-sm hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2 rounded"
+                        className="text-blue-600 hover:text-blue-700 font-medium text-sm hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2 focus-visible:ring-offset-blue-600"
                         aria-label={`Ver detalles de ${p?.titulo || "paquete"}`}
                       >
                         Ver detalles →
