@@ -249,7 +249,7 @@ const Steps = () => (
                 className="w-full h-40 sm:h-48 object-cover"
               />
               <div className="absolute top-3 right-3">
-                <span className="bg-green-600 text-white px-2 py-1 rounded-full text-xs font-bold flex items-center gap-1">
+                <span className="bg-green-700 text-white px-2 py-1 rounded-full text-xs font-bold flex items-center gap-1">
                   <svg
                     className="w-3 h-3"
                     fill="currentColor"

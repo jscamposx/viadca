@@ -145,7 +145,7 @@ const Destinations = () => {
                       <div className="text-right">
                         <span className="text-sm text-slate-500">Desde</span>
                         <div className="flex items-center gap-2 justify-end">
-                          <div className="font-bold text-lg lg:text-xl text-green-600">
+                          <div className="font-bold text-lg lg:text-xl text-green-700">
                             {precio || "—"}
                           </div>
                           {moneda && (

@@ -685,7 +685,7 @@ const Home = () => {
           id="mobile-menu"
           role="region"
           aria-labelledby="mobile-menu-button"
-          aria-hidden={!isMobileMenuOpen}
+          inert={!isMobileMenuOpen}
           className={`lg:hidden overflow-hidden transition-all duration-300 ease-in-out ${
             isMobileMenuOpen ? "max-h-screen opacity-100" : "max-h-0 opacity-0"
           }`}
@@ -801,6 +801,7 @@ const Home = () => {
                     aria-current={
                       activeSection === link.id ? "true" : undefined
                     }
+                    tabIndex={isMobileMenuOpen ? 0 : -1}
                   >
                     {link.icon}
                     <span className="font-medium">{link.label}</span>
