@@ -22,7 +22,7 @@ const testimonialsData = [
 		location: "Hace 5 días",
 		avatar: "/HomePage/testimonio-user3.avif",
 		quote:
-			"EXCELENTE SERVICIO MUY PROFESIONAL Y EFICIENTE. TODO PUNTUAL Y DE GRAN CALIDAD LO RECOMIENDO AMPLIAMENTE. TANTO PARA VIAJES NACIONALES COMO INTERNACIONALES.",
+			"EXCELENTE SERVICIO MUY PROFESIONAL Y EFICIENTE. ",
 		accentFrom: "from-orange-500",
 		accentTo: "to-amber-500",
 	},
