@@ -200,9 +200,9 @@ const Testimonials = () => {
 
 					{/* Controles mejorados (pill centrado) */}
 					<div
-						className="relative mt-6 mb-2 mx-auto w-full max-w-[360px] lg:absolute lg:left-1/2 lg:-translate-x-1/2 lg:bottom-4 lg:mt-0 lg:mb-0"
+						className="relative flex justify-center mt-6 mb-2 mx-auto w-full max-w-[360px] lg:absolute lg:left-1/2 lg:-translate-x-1/2 lg:bottom-4 lg:mt-0 lg:mb-0"
 					>
-						<div className="flex items-center gap-2 sm:gap-3 rounded-full bg-white/80 backdrop-blur-md ring-1 ring-slate-900/10 shadow-lg px-2 py-1 sm:px-3 sm:py-1.5">
+						<div className="inline-flex items-center gap-2 sm:gap-3 rounded-full bg-white/80 backdrop-blur-md ring-1 ring-slate-900/10 shadow-lg px-2 py-1 sm:px-3 sm:py-1.5">
 							<button
 								type="button"
 								onClick={prev}
