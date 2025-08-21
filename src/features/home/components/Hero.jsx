@@ -110,22 +110,23 @@ const Hero = () => {
                 {/* Stats - Solo visible en desktop */}
                 <div className="hidden lg:flex items-center gap-8 pt-8">
                   <div className="text-center">
-                    <div className="text-2xl font-bold text-slate-800">15+</div>
-                    <div className="text-sm text-slate-600">
+                    <div className="text-2xl font-bold text-blue-600">15+</div>
+                    <div className="text-sm text-slate-600 mt-2">
                       Años de experiencia
                     </div>
                   </div>
                   <div className="text-center">
-                    <div className="text-2xl font-bold text-slate-800">
+                    <div className="text-2xl font-bold text-green-600">
                       5,000+
                     </div>
-                    <div className="text-sm text-slate-600">
+                   <div className="text-sm text-slate-600 mt-2">
                       Viajeros felices
                     </div>
                   </div>
                   <div className="text-center">
-                    <div className="text-2xl font-bold text-slate-800">50+</div>
-                    <div className="text-sm text-slate-600">Destinos</div>
+                    <div className="text-2xl font-bold text-orange-600">50+</div>
+
+                    <div className="text-sm text-slate-600 mt-2">Destinos</div>
                   </div>
                 </div>
               </div>

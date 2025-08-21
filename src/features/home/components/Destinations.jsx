@@ -12,7 +12,11 @@ import {
   FiAlertCircle,
   FiRefreshCw,
   FiPlus,
+  FiPackage,
+  FiTruck,
+  FiLayers,
 } from "react-icons/fi";
+import { FaShip, FaRoute } from "react-icons/fa";
 
 const Destinations = () => {
   const [items, setItems] = useState([]);
@@ -47,6 +51,65 @@ const Destinations = () => {
     loadData();
   }, [loadData]);
 
+  // Badge dinámico por tipo de producto
+  const getBadgeConfig = (rawType) => {
+    const key = typeof rawType === "string" ? rawType.trim().toLowerCase() : null;
+    const base = {
+      label: rawType || "Activo",
+      className: "bg-green-700 text-white",
+      icon: <FiCheckCircle className="w-3 h-3" aria-hidden="true" />,
+    };
+    const map = {
+      circuito: {
+        label: "Circuito",
+        className: "bg-amber-600 text-white",
+        icon: <FaRoute className="w-3 h-3" aria-hidden="true" />,
+      },
+      paquete: {
+        label: "Paquete",
+        className: "bg-blue-600 text-white",
+        icon: <FiPackage className="w-3 h-3" aria-hidden="true" />,
+      },
+      hotel: {
+        label: "Hotel",
+        className: "bg-rose-600 text-white",
+        icon: <FiHome className="w-3 h-3" aria-hidden="true" />,
+      },
+      vuelo: {
+        label: "Vuelo",
+        className: "bg-sky-600 text-white",
+        icon: <FiSend className="w-3 h-3" aria-hidden="true" />,
+      },
+      traslado: {
+        label: "Traslado",
+        className: "bg-teal-600 text-white",
+        icon: <FiTruck className="w-3 h-3" aria-hidden="true" />,
+      },
+      excursion: {
+        label: "Excursión",
+        className: "bg-emerald-600 text-white",
+        icon: <FiMapPin className="w-3 h-3" aria-hidden="true" />,
+      },
+      combinado: {
+        label: "Combinado",
+        className: "bg-purple-600 text-white",
+        icon: <FiLayers className="w-3 h-3" aria-hidden="true" />,
+      },
+      crucero: {
+        label: "Crucero",
+        className: "bg-indigo-600 text-white",
+        icon: <FaShip className="w-3 h-3" aria-hidden="true" />,
+      },
+    };
+    if (!key) return base;
+    if (map[key]) return map[key];
+    return {
+      label: rawType,
+      className: "bg-slate-700 text-white",
+      icon: <FiGlobe className="w-3 h-3" aria-hidden="true" />,
+    };
+  };
+
   // Componente de tarjeta para reutilizar
   const DestinationCard = ({ p }) => {
     const img =
@@ -58,16 +121,22 @@ const Destinations = () => {
     const destinoTxt = p?.destinos_nombres || "Destino";
     const url = `/paquetes/${p?.codigoUrl}`;
 
+    // determinar tipo de producto desde varios posibles campos
+    const rawType = Array.isArray(p?.mayoristas_tipos) && p.mayoristas_tipos.length > 0
+      ? p.mayoristas_tipos[0]
+      : p?.tipo_producto || p?.tipo;
+    const badge = getBadgeConfig(rawType);
+
     return (
       <article
         key={p?.codigoUrl || p?.titulo}
-        className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-2 overflow-hidden border border-blue-100 hover:border-blue-300 group"
+        className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-2 overflow-hidden border border-blue-100 hover:border-blue-300 group h-full flex flex-col"
       >
         <div className="relative overflow-hidden">
           <img
             src={img}
             alt={p?.titulo || destinoTxt}
-            className="w-full h-48 sm:h-56 lg:h-64 object-cover group-hover:scale-110 transition-transform duration-500"
+            className="w-full h-44 sm:h-52 md:h-56 lg:h-60 xl:h-64 object-cover group-hover:scale-110 transition-transform duration-500"
             loading="lazy"
           />
           <div
@@ -75,13 +144,13 @@ const Destinations = () => {
             aria-hidden="true"
           ></div>
           <div className="absolute top-4 right-4">
-            {p?.mayoristas_tipos && p.mayoristas_tipos.length > 0 ? (
-              <span className="bg-blue-600 text-white px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1">
-                <FiGlobe className="w-3 h-3" aria-hidden="true" />
-                {p.mayoristas_tipos[0]}
+            {badge ? (
+              <span className={`${badge.className} px-3 py-1 rounded-full text-[11px] font-bold flex items-center gap-1`}>
+                {badge.icon}
+                {badge.label}
               </span>
             ) : (
-              <span className="bg-green-700 text-white px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1">
+              <span className="bg-green-700 text-white px-3 py-1 rounded-full text-[11px] font-bold flex items-center gap-1">
                 <FiCheckCircle className="w-3 h-3" aria-hidden="true" />
                 Activo
               </span>
@@ -94,26 +163,18 @@ const Destinations = () => {
             </span>
           </div>
         </div>
-        <div className="p-5 lg:p-6">
-          <div className="flex justify-between items-start mb-3">
-            <h3 className="font-semibold text-lg lg:text-xl text-slate-800 group-hover:text-blue-600 transition-colors line-clamp-2">
+        <div className="p-5 lg:p-6 flex-1 flex flex-col">
+          <div className="flex justify-between items-start gap-3 mb-3">
+            <h3 className="font-semibold text-lg lg:text-xl text-slate-800 group-hover:text-blue-600 transition-colors line-clamp-2 min-h-[3.25rem]">
               {p?.titulo || "Paquete"}
             </h3>
-            <div className="text-right min-w-[100px]">
-              <span className="text-sm text-slate-500 block">Desde</span>
-              <div className="flex items-center gap-2 justify-end">
-                <div className="font-bold text-lg lg:text-xl text-green-700">
+            <div className="text-right min-w-[120px]">
+              <span className="text-xs sm:text-sm text-slate-500 block">Desde</span>
+              <div className="flex items-baseline gap-1 sm:gap-1.5 justify-end flex-wrap">
+                <span className="uppercase text-[11px] sm:text-xs font-semibold tracking-wide text-slate-500">{moneda}</span>
+                <div className="font-bold text-lg sm:text-xl lg:text-2xl text-green-700 leading-tight">
                   {precio || "—"}
                 </div>
-                {moneda && (
-                  <span
-                    className="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-slate-100 text-slate-600 border border-slate-200"
-                    title={`Moneda: ${moneda}`}
-                    aria-label={`Moneda ${moneda}`}
-                  >
-                    {moneda}
-                  </span>
-                )}
               </div>
             </div>
           </div>
@@ -122,10 +183,10 @@ const Destinations = () => {
               className="w-4 h-4 mr-2 text-blue-500 shrink-0"
               aria-hidden="true"
             />
-            <span className="text-sm truncate">{duracion || destinoTxt}</span>
+            <span className="text-xs sm:text-sm truncate">{duracion || destinoTxt}</span>
           </div>
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4 text-xs text-slate-500">
+          <div className="mt-auto flex items-center justify-between">
+            <div className="flex items-center gap-4 text-xs text-slate-500 flex-wrap gap-y-2">
               <span className="flex items-center gap-1 whitespace-nowrap">
                 <FiSend className="w-3 h-3" aria-hidden="true" />
                 Vuelos
@@ -137,7 +198,7 @@ const Destinations = () => {
             </div>
             <Link
               to={url}
-              className="text-blue-600 hover:text-blue-700 font-medium text-sm hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2 rounded transition-colors"
+              className="text-blue-600 hover:text-blue-700 font-medium text-sm sm:text-base hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2 rounded transition-colors"
               aria-label={`Ver detalles de ${p?.titulo || "paquete"}`}
             >
               Ver detalles →
@@ -233,7 +294,7 @@ const Destinations = () => {
           </div>
         )}
 
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 lg:gap-8">
           {loading &&
             [0, 1, 2, 3].map((i) =>
               i < 3 ? (

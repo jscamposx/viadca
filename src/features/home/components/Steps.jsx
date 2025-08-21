@@ -9,7 +9,7 @@ const Steps = () => (
     <div className="max-w-7xl mx-auto">
       <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
         {/* Left Content - Mejorado para mobile */}
-        <div className="space-y-6 lg:space-y-8 order-2 lg:order-1">
+        <div className="space-y-6 lg:space-y-8 order-1 lg:order-1">
           <div className="text-center lg:text-left">
             <p className="text-slate-600 font-semibold text-base sm:text-lg uppercase tracking-wide mb-3">
               Proceso simple
@@ -205,35 +205,10 @@ const Steps = () => (
               </div>
             </div>
           </div>
-
-          {/* CTA móvil */}
-          <div className="lg:hidden pt-6">
-            <button
-              className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-8 py-4 rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all duration-300 font-semibold hover:shadow-lg transform hover:scale-105 flex items-center justify-center gap-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-blue-600"
-              type="button"
-              aria-label="Comenzar mi viaje"
-            >
-              <svg
-                className="w-5 h-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                aria-hidden="true"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"
-                />
-              </svg>
-              <span>Comenzar mi viaje</span>
-            </button>
-          </div>
         </div>
 
         {/* Right Content - Trip Card mejorado para mobile */}
-        <div className="relative order-1 lg:order-2">
+        <div className="relative order-2 lg:order-2">
           {/* Background Decoration - Solo desktop */}
           <div
             className="hidden lg:block absolute top-0 right-0 w-96 h-96 bg-blue-200 rounded-full opacity-40"
@@ -241,12 +216,12 @@ const Steps = () => (
           ></div>
 
           {/* Main Trip Card - Responsivo */}
-          <div className="relative bg-white rounded-3xl p-4 sm:p-6 shadow-xl border border-blue-100 max-w-md mx-auto hover:shadow-2xl transition-shadow duration-300">
+          <div className="relative bg-white rounded-3xl p-4 sm:p-6 shadow-xl border border-blue-100 w-full sm:max-w-lg lg:max-w-md mx-auto hover:shadow-2xl transition-shadow duration-300">
             <div className="relative overflow-hidden rounded-2xl mb-4 sm:mb-6">
               <img
                 src="/HomePage/como-reservar-card1.avif"
                 alt="Tour a las Pirámides"
-                className="w-full h-40 sm:h-48 object-cover"
+                className="w-full h-56 sm:h-64 object-cover"
               />
               <div className="absolute top-3 right-3">
                 <span className="bg-green-700 text-white px-2 py-1 rounded-full text-xs font-bold flex items-center gap-1">
@@ -383,7 +358,8 @@ const Steps = () => (
               </div>
             </div>
 
-            <div className="flex items-center justify-between">
+            {/* Pie de card responsivo */}
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
               <div className="flex items-center space-x-2">
                 <svg
                   className="w-5 h-5 text-blue-600"
@@ -401,7 +377,7 @@ const Steps = () => (
                 </svg>
                 <span className="text-slate-600 text-sm">Cupo disponible</span>
               </div>
-              <div className="text-right">
+              <div className="text-left sm:text-right">
                 <div className="text-xs text-slate-500">Desde</div>
                 <div className="text-xl sm:text-2xl font-bold text-green-600">
                   $2,500
