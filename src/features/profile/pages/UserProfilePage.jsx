@@ -14,7 +14,7 @@ import {
   FiShield,
   FiLogOut,
   FiGlobe,
-  FiBell
+  FiBell,
 } from "react-icons/fi";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../../contexts/AuthContext";
@@ -159,12 +159,21 @@ const UserProfilePage = () => {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex justify-between items-center py-4">
               <div className="flex items-center">
-                <button 
+                <button
                   onClick={() => navigate(-1)}
                   className="flex items-center text-gray-600 hover:text-gray-900 mr-4"
                 >
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                    <path fillRule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clipRule="evenodd" />
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-5 w-5"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z"
+                      clipRule="evenodd"
+                    />
                   </svg>
                 </button>
                 <h1 className="text-xl font-bold text-gray-900">MiApp</h1>
@@ -284,8 +293,8 @@ const UserProfilePage = () => {
                 message.type === "success"
                   ? "bg-green-50 border border-green-200 text-green-800"
                   : message.type === "error"
-                  ? "bg-red-50 border border-red-200 text-red-800"
-                  : "bg-blue-50 border border-blue-200 text-blue-800"
+                    ? "bg-red-50 border border-red-200 text-red-800"
+                    : "bg-blue-50 border border-blue-200 text-blue-800"
               }`}
             >
               {message.text}
@@ -311,7 +320,10 @@ const UserProfilePage = () => {
                   <form onSubmit={handleSubmit} className="space-y-6 max-w-2xl">
                     <div className="grid grid-cols-1 gap-y-6 gap-x-8 sm:grid-cols-6">
                       <div className="sm:col-span-6">
-                        <label htmlFor="nombre" className="block text-sm font-medium text-gray-700 mb-2">
+                        <label
+                          htmlFor="nombre"
+                          className="block text-sm font-medium text-gray-700 mb-2"
+                        >
                           Nombre completo
                         </label>
                         <div className="relative">
@@ -331,7 +343,10 @@ const UserProfilePage = () => {
                       </div>
 
                       <div className="sm:col-span-6">
-                        <label htmlFor="correo" className="block text-sm font-medium text-gray-700 mb-2">
+                        <label
+                          htmlFor="correo"
+                          className="block text-sm font-medium text-gray-700 mb-2"
+                        >
                           Correo electrónico
                         </label>
                         <div className="relative">
@@ -348,10 +363,9 @@ const UserProfilePage = () => {
                             placeholder="Ingresa tu correo electrónico"
                           />
                         </div>
-                        {formData.correo !==
-                          (user?.correo || user?.email) && (
+                        {formData.correo !== (user?.correo || user?.email) && (
                           <p className="mt-3 text-sm text-yellow-600 bg-yellow-50 p-2 rounded-lg flex items-start">
-                            <FiClock className="mr-2 mt-0.5 flex-shrink-0" /> 
+                            <FiClock className="mr-2 mt-0.5 flex-shrink-0" />
                             Al guardar, deberás verificar este nuevo correo.
                           </p>
                         )}
@@ -373,9 +387,25 @@ const UserProfilePage = () => {
                       >
                         {loading ? (
                           <>
-                            <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            <svg
+                              className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                              xmlns="http://www.w3.org/2000/svg"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                            >
+                              <circle
+                                className="opacity-25"
+                                cx="12"
+                                cy="12"
+                                r="10"
+                                stroke="currentColor"
+                                strokeWidth="4"
+                              ></circle>
+                              <path
+                                className="opacity-75"
+                                fill="currentColor"
+                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                              ></path>
                             </svg>
                             Guardando...
                           </>
@@ -395,13 +425,17 @@ const UserProfilePage = () => {
                         </h3>
                         <div className="space-y-4">
                           <div>
-                            <p className="text-sm text-gray-500">Nombre completo</p>
+                            <p className="text-sm text-gray-500">
+                              Nombre completo
+                            </p>
                             <p className="text-gray-900 font-medium mt-1">
                               {formData.nombre || "—"}
                             </p>
                           </div>
                           <div>
-                            <p className="text-sm text-gray-500">Correo electrónico</p>
+                            <p className="text-sm text-gray-500">
+                              Correo electrónico
+                            </p>
                             <p className="text-gray-900 font-medium mt-1">
                               {formData.correo || "—"}
                             </p>
@@ -416,15 +450,19 @@ const UserProfilePage = () => {
                         </h3>
                         <div className="space-y-4">
                           <div>
-                            <p className="text-sm text-gray-500">Verificación</p>
+                            <p className="text-sm text-gray-500">
+                              Verificación
+                            </p>
                             <div className="mt-1">
                               {isVerified ? (
                                 <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
-                                  <FiCheckCircle className="mr-1.5 h-4 w-4" /> Verificada
+                                  <FiCheckCircle className="mr-1.5 h-4 w-4" />{" "}
+                                  Verificada
                                 </span>
                               ) : (
                                 <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-yellow-100 text-yellow-800">
-                                  <FiClock className="mr-1.5 h-4 w-4" /> Pendiente de verificación
+                                  <FiClock className="mr-1.5 h-4 w-4" />{" "}
+                                  Pendiente de verificación
                                 </span>
                               )}
                             </div>
@@ -434,20 +472,24 @@ const UserProfilePage = () => {
                             <div className="mt-1">
                               <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
                                 <FiUser className="mr-1.5 h-4 w-4" />
-                                {(user?.rol || "usuario").toString().toUpperCase()}
+                                {(user?.rol || "usuario")
+                                  .toString()
+                                  .toUpperCase()}
                               </span>
                             </div>
                           </div>
                         </div>
                       </div>
                     </div>
-                    
+
                     <div className="mt-8 bg-blue-50 p-4 rounded-xl border border-blue-100">
                       <p className="text-sm text-blue-700 flex items-start">
                         <FiKey className="mr-2 mt-0.5 flex-shrink-0" />
                         <span>
-                          <span className="font-medium">Nota:</span> Solo puedes actualizar tu nombre y correo electrónico. 
-                          Al cambiar el correo, se enviará un nuevo email de verificación y tu cuenta quedará no verificada hasta confirmarlo.
+                          <span className="font-medium">Nota:</span> Solo puedes
+                          actualizar tu nombre y correo electrónico. Al cambiar
+                          el correo, se enviará un nuevo email de verificación y
+                          tu cuenta quedará no verificada hasta confirmarlo.
                         </span>
                       </p>
                     </div>
@@ -465,9 +507,12 @@ const UserProfilePage = () => {
                         <FiLock className="h-6 w-6" />
                       </div>
                       <div className="ml-5 flex-1">
-                        <h3 className="text-lg font-medium text-gray-900">Restablecer contraseña</h3>
+                        <h3 className="text-lg font-medium text-gray-900">
+                          Restablecer contraseña
+                        </h3>
                         <p className="mt-2 text-sm text-gray-600">
-                          Te enviaremos un enlace a tu correo electrónico para restablecer tu contraseña.
+                          Te enviaremos un enlace a tu correo electrónico para
+                          restablecer tu contraseña.
                         </p>
                         <div className="mt-4">
                           <button
@@ -477,9 +522,25 @@ const UserProfilePage = () => {
                           >
                             {pwdLoading ? (
                               <>
-                                <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                <svg
+                                  className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  fill="none"
+                                  viewBox="0 0 24 24"
+                                >
+                                  <circle
+                                    className="opacity-25"
+                                    cx="12"
+                                    cy="12"
+                                    r="10"
+                                    stroke="currentColor"
+                                    strokeWidth="4"
+                                  ></circle>
+                                  <path
+                                    className="opacity-75"
+                                    fill="currentColor"
+                                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                                  ></path>
                                 </svg>
                                 Enviando...
                               </>
@@ -491,14 +552,16 @@ const UserProfilePage = () => {
                       </div>
                     </div>
                   </div>
-                  
+
                   <div className="p-6 bg-gray-50 rounded-xl hover:bg-white transition-all duration-300 border border-gray-200">
                     <div className="flex items-start">
                       <div className="flex-shrink-0 p-2 bg-green-100 rounded-lg text-green-600">
                         <FiShield className="h-6 w-6" />
                       </div>
                       <div className="ml-5 flex-1">
-                        <h3 className="text-lg font-medium text-gray-900">Verificación de correo</h3>
+                        <h3 className="text-lg font-medium text-gray-900">
+                          Verificación de correo
+                        </h3>
                         <p className="mt-2 text-sm text-gray-600">
                           {isVerified
                             ? "Tu correo electrónico está verificado."
@@ -507,16 +570,19 @@ const UserProfilePage = () => {
                       </div>
                     </div>
                   </div>
-                  
+
                   <div className="p-6 bg-gray-50 rounded-xl hover:bg-white transition-all duration-300 border border-gray-200">
                     <div className="flex items-start">
                       <div className="flex-shrink-0 p-2 bg-indigo-100 rounded-lg text-indigo-600">
                         <FiRefreshCw className="h-6 w-6" />
                       </div>
                       <div className="ml-5 flex-1">
-                        <h3 className="text-lg font-medium text-gray-900">Sincronizar perfil</h3>
+                        <h3 className="text-lg font-medium text-gray-900">
+                          Sincronizar perfil
+                        </h3>
                         <p className="mt-2 text-sm text-gray-600">
-                          Vuelve a cargar tus datos desde el servidor para asegurarte de tener la información más reciente.
+                          Vuelve a cargar tus datos desde el servidor para
+                          asegurarte de tener la información más reciente.
                         </p>
                         <div className="mt-4">
                           <button
@@ -526,9 +592,25 @@ const UserProfilePage = () => {
                           >
                             {loading ? (
                               <>
-                                <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-gray-700" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                <svg
+                                  className="animate-spin -ml-1 mr-2 h-4 w-4 text-gray-700"
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  fill="none"
+                                  viewBox="0 0 24 24"
+                                >
+                                  <circle
+                                    className="opacity-25"
+                                    cx="12"
+                                    cy="12"
+                                    r="10"
+                                    stroke="currentColor"
+                                    strokeWidth="4"
+                                  ></circle>
+                                  <path
+                                    className="opacity-75"
+                                    fill="currentColor"
+                                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                                  ></path>
                                 </svg>
                                 Sincronizando...
                               </>
@@ -547,8 +629,10 @@ const UserProfilePage = () => {
             <div className="mt-6 bg-white rounded-xl shadow overflow-hidden">
               <div className="px-8 py-6">
                 <div className="max-w-3xl">
-                  <h2 className="text-xl font-medium text-gray-900 mb-6">Configuración de la cuenta</h2>
-                  
+                  <h2 className="text-xl font-medium text-gray-900 mb-6">
+                    Configuración de la cuenta
+                  </h2>
+
                   <div className="space-y-6">
                     <div className="p-5 bg-gray-50 rounded-xl border border-gray-200">
                       <h3 className="text-lg font-medium text-gray-900 mb-3 flex items-center">
@@ -556,7 +640,8 @@ const UserProfilePage = () => {
                         Preferencias de idioma
                       </h3>
                       <p className="text-sm text-gray-600 mb-4">
-                        Selecciona tu idioma preferido para la interfaz de usuario.
+                        Selecciona tu idioma preferido para la interfaz de
+                        usuario.
                       </p>
                       <div className="relative">
                         <select className="block w-full pl-3 pr-10 py-3 text-base border border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-lg">
@@ -567,7 +652,7 @@ const UserProfilePage = () => {
                         </select>
                       </div>
                     </div>
-                    
+
                     <div className="p-5 bg-gray-50 rounded-xl border border-gray-200">
                       <h3 className="text-lg font-medium text-gray-900 mb-3 flex items-center">
                         <FiBell className="mr-2 text-blue-500" />
@@ -579,8 +664,13 @@ const UserProfilePage = () => {
                       <div className="space-y-4">
                         <div className="flex items-center justify-between">
                           <div>
-                            <p className="text-sm font-medium text-gray-900">Notificaciones por correo</p>
-                            <p className="text-sm text-gray-500">Recibe notificaciones importantes por correo electrónico</p>
+                            <p className="text-sm font-medium text-gray-900">
+                              Notificaciones por correo
+                            </p>
+                            <p className="text-sm text-gray-500">
+                              Recibe notificaciones importantes por correo
+                              electrónico
+                            </p>
                           </div>
                           <button className="relative inline-flex flex-shrink-0 h-6 w-11 border-2 border-transparent rounded-full cursor-pointer transition-colors ease-in-out duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 bg-blue-600">
                             <span className="translate-x-5 pointer-events-none inline-block h-5 w-5 rounded-full bg-white shadow transform ring-0 transition ease-in-out duration-200"></span>
@@ -588,8 +678,12 @@ const UserProfilePage = () => {
                         </div>
                         <div className="flex items-center justify-between">
                           <div>
-                            <p className="text-sm font-medium text-gray-900">Notificaciones push</p>
-                            <p className="text-sm text-gray-500">Recibe notificaciones en este dispositivo</p>
+                            <p className="text-sm font-medium text-gray-900">
+                              Notificaciones push
+                            </p>
+                            <p className="text-sm text-gray-500">
+                              Recibe notificaciones en este dispositivo
+                            </p>
                           </div>
                           <button className="relative inline-flex flex-shrink-0 h-6 w-11 border-2 border-transparent rounded-full cursor-pointer transition-colors ease-in-out duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 bg-gray-200">
                             <span className="translate-x-0 pointer-events-none inline-block h-5 w-5 rounded-full bg-white shadow transform ring-0 transition ease-in-out duration-200"></span>
@@ -597,7 +691,7 @@ const UserProfilePage = () => {
                         </div>
                       </div>
                     </div>
-                    
+
                     <div className="p-5 bg-gray-50 rounded-xl border border-gray-200">
                       <h3 className="text-lg font-medium text-gray-900 mb-3 flex items-center">
                         <FiShield className="mr-2 text-blue-500" />
@@ -609,8 +703,12 @@ const UserProfilePage = () => {
                       <div className="space-y-4">
                         <div className="flex items-center justify-between">
                           <div>
-                            <p className="text-sm font-medium text-gray-900">Perfil público</p>
-                            <p className="text-sm text-gray-500">Permite que otros usuarios vean tu perfil</p>
+                            <p className="text-sm font-medium text-gray-900">
+                              Perfil público
+                            </p>
+                            <p className="text-sm text-gray-500">
+                              Permite que otros usuarios vean tu perfil
+                            </p>
                           </div>
                           <button className="relative inline-flex flex-shrink-0 h-6 w-11 border-2 border-transparent rounded-full cursor-pointer transition-colors ease-in-out duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 bg-blue-600">
                             <span className="translate-x-5 pointer-events-none inline-block h-5 w-5 rounded-full bg-white shadow transform ring-0 transition ease-in-out duration-200"></span>
@@ -618,8 +716,12 @@ const UserProfilePage = () => {
                         </div>
                         <div className="flex items-center justify-between">
                           <div>
-                            <p className="text-sm font-medium text-gray-900">Mostrar actividad</p>
-                            <p className="text-sm text-gray-500">Permite que otros vean tu actividad reciente</p>
+                            <p className="text-sm font-medium text-gray-900">
+                              Mostrar actividad
+                            </p>
+                            <p className="text-sm text-gray-500">
+                              Permite que otros vean tu actividad reciente
+                            </p>
                           </div>
                           <button className="relative inline-flex flex-shrink-0 h-6 w-11 border-2 border-transparent rounded-full cursor-pointer transition-colors ease-in-out duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 bg-gray-200">
                             <span className="translate-x-0 pointer-events-none inline-block h-5 w-5 rounded-full bg-white shadow transform ring-0 transition ease-in-out duration-200"></span>

@@ -437,15 +437,21 @@ const Steps = () => (
           {/* Stats móviles */}
           <div className="lg:hidden mt-6 grid grid-cols-3 gap-4">
             <div className="bg-white rounded-xl p-3 shadow-md border border-blue-100 text-center">
-              <div className="text-lg font-bold text-blue-700 sm:text-blue-600">24/7</div>
+              <div className="text-lg font-bold text-blue-700 sm:text-blue-600">
+                24/7
+              </div>
               <div className="text-xs text-slate-600">Soporte</div>
             </div>
             <div className="bg-white rounded-xl p-3 shadow-md border border-blue-100 text-center">
-              <div className="text-lg font-bold text-green-700 sm:text-green-600">15+</div>
+              <div className="text-lg font-bold text-green-700 sm:text-green-600">
+                15+
+              </div>
               <div className="text-xs text-slate-600">Años</div>
             </div>
             <div className="bg-white rounded-xl p-3 shadow-md border border-blue-100 text-center">
-              <div className="text-lg font-bold text-orange-700 sm:text-orange-600">100%</div>
+              <div className="text-lg font-bold text-orange-700 sm:text-orange-600">
+                100%
+              </div>
               <div className="text-xs text-slate-600">Seguro</div>
             </div>
           </div>

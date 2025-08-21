@@ -223,23 +223,43 @@ const Home = () => {
         src: "/HomePage/logo3.avif",
         alt: "Partner 3",
         h: "h-24", // 96px
-        boxed: true,
-        width: 180,
+        width: 240,
         height: 96,
       },
       {
         src: "/HomePage/logo7.avif",
         alt: "Partner 4",
         h: "h-14", // 56px
-        width: 168,
-        height: 56,
+        width: 240,
+        height: 96,
       },
       {
         src: "/HomePage/logo6.avif",
         alt: "Partner 5",
         h: "h-12", // 48px
-        width: 144,
-        height: 48,
+        width: 240,
+        height: 96,
+      },
+      {
+        src: "/HomePage/logo8.avif",
+        alt: "Partner 1",
+        h: "h-24", // 96px
+        width: 240,
+        height: 96,
+      },
+      {
+        src: "/HomePage/logo9.avif",
+        alt: "Partner 1",
+        h: "h-24", // 96px
+        width: 240,
+        height: 96,
+      },
+      {
+        src: "/HomePage/logo10.avif",
+        alt: "Partner 1",
+        h: "h-24", // 96px
+        width: 240,
+        height: 96,
       },
     ],
     [],

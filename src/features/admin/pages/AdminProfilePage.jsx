@@ -152,10 +152,8 @@ const AdminProfilePage = () => {
         <div className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-2xl shadow-slate-200/50 p-6 sm:p-8 mb-6">
           <div className="flex flex-col sm:flex-row items-center gap-6">
             {/* Avatar with hover effect removed */}
-            <div 
-              className="relative group"
-            >
-              <div 
+            <div className="relative group">
+              <div
                 className={`w-24 h-24 sm:w-32 sm:h-32 bg-gradient-to-br ${getRoleColor(user?.rol)} rounded-full flex items-center justify-center shadow-xl`}
               >
                 {isInitialLoading ? (
@@ -168,16 +166,16 @@ const AdminProfilePage = () => {
                   </span>
                 )}
               </div>
-              
+
               {/* Camera overlay (static, no animation) */}
-              <div 
-                className="absolute inset-0 bg-black/60 rounded-full flex items-center justify-center opacity-0 cursor-pointer"
-              >
+              <div className="absolute inset-0 bg-black/60 rounded-full flex items-center justify-center opacity-0 cursor-pointer">
                 <FiCamera className="w-8 h-8 text-white" />
               </div>
 
               {/* Role badge */}
-              <div className={`absolute -bottom-2 -right-2 w-10 h-10 rounded-full bg-gradient-to-br ${getRoleColor(user?.rol)} shadow-lg flex items-center justify-center`}>
+              <div
+                className={`absolute -bottom-2 -right-2 w-10 h-10 rounded-full bg-gradient-to-br ${getRoleColor(user?.rol)} shadow-lg flex items-center justify-center`}
+              >
                 <FiShield className="w-5 h-5 text-white" />
               </div>
             </div>
@@ -191,16 +189,10 @@ const AdminProfilePage = () => {
                 </>
               ) : (
                 <>
-                  <h1 
-                    className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent"
-                  >
+                  <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent">
                     {user?.nombre || user?.nombre_completo || user?.usuario}
                   </h1>
-                  <p 
-                    className="text-slate-600 mt-1"
-                  >
-                    @{user?.usuario}
-                  </p>
+                  <p className="text-slate-600 mt-1">@{user?.usuario}</p>
                 </>
               )}
 
@@ -210,14 +202,18 @@ const AdminProfilePage = () => {
                   <div className="h-8 w-32 bg-gray-200 rounded-full animate-pulse" />
                 ) : (
                   <>
-                    <span className={`px-3 py-1.5 rounded-full text-sm font-semibold text-white shadow-md bg-gradient-to-r ${getRoleColor(user?.rol)}`}>
+                    <span
+                      className={`px-3 py-1.5 rounded-full text-sm font-semibold text-white shadow-md bg-gradient-to-r ${getRoleColor(user?.rol)}`}
+                    >
                       {getRoleLabel(user?.rol)}
                     </span>
-                    <span className={`px-3 py-1.5 rounded-full text-sm font-semibold shadow-md flex items-center gap-1.5 ${
-                      isVerified 
-                        ? 'bg-gradient-to-r from-green-500 to-emerald-600 text-white' 
-                        : 'bg-gradient-to-r from-amber-500 to-orange-600 text-white'
-                    }`}>
+                    <span
+                      className={`px-3 py-1.5 rounded-full text-sm font-semibold shadow-md flex items-center gap-1.5 ${
+                        isVerified
+                          ? "bg-gradient-to-r from-green-500 to-emerald-600 text-white"
+                          : "bg-gradient-to-r from-amber-500 to-orange-600 text-white"
+                      }`}
+                    >
                       {isVerified ? (
                         <>
                           <FiCheckCircle className="w-4 h-4" />
@@ -285,7 +281,9 @@ const AdminProfilePage = () => {
               }`}
             >
               <div className="flex items-center gap-3">
-                {message.type === "success" && <FiCheckCircle className="w-6 h-6" />}
+                {message.type === "success" && (
+                  <FiCheckCircle className="w-6 h-6" />
+                )}
                 {message.type === "error" && <FiX className="w-6 h-6" />}
                 {message.type === "info" && <FiClock className="w-6 h-6" />}
                 <span className="font-medium">{message.text}</span>
@@ -295,9 +293,7 @@ const AdminProfilePage = () => {
         </AnimatePresence>
 
         {/* Main Content */}
-        <div 
-          className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-2xl shadow-slate-200/50 overflow-hidden"
-        >
+        <div className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-2xl shadow-slate-200/50 overflow-hidden">
           <div className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 p-6">
             <h2 className="text-xl sm:text-2xl font-bold text-white">
               Información del perfil
@@ -312,9 +308,7 @@ const AdminProfilePage = () => {
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {/* Editable Fields */}
-                  <div 
-                    className="space-y-3"
-                  >
+                  <div className="space-y-3">
                     <label className="text-sm font-semibold text-slate-700 flex items-center gap-2">
                       <FiUser className="w-5 h-5 text-indigo-600" />
                       Nombre completo
@@ -330,9 +324,7 @@ const AdminProfilePage = () => {
                     />
                   </div>
 
-                  <div 
-                    className="space-y-3"
-                  >
+                  <div className="space-y-3">
                     <label className="text-sm font-semibold text-slate-700 flex items-center gap-2">
                       <FiMail className="w-5 h-5 text-indigo-600" />
                       Correo electrónico
@@ -356,7 +348,9 @@ const AdminProfilePage = () => {
                     </label>
                     <div className="p-4 bg-slate-50 rounded-2xl border-2 border-slate-200">
                       <div className="flex items-center gap-3">
-                        <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${getRoleColor(user?.rol)} flex items-center justify-center`}>
+                        <div
+                          className={`w-10 h-10 rounded-xl bg-gradient-to-br ${getRoleColor(user?.rol)} flex items-center justify-center`}
+                        >
                           <FiShield className="w-5 h-5 text-white" />
                         </div>
                         <span className="font-medium text-slate-700">
@@ -416,23 +410,21 @@ const AdminProfilePage = () => {
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Display Mode */}
-                <div 
-                  className="space-y-3"
-                >
+                <div className="space-y-3">
                   <label className="text-sm font-semibold text-slate-700 flex items-center gap-2">
                     <FiUser className="w-5 h-5 text-indigo-600" />
                     Nombre completo
                   </label>
                   <div className="p-4 bg-gradient-to-r from-indigo-50 to-blue-50 rounded-2xl border border-indigo-200">
                     <p className="font-medium text-slate-800">
-                      {user?.nombre || user?.nombre_completo || "No especificado"}
+                      {user?.nombre ||
+                        user?.nombre_completo ||
+                        "No especificado"}
                     </p>
                   </div>
                 </div>
 
-                <div 
-                  className="space-y-3"
-                >
+                <div className="space-y-3">
                   <label className="text-sm font-semibold text-slate-700 flex items-center gap-2">
                     <FiMail className="w-5 h-5 text-indigo-600" />
                     Correo electrónico
@@ -444,9 +436,7 @@ const AdminProfilePage = () => {
                   </div>
                 </div>
 
-                <div 
-                  className="space-y-3"
-                >
+                <div className="space-y-3">
                   <label className="text-sm font-semibold text-slate-700 flex items-center gap-2">
                     <FiShield className="w-5 h-5 text-indigo-600" />
                     Rol del sistema
@@ -458,9 +448,7 @@ const AdminProfilePage = () => {
                   </div>
                 </div>
 
-                <div 
-                  className="space-y-3"
-                >
+                <div className="space-y-3">
                   <label className="text-sm font-semibold text-slate-700 flex items-center gap-2">
                     <FiKey className="w-5 h-5 text-indigo-600" />
                     Nombre de usuario
@@ -472,9 +460,7 @@ const AdminProfilePage = () => {
                   </div>
                 </div>
 
-                <div 
-                  className="space-y-3 md:col-span-2"
-                >
+                <div className="space-y-3 md:col-span-2">
                   <label className="text-sm font-semibold text-slate-700 flex items-center gap-2">
                     <FiCalendar className="w-5 h-5 text-indigo-600" />
                     Miembro desde
@@ -496,7 +482,7 @@ const AdminProfilePage = () => {
             )}
 
             {/* Verification Status (static, no entrance animation) */}
-            <div 
+            <div
               className={`mt-8 p-6 rounded-2xl shadow-lg ${
                 isVerified && formData.correo === (user.correo || user.email)
                   ? "bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200"
@@ -506,12 +492,14 @@ const AdminProfilePage = () => {
               <div className="flex items-center gap-4">
                 <div
                   className={`w-12 h-12 rounded-xl flex items-center justify-center shadow-md shrink-0 sm:shrink ${
-                    isVerified && formData.correo === (user.correo || user.email)
+                    isVerified &&
+                    formData.correo === (user.correo || user.email)
                       ? "bg-gradient-to-br from-green-500 to-emerald-600"
                       : "bg-gradient-to-br from-amber-500 to-orange-600"
                   }`}
                 >
-                  {isVerified && formData.correo === (user.correo || user.email) ? (
+                  {isVerified &&
+                  formData.correo === (user.correo || user.email) ? (
                     <FiCheckCircle className="w-6 h-6 text-white shrink-0" />
                   ) : (
                     <FiClock className="w-6 h-6 text-white shrink-0" />
@@ -520,27 +508,33 @@ const AdminProfilePage = () => {
                 <div>
                   <h3
                     className={`font-bold text-lg ${
-                      isVerified && formData.correo === (user.correo || user.email)
+                      isVerified &&
+                      formData.correo === (user.correo || user.email)
                         ? "text-green-800"
                         : "text-amber-800"
                     }`}
                   >
-                    {isVerified && formData.correo === (user.correo || user.email)
+                    {isVerified &&
+                    formData.correo === (user.correo || user.email)
                       ? "Cuenta verificada"
-                      : isEditing && formData.correo !== (user.correo || user.email)
+                      : isEditing &&
+                          formData.correo !== (user.correo || user.email)
                         ? "Verificación requerida"
                         : "Verificación pendiente"}
                   </h3>
                   <p
                     className={`mt-1 ${
-                      isVerified && formData.correo === (user.correo || user.email)
+                      isVerified &&
+                      formData.correo === (user.correo || user.email)
                         ? "text-green-700"
                         : "text-amber-700"
                     }`}
                   >
-                    {isVerified && formData.correo === (user.correo || user.email)
+                    {isVerified &&
+                    formData.correo === (user.correo || user.email)
                       ? "Tu cuenta ha sido verificada correctamente"
-                      : isEditing && formData.correo !== (user.correo || user.email)
+                      : isEditing &&
+                          formData.correo !== (user.correo || user.email)
                         ? "Al cambiar tu correo electrónico, necesitarás verificar la nueva dirección"
                         : "Tu cuenta está pendiente de verificación. Por favor revisa tu correo."}
                   </p>
