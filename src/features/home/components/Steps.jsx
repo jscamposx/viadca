@@ -222,6 +222,8 @@ const Steps = () => (
                 src="/HomePage/como-reservar-card1.avif"
                 alt="Tour a las Pirámides"
                 className="w-full h-56 sm:h-64 object-cover"
+                loading="lazy"
+                decoding="async"
               />
               <div className="absolute top-3 right-3">
                 <span className="bg-green-700 text-white px-2 py-1 rounded-full text-xs font-bold flex items-center gap-1">
@@ -393,6 +395,8 @@ const Steps = () => (
                 src="/HomePage/como-reservar-card2.avif"
                 alt="Cancún"
                 className="w-12 h-12 rounded-full object-cover"
+                loading="lazy"
+                decoding="async"
               />
               <div>
                 <p className="text-slate-600 text-sm">Próximo viaje</p>

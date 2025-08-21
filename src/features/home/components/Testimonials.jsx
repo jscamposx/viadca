@@ -170,39 +170,43 @@ const Testimonials = () => {
 				</div>
 
 				{/* Right: carrusel dinámico */}
-				<div
-					className="relative h-[200px] sm:h-[260px] md:h-[300px] lg:h-[420px] xl:h-[460px] transform-gpu will-change-transform overflow-visible"
-					role="region"
-					aria-roledescription="carrusel"
-					aria-label="Carrusel de testimonios"
-					aria-live="polite"
-					onMouseEnter={() => setPaused(true)}
-					onMouseLeave={() => setPaused(false)}
-					onFocus={() => setPaused(true)}
-					onBlur={() => setPaused(false)}
-				>
-					{/* Deck de tarjetas */}
-					<div className="relative h-full w-full" style={{ perspective: 1200 }}>
-						{testimonialsData.map((t, i) => {
-							const rel =
-								i === index
-									? 0
-									: i === mod(index - 1, len)
-									? -1
-									: i === mod(index + 1, len)
-									? 1
-									: 2;
-							return <SlideCard key={i} t={t} state={rel} />;
-						})}
+				<div className="relative">
+					<div
+						className="relative h-[200px] sm:h-[260px] md:h-[300px] lg:h-[420px] xl:h-[460px] transform-gpu will-change-transform overflow-visible"
+						role="region"
+						aria-roledescription="carrusel"
+						aria-label="Carrusel de testimonios"
+						aria-live="polite"
+						onMouseEnter={() => setPaused(true)}
+						onMouseLeave={() => setPaused(false)}
+						onFocus={() => setPaused(true)}
+						onBlur={() => setPaused(false)}
+					>
+						{/* Deck de tarjetas */}
+						<div className="relative h-full w-full" style={{ perspective: 1200 }}>
+							{testimonialsData.map((t, i) => {
+								const rel =
+									i === index
+										? 0
+										: i === mod(index - 1, len)
+										? -1
+										: i === mod(index + 1, len)
+										? 1
+										: 2;
+								return <SlideCard key={i} t={t} state={rel} />;
+							})}
+						</div>
 					</div>
 
 					{/* Controles mejorados (pill centrado) */}
-					<div className="absolute left-1/2 -translate-x-1/2 z-20 bottom-2 sm:bottom-3 md:bottom-3 lg:bottom-4 xl:bottom-3">
+					<div
+						className="relative mt-6 mb-2 mx-auto w-full max-w-[360px] lg:absolute lg:left-1/2 lg:-translate-x-1/2 lg:bottom-4 lg:mt-0 lg:mb-0"
+					>
 						<div className="flex items-center gap-2 sm:gap-3 rounded-full bg-white/80 backdrop-blur-md ring-1 ring-slate-900/10 shadow-lg px-2 py-1 sm:px-3 sm:py-1.5">
 							<button
 								type="button"
 								onClick={prev}
-								className="group inline-flex items-center justify-center w-12 h-12 sm:w-12 sm:h-12 rounded-full bg-transparent ring-1 ring-transparent hover:bg-white/90 hover:ring-slate-900/10 text-slate-700 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-secondary"
+								className="group inline-flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-transparent ring-1 ring-transparent hover:bg-white/90 hover:ring-slate-900/10 text-slate-700 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-secondary"
 								aria-label="Testimonio anterior"
 							>
 								<svg
@@ -225,7 +229,7 @@ const Testimonials = () => {
 									<button
 										key={i}
 										onClick={() => goTo(i)}
-										className={`relative grid place-items-center w-12 h-12 sm:w-12 sm:h-12 rounded-full transition-all duration-300 ease-out bg-transparent hover:bg-white/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-1 focus-visible:ring-secondary/70`}
+										className={`relative grid place-items-center w-10 h-10 sm:w-12 sm:h-12 rounded-full transition-all duration-300 ease-out bg-transparent hover:bg-white/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-1 focus-visible:ring-secondary/70`}
 										aria-label={`Ir al testimonio ${i + 1}`}
 										aria-current={i === index ? "true" : undefined}
 									>
@@ -244,7 +248,7 @@ const Testimonials = () => {
 							<button
 								type="button"
 								onClick={next}
-								className="group inline-flex items-center justify-center w-12 h-12 sm:w-12 sm:h-12 rounded-full bg-transparent ring-1 ring-transparent hover:bg-white/90 hover:ring-slate-900/10 text-slate-700 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-secondary"
+								className="group inline-flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-transparent ring-1 ring-transparent hover:bg-white/90 hover:ring-slate-900/10 text-slate-700 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-secondary"
 								aria-label="Siguiente testimonio"
 							>
 								<svg

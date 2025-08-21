@@ -139,7 +139,7 @@ const Logos = ({ logos }) => {
                  {seq.map((logo, idx) => (
                    <li key={`logo-${sIdx}-${idx}`} className="shrink-0">
                      <div
-                       className={`flex items-center justify-center ${logo.boxed ? "bg-white/90 backdrop-blur rounded-2xl p-6 shadow-xl border border-slate-100" : ""}`}
+                       className={`${"flex items-center justify-center"} ${logo.boxed ? "bg-white/90 backdrop-blur rounded-2xl p-6 shadow-xl border border-slate-100" : ""}`}
                        role="img"
                        aria-label={logo.alt}
                      >
@@ -150,6 +150,7 @@ const Logos = ({ logos }) => {
                          height={logo.height || undefined}
                          className={`${logo.h || "h-16"} w-auto grayscale hover:grayscale-0 transition-all duration-500 ease-linear drop-shadow focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-600`}
                          decoding="async"
+                         loading="lazy"
                        />
                      </div>
                    </li>

@@ -86,6 +86,7 @@ const Footer = ({ contactInfo, contactLoading, currentYear }) => (
                 alt="Logo Viadca"
                 className="h-16 w-auto drop-shadow-sm hover:scale-105 transition-transform duration-300"
                 decoding="async"
+                loading="lazy"
               />
             </div>
             <h3 className="text-xl font-bold text-slate-900">
