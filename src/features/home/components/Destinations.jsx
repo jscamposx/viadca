@@ -15,6 +15,7 @@ import {
   FiPackage,
   FiTruck,
   FiLayers,
+  FiClock,
 } from "react-icons/fi";
 import { FaShip, FaRoute } from "react-icons/fa";
 
@@ -23,48 +24,48 @@ const getBadgeConfig = (rawType) => {
   const key = typeof rawType === "string" ? rawType.trim().toLowerCase() : null;
   const base = {
     label: rawType || "Activo",
-    className: "bg-green-700 text-white",
+    className: "bg-gradient-to-r from-green-500 to-emerald-600 text-white",
     icon: <FiCheckCircle className="w-3 h-3" aria-hidden="true" />,
   };
   const map = {
     circuito: {
       label: "Circuito",
-      className: "bg-amber-600 text-white",
+      className: "bg-gradient-to-r from-amber-500 to-orange-600 text-white",
       icon: <FaRoute className="w-3 h-3" aria-hidden="true" />,
     },
     paquete: {
       label: "Paquete",
-      className: "bg-blue-600 text-white",
+      className: "bg-gradient-to-r from-blue-500 to-indigo-600 text-white",
       icon: <FiPackage className="w-3 h-3" aria-hidden="true" />,
     },
     hotel: {
       label: "Hotel",
-      className: "bg-rose-600 text-white",
+      className: "bg-gradient-to-r from-rose-500 to-pink-600 text-white",
       icon: <FiHome className="w-3 h-3" aria-hidden="true" />,
     },
     vuelo: {
       label: "Vuelo",
-      className: "bg-sky-600 text-white",
+      className: "bg-gradient-to-r from-sky-500 to-cyan-600 text-white",
       icon: <FiSend className="w-3 h-3" aria-hidden="true" />,
     },
     traslado: {
       label: "Traslado",
-      className: "bg-teal-600 text-white",
+      className: "bg-gradient-to-r from-teal-500 to-green-600 text-white",
       icon: <FiTruck className="w-3 h-3" aria-hidden="true" />,
     },
     excursion: {
       label: "Excursión",
-      className: "bg-emerald-600 text-white",
+      className: "bg-gradient-to-r from-emerald-500 to-green-600 text-white",
       icon: <FiMapPin className="w-3 h-3" aria-hidden="true" />,
     },
     combinado: {
       label: "Combinado",
-      className: "bg-purple-600 text-white",
+      className: "bg-gradient-to-r from-purple-500 to-violet-600 text-white",
       icon: <FiLayers className="w-3 h-3" aria-hidden="true" />,
     },
     crucero: {
       label: "Crucero",
-      className: "bg-indigo-600 text-white",
+      className: "bg-gradient-to-r from-indigo-500 to-blue-600 text-white",
       icon: <FaShip className="w-3 h-3" aria-hidden="true" />,
     },
   };
@@ -72,7 +73,7 @@ const getBadgeConfig = (rawType) => {
   if (map[key]) return map[key];
   return {
     label: rawType,
-    className: "bg-slate-700 text-white",
+    className: "bg-gradient-to-r from-slate-600 to-gray-700 text-white",
     icon: <FiGlobe className="w-3 h-3" aria-hidden="true" />,
   };
 };
@@ -115,79 +116,74 @@ const DestinationCard = React.memo(function DestinationCard({ p }) {
   const badge = getBadgeConfig(rawType);
 
   return (
-    <article className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-2 overflow-hidden border border-blue-100 hover:border-blue-300 group h-full flex flex-col">
+    <article className="bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 overflow-hidden border border-slate-100 group h-full flex flex-col">
       <div className="relative overflow-hidden">
         <img
           src={img}
           alt={p?.titulo || destinoTxt}
-          className="w-full h-44 sm:h-52 md:h-56 lg:h-60 xl:h-64 object-cover group-hover:scale-110 transition-transform duration-500"
+          className="w-full h-48 sm:h-52 md:h-56 lg:h-60 object-cover group-hover:scale-105 transition-transform duration-500"
           loading="lazy"
         />
         <div
-          className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+          className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"
           aria-hidden="true"
         ></div>
-        <div className="absolute top-4 right-4">
+        <div className="absolute top-3 right-3">
           {badge ? (
-            <span className={`${badge.className} px-3 py-1 rounded-full text-[11px] font-bold flex items-center gap-1`}>
+            <span className={`${badge.className} px-2.5 py-1 rounded-full text-xs font-semibold flex items-center gap-1 shadow-md`}>
               {badge.icon}
               {badge.label}
             </span>
           ) : (
-            <span className="bg-green-700 text-white px-3 py-1 rounded-full text-[11px] font-bold flex items-center gap-1">
+            <span className="bg-gradient-to-r from-green-500 to-emerald-600 text-white px-2.5 py-1 rounded-full text-xs font-semibold flex items-center gap-1 shadow-md">
               <FiCheckCircle className="w-3 h-3" aria-hidden="true" />
               Activo
             </span>
           )}
         </div>
-        <div className="absolute bottom-4 left-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-          <span className="bg-white/90 backdrop-blur-sm text-slate-800 px-3 py-2 rounded-lg text-sm font-medium flex items-center gap-1">
-            <FiMapPin className="w-4 h-4 text-blue-600" aria-hidden="true" />
+        <div className="absolute bottom-3 left-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+          <span className="bg-white/90 backdrop-blur-sm text-slate-800 px-2.5 py-1.5 rounded-md text-xs font-medium flex items-center gap-1 shadow-sm">
+            <FiMapPin className="w-3.5 h-3.5 text-blue-600" aria-hidden="true" />
             {destinoTxt}
           </span>
         </div>
       </div>
-      <div className="p-5 lg:p-6 flex-1 flex flex-col">
+      <div className="p-4 lg:p-5 flex-1 flex flex-col">
         {/* Cabecera responsiva para evitar choques entre título y precio */}
-        <div className="grid grid-cols-1 sm:grid-cols-[1fr_auto] items-start gap-3 mb-3">
-          <h3 className="font-semibold text-lg lg:text-xl text-slate-800 group-hover:text-blue-600 transition-colors leading-snug line-clamp-2 xl:line-clamp-3 min-h-[2.75rem] sm:min-h-[3.25rem] xl:min-h-[4.5rem]">
+        <div className="flex justify-between items-start gap-3 mb-3">
+          <h3 className="font-bold text-base lg:text-lg text-slate-800 group-hover:text-blue-600 transition-colors leading-tight line-clamp-2 flex-1 min-h-[2.5rem]">
             {p?.titulo || "Paquete"}
           </h3>
-          <div className="sm:text-right sm:min-w-[120px] shrink-0">
-            <span className="text-xs sm:text-sm text-slate-500 block">Desde</span>
-            <div className="flex items-baseline gap-1 sm:gap-1.5 justify-start sm:justify-end flex-wrap">
-              <span className="uppercase text-[11px] sm:text-xs font-semibold tracking-wide text-slate-500">{moneda}</span>
-              <div className="font-bold text-lg sm:text-xl lg:text-2xl text-green-700 leading-tight">
+          <div className="text-right shrink-0">
+            <span className="text-xs text-slate-500 block">Desde</span>
+            <div className="flex items-baseline gap-1 justify-end">
+              <span className="uppercase text-xs font-semibold tracking-wide text-slate-500">{moneda}</span>
+              <div className="font-bold text-lg text-blue-700 leading-tight">
                 {precio || "—"}
               </div>
             </div>
           </div>
         </div>
 
-        {/* Línea de detalle: duración o destino, con altura mínima para estabilidad */}
-        <div className="flex items-center text-slate-600 mb-4 min-h-[1.25rem]">
-          <FiMapPin className="w-4 h-4 mr-2 text-blue-500 shrink-0" aria-hidden="true" />
-          <span className="text-xs sm:text-sm truncate">{duracion || destinoTxt}</span>
+        {/* Línea de detalle: duración o destino */}
+        <div className="flex items-center text-slate-600 mb-4 text-sm">
+          <FiClock className="w-4 h-4 mr-1.5 text-slate-400 shrink-0" aria-hidden="true" />
+          <span className="truncate">{duracion}</span>
         </div>
 
         {/* Pie de tarjeta responsivo */}
-        <div className="mt-auto flex flex-col md:flex-row md:items-center md:justify-between gap-3">
-          <div className="flex flex-wrap items-center gap-3 sm:gap-4 text-[11px] sm:text-xs text-slate-500 gap-y-2 flex-1 min-w-0">
-            <span className="inline-flex items-center gap-1">
-              <FiSend className="w-3 h-3" aria-hidden="true" />
-              Vuelos
-            </span>
-            <span className="inline-flex items-center gap-1">
-              <FiHome className="w-3 h-3" aria-hidden="true" />
-              Hotel 4★
-            </span>
+        <div className="mt-auto flex items-center justify-between">
+          <div className="text-xs text-slate-500 flex items-center">
+            <FiMapPin className="w-3.5 h-3.5 mr-1 text-blue-500" />
+            <span className="truncate max-w-[120px]">{destinoTxt}</span>
           </div>
           <Link
             to={url}
-            className="text-blue-600 hover:text-blue-700 font-medium text-sm sm:text-base hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2 rounded transition-colors md:ml-2 shrink-0 whitespace-nowrap"
+            className="text-blue-600 hover:text-blue-700 font-medium text-sm hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2 rounded transition-colors flex items-center gap-1 group-hover:gap-1.5 transition-all"
             aria-label={`Ver detalles de ${p?.titulo || "paquete"}`}
           >
-            Ver detalles →
+            Ver más
+            <FiArrowRight className="w-3.5 h-3.5" />
           </Link>
         </div>
       </div>
@@ -202,7 +198,7 @@ const Destinations = () => {
   const [error, setError] = useState(null);
 
   // Limitar la cantidad de destinos visibles en la sección
-  const MAX_VISIBLE = 3;
+  const MAX_VISIBLE = 8;
   const displayItems = items.slice(0, MAX_VISIBLE);
   const hasMore = items.length > MAX_VISIBLE;
 
@@ -232,58 +228,56 @@ const Destinations = () => {
   // Componente de skeleton para reutilizar
   const DestinationCardSkeleton = () => (
     <article
-      className="bg-white rounded-2xl shadow-lg overflow-hidden border border-blue-100 animate-pulse"
+      className="bg-white rounded-xl shadow-md overflow-hidden border border-slate-100 animate-pulse h-full flex flex-col"
       aria-hidden="true"
     >
       <div className="relative overflow-hidden">
-        <div className="w-full h-48 sm:h-56 lg:h-64 bg-slate-200" />
+        <div className="w-full h-48 sm:h-52 md:h-56 lg:h-60 bg-slate-200" />
       </div>
-      <div className="p-5 lg:p-6">
+      <div className="p-4 lg:p-5">
         <div className="flex justify-between items-start mb-3">
-          <div className="h-6 w-40 bg-slate-200 rounded" />
-          <div className="h-6 w-20 bg-slate-200 rounded" />
+          <div className="h-5 w-40 bg-slate-200 rounded" />
+          <div className="h-6 w-16 bg-slate-200 rounded" />
         </div>
-        <div className="h-4 w-32 bg-slate-200 rounded mb-4" />
+        <div className="h-4 w-24 bg-slate-200 rounded mb-4" />
         <div className="flex items-center justify-between">
-          <div className="h-4 w-24 bg-slate-200 rounded" />
-          <div className="h-4 w-20 bg-slate-200 rounded" />
+          <div className="h-4 w-28 bg-slate-200 rounded" />
+          <div className="h-6 w-16 bg-slate-200 rounded" />
         </div>
       </div>
     </article>
   );
 
-  // Tarjeta especial para "Ver más destinos" - Versión transparente
+  // Tarjeta especial para "Ver más destinos"
   const MoreDestinationsCard = () => (
     <Link
       to="/paquetes"
-      className="relative bg-white/50 backdrop-blur-sm rounded-2xl border-2 border-dashed border-blue-200 hover:border-blue-400 transition-all duration-300 hover:bg-white/70 group flex flex-col items-center justify-center min-h-[340px] sm:min-h-[360px] lg:min-h-[380px] p-6 text-center"
+      className="relative bg-gradient-to-br from-blue-50/70 to-indigo-50/70 rounded-xl border-2 border-dashed border-blue-200 hover:border-blue-400 transition-all duration-300 hover:bg-blue-50 group flex flex-col items-center justify-center min-h-full p-6 text-center"
     >
-      {/* Efecto de borde en hover */}
-      <div
-        className="absolute inset-0 rounded-2xl border-2 border-transparent group-hover:border-blue-300/50 group-hover:animate-pulse transition-all duration-300"
-        aria-hidden="true"
-      ></div>
-
-      {/* Contenido de la tarjeta */}
-      <div className="bg-blue-100/50 p-4 rounded-full mb-6 group-hover:bg-blue-200/70 transition-colors duration-300">
-        <FiPlus className="w-10 h-10 text-blue-600/80 group-hover:text-blue-700" />
+      <div className="bg-gradient-to-br from-blue-100 to-blue-200 p-4 rounded-full mb-5 group-hover:from-blue-200 group-hover:to-blue-300 transition-colors duration-300">
+        <FiPlus className="w-8 h-8 text-blue-600 group-hover:text-blue-700" />
       </div>
-      <h3 className="font-bold text-xl text-slate-700 mb-3">
-        Ver más destinos
+      <h3 className="font-bold text-lg text-slate-700 mb-2">
+        Explorar más destinos
       </h3>
-      <p className="text-slate-600/80 mb-6 max-w-[200px]">
-        Descubre todos nuestros destinos disponibles
+      <p className="text-slate-600 text-sm mb-5 max-w-[180px]">
+        Descubre todos nuestros destinos disponibles alrededor del mundo
       </p>
+      <span className="inline-flex items-center gap-1 text-blue-600 font-medium text-sm group-hover:text-blue-700 transition-colors">
+        Ver todos
+        <FiArrowRight className="w-4 h-4" />
+      </span>
     </Link>
   );
 
   return (
     <section
       id="destinos"
-      className="py-12 sm:py-16 lg:py-20 px-4 sm:px-6 lg:px-8 scroll-mt-32 bg-gradient-to-b from-gray-50 to-white"
+      className="py-16 sm:py-20 lg:py-24 px-4 sm:px-6 lg:px-8 scroll-mt-32 bg-gradient-to-b from-slate-50 to-white"
     >
       <div className="max-w-7xl mx-auto">
-        <div className="text-center mb-12 lg:mb-16">
+        {/* Título de la sección - Manteniendo el estilo original pero mejorado */}
+        <div className="text-center mb-14 lg:mb-16">
           <p className="text-slate-600 font-semibold text-base sm:text-lg uppercase tracking-wide mb-3 lg:mb-4">
             Destinos favoritos
           </p>
@@ -298,7 +292,7 @@ const Destinations = () => {
         {error && (
           <div
             role="alert"
-            className="mb-6 p-4 rounded-xl bg-red-50 border border-red-200 text-red-700 flex flex-col items-center"
+            className="mb-10 p-4 rounded-xl bg-red-50 border border-red-200 text-red-700 flex flex-col items-center"
           >
             <div className="flex items-center gap-2 mb-3">
               <FiAlertCircle className="w-5 h-5" />
@@ -314,22 +308,11 @@ const Destinations = () => {
           </div>
         )}
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 lg:gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 lg:gap-7">
           {loading &&
-            [0, 1, 2, 3].map((i) =>
-              i < 3 ? (
-                <DestinationCardSkeleton key={`skeleton-${i}`} />
-              ) : (
-                <div key={`skeleton-3`} className="hidden lg:block">
-                  <div className="bg-white/50 rounded-2xl border-2 border-dashed border-blue-200 h-full min-h-[380px] animate-pulse flex flex-col items-center justify-center p-6">
-                    <div className="h-16 w-16 bg-blue-100/50 rounded-full mb-6"></div>
-                    <div className="h-6 w-40 bg-blue-100/50 rounded mb-3"></div>
-                    <div className="h-4 w-32 bg-blue-100/50 rounded mb-6"></div>
-                    <div className="h-12 w-36 bg-blue-100/50 rounded"></div>
-                  </div>
-                </div>
-              ),
-            )}
+            Array.from({ length: 8 }).map((_, i) => (
+              <DestinationCardSkeleton key={`skeleton-${i}`} />
+            ))}
 
           {!loading &&
             displayItems.map((p) => (
@@ -341,14 +324,27 @@ const Destinations = () => {
 
         {/* Mensaje cuando no hay destinos */}
         {!loading && items.length === 0 && !error && (
-          <div className="text-center py-12">
-            <FiGlobe className="w-16 h-16 text-slate-300 mx-auto mb-4" />
-            <h3 className="text-xl font-semibold text-slate-600 mb-2">
+          <div className="text-center py-16">
+            <FiGlobe className="w-20 h-20 text-slate-300 mx-auto mb-5" />
+            <h3 className="text-2xl font-semibold text-slate-600 mb-3">
               No hay destinos disponibles
             </h3>
-            <p className="text-slate-500">
-              Pronto agregaremos nuevos destinos para ti.
+            <p className="text-slate-500 max-w-md mx-auto">
+              Estamos trabajando en agregar nuevos destinos increíbles. ¡Vuelve pronto!
             </p>
+          </div>
+        )}
+
+        {/* Botón para ver más (solo en móviles) */}
+        {!loading && hasMore && (
+          <div className="mt-12 text-center lg:hidden">
+            <Link
+              to="/paquetes"
+              className="inline-flex items-center gap-2 px-8 py-3.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold rounded-lg transition-all shadow-md hover:shadow-lg"
+            >
+              Ver todos los destinos
+              <FiArrowRight className="w-5 h-5" />
+            </Link>
           </div>
         )}
       </div>
