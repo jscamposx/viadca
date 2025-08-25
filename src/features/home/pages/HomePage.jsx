@@ -19,6 +19,7 @@ import Steps from "../components/Steps";
 import Testimonials from "../components/Testimonials";
 import Logos from "../components/Logos";
 import Footer from "../components/Footer";
+import { useSEO } from "../../../hooks/useSEO";
 
 // Estilos CSS-in-JS para animaciones móviles
 const mobileStyles = `
@@ -379,6 +380,53 @@ const Home = () => {
     }
     closeMobileMenu();
   };
+
+  useSEO({
+    title: "Agencia de Viajes en Durango | Paquetes y Ofertas | Viadca",
+    description:
+      "Agencia de viajes en Durango especializada en paquetes personalizados, destinos nacionales e internacionales, vuelos, hoteles y experiencias únicas.",
+    keywords: [
+      "agencia de viajes Durango",
+      "paquetes de viaje",
+      "viajes internacionales",
+      "vacaciones México",
+      "turismo Durango",
+    ],
+    canonical: "https://www.viadca.app/",
+    og: { image: "https://www.viadca.app/viadca-preview.jpg" },
+    jsonLd: [
+      {
+        "@context": "https://schema.org",
+        "@type": "WebPage",
+        name: "Agencia de Viajes en Durango | Viadca",
+        description:
+          "Agencia de viajes en Durango especializada en paquetes personalizados, destinos nacionales e internacionales, vuelos, hoteles y experiencias únicas.",
+        url: "https://www.viadca.app/",
+      },
+      {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        mainEntity: [
+          {
+            "@type": "Question",
+            name: "¿Ofrecen paquetes a destinos internacionales?",
+            acceptedAnswer: {
+              "@type": "Answer",
+              text: "Sí, contamos con paquetes a múltiples destinos internacionales que incluyen vuelos, hospedaje y experiencias guiadas.",
+            },
+          },
+          {
+            "@type": "Question",
+            name: "¿Puedo financiar mi viaje?",
+            acceptedAnswer: {
+              "@type": "Answer",
+              text: "Ofrecemos opciones de anticipo y pago posterior según el paquete y la disponibilidad. Consulta con un asesor.",
+            },
+          },
+        ],
+      },
+    ],
+  });
 
   return (
     <>

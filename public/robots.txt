@@ -1,0 +1,14 @@
+User-agent: *
+Allow: /
+
+# Bloquear rutas privadas / admin
+Disallow: /admin
+Disallow: /iniciar-sesion
+Disallow: /registro
+Disallow: /verificar-correo
+Disallow: /recuperar-contraseña
+Disallow: /restablecer-contraseña
+Disallow: /aprobacion-pendiente
+Disallow: /perfil
+
+Sitemap: https://www.viadca.app/sitemap.xml
