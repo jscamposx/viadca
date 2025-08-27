@@ -8,10 +8,12 @@ function useScrollAnimation(options = {}) {
   const {
     threshold = 0.1,
     rootMargin = '0px 0px -100px 0px',
-    delay = 0
+    delay = 0,
+    triggerOnce = true
   } = options;
 
   useEffect(() => {
+    if (triggerOnce && isVisible) return; // evitar recrear observer si ya se mostró
     const element = elementRef.current;
     if (!element) return;
 
@@ -21,6 +23,8 @@ function useScrollAnimation(options = {}) {
           setTimeout(() => {
             setIsVisible(true);
           }, delay);
+        } else if (!triggerOnce) {
+          setIsVisible(false);
         }
       },
       {
@@ -36,9 +40,39 @@ function useScrollAnimation(options = {}) {
         observer.unobserve(element);
       }
     };
-  }, [threshold, rootMargin, delay]);
+  }, [threshold, rootMargin, delay, triggerOnce, isVisible]);
 
   return [elementRef, isVisible];
+}
+
+// Nuevo hook para disparar TODAS las animaciones internas de una sección al verse cualquier parte de la misma
+function useSectionReveal(options = {}) {
+  const sectionRef = useRef(null);
+  const [isSectionVisible, setIsSectionVisible] = useState(false);
+  const { threshold = 0.05, rootMargin = '0px 0px -10% 0px' } = options;
+
+  useEffect(() => {
+    if (isSectionVisible) return; // solo una vez
+    const el = sectionRef.current;
+    if (!el) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsSectionVisible(true);
+        }
+      },
+      { threshold, rootMargin }
+    );
+
+    observer.observe(el);
+
+    return () => {
+      if (el) observer.unobserve(el);
+    };
+  }, [threshold, rootMargin, isSectionVisible]);
+
+  return [sectionRef, isSectionVisible];
 }
 
 // Clases CSS para diferentes tipos de animaciones
@@ -76,16 +110,19 @@ function AnimatedSection({
   animation = 'fadeInUp', 
   delay = 0, 
   className = '',
+  forceVisible = false, // NUEVO: fuerza la animación (para cuando la sección ya es visible)
+  triggerOnce = true,
   ...props 
 }) {
-  const [ref, isVisible] = useScrollAnimation({ delay });
-  const animClasses = animationClasses[animation];
+  const [ref, isVisible] = useScrollAnimation({ delay, triggerOnce });
+  const animClasses = animationClasses[animation] || animationClasses.fadeInUp;
+  const show = forceVisible || isVisible;
 
   return (
     <div
       ref={ref}
       className={`${animClasses.transition} ${
-        isVisible ? animClasses.animate : animClasses.initial
+        show ? animClasses.animate : animClasses.initial
       } ${className}`}
       {...props}
     >
@@ -96,5 +133,6 @@ function AnimatedSection({
 
 export {
   useScrollAnimation,
+  useSectionReveal,
   AnimatedSection
 };

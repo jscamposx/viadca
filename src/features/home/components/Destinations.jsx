@@ -2,7 +2,7 @@ import React, { useEffect, useState, useCallback } from "react";
 import { Link } from "react-router-dom";
 import apiClient from "../../../api/axiosConfig";
 import { formatPrecio, sanitizeMoneda } from "../../../utils/priceUtils";
-import { AnimatedSection } from "../../../hooks/scrollAnimations";
+import { AnimatedSection, useSectionReveal } from "../../../hooks/scrollAnimations"; // actualizado
 import {
   FiMapPin,
   FiSend,
@@ -197,6 +197,8 @@ const Destinations = () => {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  // Revelar todas las animaciones cuando la sección entra al viewport
+  const [sectionRef, sectionVisible] = useSectionReveal({ threshold: 0.15 });
 
   // Limitar la cantidad de destinos visibles en la sección
   const MAX_VISIBLE = 8;
@@ -273,12 +275,13 @@ const Destinations = () => {
 
   return (
     <section
+      ref={sectionRef}
       id="destinos"
       className="py-16 sm:py-20 lg:py-24 px-4 sm:px-6 lg:px-8 scroll-mt-32 bg-gradient-to-b from-slate-50 to-white"
     >
       <div className="max-w-7xl mx-auto">
-        {/* Título de la sección - Manteniendo el estilo original pero mejorado */}
-        <AnimatedSection animation="fadeInUp" className="text-center mb-14 lg:mb-16">
+        {/* Título sección */}
+        <AnimatedSection animation="fadeInUp" className="text-center mb-14 lg:mb-16" forceVisible={sectionVisible}>
           <p className="text-slate-600 font-semibold text-base sm:text-lg uppercase tracking-wide mb-3 lg:mb-4">
             Destinos favoritos
           </p>
@@ -322,6 +325,7 @@ const Destinations = () => {
                 animation="fadeInUp"
                 delay={index * 120}
                 className="h-full"
+                forceVisible={sectionVisible}
               >
                 <DestinationCard p={p} />
               </AnimatedSection>
@@ -332,6 +336,7 @@ const Destinations = () => {
               animation="fadeInUp"
               delay={displayItems.length * 120}
               className="h-full"
+              forceVisible={sectionVisible}
             >
               <MoreDestinationsCard />
             </AnimatedSection>
@@ -351,7 +356,7 @@ const Destinations = () => {
           </div>
         )}
 
-        {/* Botón para ver más (solo en móviles) */}
+        {/* Botón ver más móviles */}
         {!loading && hasMore && (
           <div className="mt-12 text-center lg:hidden">
             <Link

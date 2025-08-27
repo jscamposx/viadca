@@ -8,14 +8,18 @@ import {
 } from "react-icons/fi";
 import { FaWhatsapp } from "react-icons/fa";
 import { useContactActions } from "../../../hooks/useContactActions";
-import { AnimatedSection } from "../../../hooks/scrollAnimations"; // añadido
+import { AnimatedSection, useSectionReveal } from "../../../hooks/scrollAnimations"; // actualizado
 
 const Services = () => {
   const { openWhatsApp, getPhoneHref, onPhoneClick, ToastPortal } =
     useContactActions();
 
+  // Hook que detecta la visibilidad de la sección y fuerza todas las animaciones internas
+  const [sectionRef, sectionVisible] = useSectionReveal({ threshold: 0.1 });
+
   return (
     <section
+      ref={sectionRef}
       id="servicios"
       className="relative overflow-hidden py-12 sm:py-16 lg:py-20 px-4 sm:px-6 lg:px-8 scroll-mt-32 bg-gradient-to-b from-white via-blue-50/40 to-white"
       aria-labelledby="servicios-heading"
@@ -47,7 +51,7 @@ const Services = () => {
 
       <div className="max-w-7xl mx-auto relative">
         {/* Encabezado animado */}
-        <AnimatedSection animation="fadeInUp" className="text-center mb-12 lg:mb-16">
+        <AnimatedSection animation="fadeInUp" className="text-center mb-12 lg:mb-16" forceVisible={sectionVisible}>
           <p className="text-slate-600 font-semibold text-base sm:text-lg uppercase tracking-wide mb-3 lg:mb-4">
             NUESTROS SERVICIOS
           </p>
@@ -69,7 +73,7 @@ const Services = () => {
 
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
           {/* Card 1 */}
-          <AnimatedSection animation="fadeInUp" delay={0} className="h-full">
+          <AnimatedSection animation="fadeInUp" delay={0} className="h-full" forceVisible={sectionVisible}>
             <article
               className="relative overflow-hidden bg-white p-6 lg:p-8 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 border border-orange-100 hover:border-orange-300 group h-full"
               role="article"
@@ -117,7 +121,7 @@ const Services = () => {
           </AnimatedSection>
 
           {/* Card 2 */}
-          <AnimatedSection animation="fadeInUp" delay={150} className="h-full">
+          <AnimatedSection animation="fadeInUp" delay={150} className="h-full" forceVisible={sectionVisible}>
             <article
               className="relative overflow-hidden bg-white p-6 lg:p-8 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 border border-blue-100 hover:border-blue-300 group h-full"
               role="article"
@@ -163,7 +167,7 @@ const Services = () => {
           </AnimatedSection>
 
           {/* Card 3 */}
-          <AnimatedSection animation="fadeInUp" delay={300} className="h-full">
+          <AnimatedSection animation="fadeInUp" delay={300} className="h-full" forceVisible={sectionVisible}>
             <article
               className="relative overflow-hidden bg-white p-6 lg:p-8 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 border border-green-100 hover:border-green-300 group h-full"
               role="article"
@@ -209,7 +213,7 @@ const Services = () => {
           </AnimatedSection>
 
           {/* Card 4 */}
-            <AnimatedSection animation="fadeInUp" delay={450} className="h-full">
+            <AnimatedSection animation="fadeInUp" delay={450} className="h-full" forceVisible={sectionVisible}>
             <article
               className="relative overflow-hidden bg-white p-6 lg:p-8 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 border border-purple-100 hover:border-purple-300 group h-full"
               role="article"
@@ -255,7 +259,7 @@ const Services = () => {
         </div>
 
         {/* CTA animada */}
-        <AnimatedSection animation="fadeInUp" delay={600} className="mt-12 lg:mt-16 text-center">
+        <AnimatedSection animation="fadeInUp" delay={600} className="mt-12 lg:mt-16 text-center" forceVisible={sectionVisible}>
           <div className="relative overflow-hidden bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-6 lg:p-8 border border-blue-200">
             {/* brillo sutil */}
             <span
