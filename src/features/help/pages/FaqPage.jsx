@@ -30,6 +30,14 @@ const faqCategories = [
       {
         q: '¿Tienen una oficina física en Durango que pueda visitar?',
         a: `Sí. Estamos en Calle Mascareñas 803, Victoria de Durango Zona Centro Oriente, CP 34000, Durango, México. Puedes visitarnos para recibir asesoría personalizada y resolver todas tus dudas.`
+      },
+      {
+        q: '¿Están afiliados a asociaciones o cuentan con certificaciones?',
+        a: 'Sí, operamos bajo el paraguas de Zafiro Tours y seguimos estándares de calidad, seguridad y protección al consumidor del sector turístico. Esto te brinda respaldo adicional y transparencia.'
+      },
+      {
+        q: '¿Cómo garantizan la selección de sus proveedores?',
+        a: 'Validamos reputación, cumplimiento legal, reseñas verificadas, políticas de seguridad y la calidad del servicio. Renovamos acuerdos y monitoreamos satisfacción post‑viaje para mantener sólo a los mejores.'
       }
     ]
   },
@@ -57,6 +65,14 @@ const faqCategories = [
       {
         q: '¿Ofrecen paquetes especiales para lunas de miel o bodas de destino?',
         a: `Sí. Diseñamos experiencias románticas con detalles especiales (cenas privadas, spa, excursiones) y coordinamos bodas de destino para la pareja e invitados.`
+      },
+      {
+        q: '¿Puedo combinar varios destinos o países en un mismo viaje?',
+        a: 'Sí. Diseñamos itinerarios multidestino optimizando conexiones, tiempos de traslado y presupuesto. Recomendamos planificar con antelación para asegurar disponibilidad.'
+      },
+      {
+        q: '¿Incluyen experiencias locales auténticas?',
+        a: 'Podemos integrar clases culinarias, tours guiados por expertos locales, visitas exclusivas, actividades sostenibles y experiencias inmersivas fuera de lo masivo.'
       }
     ]
   },
@@ -84,6 +100,14 @@ const faqCategories = [
       {
         q: '¿Con cuánta anticipación debo reservar mi viaje?',
         a: `Internacionales largos: 6–9 meses (más en alta demanda). Cruceros: 8–12 meses. Nacionales: 2–4 meses (más para puentes/feriados). Reservar temprano mejora tarifas y disponibilidad.`
+      },
+      {
+        q: '¿Puedo congelar una tarifa mientras decido?',
+        a: 'En algunos servicios (vuelos o circuitos) podemos gestionar “opciones” de reserva por horas o pocos días. Depende del proveedor. Consúltalo al cotizar.'
+      },
+      {
+        q: '¿Emitirán factura fiscal (CFDI)?',
+        a: 'Sí. Podemos emitir CFDI conforme a la normativa vigente en México. Facilítanos tus datos fiscales al confirmar tu reserva.'
       }
     ]
   },
@@ -107,6 +131,14 @@ const faqCategories = [
       {
         q: '¿Qué tipo de asistencia ofrecen si tengo un problema durante mi viaje?',
         a: `Te damos contactos de emergencia y te apoyamos ante retrasos, incidencias médicas o cambios de último minuto, coordinando con proveedores y aseguradora.`
+      },
+      {
+        q: '¿El seguro cubre cancelación por enfermedad o COVID-19?',
+        a: 'Ofrecemos pólizas con coberturas médicas y de cancelación ampliadas (incluyendo COVID-19 según plan). Te detallamos exclusiones antes de comprar.'
+      },
+      {
+        q: '¿Qué hago si se retrasa o cancela mi vuelo?',
+        a: 'Te asistimos coordinando alternativas con aerolínea, reemisión de cupones, cambios de tramos y reacomodos en itinerario para minimizar impacto.'
       }
     ]
   }
@@ -130,8 +162,53 @@ export default function FaqPage() {
 
   const toc = useMemo(() => faqCategories.map(c => ({ id: c.id, title: c.title })), []);
 
+  const handleFaqClick = (question) => {
+    // Evento simple (puede reemplazarse por analytics real)
+    if (window && window.dispatchEvent) {
+      const ev = new CustomEvent('faq:open', { detail: { question } });
+      window.dispatchEvent(ev);
+    }
+  };
+
+  // BreadcrumbList Schema
+  const breadcrumbJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      {
+        '@type': 'ListItem',
+        position: 1,
+        name: 'Inicio',
+        item: 'https://www.viadca.app/'
+      },
+      {
+        '@type': 'ListItem',
+        position: 2,
+        name: 'Preguntas Frecuentes',
+        item: 'https://www.viadca.app/preguntas-frecuentes'
+      }
+    ]
+  };
+
   return (
     <>
+    {/* Breadcrumb visual */}
+    <nav className="bg-white/70 backdrop-blur-sm border-b border-slate-200" aria-label="Breadcrumb">
+      <ol className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center gap-2 text-sm py-2" itemScope itemType="https://schema.org/BreadcrumbList">
+        <li itemProp="itemListElement" itemScope itemType="https://schema.org/ListItem">
+          <a href="/" itemProp="item" className="text-blue-600 hover:underline">
+            <span itemProp="name">Inicio</span>
+          </a>
+          <meta itemProp="position" content="1" />
+        </li>
+        <li aria-hidden="true" className="text-slate-400">/</li>
+        <li itemProp="itemListElement" itemScope itemType="https://schema.org/ListItem" className="text-slate-600">
+          <span itemProp="name">Preguntas Frecuentes</span>
+          <meta itemProp="position" content="2" />
+        </li>
+      </ol>
+    </nav>
+    <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }} />
     <main className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-rose-50 py-12 sm:py-16 lg:py-20 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto grid lg:grid-cols-4 gap-10">
         {/* Sidebar índice */}
@@ -175,7 +252,7 @@ export default function FaqPage() {
               <div className="space-y-4">
                 {cat.faqs.map((f, idx) => (
                   <AnimatedSection key={idx} animation="fadeInUp" delay={idx * 80}>
-                    <article className="bg-white/80 backdrop-blur rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition px-5 py-5 sm:px-6">
+                    <article className="bg-white/80 backdrop-blur rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition px-5 py-5 sm:px-6" onClick={() => handleFaqClick(f.q)}>
                       <h3 className="font-semibold text-slate-800 text-lg">
                         {f.q}
                       </h3>

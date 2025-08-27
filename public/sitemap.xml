@@ -5,5 +5,10 @@
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
+  <url>
+    <loc>https://www.viadca.app/preguntas-frecuentes</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
   <!-- Paquetes dinámicos se deben inyectar en build server-side y actualizar. Placeholder -->
 </urlset>
