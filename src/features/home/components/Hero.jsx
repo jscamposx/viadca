@@ -11,7 +11,7 @@ const Hero = () => {
       <section
         id="hero"
         aria-labelledby="hero-heading"
-        className="relative min-h-[100svh] md:min-h-[78svh] lg:min-h-[100svh] bg-gradient-to-br from-blue-50 to-orange-50 scroll-mt-32"
+        className="relative min-h-[100svh] md:min-h-[100svh] lg:min-h-[100svh] bg-gradient-to-br from-blue-50 to-orange-50 scroll-mt-32"
       >
         {/* Fondo superior SOLO mobile: transparente */}
         {/* (El degradado se eliminó para dejar el fondo completamente transparente en mobile) */}
@@ -27,11 +27,11 @@ const Hero = () => {
         ></div>
 
         {/* Hero Content - Optimizado para mobile */}
-        <div className="relative z-10 px-4 sm:px-6 lg:px-8 pt-5 sm:pt-16 md:pt-12 lg:pt-32 pb-8 lg:pb-16">
+        <div className="relative z-10 px-4 sm:px-6 lg:px-8 pt-5 sm:pt-16 md:pt-20 xl:pt-24 2xl:pt-32 pb-8 lg:pb-16">
           <div className="max-w-7xl mx-auto">
             {/* Texto superior SOLO mobile - eliminado */}
 
-            <div className="grid md:grid-cols-2 gap-8 md:gap-10 lg:gap-12 items-center">
+            <div className="grid lg:grid-cols-2 gap-10 lg:gap-12 items-center max-w-3xl md:max-w-4xl lg:max-w-none mx-auto">
               {/* Left Content */}
               <div className="space-y-6 lg:space-y-8 text-center lg:text-left">
                 <AnimatedSection animation="fadeInLeft" delay={200}>
@@ -48,7 +48,7 @@ const Hero = () => {
                 <AnimatedSection animation="fadeInLeft" delay={400}>
                   <h1
                     id="hero-heading"
-                    className="font-volkhov font-bold text-4xl sm:text-5xl lg:text-6xl xl:text-7xl leading-tight text-slate-800"
+                    className="font-volkhov font-bold text-4xl sm:text-5xl md:text-5xl lg:text-6xl xl:text-7xl leading-tight text-slate-800"
                   >
                     <span className="block">Vive experiencias</span>
                     <span className="block bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
@@ -59,7 +59,7 @@ const Hero = () => {
                 </AnimatedSection>
 
                 <AnimatedSection animation="fadeInLeft" delay={600}>
-                  <p className="text-slate-600 text-base sm:text-lg lg:text-xl leading-relaxed max-w-2xl mx-auto lg:mx-0">
+                  <p className="text-slate-600 text-base sm:text-lg md:text-lg lg:text-xl leading-relaxed max-w-2xl mx-auto lg:mx-0">
                     Somos tu agencia de viajes de confianza en Durango. Más de 15
                     años creando aventuras únicas, tours personalizados y
                     experiencias inolvidables.
@@ -142,13 +142,13 @@ const Hero = () => {
                 </AnimatedSection>
               </div>
 
-              {/* Right Content - Hero Image optimizada para mobile/tablet */}
-              <AnimatedSection animation="fadeInRight" delay={600} className="relative order-first md:order-last">
-                <div className="relative rounded-3xl overflow-hidden shadow-none border-0">
+              {/* Right Content - Hero Image optimizada para mobile/tablet y ampliada en laptops */}
+              <AnimatedSection animation="fadeInRight" delay={600} className="relative order-first lg:order-last">
+                <div className="relative rounded-3xl overflow-visible shadow-none border-0 max-w-xl md:max-w-2xl lg:max-w-none mx-auto xl:pl-6">
                   <img
                     src="/HomePage/Hero-Image.avif"
                     alt="Viajero explorando destinos increíbles"
-                    className="w-full h-auto sm:h-80 md:h-[24rem] lg:h-auto max-h-[70vh] md:max-h-[60vh] object-contain object-center sm:object-contain md:object-contain border-0 shadow-none ring-0 outline-none mx-auto"
+                    className="w-full h-auto sm:h-80 md:h-[26rem] lg:h-[30rem] xl:h-[32rem] 2xl:h-[38rem] max-h-[70vh] md:max-h-[65vh] lg:max-h-[68vh] xl:max-h-[70vh] 2xl:max-h-[78vh] object-contain border-0 shadow-none ring-0 outline-none mx-auto"
                     decoding="async"
                     fetchPriority="high"
                     loading="eager"
