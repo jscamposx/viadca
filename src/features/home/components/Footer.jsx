@@ -88,7 +88,7 @@ const Footer = ({ contactInfo, contactLoading, currentYear }) => {
               <div className="flex items-center gap-3">
                 <img
                   src="/viadcalogo.avif"
-                  alt="Logo Viadca"
+                  alt="Logo de VIADCA agencia de viajes en Durango, México"
                   className="h-16 w-auto drop-shadow-sm hover:scale-105 transition-transform duration-300"
                   decoding="async"
                   loading="lazy"

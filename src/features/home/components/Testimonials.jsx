@@ -65,7 +65,7 @@ const SlideCard = ({ t, state }) => {
 				<div className="flex items-center gap-3 sm:gap-4 mb-4 sm:mb-5">
 					<img
 						src={t.avatar}
-						alt={t.name}
+						alt={`Foto de ${t.name}, testimonio de cliente de viajes VIADCA (${t.location})`}
 						width={64}
 						height={64}
 						className="w-12 h-12 sm:w-14 sm:h-14 rounded-full object-cover shadow-sm"

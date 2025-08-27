@@ -5,8 +5,14 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/viadca-icon.avif" style="border-radius: 15px;" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- Preconnects críticos -->
     <link rel="preconnect" href="https://api.jscamposx.dev" />
     <link rel="preconnect" href="https://images.pexels.com" />
+    <link rel="preconnect" href="https://res.cloudinary.com" />
+    <link rel="preconnect" href="https://unpkg.com" />
+    <!-- Preload CSS principal no bloqueante (Vite generará el hash) -->
+    <link rel="preload" href="/assets/index-DyAvl-qr.css" as="style" onload="this.onload=null;this.rel='stylesheet'" />
+    <noscript><link rel="stylesheet" href="/assets/index-DyAvl-qr.css" /></noscript>
     <title>Viadca Viajes - Tu próxima aventura comienza aquí</title>
     <meta
       name="description"
@@ -63,19 +69,7 @@
     }</script>
 
     <!-- Preload de la imagen LCP del Hero para discovery temprano -->
-    <link
-      rel="preload"
-      as="image"
-      href="/HomePage/Hero-Image.avif"
-      type="image/avif"
-    />
-
-    <link
-      rel="stylesheet"
-      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
-      crossorigin=""
-    />
+    <link rel="preload" as="image" href="/HomePage/Hero-Image.avif" type="image/avif" imagesizes="100vw" />
   </head>
   <body>
     <div id="root"></div>

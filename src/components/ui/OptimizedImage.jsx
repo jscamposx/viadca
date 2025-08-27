@@ -22,6 +22,8 @@ const OptimizedImage = ({
   sizes,
   onLoad,
   onError,
+  priority = false, // NUEVO
+  placeholderFallback,
   ...props
 }) => {
   const [isLoaded, setIsLoaded] = useState(false);
@@ -138,11 +140,11 @@ const OptimizedImage = ({
   // URL del placeholder
   const placeholderUrl = useMemo(() => {
     if (!placeholder) return null;
-
+    if (placeholderFallback) return placeholderFallback;
     const w = width || 600;
     const h = height || 400;
     return `https://via.placeholder.com/${w}x${h}?text=Cargando...`;
-  }, [placeholder, width, height]);
+  }, [placeholder, placeholderFallback, width, height]);
 
   // URL de error
   const errorUrl = useMemo(() => {
@@ -227,6 +229,9 @@ const OptimizedImage = ({
           sizes={sizes}
           onLoad={handleLoad}
           onError={handleError}
+          loading={priority ? "eager" : lazy ? "lazy" : "eager"}
+          fetchPriority={priority ? "high" : undefined}
+          decoding={priority ? "sync" : "async"}
           {...props}
         />
       </div>
@@ -245,7 +250,9 @@ const OptimizedImage = ({
       sizes={sizes}
       onLoad={handleLoad}
       onError={handleError}
-      loading={lazy ? "lazy" : "eager"}
+      loading={priority ? "eager" : lazy ? "lazy" : "eager"}
+      fetchPriority={priority ? "high" : undefined}
+      decoding={priority ? "sync" : "async"}
       {...props}
     />
   );

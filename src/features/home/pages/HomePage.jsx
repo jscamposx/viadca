@@ -20,6 +20,7 @@ import Testimonials from "../components/Testimonials";
 import Logos from "../components/Logos";
 import Footer from "../components/Footer";
 import { useSEO } from "../../../hooks/useSEO";
+import OptimizedImage from "../../../components/ui/OptimizedImage.jsx"; // añadido
 
 // Estilos CSS-in-JS para animaciones móviles
 const mobileStyles = `
@@ -473,9 +474,14 @@ const Home = () => {
           <div className="flex items-center w-full">
             {/* Logo - Optimizado para mobile */}
             <div className="flex items-center shrink-0">
-              <img
+              {/* Logo optimizado */}
+              <OptimizedImage
                 src="/viadcalogo.avif"
                 alt="VIADCA by Zafiro Tours"
+                width={230}
+                priority={true}
+                placeholder={false}
+                lazy={false}
                 className={`w-auto hover:scale-105 transition-transform duration-300 drop-shadow-sm ${
                   isScrolled ? "h-10 sm:h-12" : "h-11 sm:h-12"
                 }`}
@@ -629,7 +635,7 @@ const Home = () => {
                                 d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
                               />
                             </svg>
-                            <span className="font-medium">Dashboard</span>
+                            <span>Dashboard</span>
                           </Link>
                         )}
                         <Link
@@ -890,8 +896,7 @@ const Home = () => {
                 }`}
               >
                 {isAuthenticated() ? (
-                  // Usuario autenticado en móvil - Rediseñado
-                  <>
+                  <div>
                     <div
                       className="bg-gradient-to-r from-blue-50 to-indigo-50 p-4 rounded-xl border border-blue-200 shadow-sm"
                       aria-label="Información rápida de usuario"
@@ -995,7 +1000,7 @@ const Home = () => {
                         <span>Cerrar Sesión</span>
                       </button>
                     </div>
-                  </>
+                  </div>
                 ) : (
                   // Usuario no autenticado en móvil - Rediseñado
                   <div className="space-y-3">

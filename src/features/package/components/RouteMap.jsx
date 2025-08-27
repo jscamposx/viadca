@@ -57,6 +57,19 @@ const RouteMap = ({ paquete }) => {
   const destinos = paquete?.destinos || [];
 
   useEffect(() => {
+    // Carga diferida del CSS de Leaflet sólo cuando el mapa se monta
+    let cancelled = false;
+    (async () => {
+      try {
+        await import('leaflet/dist/leaflet.css');
+      } catch (e) {
+        if (!cancelled) console.warn('No se pudo cargar el CSS de Leaflet de forma diferida', e);
+      }
+    })();
+    return () => { cancelled = true; };
+  }, []);
+
+  useEffect(() => {
     const timer = setTimeout(() => {
       const locationPins = document.querySelectorAll(".location-pin");
 

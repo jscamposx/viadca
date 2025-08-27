@@ -147,7 +147,7 @@ const Hero = () => {
                 <div className="relative rounded-3xl overflow-visible shadow-none border-0 max-w-xl md:max-w-2xl lg:max-w-none mx-auto xl:pl-6">
                   <img
                     src="/HomePage/Hero-Image.avif"
-                    alt="Viajero explorando destinos increíbles"
+                    alt="Ilustración de viajero preparando maletas para experiencias de viaje internacionales con la agencia VIADCA en Durango"
                     className="w-full h-auto sm:h-80 md:h-[26rem] lg:h-[30rem] xl:h-[32rem] 2xl:h-[38rem] max-h-[70vh] md:max-h-[65vh] lg:max-h-[68vh] xl:max-h-[70vh] 2xl:max-h-[78vh] object-contain border-0 shadow-none ring-0 outline-none mx-auto"
                     decoding="async"
                     fetchPriority="high"
