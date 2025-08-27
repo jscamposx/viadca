@@ -1,6 +1,7 @@
 import React from "react";
 import { useContactActions } from "../../../hooks/useContactActions";
 import { AnimatedSection } from "../../../hooks/scrollAnimations";
+import OptimizedImage from "../../../components/ui/OptimizedImage.jsx";
 
 const Hero = () => {
   const { openWhatsApp, getPhoneHref, onPhoneClick, ToastPortal } =
@@ -145,13 +146,17 @@ const Hero = () => {
               {/* Right Content - Hero Image optimizada para mobile/tablet y ampliada en laptops */}
               <AnimatedSection animation="fadeInRight" delay={600} className="relative order-first lg:order-last">
                 <div className="relative rounded-3xl overflow-visible shadow-none border-0 max-w-xl md:max-w-2xl lg:max-w-none mx-auto xl:pl-6">
-                  <img
+                  <OptimizedImage
                     src="/HomePage/Hero-Image.avif"
                     alt="Ilustración de viajero preparando maletas para experiencias de viaje internacionales con la agencia VIADCA en Durango"
+                    width={1200}
+                    height={800}
+                    priority={true}
+                    responsive
+                    sizes="(max-width:640px) 100vw, (max-width:1024px) 50vw, 50vw"
                     className="w-full h-auto sm:h-80 md:h-[26rem] lg:h-[30rem] xl:h-[32rem] 2xl:h-[38rem] max-h-[70vh] md:max-h-[65vh] lg:max-h-[68vh] xl:max-h-[70vh] 2xl:max-h-[78vh] object-contain border-0 shadow-none ring-0 outline-none mx-auto"
-                    decoding="async"
-                    fetchPriority="high"
-                    loading="eager"
+                    placeholder={false}
+                    lazy={false}
                   />
 
                   {/* Overlay gradient para mobile (transparente) */}
