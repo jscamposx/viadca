@@ -9,7 +9,7 @@ const CookiesPage = () => {
   const whatsappMsg = "Hola, tengo dudas sobre su política de cookies. ¿Podrían brindarme más información?";
 
   return (
-    <PageTransition animationType="slide-right">
+    <PageTransition>
       <main className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/20 to-orange-50/10 relative overflow-hidden">
         {/* Fondo decorativo mejorado */}
         <div
