@@ -27,6 +27,8 @@ import ProtectedUserProfilePage from "./features/profile/pages/UserProfilePage";
 import PrivacyPage from "./features/legal/pages/PrivacyPage";
 import TermsPage from "./features/legal/pages/TermsPage";
 import CookiesPage from "./features/legal/pages/CookiesPage";
+import React, { Suspense } from "react";
+const FaqPage = React.lazy(() => import("./features/help/pages/FaqPage"));
 import ScrollToTop from "./components/ui/ScrollToTop";
 
 function AppRoutes() {
@@ -43,6 +45,15 @@ function AppRoutes() {
           <Route path="/privacidad" element={<PrivacyPage />} />
           <Route path="/terminos" element={<TermsPage />} />
           <Route path="/cookies" element={<CookiesPage />} />
+          {/* FAQ / Centro de ayuda */}
+          <Route
+            path="/preguntas-frecuentes"
+            element={
+              <Suspense fallback={<div className="p-10 text-center">Cargando...</div>}>
+                <FaqPage />
+              </Suspense>
+            }
+          />
 
           <Route path="/iniciar-sesion" element={<LoginPage />} />
           <Route path="/registro" element={<RegisterPage />} />

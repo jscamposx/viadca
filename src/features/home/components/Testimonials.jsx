@@ -163,11 +163,6 @@ const Testimonials = () => {
 						<br />
 						viajeros satisfechos
 					</h2>
-					<div className="flex items-center gap-3" aria-hidden="true">
-						<span className="inline-block w-12 h-1 rounded bg-secondary" />
-						<span className="inline-block w-6 h-1 rounded bg-slate-300" />
-						<span className="inline-block w-6 h-1 rounded bg-slate-200" />
-					</div>
 				</AnimatedSection>
 
 				{/* Right: carrusel dinámico */}
