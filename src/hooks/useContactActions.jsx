@@ -44,19 +44,23 @@ export const useContactActions = () => {
     }
   }, []);
 
-  const openWhatsApp = useCallback(() => {
-    try {
-      const raw = contactInfo?.whatsapp || "";
-      const phone = raw.replace(/[^\d]/g, ""); // Solo dígitos, sin '+'
-      if (!phone) return;
-      const text =
-        "¡Hola! Estoy interesado/a en agendar un viaje con ustedes. ¿Podrían ayudarme con más detalles, por favor?";
-      const url = `https://wa.me/${phone}?text=${encodeURIComponent(text)}`;
-      window.open(url, "_blank"); // Web en desktop, app en móvil
-    } catch (e) {
-      console.error("No se pudo abrir WhatsApp:", e);
-    }
-  }, [contactInfo]);
+  const openWhatsApp = useCallback(
+    (customMessage) => {
+      try {
+        const raw = contactInfo?.whatsapp || "";
+        const phone = raw.replace(/[^\d]/g, ""); // Solo dígitos, sin '+'
+        if (!phone) return;
+        const defaultText =
+          "¡Hola! Estoy interesado/a en agendar un viaje con ustedes. ¿Podrían ayudarme con más detalles, por favor?";
+        const text = customMessage || defaultText;
+        const url = `https://wa.me/${phone}?text=${encodeURIComponent(text)}`;
+        window.open(url, "_blank"); // Web en desktop, app en móvil
+      } catch (e) {
+        console.error("No se pudo abrir WhatsApp:", e);
+      }
+    },
+    [contactInfo],
+  );
 
   const getPhoneHref = useCallback(() => {
     const raw = contactInfo?.telefono || "";

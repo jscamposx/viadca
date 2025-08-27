@@ -5,6 +5,7 @@ import { useSEO } from '../../../hooks/useSEO';
 import Footer from '../../home/components/Footer';
 import { useContactInfo } from '../../../hooks/useContactInfo';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { useContactActions } from '../../../hooks/useContactActions'; // nuevo
 
 // Estructuramos las FAQs en categorías con preguntas y respuestas.
 // Para el JSON-LD, sólo necesitamos question/answer plano; combinaremos todas.
@@ -159,6 +160,8 @@ export default function FaqPage() {
   const navigate = useNavigate();
   const location = useLocation();
   const from = location.state && location.state.from;
+  const { openWhatsApp, getPhoneHref, onPhoneClick, ToastPortal } = useContactActions();
+  const whatsappMsg = 'Hola, tengo dudas después de leer las Preguntas Frecuentes. ¿Podrían ayudarme?';
 
   const toc = useMemo(() => faqCategories.map(c => ({ id: c.id, title: c.title })), []);
 
@@ -269,24 +272,46 @@ export default function FaqPage() {
       </div>
       {/* JSON-LD para SEO */}
       <FaqSchema items={allFaqItems} />
+
+      {/* CTA de contacto */}
+      <section className="max-w-5xl mx-auto mt-24">
+        <div className="relative overflow-hidden rounded-3xl p-8 sm:p-12 bg-gradient-to-r from-blue-600 via-indigo-600 to-rose-600 text-white shadow-2xl">
+          <div className="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_20%_20%,#ffffff33,transparent_60%)]" aria-hidden="true" />
+          <div className="relative z-10 flex flex-col lg:flex-row gap-10 items-start lg:items-center">
+            <div className="flex-1 space-y-4">
+              <h2 className="text-3xl sm:text-4xl font-bold font-volkhov leading-tight">¿Aún necesitas ayuda?</h2>
+              <p className="text-base sm:text-lg text-indigo-100 max-w-2xl">Escríbenos y un asesor te responderá personalmente para planificar tu viaje o aclarar cualquier duda que no encontraste en esta sección.</p>
+              <ul className="flex flex-wrap gap-3 text-xs text-indigo-100/80">
+                <li className="px-3 py-1 rounded-full bg-white/10 backdrop-blur">Asesoría personalizada</li>
+                <li className="px-3 py-1 rounded-full bg-white/10 backdrop-blur">Respuestas rápidas</li>
+                <li className="px-3 py-1 rounded-full bg-white/10 backdrop-blur">Experiencia en viajes</li>
+              </ul>
+            </div>
+            <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
+              <button
+                type="button"
+                onClick={() => openWhatsApp(whatsappMsg)}
+                className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-white text-blue-700 font-medium shadow-lg hover:shadow-xl hover:scale-[1.03] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-white transition"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
+                WhatsApp
+              </button>
+              <a
+                href={getPhoneHref()}
+                onClick={onPhoneClick}
+                className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-blue-700/20 hover:bg-blue-700/30 text-white font-medium shadow-lg hover:shadow-xl hover:scale-[1.03] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-white transition"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" /></svg>
+                Llamar / Copiar
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
     </main>
-    <div className="bg-white/70 backdrop-blur-sm py-4 border-t border-slate-200">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row gap-4 sm:items-center sm:justify-between">
-        <button
-          type="button"
-          onClick={() => {
-            if (from) navigate(-1); else navigate('/');
-          }}
-          className="inline-flex items-center gap-2 text-sm font-medium text-blue-700 hover:text-blue-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-600 group"
-          aria-label="Volver"
-        >
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 18l-6-6 6-6" /></svg>
-          <span>{from ? 'Volver a la página anterior' : 'Volver al inicio'}</span>
-        </button>
-        <a href="/" className="text-xs text-slate-500 hover:text-slate-700 underline decoration-dotted">Ir al Home</a>
-      </div>
-    </div>
+    {/* ...existing code... */}
     <Footer contactInfo={contactInfo} contactLoading={contactLoading} currentYear={currentYear} />
+    <ToastPortal />
     </>
   );
 }
