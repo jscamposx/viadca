@@ -1,5 +1,6 @@
 import React from "react";
 import { useContactActions } from "../../../hooks/useContactActions";
+import { AnimatedSection } from "../../../hooks/scrollAnimations";
 
 const Hero = () => {
   const { openWhatsApp, getPhoneHref, onPhoneClick, ToastPortal } =
@@ -33,106 +34,116 @@ const Hero = () => {
             <div className="grid md:grid-cols-2 gap-8 md:gap-10 lg:gap-12 items-center">
               {/* Left Content */}
               <div className="space-y-6 lg:space-y-8 text-center lg:text-left">
-                <div className="space-y-4">
-                  <p className="text-blue-600 font-bold text-base sm:text-lg lg:text-xl uppercase tracking-wide">
-                    VIADCA by Zafiro Tours
-                  </p>
-                  <p className="text-slate-600 text-sm sm:text-base lg:hidden">
-                    Desde Durango para el mundo
-                  </p>
-                </div>
+                <AnimatedSection animation="fadeInLeft" delay={200}>
+                  <div className="space-y-4">
+                    <p className="text-blue-600 font-bold text-base sm:text-lg lg:text-xl uppercase tracking-wide">
+                      VIADCA by Zafiro Tours
+                    </p>
+                    <p className="text-slate-600 text-sm sm:text-base lg:hidden">
+                      Desde Durango para el mundo
+                    </p>
+                  </div>
+                </AnimatedSection>
 
-                <h1
-                  id="hero-heading"
-                  className="font-volkhov font-bold text-4xl sm:text-5xl lg:text-6xl xl:text-7xl leading-tight text-slate-800"
-                >
-                  <span className="block">Vive experiencias</span>
-                  <span className="block bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
-                    extraordinarias,
-                  </span>
-                  <span className="block">viaja sin límites</span>
-                </h1>
+                <AnimatedSection animation="fadeInLeft" delay={400}>
+                  <h1
+                    id="hero-heading"
+                    className="font-volkhov font-bold text-4xl sm:text-5xl lg:text-6xl xl:text-7xl leading-tight text-slate-800"
+                  >
+                    <span className="block">Vive experiencias</span>
+                    <span className="block bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+                      extraordinarias,
+                    </span>
+                    <span className="block">viaja sin límites</span>
+                  </h1>
+                </AnimatedSection>
 
-                <p className="text-slate-600 text-base sm:text-lg lg:text-xl leading-relaxed max-w-2xl mx-auto lg:mx-0">
-                  Somos tu agencia de viajes de confianza en Durango. Más de 15
-                  años creando aventuras únicas, tours personalizados y
-                  experiencias inolvidables.
-                </p>
+                <AnimatedSection animation="fadeInLeft" delay={600}>
+                  <p className="text-slate-600 text-base sm:text-lg lg:text-xl leading-relaxed max-w-2xl mx-auto lg:mx-0">
+                    Somos tu agencia de viajes de confianza en Durango. Más de 15
+                    años creando aventuras únicas, tours personalizados y
+                    experiencias inolvidables.
+                  </p>
+                </AnimatedSection>
 
                 {/* CTA Buttons - Mejorados para mobile */}
-                <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 pt-4">
-                  <button
-                    type="button"
-                    onClick={openWhatsApp}
-                    aria-label="Planifica tu viaje por WhatsApp"
-                    className="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-8 py-4 rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all duration-300 font-semibold hover:shadow-xl hover:scale-105 transform flex items-center justify-center gap-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-600 disabled:opacity-60 disabled:cursor-not-allowed"
-                  >
-                    <svg
-                      className="w-5 h-5"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                      aria-hidden="true"
+                <AnimatedSection animation="fadeInUp" delay={800}>
+                  <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 pt-4">
+                    <button
+                      type="button"
+                      onClick={openWhatsApp}
+                      aria-label="Planifica tu viaje por WhatsApp"
+                      className="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-8 py-4 rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all duration-300 font-semibold hover:shadow-xl hover:scale-105 transform flex items-center justify-center gap-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-600 disabled:opacity-60 disabled:cursor-not-allowed"
                     >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"
-                      />
-                    </svg>
-                    <span>Planifica tu viaje</span>
-                  </button>
-                  <a
-                    href={getPhoneHref()}
-                    onClick={onPhoneClick}
-                    aria-label="Contáctanos por teléfono"
-                    className="w-full sm:w-auto border-2 border-slate-300 text-slate-800 px-8 py-4 rounded-xl hover:border-blue-600 hover:text-blue-700 hover:bg-blue-50 transition-all duration-300 font-semibold hover:shadow-lg hover:scale-105 transform flex items-center justify-center gap-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-600 disabled:opacity-60 disabled:cursor-not-allowed"
-                  >
-                    <svg
-                      className="w-5 h-5"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                      aria-hidden="true"
+                      <svg
+                        className="w-5 h-5"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                        aria-hidden="true"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"
+                        />
+                      </svg>
+                      <span>Planifica tu viaje</span>
+                    </button>
+                    <a
+                      href={getPhoneHref()}
+                      onClick={onPhoneClick}
+                      aria-label="Contáctanos por teléfono"
+                      className="w-full sm:w-auto border-2 border-slate-300 text-slate-800 px-8 py-4 rounded-xl hover:border-blue-600 hover:text-blue-700 hover:bg-blue-50 transition-all duration-300 font-semibold hover:shadow-lg hover:scale-105 transform flex items-center justify-center gap-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-600 disabled:opacity-60 disabled:cursor-not-allowed"
                     >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
-                      />
-                    </svg>
-                    <span>Contáctanos</span>
-                  </a>
-                </div>
+                      <svg
+                        className="w-5 h-5"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                        aria-hidden="true"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
+                        />
+                      </svg>
+                      <span>Contáctanos</span>
+                    </a>
+                  </div>
+                </AnimatedSection>
 
                 {/* Stats - Solo visible en desktop */}
-                <div className="hidden lg:flex items-center gap-8 pt-8">
-                  <div className="text-center">
-                    <div className="text-2xl font-bold text-blue-600">15+</div>
-                    <div className="text-sm text-slate-600 mt-2">
-                      Años de experiencia
+                <AnimatedSection animation="fadeInUp" delay={1000}>
+                  <div className="hidden lg:flex items-center gap-8 pt-8">
+                    <div className="text-center">
+                      <div className="text-2xl font-bold text-blue-600">15+</div>
+                      <div className="text-sm text-slate-600 mt-2">
+                        Años de experiencia
+                      </div>
                     </div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-2xl font-bold text-green-600">
-                      5,000+
+                    <div className="text-center">
+                      <div className="text-2xl font-bold text-green-600">
+                        5,000+
+                      </div>
+                     <div className="text-sm text-slate-600 mt-2">
+                        Viajeros felices
+                      </div>
                     </div>
-                   <div className="text-sm text-slate-600 mt-2">
-                      Viajeros felices
-                    </div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-2xl font-bold text-orange-600">50+</div>
+                    <div className="text-center">
+                      <div className="text-2xl font-bold text-orange-600">50+</div>
 
-                    <div className="text-sm text-slate-600 mt-2">Destinos</div>
+                      <div className="text-sm text-slate-600 mt-2">Destinos</div>
+                    </div>
                   </div>
-                </div>
+                </AnimatedSection>
               </div>
 
               {/* Right Content - Hero Image optimizada para mobile/tablet */}
-              <div className="relative order-first md:order-last">
+              <AnimatedSection animation="fadeInRight" delay={600} className="relative order-first md:order-last">
                 <div className="relative rounded-3xl overflow-hidden shadow-none border-0">
                   <img
                     src="/HomePage/Hero-Image.avif"
@@ -151,21 +162,23 @@ const Hero = () => {
                 </div>
 
                 {/* Stats móviles - Tarjetas flotantes */}
-                <div className="flex lg:hidden justify-center gap-4 mt-6">
-                  <div className="bg-white rounded-xl p-4 shadow-none border-0 text-center flex-1 max-w-24">
-                    <div className="text-xl font-bold text-blue-600">15+</div>
-                    <div className="text-xs text-slate-600">Años</div>
+                <AnimatedSection animation="fadeInUp" delay={1200}>
+                  <div className="flex lg:hidden justify-center gap-4 mt-6">
+                    <div className="bg-white rounded-xl p-4 shadow-none border-0 text-center flex-1 max-w-24">
+                      <div className="text-xl font-bold text-blue-600">15+</div>
+                      <div className="text-xs text-slate-600">Años</div>
+                    </div>
+                    <div className="bg-white rounded-xl p-4 shadow-none border-0 text-center flex-1 max-w-24">
+                      <div className="text-xl font-bold text-green-600">5K+</div>
+                      <div className="text-xs text-slate-600">Clientes</div>
+                    </div>
+                    <div className="bg-white rounded-xl p-4 shadow-none border-0 text-center flex-1 max-w-24">
+                      <div className="text-xl font-bold text-orange-600">50+</div>
+                      <div className="text-xs text-slate-600">Destinos</div>
+                    </div>
                   </div>
-                  <div className="bg-white rounded-xl p-4 shadow-none border-0 text-center flex-1 max-w-24">
-                    <div className="text-xl font-bold text-green-600">5K+</div>
-                    <div className="text-xs text-slate-600">Clientes</div>
-                  </div>
-                  <div className="bg-white rounded-xl p-4 shadow-none border-0 text-center flex-1 max-w-24">
-                    <div className="text-xl font-bold text-orange-600">50+</div>
-                    <div className="text-xs text-slate-600">Destinos</div>
-                  </div>
-                </div>
-              </div>
+                </AnimatedSection>
+              </AnimatedSection>
             </div>
           </div>
         </div>

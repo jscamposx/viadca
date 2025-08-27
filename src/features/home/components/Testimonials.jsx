@@ -1,4 +1,5 @@
 import React from "react";
+import { AnimatedSection } from "../../../hooks/scrollAnimations";
 
 const testimonialsData = [
 	{
@@ -150,7 +151,7 @@ const Testimonials = () => {
 		>
 			<div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-6 sm:gap-8 md:gap-12 xl:gap-16 items-center">
 				{/* Left content */}
-				<div className="space-y-4 sm:space-y-6 md:space-y-8">
+				<AnimatedSection animation="fadeInLeft" className="space-y-4 sm:space-y-6 md:space-y-8">
 					<p className="text-text-gray font-semibold text-lg uppercase tracking-wide">
 						Testimonios
 					</p>
@@ -167,10 +168,10 @@ const Testimonials = () => {
 						<span className="inline-block w-6 h-1 rounded bg-slate-300" />
 						<span className="inline-block w-6 h-1 rounded bg-slate-200" />
 					</div>
-				</div>
+				</AnimatedSection>
 
 				{/* Right: carrusel dinámico */}
-				<div className="relative">
+				<AnimatedSection animation="fadeInRight" delay={300} className="relative">
 					<div
 						className="relative h-[200px] sm:h-[260px] md:h-[300px] lg:h-[420px] xl:h-[460px] transform-gpu will-change-transform overflow-visible"
 						role="region"
@@ -267,7 +268,7 @@ const Testimonials = () => {
 							</button>
 						</div>
 					</div>
-				</div>
+				</AnimatedSection>
 			</div>
 		</section>
 	);

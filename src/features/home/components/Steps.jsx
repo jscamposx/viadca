@@ -1,6 +1,39 @@
 import React from "react";
+import { AnimatedSection } from "../../../hooks/scrollAnimations";
 
-const Steps = () => (
+const Steps = () => {
+  // Eliminado useStaggeredAnimation: usaremos AnimatedSection para cada step
+  const steps = [
+    {
+      title: 'Consulta personalizada',
+      badge: 'Paso 1',
+      color: 'from-yellow-400 to-orange-500',
+      bgBadge: 'bg-yellow-100 text-yellow-900',
+      iconPath: 'M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z',
+      desc: 'Agenda una cita con nuestros asesores especializados. Te ayudamos a diseñar el viaje perfecto para ti.',
+      extra: (<div className="mt-3 flex items-center text-xs text-slate-500"><span className="flex items-center gap-1"><svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>30 min promedio</span><span className="mx-2">•</span><span>Gratis</span></div>)
+    },
+    {
+      title: 'Cotización y reserva',
+      badge: 'Paso 2',
+      color: 'from-red-400 to-pink-500',
+      bgBadge: 'bg-red-100 text-red-900',
+      iconPath: 'M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z',
+      desc: 'Recibe tu cotización detallada y realiza tu reserva con facilidades de pago y seguros incluidos.',
+      extra: (<div className="mt-3 flex items-center text-xs text-slate-500"><span className="flex items-center gap-1"><svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>Pago seguro</span><span className="mx-2">•</span><span>Meses sin intereses</span></div>)
+    },
+    {
+      title: '¡Disfruta tu experiencia!',
+      badge: 'Paso 3',
+      color: 'from-teal-400 to-green-500',
+      bgBadge: 'bg-green-100 text-green-900',
+      iconPath: 'M12 19l9 2-9-18-9 18 9-2zm0 0v-8',
+      desc: 'Te acompañamos durante todo el proceso. Soporte 24/7 para que vivas una experiencia inolvidable.',
+      extra: (<div className="mt-3 flex items-center text-xs text-slate-500"><span className="flex items-center gap-1"><svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" /></svg>Soporte 24/7</span><span className="mx-2">•</span><span>App móvil</span></div>)
+    }
+  ];
+
+  return (
   <section
     id="pasos"
     className="py-12 sm:py-16 lg:py-20 px-4 sm:px-6 lg:px-8 scroll-mt-32 bg-gradient-to-b from-white to-blue-50"
@@ -10,7 +43,7 @@ const Steps = () => (
       <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
         {/* Left Content - Mejorado para mobile */}
         <div className="space-y-6 lg:space-y-8 order-1 lg:order-1">
-          <div className="text-center lg:text-left">
+          <AnimatedSection animation="fadeInLeft" className="text-center lg:text-left">
             <p className="text-slate-600 font-semibold text-base sm:text-lg uppercase tracking-wide mb-3">
               Proceso simple
             </p>
@@ -28,187 +61,34 @@ const Steps = () => (
               Un proceso diseñado para hacer tu experiencia de reserva fácil y
               confiable
             </p>
-          </div>
+          </AnimatedSection>
 
           <div className="space-y-6 lg:space-y-8">
-            {/* Step 1 - Mejorado */}
-            <div className="flex items-start space-x-4 lg:space-x-6 group">
-              <div
-                className="w-14 h-14 lg:w-16 lg:h-16 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-lg group-hover:scale-110 transition-transform duration-300"
-                aria-hidden="true"
+            {steps.map((s, i) => (
+              <AnimatedSection
+                key={s.title}
+                animation="fadeInLeft"
+                delay={200 + i * 200}
+                className="flex items-start space-x-4 lg:space-x-6 group"
               >
-                <svg
-                  className="w-7 h-7 lg:w-8 lg:h-8 text-white"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  aria-hidden="true"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                  />
-                </svg>
-              </div>
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-3 mb-2">
-                  <h3 className="font-bold text-lg lg:text-xl text-slate-800">
-                    Consulta personalizada
-                  </h3>
-                  <span className="bg-yellow-100 text-yellow-900 px-2 py-1 rounded-full text-xs font-medium">
-                    Paso 1
-                  </span>
+                <div className={`w-14 h-14 lg:w-16 lg:h-16 bg-gradient-to-r ${s.color} rounded-2xl flex items-center justify-center flex-shrink-0 shadow-lg group-hover:scale-110 transition-transform duration-300`} aria-hidden="true">
+                  <svg className="w-7 h-7 lg:w-8 lg:h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={s.iconPath} /></svg>
                 </div>
-                <p className="text-slate-600 leading-relaxed text-sm lg:text-base">
-                  Agenda una cita con nuestros asesores especializados. Te
-                  ayudamos a diseñar el viaje perfecto para ti.
-                </p>
-                <div className="mt-3 flex items-center text-xs text-slate-500">
-                  <span className="flex items-center gap-1">
-                    <svg
-                      className="w-3 h-3"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                      aria-hidden="true"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                      />
-                    </svg>
-                    30 min promedio
-                  </span>
-                  <span className="mx-2">•</span>
-                  <span>Gratis</span>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-3 mb-2">
+                    <h3 className="font-bold text-lg lg:text-xl text-slate-800">{s.title}</h3>
+                    <span className={`${s.bgBadge} px-2 py-1 rounded-full text-xs font-medium`}>{s.badge}</span>
+                  </div>
+                  <p className="text-slate-600 leading-relaxed text-sm lg:text-base">{s.desc}</p>
+                  {s.extra}
                 </div>
-              </div>
-            </div>
-
-            {/* Step 2 - Mejorado */}
-            <div className="flex items-start space-x-4 lg:space-x-6 group">
-              <div
-                className="w-14 h-14 lg:w-16 lg:h-16 bg-gradient-to-r from-red-400 to-pink-500 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-lg group-hover:scale-110 transition-transform duration-300"
-                aria-hidden="true"
-              >
-                <svg
-                  className="w-7 h-7 lg:w-8 lg:h-8 text-white"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  aria-hidden="true"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"
-                  />
-                </svg>
-              </div>
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-3 mb-2">
-                  <h3 className="font-bold text-lg lg:text-xl text-slate-800">
-                    Cotización y reserva
-                  </h3>
-                  <span className="bg-red-100 text-red-900 px-2 py-1 rounded-full text-xs font-medium">
-                    Paso 2
-                  </span>
-                </div>
-                <p className="text-slate-600 leading-relaxed text-sm lg:text-base">
-                  Recibe tu cotización detallada y realiza tu reserva con
-                  facilidades de pago y seguros incluidos.
-                </p>
-                <div className="mt-3 flex items-center text-xs text-slate-500">
-                  <span className="flex items-center gap-1">
-                    <svg
-                      className="w-3 h-3"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                      aria-hidden="true"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
-                      />
-                    </svg>
-                    Pago seguro
-                  </span>
-                  <span className="mx-2">•</span>
-                  <span>Meses sin intereses</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Step 3 - Mejorado */}
-            <div className="flex items-start space-x-4 lg:space-x-6 group">
-              <div
-                className="w-14 h-14 lg:w-16 lg:h-16 bg-gradient-to-r from-teal-400 to-green-500 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-lg group-hover:scale-110 transition-transform duration-300"
-                aria-hidden="true"
-              >
-                <svg
-                  className="w-7 h-7 lg:w-8 lg:h-8 text-white"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  aria-hidden="true"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"
-                  />
-                </svg>
-              </div>
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-3 mb-2">
-                  <h3 className="font-bold text-lg lg:text-xl text-slate-800">
-                    ¡Disfruta tu experiencia!
-                  </h3>
-                  <span className="bg-green-100 text-green-900 px-2 py-1 rounded-full text-xs font-medium">
-                    Paso 3
-                  </span>
-                </div>
-                <p className="text-slate-600 leading-relaxed text-sm lg:text-base">
-                  Te acompañamos durante todo el proceso. Soporte 24/7 para que
-                  vivas una experiencia inolvidable.
-                </p>
-                <div className="mt-3 flex items-center text-xs text-slate-500">
-                  <span className="flex items-center gap-1">
-                    <svg
-                      className="w-3 h-3"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                      aria-hidden="true"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
-                      />
-                    </svg>
-                    Soporte 24/7
-                  </span>
-                  <span className="mx-2">•</span>
-                  <span>App móvil</span>
-                </div>
-              </div>
-            </div>
+              </AnimatedSection>
+            ))}
           </div>
         </div>
 
         {/* Right Content - Trip Card mejorado para mobile */}
-        <div className="relative order-2 lg:order-2">
+        <AnimatedSection animation="fadeInRight" delay={400} className="relative order-2 lg:order-2">
           {/* Background Decoration - Solo desktop */}
           <div
             className="hidden lg:block absolute top-0 right-0 w-96 h-96 bg-blue-200 rounded-full opacity-40"
@@ -435,10 +315,11 @@ const Steps = () => (
               <div className="text-xs text-slate-600">Seguro</div>
             </div>
           </div>
-        </div>
+        </AnimatedSection>
       </div>
     </div>
   </section>
-);
+  );
+};
 
 export default Steps;

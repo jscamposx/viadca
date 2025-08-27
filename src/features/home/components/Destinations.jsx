@@ -2,6 +2,7 @@ import React, { useEffect, useState, useCallback } from "react";
 import { Link } from "react-router-dom";
 import apiClient from "../../../api/axiosConfig";
 import { formatPrecio, sanitizeMoneda } from "../../../utils/priceUtils";
+import { AnimatedSection } from "../../../hooks/scrollAnimations";
 import {
   FiMapPin,
   FiSend,
@@ -179,7 +180,7 @@ const DestinationCard = React.memo(function DestinationCard({ p }) {
           </div>
           <Link
             to={url}
-            className="text-blue-600 hover:text-blue-700 font-medium text-sm hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2 rounded transition-colors flex items-center gap-1 group-hover:gap-1.5 transition-all"
+            className="text-blue-600 hover:text-blue-700 font-medium text-sm hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2 rounded  flex items-center gap-1 group-hover:gap-1.5 transition-all"
             aria-label={`Ver detalles de ${p?.titulo || "paquete"}`}
           >
             Ver más
@@ -277,7 +278,7 @@ const Destinations = () => {
     >
       <div className="max-w-7xl mx-auto">
         {/* Título de la sección - Manteniendo el estilo original pero mejorado */}
-        <div className="text-center mb-14 lg:mb-16">
+        <AnimatedSection animation="fadeInUp" className="text-center mb-14 lg:mb-16">
           <p className="text-slate-600 font-semibold text-base sm:text-lg uppercase tracking-wide mb-3 lg:mb-4">
             Destinos favoritos
           </p>
@@ -287,7 +288,7 @@ const Destinations = () => {
           <p className="text-slate-600 text-base sm:text-lg mt-4 max-w-2xl mx-auto">
             Descubre lugares increíbles con nuestros paquetes todo incluido
           </p>
-        </div>
+        </AnimatedSection>
 
         {error && (
           <div
@@ -315,11 +316,26 @@ const Destinations = () => {
             ))}
 
           {!loading &&
-            displayItems.map((p) => (
-              <DestinationCard key={p.codigoUrl || p.titulo} p={p} />
+            displayItems.map((p, index) => (
+              <AnimatedSection
+                key={p.codigoUrl || p.titulo || index}
+                animation="fadeInUp"
+                delay={index * 120}
+                className="h-full"
+              >
+                <DestinationCard p={p} />
+              </AnimatedSection>
             ))}
 
-          {!loading && hasMore && <MoreDestinationsCard />}
+          {!loading && hasMore && (
+            <AnimatedSection
+              animation="fadeInUp"
+              delay={displayItems.length * 120}
+              className="h-full"
+            >
+              <MoreDestinationsCard />
+            </AnimatedSection>
+          )}
         </div>
 
         {/* Mensaje cuando no hay destinos */}

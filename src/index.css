@@ -2,6 +2,9 @@
 
 @import "leaflet/dist/leaflet.css";
 
+/* Importar animaciones personalizadas */
+@import "./styles/animations.css";
+
 .scrollbar-hide {
   scrollbar-width: none;
 
