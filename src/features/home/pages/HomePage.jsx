@@ -479,6 +479,8 @@ const Home = () => {
                 src="/viadcalogo.avif"
                 alt="VIADCA by Zafiro Tours"
                 width={230}
+                height={115}
+                sizes="(max-width:640px) 120px, 180px"
                 priority={true}
                 placeholder={false}
                 lazy={false}
