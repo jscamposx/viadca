@@ -276,21 +276,33 @@ const Services = () => {
             </p>
             <div className="relative flex flex-col sm:flex-row items-center justify-center gap-4">
               <a
-                className="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-8 py-3 rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all duration-300 font-semibold hover:shadow-lg hover:scale-105 transform flex items-center justify-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-blue-600"
+                className="btn-cta-primary w-full sm:w-auto max-w-full sm:max-w-fit bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-6 md:px-7 py-3 rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all duration-300 font-semibold hover:shadow-lg hover:-translate-y-0.5 flex items-center justify-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-blue-600 text-sm md:text-base"
                 aria-label="Contactar al equipo por teléfono"
                 href={getPhoneHref()}
                 onClick={onPhoneClick}
               >
-                <FiPhoneCall className="w-5 h-5" aria-hidden="true" />
+                {/* SVG original del diseño (teléfono con ondas) */}
+                <svg
+                  className="w-5 h-5 flex-shrink-0"
+                  stroke="currentColor"
+                  fill="none"
+                  strokeWidth="2"
+                  viewBox="0 0 24 24"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  aria-hidden="true"
+                >
+                  <path d="M15.05 5A5 5 0 0 1 19 8.95M15.05 1A9 9 0 0 1 23 8.94m-1 7.98v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
+                </svg>
                 <span>Contáctanos</span>
               </a>
               <button
-                className="w-full sm:w-auto border-2 border-blue-600 text-blue-700 px-8 py-3 rounded-xl hover:bg-blue-600 hover:text-white transition-all duration-300 font-semibold hover:shadow-lg hover:scale-105 transform flex items-center justify-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2"
+                className="btn-cta-secondary w-full sm:w-auto max-w-full sm:max-w-fit border-2 border-blue-600 text-blue-700 px-6 md:px-7 py-3 rounded-xl hover:bg-blue-600 hover:text-white transition-all duration-300 font-semibold hover:shadow-lg hover:-translate-y-0.5 flex items-center justify-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2 text-sm md:text-base"
                 type="button"
                 aria-label="Abrir chat en línea por WhatsApp"
                 onClick={openWhatsApp}
               >
-                <FaWhatsapp className="w-5 h-5" aria-hidden="true" />
+                <FaWhatsapp className="w-5 h-5 flex-shrink-0" aria-hidden="true" />
                 <span>Chatea con nosotros</span>
               </button>
             </div>
