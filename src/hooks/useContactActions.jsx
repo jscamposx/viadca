@@ -48,13 +48,17 @@ export const useContactActions = () => {
     (customMessage) => {
       try {
         const raw = contactInfo?.whatsapp || "";
-        const phone = raw.replace(/[^\d]/g, ""); // Solo dígitos, sin '+'
+        const phone = raw.replace(/[^\d]/g, ""); // Solo dígitos
         if (!phone) return;
         const defaultText =
           "¡Hola! Estoy interesado/a en agendar un viaje con ustedes. ¿Podrían ayudarme con más detalles, por favor?";
-        const text = customMessage || defaultText;
-        const url = `https://wa.me/${phone}?text=${encodeURIComponent(text)}`;
-        window.open(url, "_blank"); // Web en desktop, app en móvil
+        // Si llega un SyntheticEvent u otro tipo distinto de string, lo ignoramos
+        const safeMessage =
+          typeof customMessage === "string" && customMessage.trim().length > 0
+            ? customMessage.trim()
+            : defaultText;
+        const url = `https://wa.me/${phone}?text=${encodeURIComponent(safeMessage)}`;
+        window.open(url, "_blank");
       } catch (e) {
         console.error("No se pudo abrir WhatsApp:", e);
       }

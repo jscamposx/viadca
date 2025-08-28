@@ -331,58 +331,8 @@ const CookiesPage = () => {
               </div>
             </div>
 
-            <div className="mt-16 grid md:grid-cols-2 gap-6">
-              <div className="p-6 bg-gradient-to-br from-purple-50 to-indigo-50 rounded-xl border border-purple-100/60 shadow-sm transition-all duration-300 hover:shadow-md hover:border-purple-300">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-12 h-12 bg-purple-600 rounded-lg flex items-center justify-center">
-                    <svg
-                      className="w-6 h-6 text-white"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
-                      />
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                      />
-                    </svg>
-                  </div>
-                  <h3 className="font-semibold text-slate-800 text-lg">
-                    Gestión de Cookies
-                  </h3>
-                </div>
-                <p className="text-slate-600 text-sm mb-4">
-                  Puedes configurar tu navegador para controlar el uso de
-                  cookies según tus preferencias.
-                </p>
-                <div className="mt-4">
-                  <button className="text-sm font-medium text-purple-600 hover:text-purple-700 transition-colors flex items-center gap-1">
-                    Ver guía de configuración
-                    <svg
-                      className="w-4 h-4"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M9 5l7 7-7 7"
-                      />
-                    </svg>
-                  </button>
-                </div>
-              </div>
-
+            {/* Sección de ayuda (eliminado bloque "Gestión de Cookies") */}
+            <div className="mt-16">
               <div className="p-6 bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl border border-blue-100/60 shadow-sm transition-all duration-300 hover:shadow-md hover:border-blue-300">
                 <div className="flex items-center gap-3 mb-4">
                   <div className="w-12 h-12 bg-blue-600 rounded-lg flex items-center justify-center">
@@ -400,7 +350,7 @@ const CookiesPage = () => {
                       />
                     </svg>
                   </div>
-                  <h3 className="font-semibold text-slate-800 text-lg">
+                  <h3 className="font-semibold text-blue-800 text-lg">
                     ¿Necesitas ayuda?
                   </h3>
                 </div>
@@ -412,7 +362,7 @@ const CookiesPage = () => {
                   <button
                     type="button"
                     onClick={() => openWhatsApp(whatsappMsg)}
-                    className="inline-flex items-center gap-2 text-white bg-purple-600 hover:bg-purple-700 font-medium text-sm px-4 py-2 rounded-lg transition-colors shadow-sm"
+                    className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-600 font-medium text-sm px-4 py-2 rounded-lg transition-colors shadow-sm"
                   >
                     <svg
                       className="w-4 h-4"
@@ -432,10 +382,10 @@ const CookiesPage = () => {
                   <a
                     href={getPhoneHref()}
                     onClick={onPhoneClick}
-                    className="inline-flex items-center gap-2 text-purple-600 hover:text-purple-700 font-medium text-sm px-4 py-2 rounded-lg transition-colors"
+                    className="inline-flex items-center gap-2 bg-white text-blue-700 hover:bg-blue-50 border border-blue-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-600 font-medium text-sm px-4 py-2 rounded-lg transition-colors shadow-sm"
                   >
                     <svg
-                      className="w-4 h-4"
+                      className="w-4 h-4 text-blue-600"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"

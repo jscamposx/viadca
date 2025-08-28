@@ -166,20 +166,22 @@ const Hero = () => {
                   ></div>
                 </div>
 
-                {/* Stats móviles - Tarjetas flotantes */}
+                {/* Stats móviles - envueltas en contenedor lg:hidden para asegurar ocultamiento en desktop */}
                 <AnimatedSection animation="fadeInUp" delay={1200}>
-                  <div className="flex lg:hidden justify-center gap-4 mt-6">
-                    <div className="bg-white rounded-xl p-4 shadow-none border-0 text-center flex-1 max-w-24">
-                      <div className="text-xl font-bold text-blue-600">15+</div>
-                      <div className="text-xs text-slate-600">Años</div>
-                    </div>
-                    <div className="bg-white rounded-xl p-4 shadow-none border-0 text-center flex-1 max-w-24">
-                      <div className="text-xl font-bold text-green-600">5K+</div>
-                      <div className="text-xs text-slate-600">Clientes</div>
-                    </div>
-                    <div className="bg-white rounded-xl p-4 shadow-none border-0 text-center flex-1 max-w-24">
-                      <div className="text-xl font-bold text-orange-600">50+</div>
-                      <div className="text-xs text-slate-600">Destinos</div>
+                  <div className="lg:hidden">
+                    <div className="flex justify-center gap-4 mt-6">
+                      <div className="bg-white rounded-xl p-4 shadow-none border-0 text-center flex-1 max-w-24">
+                        <div className="text-xl font-bold text-blue-600">15+</div>
+                        <div className="text-xs text-slate-600">Años</div>
+                      </div>
+                      <div className="bg-white rounded-xl p-4 shadow-none border-0 text-center flex-1 max-w-24">
+                        <div className="text-xl font-bold text-green-600">5K+</div>
+                        <div className="text-xs text-slate-600">Clientes</div>
+                      </div>
+                      <div className="bg-white rounded-xl p-4 shadow-none border-0 text-center flex-1 max-w-24">
+                        <div className="text-xl font-bold text-orange-600">50+</div>
+                        <div className="text-xs text-slate-600">Destinos</div>
+                      </div>
                     </div>
                   </div>
                 </AnimatedSection>
