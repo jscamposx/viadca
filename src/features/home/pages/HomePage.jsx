@@ -688,9 +688,9 @@ const Home = () => {
                   </Link>
                   <Link
                     to="/registro"
-                    className="hidden lg:inline-flex border-1 border-blue-700 text-slate-700 px-6 py-3 rounded-lg hover:bg-blue-600 hover:border-blue-600 hover:text-white hover:shadow-lg hover:scale-105 transition-all duration-300 font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-600"
+                    className="group hidden lg:inline-flex relative items-center justify-center px-6 py-3 rounded-xl font-medium text-slate-700 border border-blue-600/70 bg-white/80 backdrop-blur-sm transition-all duration-300 hover:text-white hover:scale-[1.04] hover:border-blue-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-600 overflow-hidden shadow-[0_2px_6px_-1px_rgba(37,99,235,0.15)] hover:shadow-[0_8px_24px_-6px_rgba(37,99,235,0.45)] after:absolute after:inset-0 after:rounded-xl after:p-[1px] after:bg-gradient-to-r after:from-blue-600 after:to-indigo-500 after:opacity-0 group-hover:after:opacity-100 after:transition-opacity after:duration-300 after:content-['']"
                   >
-                    Registrarse
+                    <span className="relative z-10">Registrarse</span>
                   </Link>
                   <Link
                     to="/registro"
