@@ -101,6 +101,27 @@ const animationClasses = {
     initial: 'opacity-0 scale-95',
     animate: 'opacity-100 scale-100',
     transition: 'transition-all duration-700 ease-out'
+  },
+  // Nuevas animaciones mejoradas para destinos
+  slideUpCard: {
+    initial: 'opacity-0 translate-y-12 scale-95',
+    animate: 'opacity-100 translate-y-0 scale-100',
+    transition: 'transition-all duration-800 ease-[cubic-bezier(0.16,1,0.3,1)]'
+  },
+  floatIn: {
+    initial: 'opacity-0 translate-y-16 rotate-3',
+    animate: 'opacity-100 translate-y-0 rotate-0',
+    transition: 'transition-all duration-900 ease-[cubic-bezier(0.165,0.84,0.44,1)]'
+  },
+  bounceIn: {
+    initial: 'opacity-0 scale-50 translate-y-8',
+    animate: 'opacity-100 scale-100 translate-y-0',
+    transition: 'transition-all duration-700 ease-[cubic-bezier(0.68,-0.55,0.265,1.55)]'
+  },
+  slideUpTitle: {
+    initial: 'opacity-0 translate-y-6 blur-sm',
+    animate: 'opacity-100 translate-y-0 blur-none',
+    transition: 'transition-all duration-800 ease-out'
   }
 };
 

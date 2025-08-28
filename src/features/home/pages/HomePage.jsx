@@ -688,7 +688,13 @@ const Home = () => {
                   </Link>
                   <Link
                     to="/registro"
-                    className="border-2 border-slate-700 text-slate-700 px-6 py-3 rounded-lg hover:bg-blue-600 hover:border-blue-600 hover:text-white hover:shadow-lg hover:scale-105 transition-all duration-300 font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-600"
+                    className="hidden lg:inline-flex border-1 border-blue-700 text-slate-700 px-6 py-3 rounded-lg hover:bg-blue-600 hover:border-blue-600 hover:text-white hover:shadow-lg hover:scale-105 transition-all duration-300 font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-600"
+                  >
+                    Registrarse
+                  </Link>
+                  <Link
+                    to="/registro"
+                    className="lg:hidden text-slate-700 px-6 py-3 rounded-lg bg-blue-50 hover:bg-blue-600 hover:text-white hover:shadow-lg hover:scale-105 transition-all duration-300 font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-600"
                   >
                     Registrarse
                   </Link>

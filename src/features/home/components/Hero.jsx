@@ -192,7 +192,7 @@ const Hero = () => {
         </div>
       </section>
 
-      {/* Toast montado en portal con diseño centrado, blanco y moderno */}
+
       <ToastPortal />
     </>
   );
