@@ -1,5 +1,6 @@
 import React from "react";
 import { AnimatedSection } from "../../../hooks/scrollAnimations";
+import OptimizedImage, { AvatarImage } from "../../../components/ui/OptimizedImage.jsx";
 
 const testimonialsData = [
 	{
@@ -63,14 +64,14 @@ const SlideCard = ({ t, state }) => {
 					aria-hidden="true"
 				/>
 				<div className="flex items-center gap-3 sm:gap-4 mb-4 sm:mb-5">
-					<img
+					<AvatarImage
 						src={t.avatar}
 						alt={`Foto de ${t.name}, testimonio de cliente de viajes VIADCA (${t.location})`}
 						width={64}
 						height={64}
+						lazy={true}
+						placeholder={false}
 						className="w-12 h-12 sm:w-14 sm:h-14 rounded-full object-cover shadow-sm"
-						loading="lazy"
-						decoding="async"
 					/>
 					<div className="min-w-0">
 						<h3 className="text-slate-900 font-semibold leading-tight truncate">

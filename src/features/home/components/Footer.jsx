@@ -1,6 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { useContactActions } from "../../../hooks/useContactActions"; // nuevo hook para unificar lógica
+import OptimizedImage from "../../../components/ui/OptimizedImage.jsx";
 
 const Footer = ({ contactInfo, contactLoading, currentYear }) => {
   const { openWhatsApp, getPhoneHref, onPhoneClick, ToastPortal } = useContactActions();
@@ -86,12 +87,17 @@ const Footer = ({ contactInfo, contactLoading, currentYear }) => {
           <div className="lg:col-span-1 space-y-6">
             <div className="space-y-4">
               <div className="flex items-center gap-3">
-                <img
+                <OptimizedImage
                   src="/viadcalogo.avif"
                   alt="Logo de VIADCA agencia de viajes en Durango, México"
+                  width={200}
+                  height={64}
+                  sizes="(max-width:640px) 160px, 180px"
                   className="h-16 w-auto drop-shadow-sm hover:scale-105 transition-transform duration-300"
+                  placeholder={false}
+                  lazy={true}
+                  fetchPriority="low"
                   decoding="async"
-                  loading="lazy"
                 />
               </div>
               <h3 className="text-xl font-bold text-slate-900">

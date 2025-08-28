@@ -19,6 +19,7 @@ import {
   FiClock,
 } from "react-icons/fi";
 import { FaShip, FaRoute } from "react-icons/fa";
+import OptimizedImage from "../../../components/ui/OptimizedImage.jsx";
 
 // Helpers y tarjeta memoizados a nivel de módulo para evitar recreaciones por render
 const getBadgeConfig = (rawType) => {
@@ -119,11 +120,19 @@ const DestinationCard = React.memo(function DestinationCard({ p }) {
   return (
     <article className="bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 overflow-hidden border border-slate-100 group h-full flex flex-col">
       <div className="relative overflow-hidden">
-        <img
+        {/* Imagen optimizada */}
+        <OptimizedImage
           src={img}
           alt={p?.titulo || destinoTxt}
           className="w-full h-48 sm:h-52 md:h-56 lg:h-60 object-cover group-hover:scale-105 transition-transform duration-500"
-          loading="lazy"
+          // Dimensiones aproximadas para evitar competencia de ancho en layout; la altura viene de clases
+          width={800}
+          height={480}
+          responsive
+          sizes="(max-width:640px) 100vw, (max-width:1024px) 50vw, (max-width:1536px) 25vw, 320px"
+          // Estas imágenes no son LCP; mantener lazy
+          lazy={true}
+          placeholder={true}
         />
         <div
           className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"

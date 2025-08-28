@@ -5,6 +5,38 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/viadca-icon.avif" style="border-radius: 15px;" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- CSS crítico inline -->
+    <style>
+      /* ==== Critical CSS (base + layout inicial) ==== */
+      :root { --primary-color:#3490dc; --secondary-color:#ffed4a; --danger-color:#e3342f; }
+      *,::before,::after { box-sizing:border-box; border-width:0; border-style:solid; border-color:#e5e7eb; }
+      html { line-height:1.5; -webkit-text-size-adjust:100%; tab-size:4; font-family:ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji"; }
+      body { margin:0; line-height:inherit; background:#f7fafc; -webkit-font-smoothing:antialiased; }
+      #root { min-height:100vh; background-color:#f7fafc; }
+      .fade-in { animation:fadeIn 1s ease-in-out; }
+      @keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+      /* Utilidades mínimas usadas en above-the-fold (header / hero placeholders) */
+      .flex { display:flex; }
+      .items-center { align-items:center; }
+      .justify-center { justify-content:center; }
+      .w-full { width:100%; }
+      .h-full { height:100%; }
+      .text-center { text-align:center; }
+      .bg-white { background:#fff; }
+      .transition-transform { transition:transform .3s; }
+      .duration-300 { transition-duration:.3s; }
+      .hover\:scale-105:hover { transform:scale(1.05); }
+      .shadow-sm { box-shadow:0 1px 2px 0 rgb(0 0 0 / 0.05); }
+      .mx-auto { margin-left:auto; margin-right:auto; }
+      .relative { position:relative; }
+      .absolute { position:absolute; }
+      .top-0 { top:0; }
+      .left-0 { left:0; }
+      .right-0 { right:0; }
+      .z-\[9999\] { z-index:9999; }
+      /* Evitar FOUC básico */
+      body { visibility:visible; }
+    </style>
     <!-- Preconnects críticos -->
     <link rel="preconnect" href="https://api.jscamposx.dev" />
     <link rel="preconnect" href="https://images.pexels.com" />
@@ -70,8 +102,6 @@
 
     <!-- Preload de la imagen LCP del Hero para discovery temprano -->
     <link rel="preload" as="image" href="/HomePage/Hero-Image.avif" type="image/avif" imagesizes="100vw" />
-    <!-- Preload del logo para reducir LCP cuando el logo es elemento principal -->
-    <link rel="preload" as="image" href="/viadcalogo.avif" type="image/avif" />
   </head>
   <body>
     <div id="root"></div>
