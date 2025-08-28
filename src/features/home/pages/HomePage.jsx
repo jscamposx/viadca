@@ -480,14 +480,14 @@ const Home = () => {
                 alt="VIADCA by Zafiro Tours"
                 width={230}
                 height={115}
-                sizes="(max-width:640px) 120px, 180px"
+                sizes="(max-width:640px) 140px, (max-width:1024px) 180px, 230px"
                 priority={true}
                 placeholder={false}
                 lazy={false}
                 fadeIn={false}
-                className={`w-auto hover:scale-105 transition-transform duration-300 drop-shadow-sm ${
+                className={`w-auto select-none pointer-events-none sm:pointer-events-auto ${
                   isScrolled ? "h-10 sm:h-12" : "h-11 sm:h-12"
-                }`}
+                } sm:transition-transform sm:duration-300 sm:hover:scale-105 sm:drop-shadow-sm`}
               />
             </div>
             {/* Links centro */}
