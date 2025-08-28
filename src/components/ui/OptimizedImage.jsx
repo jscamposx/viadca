@@ -24,6 +24,7 @@ const OptimizedImage = ({
   onError,
   priority = false, // NUEVO
   placeholderFallback,
+  fadeIn = true, // NUEVO: permite desactivar la transición (evitar retrasar LCP)
   ...props
 }) => {
   const [isLoaded, setIsLoaded] = useState(false);
@@ -153,6 +154,12 @@ const OptimizedImage = ({
     return `https://via.placeholder.com/${w}x${h}?text=Error+al+cargar`;
   }, [width, height]);
 
+  // Helper para clases de fade únicamente cuando se desea
+  const buildImgClass = (loaded) => {
+    if (!fadeIn) return className; // sin transición
+    return `${className} transition-opacity duration-300 ${loaded ? "opacity-100" : "opacity-0"}`;
+  };
+
   // Mostrar placeholder si no está en vista (lazy loading)
   if (lazy && !isInView) {
     return (
@@ -222,7 +229,7 @@ const OptimizedImage = ({
         <img
           src={processedUrl}
           alt={alt}
-          className={`${className} transition-opacity duration-300 ${isLoaded ? "opacity-100" : "opacity-0"}`}
+          className={buildImgClass(isLoaded)}
           width={width}
           height={height}
           srcSet={srcSet}
@@ -243,7 +250,7 @@ const OptimizedImage = ({
     <img
       src={processedUrl}
       alt={alt}
-      className={`${className} transition-opacity duration-300 ${isLoaded ? "opacity-100" : "opacity-0"}`}
+      className={buildImgClass(isLoaded)}
       width={width}
       height={height}
       srcSet={srcSet}
@@ -290,7 +297,7 @@ export const ThumbnailImage = ({ src, alt = "Thumbnail", ...props }) => (
 );
 
 // Componente específico para imágenes de hero/banner
-export const HeroImage = ({ src, alt = "Hero image", ...props }) => (
+export const HeroImage = ({ src, alt = "Hero image", fadeIn = false, ...props }) => (
   <OptimizedImage
     src={src}
     alt={alt}
@@ -300,6 +307,9 @@ export const HeroImage = ({ src, alt = "Hero image", ...props }) => (
     format="auto"
     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 70vw"
     className={`w-full h-64 md:h-96 object-cover ${props.className || ""}`}
+    priority
+    placeholder={false}
+    fadeIn={fadeIn}
     {...props}
   />
 );

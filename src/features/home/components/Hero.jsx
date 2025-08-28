@@ -157,6 +157,7 @@ const Hero = () => {
                     className="w-full h-auto sm:h-80 md:h-[26rem] lg:h-[30rem] xl:h-[32rem] 2xl:h-[38rem] max-h-[70vh] md:max-h-[65vh] lg:max-h-[68vh] xl:max-h-[70vh] 2xl:max-h-[78vh] object-contain border-0 shadow-none ring-0 outline-none mx-auto"
                     placeholder={false}
                     lazy={false}
+                    fadeIn={false}
                   />
 
                   {/* Overlay gradient para mobile (transparente) */}

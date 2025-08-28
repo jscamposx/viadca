@@ -481,9 +481,10 @@ const Home = () => {
                 width={230}
                 height={115}
                 sizes="(max-width:640px) 120px, 180px"
-                priority={false}
+                priority={true}
                 placeholder={false}
                 lazy={false}
+                fadeIn={false}
                 className={`w-auto hover:scale-105 transition-transform duration-300 drop-shadow-sm ${
                   isScrolled ? "h-10 sm:h-12" : "h-11 sm:h-12"
                 }`}
@@ -1054,6 +1055,7 @@ const Home = () => {
           {/* Reordenado según solicitud: Destinos, Pasos, Testimonios, Servicios, Logos, Footer */}
           <Destinations />
           <Steps />
+           
           <Testimonials />
           <Services />
           <Logos logos={logos} />
