@@ -75,6 +75,20 @@ function useSectionReveal(options = {}) {
   return [sectionRef, isSectionVisible];
 }
 
+// Hook para detectar preferencia de movimiento reducido
+function usePrefersReducedMotion() {
+  const [reduced, setReduced] = useState(false);
+  useEffect(() => {
+    if (typeof window === 'undefined' || !window.matchMedia) return;
+    const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const handle = () => setReduced(mq.matches);
+    handle();
+    mq.addEventListener('change', handle);
+    return () => mq.removeEventListener('change', handle);
+  }, []);
+  return reduced;
+}
+
 // Clases CSS para diferentes tipos de animaciones
 const animationClasses = {
   fadeInUp: {
@@ -122,6 +136,11 @@ const animationClasses = {
     initial: 'opacity-0 translate-y-6 blur-sm',
     animate: 'opacity-100 translate-y-0 blur-none',
     transition: 'transition-all duration-800 ease-out'
+  },
+  destCard: {
+    initial: 'opacity-0 translate-y-10 scale-[0.98]',
+    animate: 'opacity-100 translate-y-0 scale-100',
+    transition: 'transition-all duration-600 ease-[cubic-bezier(.4,0,.2,1)] will-change-transform'
   }
 };
 
@@ -133,18 +152,31 @@ function AnimatedSection({
   className = '',
   forceVisible = false, // NUEVO: fuerza la animación (para cuando la sección ya es visible)
   triggerOnce = true,
+  stagger, // nuevo: tamaño del escalonado en ms
+  index = 0, // nuevo: índice del item para escalonado
   ...props 
 }) {
+  const reducedMotion = usePrefersReducedMotion();
   const [ref, isVisible] = useScrollAnimation({ delay, triggerOnce });
   const animClasses = animationClasses[animation] || animationClasses.fadeInUp;
-  const show = forceVisible || isVisible;
+  const show = reducedMotion ? true : (forceVisible || isVisible);
+  const style = {};
+  if (!reducedMotion && stagger && show) {
+    const totalDelay = index * stagger;
+    style.transitionDelay = `${Math.min(totalDelay, 900)}ms`;
+  } else if (!reducedMotion && delay) {
+    style.transitionDelay = `${delay}ms`;
+  }
+
+  const appliedClasses = reducedMotion
+    ? className
+    : `${animClasses.transition} ${show ? animClasses.animate : animClasses.initial} ${className}`;
 
   return (
     <div
       ref={ref}
-      className={`${animClasses.transition} ${
-        show ? animClasses.animate : animClasses.initial
-      } ${className}`}
+      className={appliedClasses}
+      style={style}
       {...props}
     >
       {children}

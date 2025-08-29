@@ -337,9 +337,10 @@ const Destinations = () => {
             displayItems.map((p, index) => (
               <AnimatedSection
                 key={p.codigoUrl || p.titulo || index}
-                animation="fadeInUp"
-                delay={index * 120}
-                className="h-full"
+                animation="destCard"
+                index={index}
+                stagger={90}
+                className="h-full will-change-transform"
                 forceVisible={sectionVisible}
               >
                 <DestinationCard p={p} />
@@ -348,9 +349,10 @@ const Destinations = () => {
 
           {!loading && hasMore && (
             <AnimatedSection
-              animation="fadeInUp"
-              delay={displayItems.length * 120}
-              className="h-full"
+              animation="destCard"
+              index={displayItems.length}
+              stagger={90}
+              className="h-full will-change-transform"
               forceVisible={sectionVisible}
             >
               <MoreDestinationsCard />
