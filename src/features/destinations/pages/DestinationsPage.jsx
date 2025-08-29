@@ -22,13 +22,12 @@ const PackageCard = ({ paquete }) => {
   const url = `/paquetes/${paquete?.codigoUrl}`;
 
   return (
-    <article className="group bg-white rounded-3xl shadow-lg hover:shadow-2xl overflow-hidden border border-slate-100 h-full flex flex-col transition-all duration-500 hover:-translate-y-3 hover:scale-[1.02] hover:border-blue-200">
-      {/* Imagen con overlay mejorado */}
-      <div className="relative overflow-hidden rounded-t-3xl">
+    <article className="bg-white rounded-xl shadow-lg hover:shadow-xl hover:shadow-blue-500/10 transition-all duration-500 hover:-translate-y-2 hover:scale-[1.02] overflow-hidden border border-slate-100 group h-full flex flex-col">
+      <div className="relative">
         <OptimizedImage
           src={img}
           alt={paquete?.titulo || 'Paquete'}
-          className="w-full h-52 sm:h-56 md:h-60 lg:h-64 object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
+          className="w-full h-48 sm:h-52 md:h-56 lg:h-60 object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
           width={800}
           height={480}
           responsive
@@ -36,87 +35,32 @@ const PackageCard = ({ paquete }) => {
           lazy={true}
           placeholder={true}
         />
-        
-        {/* Overlay con gradiente dinámico */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500" />
-        
-        {/* Badge de destino */}
-        <div className="absolute bottom-4 left-4 opacity-0 group-hover:opacity-100 transition-all duration-500 transform translate-y-2 group-hover:translate-y-0">
-          <span className="inline-flex items-center gap-1 bg-white/95 backdrop-blur-sm text-slate-800 px-3 py-2 rounded-full text-xs font-semibold shadow-xl">
-            <span className="w-2 h-2 rounded-full bg-green-500" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/30 to-transparent opacity-0 group-hover:opacity-100 transition duration-500" />
+        <div className="absolute bottom-3 left-3 opacity-0 group-hover:opacity-100 transition-all duration-500 transform translate-y-2 group-hover:translate-y-0">
+          <span className="bg-white/90 backdrop-blur-sm text-slate-800 px-3 py-2 rounded-lg text-xs font-medium shadow-lg">
             {paquete?.destinos_nombres || 'Destino'}
           </span>
         </div>
-        
-        {/* Botón favorito */}
-        <button className="absolute top-4 right-4 w-10 h-10 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center shadow-lg opacity-0 group-hover:opacity-100 transition-all duration-300 hover:bg-white hover:scale-110">
-          <svg className="w-5 h-5 text-slate-600 hover:text-red-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-          </svg>
-        </button>
-        
-        {/* Badge de oferta */}
-        {paquete?.precio_descuento && (
-          <div className="absolute top-4 left-4">
-            <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-gradient-to-r from-red-500 to-pink-500 text-white text-xs font-bold shadow-lg">
-              🔥 OFERTA
-            </span>
-          </div>
-        )}
       </div>
-      
-      {/* Contenido de la tarjeta */}
-      <div className="p-5 lg:p-6 flex-1 flex flex-col">
-        <div className="flex justify-between items-start gap-4 mb-4">
-          <h3 className="font-bold text-lg lg:text-xl text-slate-800 group-hover:text-blue-600 transition-colors leading-tight line-clamp-2 flex-1">
+      <div className="p-4 lg:p-5 flex-1 flex flex-col">
+        <div className="flex justify-between items-start gap-3 mb-3">
+          <h3 className="font-bold text-base lg:text-lg text-slate-800 group-hover:text-blue-600 transition-colors leading-tight line-clamp-2 flex-1 min-h-[2.5rem]">
             {paquete?.titulo || 'Paquete'}
           </h3>
           <div className="text-right shrink-0">
-            <span className="text-xs text-slate-500 block mb-1">Desde</span>
+            <span className="text-xs text-slate-500 block">Desde</span>
             <div className="flex items-baseline gap-1 justify-end">
-              <span className="uppercase text-xs font-semibold tracking-wide text-slate-400">{moneda}</span>
-              <div className="font-bold text-xl text-blue-700 leading-tight">{precio || '—'}</div>
+              <span className="uppercase text-xs font-semibold tracking-wide text-slate-500">{moneda}</span>
+              <div className="font-bold text-lg text-blue-700 leading-tight">{precio || '—'}</div>
             </div>
           </div>
         </div>
-        
-        {/* Información adicional */}
-        <div className="flex items-center gap-4 mb-4 text-xs text-slate-500">
-          <span className="flex items-center gap-1">
-            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-            </svg>
-            {paquete?.duracion_dias ? `${paquete.duracion_dias} días` : 'Consultar'}
-          </span>
-          <span className="flex items-center gap-1">
-            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-            </svg>
-            {paquete?.destinos_nombres || 'Destino'}
-          </span>
-        </div>
-        
-        {/* Footer de la tarjeta */}
-        <div className="mt-auto flex items-center justify-between pt-4 border-t border-slate-100">
-          <div className="flex items-center gap-2">
-            <div className="flex -space-x-1">
-              {[1,2,3].map(i => (
-                <div key={i} className="w-6 h-6 rounded-full bg-gradient-to-r from-blue-400 to-indigo-400 border-2 border-white flex items-center justify-center">
-                  <span className="text-[10px] text-white font-bold">★</span>
-                </div>
-              ))}
-            </div>
-            <span className="text-xs text-slate-500">+50 viajeros</span>
+        <div className="mt-auto flex items-center justify-between">
+          <div className="text-xs text-slate-500 flex items-center">
+            <span className="truncate max-w-[120px]">{paquete?.destinos_nombres || 'Destino'}</span>
           </div>
-          
-          <Link 
-            to={url} 
-            className="group inline-flex items-center gap-2 text-blue-600 hover:text-blue-700 font-semibold text-sm transition-all duration-300 hover:gap-3"
-          >
-            <span>Ver detalles</span>
-            <svg className="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-            </svg>
+          <Link to={url} className="text-blue-600 hover:text-blue-700 font-medium text-sm hover:underline flex items-center gap-1 transition-colors">
+            Ver más
           </Link>
         </div>
       </div>
@@ -248,60 +192,22 @@ const DestinationsPage = () => {
         </div>
         <AlphaIndex letters={letters} onJump={handleJump} active={activeLetter} />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 flex-1 w-full">
-          {/* Estadísticas rápidas */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-            <div className="bg-white/80 backdrop-blur rounded-2xl p-4 text-center border border-white/60 shadow-lg">
-              <div className="text-2xl font-bold text-blue-600">{data.length}</div>
-              <div className="text-xs text-slate-600 font-medium">Disponibles</div>
-            </div>
-            <div className="bg-white/80 backdrop-blur rounded-2xl p-4 text-center border border-white/60 shadow-lg">
-              <div className="text-2xl font-bold text-green-600">15+</div>
-              <div className="text-xs text-slate-600 font-medium">Países</div>
-            </div>
-            <div className="bg-white/80 backdrop-blur rounded-2xl p-4 text-center border border-white/60 shadow-lg">
-              <div className="text-2xl font-bold text-orange-600">50+</div>
-              <div className="text-xs text-slate-600 font-medium">Ciudades</div>
-            </div>
-            <div className="bg-white/80 backdrop-blur rounded-2xl p-4 text-center border border-white/60 shadow-lg">
-              <div className="text-2xl font-bold text-purple-600">24/7</div>
-              <div className="text-xs text-slate-600 font-medium">Soporte</div>
-            </div>
-          </div>
-
           {error && (
-            <div className="p-6 mb-8 bg-red-50/90 backdrop-blur border border-red-200 text-red-700 rounded-2xl text-sm flex items-center gap-3 shadow-lg">
-              <svg className="w-5 h-5 text-red-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
-              </svg>
-              <div>
-                <div className="font-semibold">Ups, algo salió mal</div>
-                <div>{error}</div>
-              </div>
+            <div className="p-4 mb-6 bg-red-50 border border-red-200 text-red-600 rounded-xl text-sm">
+              {error}
             </div>
           )}
 
           {loading && (
-            <div className="space-y-8">
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 lg:gap-8">
-                {Array.from({ length: 8 }).map((_,i) => (
-                  <div key={i} className="animate-pulse">
-                    <div className="h-64 bg-slate-200 rounded-t-3xl" />
-                    <div className="p-6 bg-white rounded-b-3xl border border-slate-100">
-                      <div className="h-4 bg-slate-200 rounded mb-3" />
-                      <div className="h-4 bg-slate-200 rounded w-2/3 mb-4" />
-                      <div className="flex justify-between">
-                        <div className="h-3 bg-slate-200 rounded w-1/3" />
-                        <div className="h-3 bg-slate-200 rounded w-1/4" />
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 lg:gap-7 animate-pulse">
+              {Array.from({ length: 8 }).map((_,i) => (
+                <div key={i} className="h-72 bg-white rounded-xl border border-slate-100" />
+              ))}
             </div>
           )}
 
           {!loading && grouped.map(([letter, items]) => (
-            <PackagesSection key={letter} id={`sec-${letter}`} title={`Destinos "${letter}"`} description={`Descubre ${items.length} increíbles paquetes que comienzan con la letra ${letter}`}> 
+            <PackagesSection key={letter} id={`sec-${letter}`} title={`Destinos "${letter}"`} description={`Paquetes que comienzan con la letra ${letter}`}> 
               {items.map((p,i) => (
                 <AnimatedSection key={p.codigoUrl || p.id || i} animation="destCard" index={i} stagger={70} className="h-full">
                   <PackageCard paquete={p} />
@@ -311,57 +217,24 @@ const DestinationsPage = () => {
           ))}
 
           {!loading && !grouped.length && !error && (
-            <div className="text-center py-24">
-              <div className="max-w-md mx-auto">
-                <div className="w-24 h-24 mx-auto mb-6 rounded-full bg-gradient-to-r from-blue-100 to-indigo-100 flex items-center justify-center">
-                  <svg className="w-12 h-12 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                  </svg>
-                </div>
-                <h3 className="text-xl font-bold text-slate-800 mb-2">No encontramos resultados</h3>
-                <p className="text-slate-600 mb-6">Intenta ajustar tus filtros o buscar algo diferente</p>
-                <button 
-                  onClick={() => { setSearch(''); setFilters({}); setActiveCategory('todos'); }}
-                  className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
-                >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                  </svg>
-                  Limpiar filtros
-                </button>
-              </div>
-            </div>
+            <div className="text-center py-24 text-slate-500">No se encontraron resultados</div>
           )}
 
-          {/* Paginación mejorada */}
-          <div className="flex items-center justify-center gap-6 mt-16 mb-8">
+          <div className="flex items-center justify-center gap-4 mt-12">
             <button
               disabled={page === 1 || loading}
               onClick={() => setPage(p => Math.max(1, p-1))}
-              className="group inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-white border border-slate-200 text-slate-600 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-slate-50 hover:border-slate-300 transition-all duration-300 shadow-sm hover:shadow-md font-medium"
+              className="px-5 py-2 rounded-lg bg-white border border-slate-200 text-slate-600 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-slate-50 transition text-sm font-medium"
             >
-              <svg className="w-4 h-4 transition-transform group-hover:-translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-              </svg>
               Anterior
             </button>
-            
-            <div className="flex items-center gap-2">
-              <span className="px-4 py-2 rounded-lg bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold">
-                {page}
-              </span>
-              <span className="text-slate-500 text-sm">de muchas páginas</span>
-            </div>
-            
+            <span className="text-sm text-slate-500">Página {page}</span>
             <button
               disabled={loading || data.length < limit}
               onClick={() => setPage(p => p+1)}
-              className="group inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-white border border-slate-200 text-slate-600 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-slate-50 hover:border-slate-300 transition-all duration-300 shadow-sm hover:shadow-md font-medium"
+              className="px-5 py-2 rounded-lg bg-white border border-slate-200 text-slate-600 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-slate-50 transition text-sm font-medium"
             >
               Siguiente
-              <svg className="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-              </svg>
             </button>
           </div>
         </div>
