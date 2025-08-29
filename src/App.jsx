@@ -13,6 +13,7 @@ import PapeleraPage from "./features/admin/pages/PapeleraPage";
 import AdminUsersPage from "./features/admin/pages/AdminUsersPage";
 import AdminProfilePage from "./features/admin/pages/AdminProfilePage";
 import AdminConfigPage from "./features/admin/pages/AdminConfigPage";
+import DestinationsPage from "./features/destinations/pages/DestinationsPage";
 
 import { AuthProvider } from "./contexts/AuthContext";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
@@ -40,6 +41,7 @@ function AppRoutes() {
       <AnimatePresence mode="wait" initial={false}>
         <Routes location={location} key={location.pathname}>
           <Route path="/" element={<Home />} />
+          <Route path="/paquetes" element={<DestinationsPage />} />
           <Route path="/paquetes/:url" element={<PaqueteDetalle />} />
 
           <Route path="/privacidad" element={<PrivacyPage />} />
