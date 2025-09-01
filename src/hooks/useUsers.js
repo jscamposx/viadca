@@ -349,5 +349,6 @@ export const useUsers = () => {
     setItemsPerPage,
     search,
     setSearch: setSearchQuery,
+    isInitialized,
   };
 };
