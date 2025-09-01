@@ -1,8 +1,9 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useState, useMemo, useRef } from 'react';
 import DestinationsHero from '../components/DestinationsHero';
 import PackagesSearchBar from '../components/PackagesSearchBar';
 import PackagesSection from '../components/PackagesSection';
-import { getPaquetes } from '../../../api/packagesService';
+// import { getPaquetesPublic } from '../../../api/packagesService';
+import apiClient from '../../../api/axiosConfig';
 import OptimizedImage from '../../../components/ui/OptimizedImage';
 import { formatPrecio, sanitizeMoneda } from '../../../utils/priceUtils';
 import PageTransition from '../../../components/ui/PageTransition';
@@ -10,7 +11,7 @@ import { AnimatedSection } from '../../../hooks/scrollAnimations';
 import { Link } from 'react-router-dom';
 import FiltersPanel from '../components/FiltersPanel';
 import CategoryTabs from '../components/CategoryTabs';
-import AlphaIndex from '../components/AlphaIndex';
+// import AlphaIndex from '../components/AlphaIndex'; // Eliminado: ya no agrupamos por letra
 import TransparentNav from '../../../components/layout/TransparentNav';
 import Footer from '../../home/components/Footer';
 import { useContactInfo } from '../../../hooks/useContactInfo';
@@ -20,13 +21,35 @@ const PackageCard = ({ paquete }) => {
   const moneda = sanitizeMoneda(paquete?.moneda);
   const precio = formatPrecio(paquete?.precio_total, moneda);
   const url = `/paquetes/${paquete?.codigoUrl}`;
-
+  // Nuevo formato Estado, Ciudad
+  const firstDest = Array.isArray(paquete?.destinos) && paquete.destinos.length > 0 ? paquete.destinos[0] : null;
+  const buildDestinoPrincipal = () => {
+    let estado = "";
+    let ciudad = "";
+    let pais = "";
+    if (firstDest) {
+      estado = (firstDest.estado || "").trim();
+      ciudad = (firstDest.ciudad || firstDest.destino || "").trim();
+      pais = (firstDest.pais || "").trim();
+    } else {
+      // Fallback a campos root (compatibilidad versiones anteriores)
+      estado = (paquete?.destino_estado || "").trim();
+      ciudad = (paquete?.destino_ciudad || paquete?.destino || "").trim();
+      pais = (paquete?.destino_pais || "").trim();
+    }
+    if (estado && ciudad && estado.toLowerCase() !== ciudad.toLowerCase()) return `${estado}, ${ciudad}`;
+    if (estado) return estado;
+    if (ciudad) return ciudad;
+    if (pais) return pais;
+    return paquete?.destino || paquete?.destinos_nombres || 'Destino';
+  };
+  const destinoPrincipal = buildDestinoPrincipal() || paquete?.destino || paquete?.destinos_nombres || 'Destino';
   return (
-    <article className="bg-white rounded-xl shadow-lg hover:shadow-xl hover:shadow-blue-500/10 transition-all duration-500 hover:-translate-y-2 hover:scale-[1.02] overflow-hidden border border-slate-100 group h-full flex flex-col">
+    <article className="bg-white rounded-xl shadow-lg hover:shadow-xl hover:shadow-blue-500/10 transition-all duration-500 hover:-translate-y-2 hover:scale-[1.02] overflow-hidden border border-slate-100 group h-full flex flex-col relative">
       <div className="relative">
         <OptimizedImage
           src={img}
-          alt={paquete?.titulo || 'Paquete'}
+          alt={paquete?.titulo || destinoPrincipal || 'Paquete'}
           className="w-full h-48 sm:h-52 md:h-56 lg:h-60 object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
           width={800}
           height={480}
@@ -35,10 +58,13 @@ const PackageCard = ({ paquete }) => {
           lazy={true}
           placeholder={true}
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/30 to-transparent opacity-0 group-hover:opacity-100 transition duration-500" />
-        <div className="absolute bottom-3 left-3 opacity-0 group-hover:opacity-100 transition-all duration-500 transform translate-y-2 group-hover:translate-y-0">
-          <span className="bg-white/90 backdrop-blur-sm text-slate-800 px-3 py-2 rounded-lg text-xs font-medium shadow-lg">
-            {paquete?.destinos_nombres || 'Destino'}
+        {/* Overlay mejorado */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/40 to-transparent opacity-60 group-hover:opacity-80 transition duration-500" />
+        {/* Destino siempre visible */}
+        <div className="absolute bottom-3 left-3 right-3 transition-all duration-500">
+          <span className="bg-white/90 backdrop-blur-sm text-slate-800 px-3 py-2 rounded-lg text-xs font-medium shadow-lg inline-flex items-center gap-2 border border-white/40 w-auto max-w-full">
+            <svg className="w-3.5 h-3.5 text-blue-600" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" aria-hidden="true"><path strokeLinecap="round" strokeLinejoin="round" d="M12 21c-4.5-6-6-9-6-11a6 6 0 1112 0c0 2-1.5 5-6 11z" /></svg>
+            <span className="truncate max-w-[140px] md:max-w-[180px] lg:max-w-[220px]" title={destinoPrincipal}>{destinoPrincipal}</span>
           </span>
         </div>
       </div>
@@ -57,11 +83,11 @@ const PackageCard = ({ paquete }) => {
         </div>
         <div className="mt-auto flex items-center justify-between">
           <div className="text-xs text-slate-500 flex items-center">
-            <span className="truncate max-w-[120px]">{paquete?.destinos_nombres || 'Destino'}</span>
+            <span className="truncate max-w-[120px]" title={destinoPrincipal}>{destinoPrincipal}</span>
           </div>
-          <Link to={url} className="text-blue-600 hover:text-blue-700 font-medium text-sm hover:underline flex items-center gap-1 transition-colors">
-            Ver más
-          </Link>
+            <Link to={url} className="text-blue-600 hover:text-blue-700 font-medium text-sm hover:underline flex items-center gap-1 transition-colors">
+              Ver más
+            </Link>
         </div>
       </div>
     </article>
@@ -72,14 +98,11 @@ const DestinationsPage = () => {
   const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [page, setPage] = useState(1);
   const [data, setData] = useState([]);
-  const [total, setTotal] = useState(0);
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [filters, setFilters] = useState({});
   const [activeCategory, setActiveCategory] = useState('todos');
-  const [activeLetter, setActiveLetter] = useState(null);
-  const limit = 12;
+  const hasFetched = useRef(false); // evita doble carga StrictMode
 
   const categories = useMemo(() => ([
     { label: 'Todos', value: 'todos' },
@@ -93,10 +116,9 @@ const DestinationsPage = () => {
     try {
       setLoading(true);
       setError(null);
-      const { data: resp } = await getPaquetes(page, limit, search || undefined);
+      const { data: resp } = await apiClient.get('/paquetes/listado');
       const items = Array.isArray(resp?.data) ? resp.data : Array.isArray(resp) ? resp : [];
       setData(items);
-      if (resp?.meta?.total) setTotal(resp.meta.total);
     } catch (e) {
       setError(e?.response?.data?.message || 'Error cargando paquetes');
     } finally {
@@ -105,23 +127,23 @@ const DestinationsPage = () => {
   };
 
   useEffect(() => {
+    if (hasFetched.current) return;
+    hasFetched.current = true;
     loadData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [page]);
+  }, []);
 
-  useEffect(() => {
-    const t = setTimeout(() => {
-      setPage(1);
-      loadData();
-    }, 400);
-    return () => clearTimeout(t);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [search]);
-
-  // Filtro/transformación de datos según categoría
+  // Filtrado base (ahora todo en cliente, incluye búsqueda local)
   const filteredData = useMemo(() => {
     let base = [...data];
-    // aplicar búsqueda ya aplicada en API si backend la soporta; aquí podría refinar
+    const q = search.trim().toLowerCase();
+    if (q) {
+      base = base.filter(p => {
+        const titulo = (p?.titulo || '').toLowerCase();
+        const legacy = (p?.destino || p?.destinos_nombres || '').toLowerCase();
+        const destinosTxt = Array.isArray(p?.destinos) ? p.destinos.map(d => `${d.estado||''} ${d.ciudad||d.destino||''} ${d.pais||''}`.toLowerCase()).join(' ') : '';
+        return titulo.includes(q) || legacy.includes(q) || destinosTxt.includes(q);
+      });
+    }
     if (filters.minPrecio) base = base.filter(p => Number(p.precio_total) >= Number(filters.minPrecio));
     if (filters.maxPrecio) base = base.filter(p => Number(p.precio_total) <= Number(filters.maxPrecio));
     if (filters.minDuracion) base = base.filter(p => Number(p.duracion_dias||0) >= Number(filters.minDuracion));
@@ -133,64 +155,72 @@ const DestinationsPage = () => {
       });
     }
     if (filters.continentes?.length) {
-      // Suponiendo p.continente; si no existe, habría que mapear por destino
       base = base.filter(p => filters.continentes.includes(p?.continente));
     }
     switch (activeCategory) {
-      case 'larga':
-        base = base.filter(p => (p.duracion_dias||0) >= 10);
-        break;
-      case 'cortos':
-        base = base.filter(p => (p.duracion_dias||0) > 0 && (p.duracion_dias||0) <= 5);
-        break;
-      case 'populares':
-        base = base.slice().sort((a,b)=> (b?.reservas||0) - (a?.reservas||0));
-        break;
-      case 'ofertas':
-        base = base.filter(p => p?.precio_descuento || p?.en_oferta);
-        break;
-      default:
-        break;
+      case 'larga': base = base.filter(p => (p.duracion_dias||0) >= 10); break;
+      case 'cortos': base = base.filter(p => (p.duracion_dias||0) > 0 && (p.duracion_dias||0) <= 5); break;
+      case 'populares': base = base.slice().sort((a,b)=> (b?.reservas||0) - (a?.reservas||0)); break;
+      case 'ofertas': base = base.filter(p => p?.precio_descuento || p?.en_oferta); break;
+      default: break;
     }
     return base;
-  }, [data, filters, activeCategory]);
+  }, [data, filters, activeCategory, search]);
 
-  const grouped = useMemo(() => {
-    const map = new Map();
-    filteredData.forEach(p => {
-      const key = (p?.destinos_nombres || 'Otros').charAt(0).toUpperCase();
-      if (!map.has(key)) map.set(key, []);
-      map.get(key).push(p);
-    });
-    return Array.from(map.entries()).sort((a,b) => a[0].localeCompare(b[0]));
-  }, [filteredData]);
-
-  const letters = useMemo(()=> grouped.map(([l])=>l), [grouped]);
-
-  const handleJump = (l) => {
-    setActiveLetter(l);
-    const el = document.getElementById(`sec-${l}`);
-    if (el) {
-      window.scrollTo({ top: el.offsetTop - 100, behavior: 'smooth' });
-      setTimeout(()=>setActiveLetter(null), 1500);
+  // Helper para extraer país robustamente
+  const getCountry = (p) => {
+    const tryStr = (val) => (val && typeof val === 'string' ? val.trim() : '');
+    const d0 = p?.destinos?.[0] || {};
+    const explicit = tryStr(d0.pais || p?.destino_pais);
+    if (explicit) return explicit;
+    // Buscar en otros destinos
+    const other = (p?.destinos || []).map(d=> tryStr(d.pais)).find(Boolean);
+    if (other) return other;
+    // Intentar parsear destinos_nombres -> tomar última parte si contiene coma
+    const nombres = tryStr(p?.destinos_nombres);
+    if (nombres.includes(',')) {
+      const parts = nombres.split(',').map(s=>s.trim()).filter(Boolean);
+      if (parts.length) return parts[parts.length-1];
     }
+    return 'Otros';
   };
+
+  // Construir secciones: Favoritos + País
+  const sections = useMemo(() => {
+    const favoritos = filteredData.filter(p => !!p.favorito);
+    const resto = filteredData.filter(p => !p.favorito);
+    const countryMap = new Map();
+    resto.forEach(p => {
+      const country = getCountry(p) || 'Otros';
+      if (!countryMap.has(country)) countryMap.set(country, []);
+      countryMap.get(country).push(p);
+    });
+
+    const countrySections = Array.from(countryMap.entries())
+      .sort((a,b)=> a[0].localeCompare(b[0]))
+      .map(([country, items]) => ({ key: `country-${country}`, title: country, description: `Paquetes para ${country}`, items }));
+
+    const finalSections = [];
+    if (favoritos.length) {
+      finalSections.push({ key: 'favoritos', title: 'Nuestros favoritos', description: 'Paquetes destacados por el equipo', items: favoritos });
+    }
+    return [...finalSections, ...countrySections];
+  }, [filteredData]);
 
   const { contactInfo, loading: contactLoading } = useContactInfo();
   const currentYear = new Date().getFullYear();
 
   return (
     <PageTransition>
-      <div id="top" className="flex flex-col min-h-screen bg-gradient-to-b from-slate-50 to-white">
+      <div className="flex flex-col min-h-screen bg-gradient-to-b from-slate-50 to-white">{/* removido id=top */}
         <TransparentNav />
         <DestinationsHero />
-        {/* anchor for hero cta scroll */}
-        <div id="top-search" className="-mt-10" aria-hidden="true"></div>
+        {/* removido anchor top-search */}
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 -mt-14 relative z-10 space-y-6">
           <PackagesSearchBar value={search} onChange={setSearch} onOpenFilters={() => setFiltersOpen(true)} />
           <CategoryTabs categories={categories} current={activeCategory} onChange={setActiveCategory} />
         </div>
-        <AlphaIndex letters={letters} onJump={handleJump} active={activeLetter} />
+        {/* Eliminado AlphaIndex */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 flex-1 w-full">
           {error && (
             <div className="p-4 mb-6 bg-red-50 border border-red-200 text-red-600 rounded-xl text-sm">
@@ -206,9 +236,9 @@ const DestinationsPage = () => {
             </div>
           )}
 
-          {!loading && grouped.map(([letter, items]) => (
-            <PackagesSection key={letter} id={`sec-${letter}`} title={`Destinos "${letter}"`} description={`Paquetes que comienzan con la letra ${letter}`}> 
-              {items.map((p,i) => (
+          {!loading && sections.map(section => (
+            <PackagesSection key={section.key} id={section.key} title={section.title} description={section.description} carousel={section.items.length > 6}>
+              {section.items.map((p,i) => (
                 <AnimatedSection key={p.codigoUrl || p.id || i} animation="destCard" index={i} stagger={70} className="h-full">
                   <PackageCard paquete={p} />
                 </AnimatedSection>
@@ -216,27 +246,10 @@ const DestinationsPage = () => {
             </PackagesSection>
           ))}
 
-          {!loading && !grouped.length && !error && (
+          {!loading && !sections.length && !error && (
             <div className="text-center py-24 text-slate-500">No se encontraron resultados</div>
           )}
 
-          <div className="flex items-center justify-center gap-4 mt-12">
-            <button
-              disabled={page === 1 || loading}
-              onClick={() => setPage(p => Math.max(1, p-1))}
-              className="px-5 py-2 rounded-lg bg-white border border-slate-200 text-slate-600 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-slate-50 transition text-sm font-medium"
-            >
-              Anterior
-            </button>
-            <span className="text-sm text-slate-500">Página {page}</span>
-            <button
-              disabled={loading || data.length < limit}
-              onClick={() => setPage(p => p+1)}
-              className="px-5 py-2 rounded-lg bg-white border border-slate-200 text-slate-600 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-slate-50 transition text-sm font-medium"
-            >
-              Siguiente
-            </button>
-          </div>
         </div>
 
         <FiltersPanel

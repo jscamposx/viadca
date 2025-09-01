@@ -7,6 +7,13 @@ export const getPaquetes = (page = 1, limit = 6, search) => {
   });
 };
 
+// Nuevo endpoint público para listado de paquetes (fuera de /admin)
+export const getPaquetesPublic = (page = 1, limit = 12, search) => {
+  return apiClient.get("/paquetes/listado", {
+    params: buildPaginatedParams({ page, limit, search }),
+  });
+};
+
 export const getAllPaquetes = () => {
   return apiClient.get("/admin/paquetes");
 };
@@ -40,4 +47,9 @@ export const exportToExcel = (id) => {
 // Stats overview: { total, paquetes, activos, inactivos }
 export const getPaquetesStatsOverview = () => {
   return apiClient.get("/admin/paquetes/stats/overview");
+};
+
+// Nuevo: toggle de favorito (solo admins)
+export const toggleFavorito = (id, favorito) => {
+  return apiClient.patch(`/admin/paquetes/${id}`, { favorito: !!favorito });
 };

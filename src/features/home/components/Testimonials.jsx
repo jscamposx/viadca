@@ -110,7 +110,7 @@ const Testimonials = () => {
 		if (intervalRef.current) return;
 		intervalRef.current = setInterval(() => {
 			if (!document.hidden) next();
-		}, 5000);
+		}, 5500);
 	}, [next]);
 
 	const stop = React.useCallback(() => {
@@ -147,18 +147,18 @@ const Testimonials = () => {
 	return (
 		<section
 			id="testimonios"
-			className="py-10 sm:py-14 lg:py-20 px-4 sm:px-6 lg:px-8 scroll-mt-32"
+			className="py-10 sm:py-14 lg:py-18 px-4 sm:px-6 lg:px-8 scroll-mt-32"
 			aria-labelledby="testimonios-heading"
 		>
-			<div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-6 sm:gap-8 md:gap-12 xl:gap-16 items-center">
+			<div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-8 md:gap-12 xl:gap-16 items-center">
 				{/* Left content */}
-				<AnimatedSection animation="fadeInLeft" className="space-y-4 sm:space-y-6 md:space-y-8">
-					<p className="text-text-gray font-semibold text-lg uppercase tracking-wide">
+				<AnimatedSection animation="fadeInLeft" className="space-y-4 sm:space-y-6 md:space-y-8 text-center lg:text-left">
+					<p className="text-text-gray font-semibold text-sm sm:text-base uppercase tracking-wide">
 						Testimonios
 					</p>
 					<h2
 						id="testimonios-heading"
-						className="font-volkhov font-bold text-4xl sm:text-5xl text-secondary leading-tight"
+						className="font-volkhov font-bold text-3xl sm:text-5xl text-secondary leading-tight"
 					>
 						Lo que dicen nuestros
 						<br />
@@ -168,8 +168,9 @@ const Testimonials = () => {
 
 				{/* Right: carrusel dinámico */}
 				<AnimatedSection animation="fadeInRight" delay={300} className="relative">
+					<div className="sm:hidden absolute inset-0 -z-10 bg-white/70 backdrop-blur-sm rounded-3xl border border-white/60" />
 					<div
-						className="relative h-[200px] sm:h-[260px] md:h-[300px] lg:h-[420px] xl:h-[460px] transform-gpu will-change-transform overflow-visible"
+						className="relative h-[220px] sm:h-[300px] lg:h-[420px] xl:h-[460px] transform-gpu will-change-transform overflow-visible"
 						role="region"
 						aria-roledescription="carrusel"
 						aria-label="Carrusel de testimonios"
@@ -196,14 +197,12 @@ const Testimonials = () => {
 					</div>
 
 					{/* Controles mejorados (pill centrado) */}
-					<div
-						className="relative flex justify-center mt-6 mb-2 mx-auto w-full max-w-[360px] lg:absolute lg:left-1/2 lg:-translate-x-1/2 lg:bottom-4 lg:mt-0 lg:mb-0"
-					>
-						<div className="inline-flex items-center gap-2 sm:gap-3 rounded-full bg-white/80 backdrop-blur-md ring-1 ring-slate-900/10 shadow-lg px-2 py-1 sm:px-3 sm:py-1.5">
+					<div className="relative flex justify-center mt-6 mx-auto w-full max-w-[360px] lg:absolute lg:left-1/2 lg:-translate-x-1/2 lg:bottom-4">
+						<div className="inline-flex items-center gap-1.5 sm:gap-3 rounded-full bg-white/80 backdrop-blur-md ring-1 ring-slate-900/10 shadow-lg px-2 py-1 sm:px-3 sm:py-1.5">
 							<button
 								type="button"
 								onClick={prev}
-								className="group inline-flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-transparent ring-1 ring-transparent hover:bg-white/90 hover:ring-slate-900/10 text-slate-700 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-secondary"
+								className="group inline-flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-transparent ring-1 ring-transparent hover:bg-white/90 hover:ring-slate-900/10 text-slate-700 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-secondary"
 								aria-label="Testimonio anterior"
 							>
 								<svg
@@ -221,12 +220,12 @@ const Testimonials = () => {
 								</svg>
 							</button>
 
-							<div className="flex items-center gap-2">
+							<div className="flex items-center gap-2 sm:gap-3">
 								{testimonialsData.map((t, i) => (
 									<button
 										key={i}
 										onClick={() => goTo(i)}
-										className={`relative grid place-items-center w-10 h-10 sm:w-12 sm:h-12 rounded-full transition-all duration-300 ease-out bg-transparent hover:bg-white/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-1 focus-visible:ring-secondary/70`}
+										className="relative grid place-items-center w-8 h-8 sm:w-10 sm:h-10 rounded-full transition-all duration-300 ease-out bg-transparent hover:bg-white/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-1 focus-visible:ring-secondary/70"
 										aria-label={`Ir al testimonio ${i + 1}`}
 										aria-current={i === index ? "true" : undefined}
 									>
@@ -245,7 +244,7 @@ const Testimonials = () => {
 							<button
 								type="button"
 								onClick={next}
-								className="group inline-flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-transparent ring-1 ring-transparent hover:bg-white/90 hover:ring-slate-900/10 text-slate-700 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-secondary"
+								className="group inline-flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-transparent ring-1 ring-transparent hover:bg-white/90 hover:ring-slate-900/10 text-slate-700 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-secondary"
 								aria-label="Siguiente testimonio"
 							>
 								<svg

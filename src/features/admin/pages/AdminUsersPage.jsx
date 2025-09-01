@@ -85,9 +85,10 @@ const AdminUsersPage = () => {
   useEffect(() => {
     if (didInitRef.current) return;
     didInitRef.current = true;
-    // Carga inicial unificada y concurrente sin forzar (respeta caché del hook)
-    Promise.all([fetchUsers(), fetchStats()]).catch((e) => {
-      console.error("Error en carga inicial de usuarios/stats:", e);
+    // Evitar doble carga de usuarios: el hook ya hace fetch inicial.
+    // Solo obtenemos stats aquí.
+    fetchStats().catch((e) => {
+      console.error("Error en carga inicial de estadísticas de usuarios:", e);
     });
   }, []);
 
@@ -365,8 +366,11 @@ const AdminUsersPage = () => {
   };
 
   useEffect(() => {
-    setSearch(deferredSearch || "");
-  }, [deferredSearch, setSearch]);
+    // Evitar setSearch redundante que causaría un segundo fetch inmediato.
+    if ((deferredSearch || "") !== (search || "")) {
+      setSearch(deferredSearch || "");
+    }
+  }, [deferredSearch, setSearch, search]);
 
   return (
     <div className="min-h-screen bg-gray-50 p-2 sm:p-4 md:p-5 lg:p-6 xl:p-8">

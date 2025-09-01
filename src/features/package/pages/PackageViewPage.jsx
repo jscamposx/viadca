@@ -244,12 +244,12 @@ function PackageViewPage() {
       title: `${paquete.titulo} | Paquete de Viaje | Viadca Viajes`,
       description:
         paquete.descripcion ||
-        `Descubre el paquete ${paquete.titulo} con ${paquete.duracion_dias} días de aventura${paquete.destinos?.length ? ` por ${paquete.destinos.map(d=>d.destino).join(', ')}` : ''}. Reserva ahora con Viadca Viajes.`,
+        `Descubre el paquete ${paquete.titulo} con ${paquete.duracion_dias} días de aventura${paquete.destinos?.length ? ` por ${paquete.destinos.map(d=> d.ciudad || d.destino).join(', ')}` : ''}. Reserva ahora con Viadca Viajes.`,
       keywords: [
         paquete.titulo,
         "paquete de viaje",
         "viajes organizados",
-        ...((paquete.destinos || []).map((d) => d.destino) || []),
+        ...((paquete.destinos || []).map((d) => d.ciudad || d.destino) || []),
       ],
       canonical: `https://www.viadca.app/paquetes/${url}`,
       og: {
@@ -393,7 +393,7 @@ function PackageViewPage() {
               >
                 {paquete.destinos && paquete.destinos.length > 0
                   ? paquete.destinos.length === 1
-                    ? paquete.destinos[0].destino
+                    ? paquete.destinos[0].ciudad || paquete.destinos[0].destino
                     : `${paquete.destinos.length} destinos`
                   : "Destino"}
               </Badge>
@@ -556,7 +556,7 @@ function PackageViewPage() {
                           Pronóstico del Clima
                         </h2>
                         <p className="text-gray-600">
-                          El tiempo en {paquete.destinos[0].destino}
+                          El tiempo en {paquete.destinos[0].ciudad || paquete.destinos[0].destino}
                         </p>
                       </div>
                     </div>
@@ -565,7 +565,7 @@ function PackageViewPage() {
                       <WeatherForecast
                         lat={paquete.destinos[0].destino_lat}
                         lon={paquete.destinos[0].destino_lng}
-                        cityName={paquete.destinos[0].destino}
+                        cityName={paquete.destinos[0].ciudad || paquete.destinos[0].destino}
                       />
                     </div>
                   </section>
@@ -586,8 +586,8 @@ function PackageViewPage() {
                     {paquete?.destinos && paquete.destinos.length > 1 && (
                       <div className="mt-3 p-3 bg-purple-50 rounded-xl border border-purple-100">
                         <span className="text-sm font-medium text-purple-700">
-                          Ruta:{" "}
-                          {paquete.destinos.map((d) => d.destino).join(" → ")}
+                          Ruta: {" "}
+                          {paquete.destinos.map((d) => d.ciudad || d.destino).join(" → ")}
                         </span>
                       </div>
                     )}

@@ -141,64 +141,89 @@ const normalizePackageData = (data) => {
 };
 
 const hasDestinationChanges = (original, current) => {
+  // Normalizar destino principal original (nuevo o legacy)
+  const origFirst = original?.destinos?.[0] || {};
   const originalDestino = {
-    destino: original?.destinos?.[0]?.destino || original?.destino || "",
-    destino_lat:
-      parseFloat(
-        original?.destinos?.[0]?.destino_lat || original?.destino_lat,
-      ) || null,
-    destino_lng:
-      parseFloat(
-        original?.destinos?.[0]?.destino_lng || original?.destino_lng,
-      ) || null,
+    ciudad: origFirst.ciudad || origFirst.destino || original?.destino || "",
+    estado: origFirst.estado || null,
+    pais: origFirst.pais || null,
+    destino_lat: parseFloat(origFirst.destino_lat || original?.destino_lat) || null,
+    destino_lng: parseFloat(origFirst.destino_lng || original?.destino_lng) || null,
   };
-
+  // Normalizar destino principal actual (tomar campos desglosados si existen)
   const currentDestino = {
-    destino: current.destino || "",
+    ciudad: current.destino_ciudad || current.destino || "",
+    estado: current.destino_estado || null,
+    pais: current.destino_pais || null,
     destino_lat: parseFloat(current.destino_lat) || null,
     destino_lng: parseFloat(current.destino_lng) || null,
   };
-
   if (!isEqual(originalDestino, currentDestino)) return true;
-
-  const originalAdditional = (original?.destinos || []).slice(1);
-  const currentAdditional = current.additionalDestinations || [];
-
-  if (originalAdditional.length !== currentAdditional.length) return true;
-
-  return !originalAdditional.every((orig, index) => {
-    const curr = currentAdditional[index];
+  // Destinos adicionales
+  const originalAdditional = (original?.destinos || []).slice(1).map((d) => ({
+    ciudad: d.ciudad || d.destino || "",
+    estado: d.estado || null,
+    pais: d.pais || null,
+    lat: d.destino_lat || null,
+    lng: d.destino_lng || null,
+  }));
+  const currentAdditionalRaw = (current.additionalDestinationsDetailed && current.additionalDestinationsDetailed.length)
+    ? current.additionalDestinationsDetailed.map((d) => ({
+        ciudad: d.ciudad || d.name || "",
+        estado: d.estado || null,
+        pais: d.pais || null,
+        lat: d.lat || null,
+        lng: d.lng || null,
+      }))
+    : (current.additionalDestinations || []).map((d) => ({
+        ciudad: d.ciudad || d.name || "",
+        estado: d.estado || null,
+        pais: d.pais || null,
+        lat: d.lat || null,
+        lng: d.lng || null,
+      }));
+  if (originalAdditional.length !== currentAdditionalRaw.length) return true;
+  return !originalAdditional.every((orig, idx) => {
+    const curr = currentAdditionalRaw[idx];
     return (
       curr &&
-      orig.destino === curr.name &&
-      orig.destino_lat === curr.lat &&
-      orig.destino_lng === curr.lng
+      orig.ciudad === curr.ciudad &&
+      orig.estado === curr.estado &&
+      orig.pais === curr.pais &&
+      parseFloat(orig.lat) === parseFloat(curr.lat) &&
+      parseFloat(orig.lng) === parseFloat(curr.lng)
     );
   });
 };
 
 const buildDestinosPayload = (formData) => {
-  const destinos = [
-    {
-      destino: formData.destino,
-      destino_lng: parseFloat(formData.destino_lng),
-      destino_lat: parseFloat(formData.destino_lat),
-      orden: 1,
-    },
-  ];
-
-  if (formData.additionalDestinations) {
-    formData.additionalDestinations.forEach((dest, index) => {
-      destinos.push({
-        destino: dest.name,
-        destino_lng: parseFloat(dest.lng),
-        destino_lat: parseFloat(dest.lat),
-        orden: index + 2,
-      });
-    });
-  }
-
-  return destinos;
+  const parseDisplay = (display) => {
+    if (!display) return { ciudad: '', estado: null, pais: null };
+    const parts = display.split(',').map(p => p.trim());
+    if (parts.length === 1) return { ciudad: parts[0], estado: null, pais: formData.destino_pais || null };
+    if (parts.length === 2) return { ciudad: parts[0], estado: null, pais: parts[1] };
+    return { ciudad: parts[0], estado: parts[1], pais: parts[parts.length - 1] };
+  };
+  const first = {
+    ciudad: formData.destino_ciudad || parseDisplay(formData.destino).ciudad,
+    estado: formData.destino_estado || parseDisplay(formData.destino).estado,
+    pais: formData.destino_pais || parseDisplay(formData.destino).pais,
+    destino_lat: parseFloat(formData.destino_lat) || null,
+    destino_lng: parseFloat(formData.destino_lng) || null,
+    orden: 1,
+  };
+  const additional = (formData.additionalDestinationsDetailed && formData.additionalDestinationsDetailed.length
+    ? formData.additionalDestinationsDetailed
+    : (formData.additionalDestinations || [])
+  ).map((d, idx) => ({
+    ciudad: d.ciudad || d.name || '',
+    estado: d.estado || null,
+    pais: d.pais || null,
+    destino_lat: parseFloat(d.lat) || null,
+    destino_lng: parseFloat(d.lng) || null,
+    orden: idx + 2,
+  }));
+  return [first, ...additional];
 };
 
 const hasMayoristasChanges = (original, current) => {

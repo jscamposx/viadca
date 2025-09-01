@@ -100,10 +100,10 @@ const LoginPage = () => {
       const response = await login(formData);
       setLoginSuccess(true);
     } catch (error) {
+      const status = error?.response?.status;
       const rawMsg = String(error?.response?.data?.message || "");
       const isTooMany =
-        error?.response?.status === 429 ||
-        /too many requests|throttlerexception/i.test(rawMsg);
+        status === 429 || /too many requests|throttlerexception/i.test(rawMsg);
 
       if (isTooMany) {
         const retryHeader = error?.response?.headers?.["retry-after"];
@@ -113,12 +113,13 @@ const LoginPage = () => {
         setMessage(
           `Has realizado demasiados intentos. Por tu seguridad, espera ${retryAfter}s e inténtalo más tarde.`,
         );
+      } else if (status === 401) {
+        // Mensaje genérico exigido
+        setMessage("Credenciales inválidas");
+      } else if (status === 403) {
+        setMessage("Debes verificar tu email antes de iniciar sesión");
       } else if (error.response?.data?.message) {
         setMessage(error.response.data.message);
-      } else if (error.response?.status === 401) {
-        setMessage("Credenciales incorrectas");
-      } else if (error.response?.status === 403) {
-        setMessage("Debes verificar tu email antes de iniciar sesión");
       } else {
         setMessage("Error al iniciar sesión. Intenta de nuevo.");
       }
@@ -269,7 +270,7 @@ const LoginPage = () => {
                             ? "border-red-300 bg-red-50"
                             : "border-gray-300 hover:border-gray-400"
                         }`}
-                        placeholder="usuario@ejemplo.com"
+                        placeholder="Usuario o correo"
                         disabled={isDisabled}
                         aria-invalid={Boolean(errors.usuario)}
                         aria-describedby={

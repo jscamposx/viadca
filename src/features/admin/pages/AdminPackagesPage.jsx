@@ -24,6 +24,8 @@ import {
   FiCheckCircle,
   FiRefreshCw,
   FiXCircle,
+  FiStar, // añadido
+  FiHeart
 } from "react-icons/fi";
 import api from "../../../api";
 // import { useNotification } from "./AdminLayout";
@@ -68,6 +70,7 @@ const AdminPaquetes = () => {
   const [mayoristaFilter, setMayoristaFilter] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
   const [tipoProductoFilter, setTipoProductoFilter] = useState("");
+  const [favoritoFilter, setFavoritoFilter] = useState(false); // nuevo filtro favoritos
   const [isFiltersOpen, setIsFiltersOpen] = useState(false);
   const [isSortMenuOpen, setIsSortMenuOpen] = useState(false);
   const [confirmDialog, setConfirmDialog] = useState({
@@ -78,6 +81,7 @@ const AdminPaquetes = () => {
   // const { addNotification } = useNotification();
   const { notify } = useNotifications();
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [favoritoLoading, setFavoritoLoading] = useState({}); // estado carga toggle favorito
 
   // Tipos únicos derivados de mayoristas (para filtro de tipo)
   const tiposUnicos = useMemo(
@@ -262,6 +266,10 @@ const AdminPaquetes = () => {
         }
       }
 
+      if (favoritoFilter) {
+        result = result.filter((p) => !!p.favorito);
+      }
+
       if (sortConfig.key) {
         result.sort((a, b) => {
           let aValue = a[sortConfig.key];
@@ -299,6 +307,7 @@ const AdminPaquetes = () => {
     mayoristaFilter,
     statusFilter,
     tipoProductoFilter,
+    favoritoFilter,
   ]);
 
   const requestSort = (key) => {
@@ -361,6 +370,7 @@ const AdminPaquetes = () => {
     setMayoristaFilter("");
     setStatusFilter("");
     setTipoProductoFilter("");
+    setFavoritoFilter(false);
     setSearchTerm("");
     setSearch("");
   };
@@ -456,6 +466,33 @@ const AdminPaquetes = () => {
       }, 100);
     }
   }, [location.state?.pendingOperation, location.key, notify, refetch]);
+
+  const toggleFavorito = async (paquete) => {
+    const id = paquete.id;
+    const nuevoValor = !paquete.favorito;
+    setFavoritoLoading((m) => ({ ...m, [id]: true }));
+    // Optimista
+    setPaquetes((prev) =>
+      Array.isArray(prev)
+        ? prev.map((p) => (p.id === id ? { ...p, favorito: nuevoValor } : p))
+        : prev,
+    );
+    try {
+      await api.packages.toggleFavorito(id, nuevoValor);
+    } catch (e) {
+      // Revertir
+      setPaquetes((prev) =>
+        Array.isArray(prev)
+          ? prev.map((p) => (p.id === id ? { ...p, favorito: !nuevoValor } : p))
+          : prev,
+      );
+      notify.error(
+        `No se pudo ${nuevoValor ? "marcar" : "desmarcar"} como favorito`,
+      );
+    } finally {
+      setFavoritoLoading((m) => ({ ...m, [id]: false }));
+    }
+  };
 
   if (error) {
     return (
@@ -975,14 +1012,18 @@ const AdminPaquetes = () => {
                   setMayoristaFilter("");
                   setTipoProductoFilter("");
                   setStatusFilter("");
+                  setFavoritoFilter(false);
                   setIsFiltersOpen(false);
                 }}
                 aria-pressed={
-                  !mayoristaFilter && !tipoProductoFilter && !statusFilter
+                  !mayoristaFilter &&
+                  !tipoProductoFilter &&
+                  !statusFilter &&
+                  !favoritoFilter
                 }
                 aria-label="Mostrar todos los paquetes"
                 className={`px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg sm:rounded-xl text-xs sm:text-sm font-medium transition-all duration-200 ${
-                  !mayoristaFilter && !tipoProductoFilter && !statusFilter
+                  !mayoristaFilter && !tipoProductoFilter && !statusFilter && !favoritoFilter
                     ? "bg-gradient-to-r from-purple-500 to-indigo-600 text-white shadow-lg"
                     : "bg-white text-gray-600 hover:bg-purple-50 hover:text-purple-700 border border-gray-200 hover:border-purple-200"
                 }`}
@@ -997,6 +1038,7 @@ const AdminPaquetes = () => {
               <button
                 onClick={() => {
                   setStatusFilter("activo");
+                  setFavoritoFilter(false);
                   setIsFiltersOpen(false);
                 }}
                 aria-pressed={statusFilter === "activo"}
@@ -1019,6 +1061,7 @@ const AdminPaquetes = () => {
               <button
                 onClick={() => {
                   setStatusFilter("inactivo");
+                  setFavoritoFilter(false);
                   setIsFiltersOpen(false);
                 }}
                 aria-pressed={statusFilter === "inactivo"}
@@ -1035,6 +1078,31 @@ const AdminPaquetes = () => {
                   ></div>
                   <span className="hidden sm:inline">Paquetes Inactivos</span>
                   <span className="sm:hidden">Inactivos</span>
+                </div>
+              </button>
+
+              {/* Nuevo: botón de Favoritos */}
+              <button
+                onClick={() => {
+                  setFavoritoFilter(!favoritoFilter);
+                  setIsFiltersOpen(false);
+                }}
+                aria-pressed={favoritoFilter}
+                aria-label="Paquetes favoritos"
+                className={`px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg sm:rounded-xl text-xs sm:text-sm font-medium transition-all duration-200 ${
+                  favoritoFilter
+                    ? "bg-yellow-400 text-yellow-900 shadow-lg"
+                    : "bg-white text-gray-600 hover:bg-yellow-50 hover:text-yellow-700 border border-gray-200 hover:border-yellow-300"
+                }`}
+              >
+                <div className="flex items-center justify-center gap-1.5">
+                  <FiStar
+                    className={`w-3.5 h-3.5 ${
+                      favoritoFilter ? "fill-yellow-900" : ""
+                    }`}
+                  />
+                  <span className="hidden sm:inline">Favoritos</span>
+                  <span className="sm:hidden">Favs</span>
                 </div>
               </button>
             </div>
@@ -1112,7 +1180,8 @@ const AdminPaquetes = () => {
               priceFilter.max ||
               mayoristaFilter ||
               statusFilter ||
-              tipoProductoFilter) && (
+              tipoProductoFilter ||
+              favoritoFilter) && (
               <div className="pt-2 sm:pt-2 border-t border-gray-200">
                 <button
                   onClick={clearFilters}
@@ -1194,19 +1263,57 @@ const AdminPaquetes = () => {
                     {/* Overlay */}
                     <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
 
-                    {/* Badge de precio */}
-                    <div className="absolute top-2 sm:top-4 right-2 sm:right-4">
-                      <div
-                        className="bg-gradient-to-r from-blue-600 to-indigo-700 text-white text-xs sm:text-sm font-bold px-2 sm:px-4 py-1 sm:py-2 rounded-lg sm:rounded-2xl shadow-xl backdrop-blur-sm border border-white/20 flex items-center gap-1"
-                        title={`Moneda: ${sanitizeMoneda(paquete?.moneda)}`}
+                    {/* Botón favorito (separado del precio) */}
+                    <div className="absolute top-2 sm:top-3 right-2 sm:right-3 z-20">
+                      <button
+                        type="button"
+                        onClick={() => toggleFavorito(paquete)}
+                        disabled={!!favoritoLoading[paquete.id]}
+                        className={`group/fav relative p-2 rounded-xl shadow-md border text-xs font-semibold transition-all duration-300 flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-400 ${
+                          paquete.favorito
+                            ? "bg-yellow-400/95 border-yellow-300 text-yellow-900 hover:bg-yellow-300"
+                            : "bg-white/90 border-gray-200 text-gray-500 hover:bg-yellow-100 hover:text-yellow-700"
+                        } ${favoritoLoading[paquete.id] ? "opacity-50 cursor-not-allowed" : "cursor-pointer hover:scale-105 active:scale-95"}`}
+                        title={
+                          paquete.favorito
+                            ? "Quitar de favoritos"
+                            : "Marcar como favorito"
+                        }
+                        aria-pressed={paquete.favorito}
+                        aria-label={
+                          paquete.favorito
+                            ? `Quitar ${paquete.titulo} de favoritos`
+                            : `Marcar ${paquete.titulo} como favorito`
+                        }
                       >
-                        <span>
+                        <FiStar
+                          className={`w-4 h-4 transition-colors duration-300 ${
+                            paquete.favorito ? "fill-yellow-900" : "group-hover/fav:scale-110"
+                          }`}
+                        />
+                        <span className="sr-only">Toggle favorito</span>
+                        <span className={`absolute inset-0 rounded-xl ring-2 ring-yellow-400/40 animate-ping ${
+                          paquete.favorito ? "opacity-70" : "opacity-0 group-hover/fav:opacity-40"
+                        }`} />
+                        <span className="pointer-events-none absolute top-full mt-1 px-2 py-1 rounded-md bg-gray-900 text-[10px] font-medium text-white opacity-0 group-hover/fav:opacity-100 transition-opacity whitespace-nowrap shadow-lg">
+                          {paquete.favorito ? "Favorito" : "Marcar favorito"}
+                        </span>
+                      </button>
+                    </div>
+
+                    {/* Badge de precio reposicionado (esquina inferior derecha) */}
+                    <div
+                      className="absolute bottom-2 sm:bottom-3 right-2 sm:right-3 z-20"
+                      title={`Moneda: ${sanitizeMoneda(paquete?.moneda)}`}
+                    >
+                      <div className="bg-white/90 backdrop-blur-md border border-gray-200/70 shadow-lg rounded-xl px-2.5 sm:px-4 py-1.5 sm:py-2 flex items-center gap-1.5 sm:gap-2">
+                        <span className="text-[11px] sm:text-sm font-bold bg-gradient-to-r from-blue-600 to-indigo-700 bg-clip-text text-transparent tracking-tight">
                           {formatPrecio(
                             paquete?.precio_total,
                             sanitizeMoneda(paquete?.moneda),
                           )}
                         </span>
-                        <span className="ml-0.5 text-[9px] sm:text-[10px] leading-none tracking-wide bg-white/15 px-1 py-0.5 rounded uppercase">
+                        <span className="text-[9px] sm:text-[10px] leading-none tracking-wide bg-blue-600/10 text-blue-700 px-1.5 py-0.5 rounded uppercase font-semibold">
                           {sanitizeMoneda(paquete?.moneda)}
                         </span>
                       </div>
@@ -1299,6 +1406,15 @@ const AdminPaquetes = () => {
                             {sanitizeMoneda(paquete?.moneda)}
                           </div>
                         </div>
+                        {paquete.favorito && (
+                          <div className="bg-yellow-50 ring-1 ring-yellow-300/60 hover:bg-yellow-100 rounded-lg sm:rounded-xl p-2 sm:p-3 text-center transition-all duration-200 hover:shadow-md hover:scale-105 cursor-pointer col-span-1 relative overflow-hidden">
+                            <FiStar className="w-3 h-3 sm:w-4 sm:h-4 text-yellow-600 mx-auto mb-1" />
+                            <div className="text-[10px] text-yellow-700 font-medium uppercase tracking-wide">
+                              Fav
+                            </div>
+                            <span className="absolute inset-0 bg-gradient-to-br from-yellow-300/10 via-transparent to-transparent" />
+                          </div>
+                        )}
                       </div>
 
                       {/* Mayoristas - Completo para desktop, simplificado para móvil */}
@@ -1472,7 +1588,8 @@ const AdminPaquetes = () => {
                 priceFilter.max ||
                 mayoristaFilter ||
                 statusFilter ||
-                tipoProductoFilter) && (
+                tipoProductoFilter ||
+                favoritoFilter) && (
                 <div className="mb-6 sm:mb-8 p-4 sm:p-6 bg-gradient-to-r from-gray-50 to-blue-50 rounded-xl sm:rounded-2xl border border-gray-200">
                   <p className="text-xs sm:text-sm font-semibold text-gray-700 mb-2 sm:mb-3">
                     FILTROS APLICADOS
@@ -1501,7 +1618,7 @@ const AdminPaquetes = () => {
                       </span>
                     )}
                     {tipoProductoFilter && (
-                      <span className="px-2 sm:px-3 py-1 sm:py-2 bg-gradient-to-r from-teal-500 to-cyan-600 text-white text-xs rounded-lg sm:rounded-xl font-medium shadow-md">
+                      <span className="px-2 sm:px-3 py-1 sm:py-2 bg-gradient-to-r from-teal-500 to-cyan-600 text-white text-xs rounded-lg sm:rounded-XL font-medium shadow-md">
                         <span className="hidden sm:inline">Tipo: </span>
                         {tipoProductoFilter}
                       </span>
@@ -1510,6 +1627,11 @@ const AdminPaquetes = () => {
                       <span className="px-2 sm:px-3 py-1 sm:py-2 bg-gradient-to-r from-yellow-500 to-orange-600 text-white text-xs rounded-lg sm:rounded-XL font-medium shadow-md">
                         <span className="hidden sm:inline">Precio: </span>$
                         {priceFilter.min || "0"} - ${priceFilter.max || "∞"}
+                      </span>
+                    )}
+                    {favoritoFilter && (
+                      <span className="px-2 sm:px-3 py-1 sm:py-2 bg-gradient-to-r from-yellow-400 to-amber-500 text-yellow-900 text-xs rounded-lg sm:rounded-XL font-medium shadow-md flex items-center gap-1">
+                        <FiStar className="w-3 h-3" /> Favoritos
                       </span>
                     )}
                   </div>

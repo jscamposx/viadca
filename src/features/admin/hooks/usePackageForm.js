@@ -44,17 +44,23 @@ export const usePackageForm = (initialPackageData = null) => {
     origen: "Durango, México",
     origen_lat: 24.0277,
     origen_lng: -104.6532,
-    destino: "",
+    destino: "", // display legacy
     destino_lat: null,
     destino_lng: null,
-    additionalDestinations: [],
+    // Nuevo desglose destino principal (auto)
+    destino_ciudad: "",
+    destino_estado: "",
+    destino_pais: "",
+    additionalDestinations: [], // legacy ({name,lat,lng})
+    // Nuevo arreglo detallado opcional (cuando tengamos ciudad/estado/pais explícitos)
+    additionalDestinationsDetailed: [], // [{ciudad, estado, pais, lat, lng}]
     destinos: [],
     imagenes: [],
     hotel: null,
     mayoristas: [],
     mayoristasIds: [],
-    // Soporte de moneda
     moneda: "MXN",
+    favorito: false,
   });
 
   useEffect(() => {
@@ -84,6 +90,14 @@ export const usePackageForm = (initialPackageData = null) => {
       );
 
       const initialDestino = initialPackageData.destinos?.[0] || {};
+      // Nuevo: construir display de destino si backend ya no envía campo legacy `destino`
+      const computedDisplayDestino =
+        initialDestino.destino ||
+        [initialDestino.ciudad, initialDestino.estado, initialDestino.pais]
+          .filter(Boolean)
+          .join(", ") ||
+        initialPackageData.destino ||
+        "";
 
       const processedImages = (initialPackageData.imagenes || []).map(
         (img, index) => {
@@ -131,7 +145,6 @@ export const usePackageForm = (initialPackageData = null) => {
         descuento: initialPackageData.descuento || "",
         anticipo: initialPackageData.anticipo || "",
         precio_total: initialPackageData.precio_total || "",
-
         precio_original:
           initialPackageData.descuento &&
           parseFloat(initialPackageData.descuento) > 0
@@ -146,31 +159,40 @@ export const usePackageForm = (initialPackageData = null) => {
           initialPackageData.activo !== undefined
             ? initialPackageData.activo
             : true,
-
         origen: initialPackageData.origen || "Durango, México",
         origen_lat: initialPackageData.origen_lat || 24.0277,
         origen_lng: initialPackageData.origen_lng || -104.6532,
-
-        destino: initialDestino.destino || initialPackageData.destino || "",
+        destino: computedDisplayDestino,
         destino_lat:
           initialDestino.destino_lat || initialPackageData.destino_lat || null,
         destino_lng:
           initialDestino.destino_lng || initialPackageData.destino_lng || null,
-
+        destino_ciudad: initialDestino.ciudad || "",
+        destino_estado: initialDestino.estado || "",
+        destino_pais: initialDestino.pais || "",
         additionalDestinations: (initialPackageData.destinos || [])
           .slice(1)
           .map((dest) => ({
-            name: dest.destino,
+            name: dest.destino || dest.ciudad,
             lat: dest.destino_lat,
             lng: dest.destino_lng,
           })),
-
+        additionalDestinationsDetailed: (initialPackageData.destinos || [])
+          .slice(1)
+          .map((dest) => ({
+            ciudad: dest.ciudad || dest.destino || "",
+            estado: dest.estado || "",
+            pais: dest.pais || "",
+            lat: dest.destino_lat,
+            lng: dest.destino_lng,
+          })),
         destinos: initialPackageData.destinos || [],
         imagenes: processedImages,
         hotel: initialPackageData.hotel || null,
         mayoristas: initialPackageData.mayoristas || [],
         mayoristasIds: mayoristasIds,
         moneda: sanitizeMoneda(initialPackageData.moneda),
+        favorito: !!initialPackageData.favorito,
       });
     }
   }, [initialPackageData]);
@@ -188,23 +210,38 @@ export const usePackageForm = (initialPackageData = null) => {
     (place) => {
       const { geometry, formatted_address } = place;
       if (!geometry) return;
-
       const { lat, lng } = geometry.location;
-      const simplifiedAddress = formatted_address
+      // Extraer componentes para ciudad/estado/pais
+      const comps = place.address_components || [];
+      const getComp = (type) => {
+        const c = comps.find((ac) => ac.types.includes(type));
+        return c ? c.long_name : null;
+      };
+      const ciudad =
+        getComp("locality") ||
+        getComp("sublocality") ||
+        getComp("administrative_area_level_2") ||
+        getComp("administrative_area_level_3") ||
+        "";
+      const estado = getComp("administrative_area_level_1") || "";
+      const pais = getComp("country") || "";
+      const display = formatted_address
         .split(",")
         .slice(0, 2)
         .join(", ");
-
       setFormData((prev) => ({
         ...prev,
         ...(selectionMode === "destino"
           ? {
-              destino: simplifiedAddress,
+              destino: display,
+              destino_ciudad: ciudad,
+              destino_estado: estado,
+              destino_pais: pais,
               destino_lat: lat(),
               destino_lng: lng(),
             }
           : {
-              origen: simplifiedAddress,
+              origen: display,
               origen_lat: lat(),
               origen_lng: lng(),
             }),
@@ -217,7 +254,6 @@ export const usePackageForm = (initialPackageData = null) => {
     (event) => {
       const latLng = event.detail.latLng;
       if (!latLng) return;
-
       const geocoder = new window.google.maps.Geocoder();
       geocoder.geocode(
         {
@@ -228,21 +264,36 @@ export const usePackageForm = (initialPackageData = null) => {
         (results, status) => {
           if (status === "OK" && results[0]) {
             const place = results[0];
-            const simplifiedAddress = place.formatted_address
+            const comps = place.address_components || [];
+            const getComp = (type) => {
+              const c = comps.find((ac) => ac.types.includes(type));
+              return c ? c.long_name : null;
+            };
+            const ciudad =
+              getComp("locality") ||
+              getComp("sublocality") ||
+              getComp("administrative_area_level_2") ||
+              getComp("administrative_area_level_3") ||
+              "";
+            const estado = getComp("administrative_area_level_1") || "";
+            const pais = getComp("country") || "";
+            const display = place.formatted_address
               .split(",")
               .slice(0, 2)
               .join(", ");
-
             setFormData((prev) => ({
               ...prev,
               ...(selectionMode === "destino"
                 ? {
-                    destino: simplifiedAddress,
+                    destino: display,
+                    destino_ciudad: ciudad,
+                    destino_estado: estado,
+                    destino_pais: pais,
                     destino_lat: latLng.lat,
                     destino_lng: latLng.lng,
                   }
                 : {
-                    origen: simplifiedAddress,
+                    origen: display,
                     origen_lat: latLng.lat,
                     origen_lng: latLng.lng,
                   }),
@@ -518,15 +569,70 @@ export const usePackageForm = (initialPackageData = null) => {
 
   const handleFullCreate = async (addNotification) => {
     logPatchOperation("create-mode");
-
     const packageImages = await processImages(formData.imagenes || []);
     const hotelPayload = await processHotel(formData.hotel);
-
     console.log("🆕 Creando paquete - Mayoristas:", {
       mayoristasIds: formData.mayoristasIds,
       count: (formData.mayoristasIds || []).length,
     });
-
+    // Helper para construir objeto destino nuevo esquema
+    const buildDestino = (displayName, lat, lng, orden, detailed) => {
+      if (detailed && detailed.ciudad) {
+        return {
+          ciudad: detailed.ciudad,
+          estado: detailed.estado || null,
+            pais: detailed.pais || null,
+            destino_lat: parseFloat(lat),
+            destino_lng: parseFloat(lng),
+            orden,
+        };
+      }
+      const parts = (displayName || "").split(",").map((p) => p.trim());
+      let ciudad = parts[0] || displayName || "";
+      let estado = null;
+      let pais = null;
+      if (parts.length === 2) {
+        pais = parts[1];
+      } else if (parts.length >= 3) {
+        estado = parts[1];
+        pais = parts[parts.length - 1];
+      }
+      return {
+        ciudad,
+        estado: estado || null,
+        pais: pais || formData.destino_pais || null,
+        destino_lat: parseFloat(lat),
+        destino_lng: parseFloat(lng),
+        orden,
+      };
+    };
+    const destinosPayload = [
+      buildDestino(
+        formData.destino,
+        formData.destino_lat,
+        formData.destino_lng,
+        1,
+        {
+          ciudad: formData.destino_ciudad,
+          estado: formData.destino_estado,
+          pais: formData.destino_pais,
+        },
+      ),
+      ...((formData.additionalDestinationsDetailed &&
+      formData.additionalDestinationsDetailed.length
+        ? formData.additionalDestinationsDetailed.map((d, idx) =>
+            buildDestino(
+              d.ciudad,
+              d.lat,
+              d.lng,
+              idx + 2,
+              { ciudad: d.ciudad, estado: d.estado, pais: d.pais },
+            ),
+          )
+        : (formData.additionalDestinations || []).map((d, idx) =>
+            buildDestino(d.name, d.lat, d.lng, idx + 2),
+          ))),
+    ];
     const payload = {
       titulo: formData.titulo,
       origen: formData.origen,
@@ -547,7 +653,6 @@ export const usePackageForm = (initialPackageData = null) => {
           ? formData.requisitos
           : null,
       precio_total: parseFloat(formData.precio_total),
-      // Enviar moneda normalizada
       moneda: sanitizeMoneda(formData.moneda),
       descuento:
         formData.descuento && formData.descuento !== ""
@@ -562,34 +667,18 @@ export const usePackageForm = (initialPackageData = null) => {
       activo: formData.activo,
       mayoristasIds: formData.mayoristasIds,
       itinerario_texto: formData.itinerario_texto || "",
-      destinos: [
-        {
-          destino: formData.destino,
-          destino_lng: parseFloat(formData.destino_lng),
-          destino_lat: parseFloat(formData.destino_lat),
-          orden: 1,
-        },
-        ...(formData.additionalDestinations || []).map((dest, index) => ({
-          destino: dest.name,
-          destino_lng: parseFloat(dest.lng),
-          destino_lat: parseFloat(dest.lat),
-          orden: index + 2,
-        })),
-      ],
+      destinos: destinosPayload,
       imagenes: packageImages,
       hotel: hotelPayload,
+      favorito: !!formData.favorito,
     };
-
     console.log("📤 Enviando CREATE - Payload completo:", {
       payload,
       mayoristasIncluded: "mayoristasIds" in payload,
       mayoristasCount: (payload.mayoristasIds || []).length,
     });
-
     const response = await api.packages.createPaquete(payload);
-
     logPatchOperation("create-success");
-
     return {
       packageId: response.data?.id || null,
       packageTitle: formData.titulo,

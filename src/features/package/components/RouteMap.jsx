@@ -54,7 +54,16 @@ const createCustomIcon = (color, destino, index) => {
 
 const RouteMap = ({ paquete }) => {
   const [mapKey, setMapKey] = useState(0);
-  const destinos = paquete?.destinos || [];
+  const destinos = (paquete?.destinos || []).map(d => {
+    const label = d.ciudad || d.destino || d.nombre || '';
+    const composed = [d.ciudad, d.estado, d.pais].filter(Boolean).join(', ');
+    return {
+      label: composed || label,
+      destino_lat: d.destino_lat || d.lat || d.latitude || null,
+      destino_lng: d.destino_lng || d.lng || d.longitude || null,
+      descripcion: d.descripcion,
+    };
+  });
 
   useEffect(() => {
     // Carga diferida del CSS de Leaflet sólo cuando el mapa se monta
@@ -195,7 +204,7 @@ const RouteMap = ({ paquete }) => {
         {destinosConCoordenadas.map((dest, index) => {
           const lat = parseFloat(dest.destino_lat);
           const lng = parseFloat(dest.destino_lng);
-          const customIcon = createCustomIcon("#3b82f6", dest.destino, index);
+          const customIcon = createCustomIcon("#3b82f6", dest.label, index);
 
           return (
             <Marker key={index} position={[lat, lng]} icon={customIcon}>
@@ -213,7 +222,7 @@ const RouteMap = ({ paquete }) => {
                   </div>
 
                   <p className="text-base text-blue-600 font-medium mb-2">
-                    📍 {dest.destino}
+                    📍 {dest.label}
                   </p>
 
                   {dest.descripcion && (

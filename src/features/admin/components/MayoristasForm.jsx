@@ -1,10 +1,23 @@
 import React, { useState, useEffect } from "react";
-import { FiUsers, FiTag } from "react-icons/fi";
+import { FiUsers, FiTag, FiSearch, FiLoader } from "react-icons/fi";
 import { useMayoristas } from "../hooks/useMayoristas";
+import Pagination from "../../../components/ui/Pagination";
 
 const MayoristasForm = ({ formData, onFormChange }) => {
-  const { mayoristas, loading, error } = useMayoristas();
+  const {
+    mayoristas,
+    loading,
+    error,
+    page,
+    limit,
+    totalPages,
+    totalItems,
+    goToPage,
+    search,
+    setSearch,
+  } = useMayoristas();
   const [selectedMayoristas, setSelectedMayoristas] = useState([]);
+  const [searchInput, setSearchInput] = useState("");
 
   useEffect(() => {
     if (formData.mayoristas) {
@@ -12,38 +25,25 @@ const MayoristasForm = ({ formData, onFormChange }) => {
     }
   }, [formData.mayoristas]);
 
+  useEffect(() => {
+    setSearchInput(search || "");
+  }, [search]);
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      if (searchInput !== search) setSearch(searchInput.trim());
+    }, 400);
+    return () => clearTimeout(handler);
+  }, [searchInput, search, setSearch]);
+
   const handleMayoristaToggle = (mayorista) => {
     const isSelected = selectedMayoristas.some((m) => m.id === mayorista.id);
-    let newSelected;
-
-    if (isSelected) {
-      newSelected = selectedMayoristas.filter((m) => m.id !== mayorista.id);
-    } else {
-      newSelected = [...selectedMayoristas, mayorista];
-    }
-
+    const newSelected = isSelected
+      ? selectedMayoristas.filter((m) => m.id !== mayorista.id)
+      : [...selectedMayoristas, mayorista];
     setSelectedMayoristas(newSelected);
-    onFormChange({
-      target: { name: "mayoristas", value: newSelected },
-    });
+    onFormChange({ target: { name: "mayoristas", value: newSelected } });
   };
-
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center py-8">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
-        <span className="ml-2 text-slate-600">Cargando mayoristas...</span>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="bg-red-50 border border-red-200 rounded-lg p-6 text-center">
-        <p className="text-red-600">Error al cargar mayoristas: {error}</p>
-      </div>
-    );
-  }
 
   return (
     <div className="space-y-6">
@@ -57,12 +57,61 @@ const MayoristasForm = ({ formData, onFormChange }) => {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-        {mayoristas.map((mayorista) => {
-          const isSelected = selectedMayoristas.some(
-            (m) => m.id === mayorista.id,
-          );
+      {/* Controles superiores: búsqueda, límite y estado */}
+      <div className="flex flex-col lg:flex-row gap-4 lg:items-end">
+        <div className="flex-1">
+          <label className="block text-sm font-medium text-slate-700 mb-1">
+            Buscar mayoristas
+          </label>
+          <div className="relative">
+            <FiSearch className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+            <input
+              type="text"
+              value={searchInput}
+              onChange={(e) => setSearchInput(e.target.value)}
+              placeholder="Nombre, clave..."
+              className="w-full pl-9 pr-3 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm"
+            />
+            {loading && (
+              <FiLoader className="w-4 h-4 animate-spin absolute right-3 top-1/2 -translate-y-1/2 text-indigo-500" />
+            )}
+          </div>
+        </div>
 
+        <div className="mt-6 text-xs text-slate-500 whitespace-nowrap">
+          {(totalItems || mayoristas.length) > 0 && (
+            <span>
+              {(totalItems || mayoristas.length)} resultado{(totalItems || mayoristas.length) !== 1 ? "s" : ""}
+            </span>
+          )}
+        </div>
+      </div>
+
+      {error && (
+        <div className="bg-red-50 border border-red-200 rounded-lg p-6 text-center">
+          <p className="text-red-600">Error al cargar mayoristas: {error}</p>
+        </div>
+      )}
+
+      {/* Grid de mayoristas */}
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 min-h-[120px]">
+        {loading && mayoristas.length === 0 && (
+          [...Array(limit)].map((_, i) => (
+            <div
+              key={i}
+              className="p-5 rounded-xl border-2 border-slate-200 bg-white animate-pulse h-32"
+            >
+              <div className="h-full w-full bg-slate-100 rounded-lg" />
+            </div>
+          ))
+        )}
+        {!loading && mayoristas.length === 0 && !error && (
+          <div className="col-span-full text-center py-10 text-slate-500">
+            No se encontraron mayoristas.
+          </div>
+        )}
+        {mayoristas.map((mayorista) => {
+          const isSelected = selectedMayoristas.some((m) => m.id === mayorista.id);
           return (
             <div
               key={mayorista.id}
@@ -76,79 +125,39 @@ const MayoristasForm = ({ formData, onFormChange }) => {
               <div className="flex items-start gap-4">
                 <div
                   className={`flex-shrink-0 w-5 h-5 rounded-md border-2 flex items-center justify-center transition-all ${
-                    isSelected
-                      ? "bg-indigo-600 border-indigo-600"
-                      : "border-slate-300"
+                    isSelected ? "bg-indigo-600 border-indigo-600" : "border-slate-300"
                   }`}
                 >
                   {isSelected && (
-                    <svg
-                      className="w-3 h-3 text-white"
-                      fill="currentColor"
-                      viewBox="0 0 20 20"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                        clipRule="evenodd"
-                      />
+                    <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                     </svg>
                   )}
                 </div>
-
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-2">
-                    <FiUsers
-                      className={`w-4 h-4 ${isSelected ? "text-indigo-600" : "text-slate-500"}`}
-                    />
-                    <h4
-                      className={`font-semibold truncate ${isSelected ? "text-indigo-900" : "text-slate-900"}`}
-                    >
-                      {mayorista.nombre}
-                    </h4>
+                    <FiUsers className={`w-4 h-4 ${isSelected ? "text-indigo-600" : "text-slate-500"}`} />
+                    <h4 className={`font-semibold truncate ${isSelected ? "text-indigo-900" : "text-slate-900"}`}>{mayorista.nombre}</h4>
                   </div>
-
                   <div className="space-y-1">
                     <div className="flex items-center gap-2 text-sm">
-                      <FiTag
-                        className={`w-3 h-3 ${isSelected ? "text-indigo-500" : "text-slate-400"}`}
-                      />
-                      <span
-                        className={`font-mono text-xs px-2 py-1 rounded-md ${
-                          isSelected
-                            ? "bg-indigo-100 text-indigo-700"
-                            : "bg-slate-100 text-slate-600"
-                        }`}
-                      >
-                        {mayorista.clave}
-                      </span>
+                      <FiTag className={`w-3 h-3 ${isSelected ? "text-indigo-500" : "text-slate-400"}`} />
+                      <span className={`font-mono text-xs px-2 py-1 rounded-md ${isSelected ? "bg-indigo-100 text-indigo-700" : "bg-slate-100 text-slate-600"}`}>{mayorista.clave}</span>
                     </div>
                     {mayorista.tipo_producto && (
-                      <div
-                        className={`inline-block text-xs px-2 py-1 rounded-full ${
-                          isSelected
-                            ? "bg-indigo-100 text-indigo-700"
-                            : "bg-slate-100 text-slate-600"
-                        }`}
-                      >
-                        {mayorista.tipo_producto}
-                      </div>
+                      <div className={`inline-block text-xs px-2 py-1 rounded-full ${isSelected ? "bg-indigo-100 text-indigo-700" : "bg-slate-100 text-slate-600"}`}>{mayorista.tipo_producto}</div>
                     )}
                   </div>
                 </div>
               </div>
-
-              <input
-                className="sr-only"
-                aria-label={`Seleccionar mayorista ${mayorista.nombre}`}
-                type="checkbox"
-                checked={isSelected}
-                onChange={() => handleMayoristaToggle(mayorista)}
-              />
+              <input className="sr-only" aria-label={`Seleccionar mayorista ${mayorista.nombre}`} type="checkbox" checked={isSelected} onChange={() => handleMayoristaToggle(mayorista)} />
             </div>
           );
         })}
       </div>
+
+      {/* Paginación */}
+      <Pagination currentPage={page} totalPages={totalPages} totalItems={totalItems} itemsPerPage={limit} onPageChange={goToPage} />
 
       {/* Sección de confirmación - Mayoristas seleccionados */}
       {selectedMayoristas.length > 0 && (
@@ -157,44 +166,21 @@ const MayoristasForm = ({ formData, onFormChange }) => {
             <FiUsers className="w-5 h-5 text-indigo-600" />
             Mayoristas Incluidos ({selectedMayoristas.length})
           </h4>
-
           <div className="flex flex-wrap gap-3">
             {selectedMayoristas.map((mayorista) => (
-              <div
-                key={mayorista.id}
-                className="inline-flex items-center gap-2 bg-indigo-100 text-indigo-800 px-4 py-2 rounded-full border border-indigo-200"
-              >
+              <div key={mayorista.id} className="inline-flex items-center gap-2 bg-indigo-100 text-indigo-800 px-4 py-2 rounded-full border border-indigo-200">
                 <FiTag className="w-3 h-3" />
                 <span className="font-medium">{mayorista.nombre}</span>
-                <span className="text-xs font-mono bg-indigo-200 text-indigo-700 px-2 py-0.5 rounded">
-                  {mayorista.clave}
-                </span>
-                <button
-                  type="button"
-                  onClick={() => handleMayoristaToggle(mayorista)}
-                  className="ml-1 text-indigo-600 hover:text-indigo-800 transition-colors"
-                  aria-label={`Quitar ${mayorista.nombre}`}
-                >
-                  <svg
-                    className="w-4 h-4"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                      clipRule="evenodd"
-                    />
+                <span className="text-xs font-mono bg-indigo-200 text-indigo-700 px-2 py-0.5 rounded">{mayorista.clave}</span>
+                <button type="button" onClick={() => handleMayoristaToggle(mayorista)} className="ml-1 text-indigo-600 hover:text-indigo-800 transition-colors" aria-label={`Quitar ${mayorista.nombre}`}>
+                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
                   </svg>
                 </button>
               </div>
             ))}
           </div>
-
-          <p className="text-sm text-indigo-700 mt-3">
-            Estos mayoristas están incluidos como parte de este paquete
-            turístico.
-          </p>
+          <p className="text-sm text-indigo-700 mt-3">Estos mayoristas están incluidos como parte de este paquete turístico.</p>
         </div>
       )}
     </div>
