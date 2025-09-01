@@ -12,7 +12,7 @@ import { Link } from 'react-router-dom';
 import FiltersPanel from '../components/FiltersPanel';
 import CategoryTabs from '../components/CategoryTabs';
 // import AlphaIndex from '../components/AlphaIndex'; // Eliminado: ya no agrupamos por letra
-import TransparentNav from '../../../components/layout/TransparentNav';
+import UnifiedNav from '../../../components/layout/UnifiedNav';
 import Footer from '../../home/components/Footer';
 import { useContactInfo } from '../../../hooks/useContactInfo';
 
@@ -211,56 +211,62 @@ const DestinationsPage = () => {
   const currentYear = new Date().getFullYear();
 
   return (
-    <PageTransition>
-      <div className="flex flex-col min-h-screen bg-gradient-to-b from-slate-50 to-white">{/* removido id=top */}
-        <TransparentNav />
-        <DestinationsHero />
-        {/* removido anchor top-search */}
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 -mt-14 relative z-10 space-y-6">
-          <PackagesSearchBar value={search} onChange={setSearch} onOpenFilters={() => setFiltersOpen(true)} />
-          <CategoryTabs categories={categories} current={activeCategory} onChange={setActiveCategory} />
+    <>
+      {/* Navbar fija fuera de la animación para que no se vea afectada por transform del PageTransition */}
+      <UnifiedNav transparentOnTop showScrollProgress sectionLinks={[
+        { id: 'top-search', label: 'Buscar' },
+        { id: 'favoritos', label: 'Favoritos' },
+      ]} />
+      <PageTransition>
+        <div className="flex flex-col min-h-screen bg-gradient-to-b from-slate-50 to-white">{/* removido id=top */}
+          <DestinationsHero />
+          {/* Anchor para scroll desde el botón "Buscar paquetes" del hero */}
+          <div id="top-search" className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 -mt-14 relative z-10 space-y-6">
+            <PackagesSearchBar value={search} onChange={setSearch} onOpenFilters={() => setFiltersOpen(true)} />
+            <CategoryTabs categories={categories} current={activeCategory} onChange={setActiveCategory} />
+          </div>
+          {/* Eliminado AlphaIndex */}
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 flex-1 w-full">
+            {error && (
+              <div className="p-4 mb-6 bg-red-50 border border-red-200 text-red-600 rounded-xl text-sm">
+                {error}
+              </div>
+            )}
+
+            {loading && (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 lg:gap-7 animate-pulse">
+                {Array.from({ length: 8 }).map((_,i) => (
+                  <div key={i} className="h-72 bg-white rounded-xl border border-slate-100" />
+                ))}
+              </div>
+            )}
+
+            {!loading && sections.map(section => (
+              <PackagesSection key={section.key} id={section.key} title={section.title} description={section.description} carousel={section.items.length > 6}>
+                {section.items.map((p,i) => (
+                  <AnimatedSection key={p.codigoUrl || p.id || i} animation="destCard" index={i} stagger={70} className="h-full">
+                    <PackageCard paquete={p} />
+                  </AnimatedSection>
+                ))}
+              </PackagesSection>
+            ))}
+
+            {!loading && !sections.length && !error && (
+              <div className="text-center py-24 text-slate-500">No se encontraron resultados</div>
+            )}
+
+          </div>
+
+          <FiltersPanel
+            open={filtersOpen}
+            onClose={()=>setFiltersOpen(false)}
+            onApply={setFilters}
+            initial={filters}
+          />
+          <Footer contactInfo={contactInfo} contactLoading={contactLoading} currentYear={currentYear} />
         </div>
-        {/* Eliminado AlphaIndex */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 flex-1 w-full">
-          {error && (
-            <div className="p-4 mb-6 bg-red-50 border border-red-200 text-red-600 rounded-xl text-sm">
-              {error}
-            </div>
-          )}
-
-          {loading && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 lg:gap-7 animate-pulse">
-              {Array.from({ length: 8 }).map((_,i) => (
-                <div key={i} className="h-72 bg-white rounded-xl border border-slate-100" />
-              ))}
-            </div>
-          )}
-
-          {!loading && sections.map(section => (
-            <PackagesSection key={section.key} id={section.key} title={section.title} description={section.description} carousel={section.items.length > 6}>
-              {section.items.map((p,i) => (
-                <AnimatedSection key={p.codigoUrl || p.id || i} animation="destCard" index={i} stagger={70} className="h-full">
-                  <PackageCard paquete={p} />
-                </AnimatedSection>
-              ))}
-            </PackagesSection>
-          ))}
-
-          {!loading && !sections.length && !error && (
-            <div className="text-center py-24 text-slate-500">No se encontraron resultados</div>
-          )}
-
-        </div>
-
-        <FiltersPanel
-          open={filtersOpen}
-          onClose={()=>setFiltersOpen(false)}
-          onApply={setFilters}
-          initial={filters}
-        />
-        <Footer contactInfo={contactInfo} contactLoading={contactLoading} currentYear={currentYear} />
-      </div>
-    </PageTransition>
+      </PageTransition>
+    </>
   );
 };
 
