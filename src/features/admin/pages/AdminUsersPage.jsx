@@ -969,7 +969,8 @@ const AdminUsersPage = () => {
 
         {/* Lista de usuarios */}
         <div className="rounded-xl sm:rounded-2xl  ">
-          {isInitialLoading ? (
+          {loading ? (
+            // Mostrar skeleton siempre que esté cargando (no solo en carga inicial)
             renderSkeletonCards(10)
           ) : filteredUsers.length > 0 ? (
             <>
@@ -1002,6 +1003,7 @@ const AdminUsersPage = () => {
               />
             </>
           ) : (
+            // Estado vacío (solo cuando NO está cargando y no hay resultados)
             <div className="bg-gradient-to-br from-white via-gray-50 to-white rounded-2xl sm:rounded-3xl shadow-xl p-6 sm:p-8 lg:p-12 text-center border border-gray-200">
               <div className="max-w-md mx-auto">
                 {/* Icono central con animación */}
