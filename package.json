@@ -7,6 +7,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "build:seo": "node scripts/generateSitemap.js && vite build",
     "lint": "eslint .",
     "format": "prettier --write .",
     "preview": "vite preview",
@@ -15,7 +16,8 @@
     "build:analyze": "vite build && npx vite-bundle-analyzer",
     "build:gzip": "vite build && gzip-size-cli dist/**/*.{js,css}",
     "serve:compressed": "vite preview --host",
-    "env-check": "node env-check.js"
+    "env-check": "node env-check.js",
+    "generate-sitemap": "node scripts/generateSitemap.js"
   },
   "dependencies": {
     "@floating-ui/dom": "^1.7.3",

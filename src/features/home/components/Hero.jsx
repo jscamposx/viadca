@@ -1,11 +1,30 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useContactActions } from "../../../hooks/useContactActions";
-import { AnimatedSection } from "../../../hooks/scrollAnimations";
+import { AnimatedSection, useSectionReveal } from "../../../hooks/scrollAnimations";
 import OptimizedImage from "../../../components/ui/OptimizedImage.jsx";
 
 const Hero = () => {
   const { openWhatsApp, getPhoneHref, onPhoneClick, ToastPortal } =
     useContactActions();
+
+  // Detectar mobile para ajustar delays
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const mq = window.matchMedia('(max-width: 640px)');
+    const handler = () => setIsMobile(mq.matches);
+    handler();
+    mq.addEventListener('change', handler);
+    return () => mq.removeEventListener('change', handler);
+  }, []);
+
+  // Revelar todo el hero tan pronto como cualquier parte entre al viewport (mobile: inmediato)
+  const [heroRef, heroVisible] = useSectionReveal({
+    threshold: 0.01,
+    rootMargin: isMobile ? '0px 0px 0px 0px' : '0px 0px -5% 0px'
+  });
+
+  const d = (base) => (isMobile ? Math.min(Math.round(base * 0.35), 180) : base);
 
   // Inyectar preload de la imagen Hero solo cuando este componente se monta (evita warning en otras rutas)
   useEffect(() => {
@@ -24,6 +43,7 @@ const Hero = () => {
   return (
     <>
       <section
+        ref={heroRef}
         id="hero"
         aria-labelledby="hero-heading"
         className="relative min-h-[100svh] md:min-h-[100svh] lg:min-h-[100svh] bg-gradient-to-br from-blue-50 to-orange-50 scroll-mt-32"
@@ -43,7 +63,7 @@ const Hero = () => {
           <div className="max-w-7xl mx-auto">
             <div className="grid lg:grid-cols-2 gap-10 lg:gap-12 items-center max-w-3xl md:max-w-4xl lg:max-w-none mx-auto">
               {/* Imagen primero en mobile */}
-              <AnimatedSection animation="fadeInRight" delay={400} className="relative order-first lg:order-last">
+              <AnimatedSection animation="fadeInRight" delay={d(400)} forceVisible={heroVisible} className="relative order-first lg:order-last">
                 <div className="relative rounded-3xl overflow-visible max-w-md sm:max-w-xl md:max-w-2xl lg:max-w-none mx-auto">
                   <OptimizedImage
                     src="/HomePage/Hero-Image.avif"
@@ -62,10 +82,10 @@ const Hero = () => {
               </AnimatedSection>
 
               {/* Texto */}
-              <div className="space-y-6 lg:space-y-8 text-center lg:text-left relative">
+              <div className="space-y-6 lg:space-y-8 text-center lg:text-left relative bg-transparent">
                 {/* Backdrop sutil solo mobile para mejorar contraste (sin borde ni sombra) */}
-                <div className="absolute inset-0 -z-10 bg-white/70 backdrop-blur-sm rounded-3xl sm:hidden"></div>
-                <AnimatedSection animation="fadeInLeft" delay={150}>
+                <div className="absolute inset-0 -z-10 rounded-3xl sm:hidden"></div>
+                <AnimatedSection animation="fadeInLeft" delay={d(150)} forceVisible={heroVisible}>
                   <div className="space-y-3">
                     <p className="text-blue-600 font-semibold text-sm tracking-wide sm:text-base uppercase">
                       VIADCA by Zafiro Tours
@@ -76,7 +96,7 @@ const Hero = () => {
                   </div>
                 </AnimatedSection>
 
-                <AnimatedSection animation="fadeInLeft" delay={300}>
+                <AnimatedSection animation="fadeInLeft" delay={d(300)} forceVisible={heroVisible}>
                   <h1
                     id="hero-heading"
                     className="font-volkhov font-bold leading-tight text-slate-800 text-[clamp(2rem,6vw,3.4rem)] sm:text-5xl md:text-6xl xl:text-7xl tracking-tight"
@@ -89,7 +109,7 @@ const Hero = () => {
                   </h1>
                 </AnimatedSection>
 
-                <AnimatedSection animation="fadeInLeft" delay={450}>
+                <AnimatedSection animation="fadeInLeft" delay={d(450)} forceVisible={heroVisible}>
                   <p className="text-slate-600 text-[15px] sm:text-lg md:text-lg lg:text-xl leading-relaxed max-w-xl mx-auto lg:mx-0">
                     Más de 15 años diseñando aventuras únicas, tours personalizados y
                     experiencias inolvidables desde Durango.
@@ -97,7 +117,7 @@ const Hero = () => {
                 </AnimatedSection>
 
                 {/* CTA */}
-                <AnimatedSection animation="fadeInUp" delay={650}>
+                <AnimatedSection animation="fadeInUp" delay={d(650)} forceVisible={heroVisible}>
                   <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3 sm:gap-4 pt-2 sm:pt-4">
                     <button
                       type="button"
@@ -121,7 +141,7 @@ const Hero = () => {
                 </AnimatedSection>
 
                 {/* Stats desktop + versión comprimida mobile */}
-                <AnimatedSection animation="fadeInUp" delay={850}>
+                <AnimatedSection animation="fadeInUp" delay={d(850)} forceVisible={heroVisible}>
                   <div className="hidden lg:flex items-center gap-8 pt-3">
                     <div className="text-center">
                       <div className="text-2xl font-bold text-blue-600">15+</div>

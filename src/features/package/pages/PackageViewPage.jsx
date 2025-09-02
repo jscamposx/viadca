@@ -33,6 +33,14 @@ import {
 } from "react-icons/fi";
 import { formatPrecio, sanitizeMoneda } from "../../../utils/priceUtils";
 import { useSEO } from "../../../hooks/useSEO";
+import { 
+  generateSEOTitle, 
+  generateSEODescription, 
+  generatePackageKeywords,
+  generatePackageJsonLd,
+  generatePackageOG,
+  generatePackageTwitter
+} from "../../../utils/seoUtils";
 
 function LoadingSpinner() {
   return (
@@ -239,56 +247,14 @@ function PackageViewPage() {
   // Preparar config SEO SIEMPRE antes de returns condicionales
   let seoConfig;
   if (paquete) {
-    const monedaTmp = sanitizeMoneda(paquete?.moneda);
     seoConfig = {
-      title: `${paquete.titulo} | Paquete de Viaje | Viadca Viajes`,
-      description:
-        paquete.descripcion ||
-        `Descubre el paquete ${paquete.titulo} con ${paquete.duracion_dias} días de aventura${paquete.destinos?.length ? ` por ${paquete.destinos.map(d=> d.ciudad || d.destino).join(', ')}` : ''}. Reserva ahora con Viadca Viajes.`,
-      keywords: [
-        paquete.titulo,
-        "paquete de viaje",
-        "viajes organizados",
-        ...((paquete.destinos || []).map((d) => d.ciudad || d.destino) || []),
-      ],
+      title: generateSEOTitle(paquete),
+      description: generateSEODescription(paquete),
+      keywords: generatePackageKeywords(paquete),
       canonical: `https://www.viadca.app/paquetes/${url}`,
-      og: {
-        type: "product",
-        image:
-          paquete.imagenes?.[0]?.url ||
-          "https://www.viadca.app/viadca-preview.jpg",
-      },
-      jsonLd: [
-        {
-          "@context": "https://schema.org",
-          "@type": "BreadcrumbList",
-          itemListElement: [
-            { "@type": "ListItem", position: 1, name: "Inicio", item: "https://www.viadca.app/" },
-            { "@type": "ListItem", position: 2, name: "Paquetes", item: "https://www.viadca.app/paquetes" },
-            { "@type": "ListItem", position: 3, name: paquete.titulo, item: `https://www.viadca.app/paquetes/${url}` },
-          ],
-        },
-        {
-          "@context": "https://schema.org",
-            "@type": "Product",
-            name: paquete.titulo,
-            description:
-              paquete.descripcion ||
-              `Paquete de viaje ${paquete.titulo} con ${paquete.duracion_dias} días`,
-            image: (paquete.imagenes || []).map((i) => i.url).slice(0, 6),
-            sku: paquete.codigo || url,
-            brand: { "@type": "Brand", name: "Viadca Viajes" },
-            offers: {
-              "@type": "Offer",
-              priceCurrency: monedaTmp || "MXN",
-              price: parseFloat(paquete.precio_total) || 0,
-              url: `https://www.viadca.app/paquetes/${url}`,
-              availability: paquete.activo
-                ? "https://schema.org/InStock"
-                : "https://schema.org/Discontinued",
-            },
-        },
-      ],
+      og: generatePackageOG(paquete, url),
+      twitter: generatePackageTwitter(paquete),
+      jsonLd: generatePackageJsonLd(paquete, url),
     };
   } else if (loading) {
     seoConfig = { title: "Cargando paquete | Viadca Viajes", noindex: true };
