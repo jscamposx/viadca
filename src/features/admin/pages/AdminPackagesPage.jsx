@@ -25,7 +25,7 @@ import {
   FiRefreshCw,
   FiXCircle,
   FiStar, // añadido
-  FiHeart
+  FiHeart,
 } from "react-icons/fi";
 import api from "../../../api";
 // import { useNotification } from "./AdminLayout";
@@ -1023,7 +1023,10 @@ const AdminPaquetes = () => {
                 }
                 aria-label="Mostrar todos los paquetes"
                 className={`px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg sm:rounded-xl text-xs sm:text-sm font-medium transition-all duration-200 ${
-                  !mayoristaFilter && !tipoProductoFilter && !statusFilter && !favoritoFilter
+                  !mayoristaFilter &&
+                  !tipoProductoFilter &&
+                  !statusFilter &&
+                  !favoritoFilter
                     ? "bg-gradient-to-r from-purple-500 to-indigo-600 text-white shadow-lg"
                     : "bg-white text-gray-600 hover:bg-purple-50 hover:text-purple-700 border border-gray-200 hover:border-purple-200"
                 }`}
@@ -1288,13 +1291,19 @@ const AdminPaquetes = () => {
                       >
                         <FiStar
                           className={`w-4 h-4 transition-colors duration-300 ${
-                            paquete.favorito ? "fill-yellow-900" : "group-hover/fav:scale-110"
+                            paquete.favorito
+                              ? "fill-yellow-900"
+                              : "group-hover/fav:scale-110"
                           }`}
                         />
                         <span className="sr-only">Toggle favorito</span>
-                        <span className={`absolute inset-0 rounded-xl ring-2 ring-yellow-400/40 animate-ping ${
-                          paquete.favorito ? "opacity-70" : "opacity-0 group-hover/fav:opacity-40"
-                        }`} />
+                        <span
+                          className={`absolute inset-0 rounded-xl ring-2 ring-yellow-400/40 animate-ping ${
+                            paquete.favorito
+                              ? "opacity-70"
+                              : "opacity-0 group-hover/fav:opacity-40"
+                          }`}
+                        />
                         <span className="pointer-events-none absolute top-full mt-1 px-2 py-1 rounded-md bg-gray-900 text-[10px] font-medium text-white opacity-0 group-hover/fav:opacity-100 transition-opacity whitespace-nowrap shadow-lg">
                           {paquete.favorito ? "Favorito" : "Marcar favorito"}
                         </span>

@@ -8,7 +8,10 @@ import {
 } from "react-icons/fi";
 import { FaWhatsapp } from "react-icons/fa";
 import { useContactActions } from "../../../hooks/useContactActions";
-import { AnimatedSection, useSectionReveal } from "../../../hooks/scrollAnimations"; // actualizado
+import {
+  AnimatedSection,
+  useSectionReveal,
+} from "../../../hooks/scrollAnimations"; // actualizado
 import { Carousel } from "react-responsive-carousel";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 
@@ -64,7 +67,11 @@ const Services = () => {
 
       <div className="max-w-7xl mx-auto relative">
         {/* Encabezado animado */}
-        <AnimatedSection animation="fadeInUp" className="text-center mb-12 lg:mb-16" forceVisible={sectionVisible}>
+        <AnimatedSection
+          animation="fadeInUp"
+          className="text-center mb-12 lg:mb-16"
+          forceVisible={sectionVisible}
+        >
           <p className="text-slate-600 font-semibold text-base sm:text-lg uppercase tracking-wide mb-3 lg:mb-4">
             NUESTROS SERVICIOS
           </p>
@@ -86,7 +93,8 @@ const Services = () => {
 
         {/* Carrusel Mobile */}
         {isMobile && (
-          <div className="lg:hidden -mx-4 px-1 pb-8">{/* padding extra para indicadores */}
+          <div className="lg:hidden -mx-4 px-1 pb-8">
+            {/* padding extra para indicadores */}
             <Carousel
               showThumbs={false}
               showStatus={false}
@@ -104,7 +112,12 @@ const Services = () => {
             >
               {/* Slide 1 */}
               <div className="px-3 pb-2">
-                <AnimatedSection animation="fadeInUp" delay={0} className="h-full" forceVisible={sectionVisible}>
+                <AnimatedSection
+                  animation="fadeInUp"
+                  delay={0}
+                  className="h-full"
+                  forceVisible={sectionVisible}
+                >
                   {/* Card 1 - Tours Personalizados */}
                   <article
                     className="relative overflow-hidden bg-white p-6 lg:p-8 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 border border-orange-100 hover:border-orange-300 group h-full"
@@ -138,8 +151,8 @@ const Services = () => {
                       Tours Personalizados
                     </h3>
                     <p className="text-slate-600 leading-relaxed text-sm lg:text-base text-center">
-                      Diseñamos itinerarios únicos adaptados a tus gustos, presupuesto y
-                      tiempo disponible.
+                      Diseñamos itinerarios únicos adaptados a tus gustos,
+                      presupuesto y tiempo disponible.
                     </p>
                     <div className="mt-4 flex flex-wrap items-center justify-center gap-2">
                       <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-900">
@@ -154,7 +167,12 @@ const Services = () => {
               </div>
               {/* Slide 2 */}
               <div className="px-3 pb-2">
-                <AnimatedSection animation="fadeInUp" delay={150} className="h-full" forceVisible={sectionVisible}>
+                <AnimatedSection
+                  animation="fadeInUp"
+                  delay={150}
+                  className="h-full"
+                  forceVisible={sectionVisible}
+                >
                   {/* Card 2 - Destinos Nacionales e Internacionales */}
                   <article
                     className="relative overflow-hidden bg-white p-6 lg:p-8 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 border border-blue-100 hover:border-blue-300 group h-full"
@@ -186,8 +204,8 @@ const Services = () => {
                       Destinos Nacionales e Internacionales
                     </h3>
                     <p className="text-slate-600 leading-relaxed text-sm lg:text-base text-center">
-                      Explora México y el mundo con nuestros paquetes completos que
-                      incluyen vuelos, hospedaje y actividades.
+                      Explora México y el mundo con nuestros paquetes completos
+                      que incluyen vuelos, hospedaje y actividades.
                     </p>
                     <div className="mt-4 flex flex-wrap items-center justify-center gap-2">
                       <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-900">
@@ -202,7 +220,12 @@ const Services = () => {
               </div>
               {/* Slide 3 */}
               <div className="px-3 pb-2">
-                <AnimatedSection animation="fadeInUp" delay={300} className="h-full" forceVisible={sectionVisible}>
+                <AnimatedSection
+                  animation="fadeInUp"
+                  delay={300}
+                  className="h-full"
+                  forceVisible={sectionVisible}
+                >
                   {/* Card 3 - Viajes Corporativos */}
                   <article
                     className="relative overflow-hidden bg-white p-6 lg:p-8 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 border border-green-100 hover:border-green-300 group h-full"
@@ -234,8 +257,8 @@ const Services = () => {
                       Viajes Corporativos
                     </h3>
                     <p className="text-slate-600 leading-relaxed text-sm lg:text-base text-center">
-                      Soluciones empresariales para convenciones, reuniones de trabajo y
-                      eventos corporativos.
+                      Soluciones empresariales para convenciones, reuniones de
+                      trabajo y eventos corporativos.
                     </p>
                     <div className="mt-4 flex flex-wrap items-center justify-center gap-2">
                       <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-900">
@@ -250,7 +273,12 @@ const Services = () => {
               </div>
               {/* Slide 4 */}
               <div className="px-3 pb-2">
-                <AnimatedSection animation="fadeInUp" delay={450} className="h-full" forceVisible={sectionVisible}>
+                <AnimatedSection
+                  animation="fadeInUp"
+                  delay={450}
+                  className="h-full"
+                  forceVisible={sectionVisible}
+                >
                   {/* Card 4 - Asesoría Especializada */}
                   <article
                     className="relative overflow-hidden bg-white p-6 lg:p-8 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 border border-purple-100 hover:border-purple-300 group h-full"
@@ -282,7 +310,8 @@ const Services = () => {
                       Asesoría Especializada
                     </h3>
                     <p className="text-slate-600 leading-relaxed text-sm lg:text-base text-center">
-                      Más de 15 años de experiencia respaldándonos para brindarte la mejor asesoría y recomendaciones.
+                      Más de 15 años de experiencia respaldándonos para
+                      brindarte la mejor asesoría y recomendaciones.
                     </p>
                     <div className="mt-4 flex flex-wrap items-center justify-center gap-2">
                       <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-900">
@@ -298,13 +327,13 @@ const Services = () => {
             </Carousel>
             {/* Indicadores personalizados */}
             <div className="mt-3 flex items-center justify-center gap-2">
-              {[0,1,2,3].map(i => (
+              {[0, 1, 2, 3].map((i) => (
                 <button
                   key={i}
                   type="button"
                   onClick={() => setCurrentSlide(i)}
-                  aria-label={`Ir al slide ${i+1}`}
-                  className={`w-2.5 h-2.5 rounded-full transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-blue-500 ${currentSlide===i ? 'bg-gradient-to-r from-blue-600 to-indigo-600 scale-110 shadow' : 'bg-slate-300 hover:bg-slate-400'}`}
+                  aria-label={`Ir al slide ${i + 1}`}
+                  className={`w-2.5 h-2.5 rounded-full transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-blue-500 ${currentSlide === i ? "bg-gradient-to-r from-blue-600 to-indigo-600 scale-110 shadow" : "bg-slate-300 hover:bg-slate-400"}`}
                 />
               ))}
             </div>
@@ -314,7 +343,12 @@ const Services = () => {
         {/* Grid Desktop (oculto en mobile) */}
         <div className="hidden lg:grid sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
           {/* Card 1 */}
-          <AnimatedSection animation="fadeInUp" delay={0} className="h-full" forceVisible={sectionVisible}>
+          <AnimatedSection
+            animation="fadeInUp"
+            delay={0}
+            className="h-full"
+            forceVisible={sectionVisible}
+          >
             <article
               className="relative overflow-hidden bg-white p-6 lg:p-8 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 border border-orange-100 hover:border-orange-300 group h-full"
               role="article"
@@ -347,8 +381,8 @@ const Services = () => {
                 Tours Personalizados
               </h3>
               <p className="text-slate-600 leading-relaxed text-sm lg:text-base text-center">
-                Diseñamos itinerarios únicos adaptados a tus gustos, presupuesto y
-                tiempo disponible.
+                Diseñamos itinerarios únicos adaptados a tus gustos, presupuesto
+                y tiempo disponible.
               </p>
               <div className="mt-4 flex flex-wrap items-center justify-center gap-2">
                 <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-900">
@@ -362,7 +396,12 @@ const Services = () => {
           </AnimatedSection>
 
           {/* Card 2 */}
-          <AnimatedSection animation="fadeInUp" delay={150} className="h-full" forceVisible={sectionVisible}>
+          <AnimatedSection
+            animation="fadeInUp"
+            delay={150}
+            className="h-full"
+            forceVisible={sectionVisible}
+          >
             <article
               className="relative overflow-hidden bg-white p-6 lg:p-8 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 border border-blue-100 hover:border-blue-300 group h-full"
               role="article"
@@ -408,7 +447,12 @@ const Services = () => {
           </AnimatedSection>
 
           {/* Card 3 */}
-          <AnimatedSection animation="fadeInUp" delay={300} className="h-full" forceVisible={sectionVisible}>
+          <AnimatedSection
+            animation="fadeInUp"
+            delay={300}
+            className="h-full"
+            forceVisible={sectionVisible}
+          >
             <article
               className="relative overflow-hidden bg-white p-6 lg:p-8 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 border border-green-100 hover:border-green-300 group h-full"
               role="article"
@@ -439,8 +483,8 @@ const Services = () => {
                 Viajes Corporativos
               </h3>
               <p className="text-slate-600 leading-relaxed text-sm lg:text-base text-center">
-                Soluciones empresariales para convenciones, reuniones de trabajo y
-                eventos corporativos.
+                Soluciones empresariales para convenciones, reuniones de trabajo
+                y eventos corporativos.
               </p>
               <div className="mt-4 flex flex-wrap items-center justify-center gap-2">
                 <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-900">
@@ -454,7 +498,12 @@ const Services = () => {
           </AnimatedSection>
 
           {/* Card 4 */}
-          <AnimatedSection animation="fadeInUp" delay={450} className="h-full" forceVisible={sectionVisible}>
+          <AnimatedSection
+            animation="fadeInUp"
+            delay={450}
+            className="h-full"
+            forceVisible={sectionVisible}
+          >
             <article
               className="relative overflow-hidden bg-white p-6 lg:p-8 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 border border-purple-100 hover:border-purple-300 group h-full"
               role="article"
@@ -485,7 +534,8 @@ const Services = () => {
                 Asesoría Especializada
               </h3>
               <p className="text-slate-600 leading-relaxed text-sm lg:text-base text-center">
-                Más de 15 años de experiencia respaldándonos para brindarte la mejor asesoría y recomendaciones.
+                Más de 15 años de experiencia respaldándonos para brindarte la
+                mejor asesoría y recomendaciones.
               </p>
               <div className="mt-4 flex flex-wrap items-center justify-center gap-2">
                 <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-900">
@@ -500,7 +550,12 @@ const Services = () => {
         </div>
 
         {/* CTA animada */}
-        <AnimatedSection animation="fadeInUp" delay={600} className="mt-12 lg:mt-16 text-center" forceVisible={sectionVisible}>
+        <AnimatedSection
+          animation="fadeInUp"
+          delay={600}
+          className="mt-12 lg:mt-16 text-center"
+          forceVisible={sectionVisible}
+        >
           <div className="relative overflow-hidden bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-6 lg:p-8 border border-blue-200">
             {/* brillo sutil */}
             <span
@@ -543,7 +598,10 @@ const Services = () => {
                 aria-label="Abrir chat en línea por WhatsApp"
                 onClick={openWhatsApp}
               >
-                <FaWhatsapp className="w-5 h-5 flex-shrink-0" aria-hidden="true" />
+                <FaWhatsapp
+                  className="w-5 h-5 flex-shrink-0"
+                  aria-hidden="true"
+                />
                 <span>Chatea con nosotros</span>
               </button>
             </div>

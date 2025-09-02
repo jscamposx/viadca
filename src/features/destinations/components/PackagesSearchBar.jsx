@@ -1,5 +1,5 @@
-import React from 'react';
-import { FiSearch, FiSliders } from 'react-icons/fi';
+import React from "react";
+import { FiSearch, FiSliders } from "react-icons/fi";
 
 const PackagesSearchBar = ({ value, onChange, onOpenFilters }) => {
   return (

@@ -1,14 +1,20 @@
-import React, { useRef, useCallback } from 'react';
-import { AnimatedSection } from '../../../hooks/scrollAnimations';
-import { FiChevronLeft, FiChevronRight } from 'react-icons/fi';
+import React, { useRef, useCallback } from "react";
+import { AnimatedSection } from "../../../hooks/scrollAnimations";
+import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
 
-const PackagesSection = ({ id, title, description, children, carousel = false }) => {
+const PackagesSection = ({
+  id,
+  title,
+  description,
+  children,
+  carousel = false,
+}) => {
   const scrollRef = useRef(null);
   const scrollBy = useCallback((dir) => {
     if (!scrollRef.current) return;
     const el = scrollRef.current;
     const amount = el.clientWidth * 0.85 * dir;
-    el.scrollBy({ left: amount, behavior: 'smooth' });
+    el.scrollBy({ left: amount, behavior: "smooth" });
   }, []);
 
   const childArray = React.Children.toArray(children);
@@ -29,7 +35,10 @@ const PackagesSection = ({ id, title, description, children, carousel = false })
                 </p>
               )}
             </div>
-            <a href="#top" className="text-sm font-medium text-blue-600 hover:text-blue-700 hover:underline self-start sm:self-auto">
+            <a
+              href="#top"
+              className="text-sm font-medium text-blue-600 hover:text-blue-700 hover:underline self-start sm:self-auto"
+            >
               Volver arriba
             </a>
           </div>

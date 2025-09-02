@@ -5,9 +5,11 @@ import { useContactActions } from "../../../hooks/useContactActions"; // nuevo
 
 const PrivacyPage = () => {
   const lastUpdate = "Agosto 2025";
-  const { openWhatsApp, getPhoneHref, onPhoneClick, ToastPortal } = useContactActions(); // hook
+  const { openWhatsApp, getPhoneHref, onPhoneClick, ToastPortal } =
+    useContactActions(); // hook
 
-  const whatsappMsg = "Hola, tengo dudas sobre su política de privacidad. ¿Podrían ayudarme?";
+  const whatsappMsg =
+    "Hola, tengo dudas sobre su política de privacidad. ¿Podrían ayudarme?";
 
   return (
     <PageTransition>

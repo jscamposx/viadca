@@ -5,8 +5,10 @@ import { useContactActions } from "../../../hooks/useContactActions"; // nuevo
 
 const CookiesPage = () => {
   const lastUpdate = "Agosto 2025";
-  const { openWhatsApp, getPhoneHref, onPhoneClick, ToastPortal } = useContactActions();
-  const whatsappMsg = "Hola, tengo dudas sobre su política de cookies. ¿Podrían brindarme más información?";
+  const { openWhatsApp, getPhoneHref, onPhoneClick, ToastPortal } =
+    useContactActions();
+  const whatsappMsg =
+    "Hola, tengo dudas sobre su política de cookies. ¿Podrían brindarme más información?";
 
   return (
     <PageTransition>

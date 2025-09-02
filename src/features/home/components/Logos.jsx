@@ -102,7 +102,10 @@ const Logos = ({ logos }) => {
             Socios y marcas colaboradoras
           </h2>
           <div className="mt-4 flex justify-center">
-            <span className="h-1 w-16 rounded bg-blue-500/70" aria-hidden="true" />
+            <span
+              className="h-1 w-16 rounded bg-blue-500/70"
+              aria-hidden="true"
+            />
           </div>
         </div>
         <div
@@ -115,50 +118,50 @@ const Logos = ({ logos }) => {
           onBlur={() => setPaused(false)}
           tabIndex={0}
         >
-           <div
+          <div
             className="pointer-events-none absolute left-0 top-0 h-full w-16 sm:w-24 lg:w-32 bg-gradient-to-r from-white to-transparent z-10"
-             aria-hidden="true"
-           />
-           <div
+            aria-hidden="true"
+          />
+          <div
             className="pointer-events-none absolute right-0 top-0 h-full w-16 sm:w-24 lg:w-32 bg-gradient-to-l from-white to-transparent z-10"
-             aria-hidden="true"
-           />
+            aria-hidden="true"
+          />
 
-           <div
-             ref={trackRef}
-             className="flex w-max items-center opacity-90 hover:opacity-100 transition-opacity py-6 px-2 sm:px-4 will-change-transform select-none"
-             style={{ transform: "translate3d(0,0,0)" }}
-           >
-             {sequences.map((seq, sIdx) => (
-               <ul
-                 key={`seq-${sIdx}`}
-                 ref={sIdx === 0 ? firstSeqRef : undefined}
-                 className="flex w-max shrink-0 items-center gap-16 sm:gap-20 lg:gap-24"
-                 role="list"
-               >
-                 {seq.map((logo, idx) => (
-                   <li key={`logo-${sIdx}-${idx}`} className="shrink-0">
-                     <div
-                       className={`${"flex items-center justify-center"} ${logo.boxed ? "bg-white/90 backdrop-blur rounded-2xl p-6 shadow-xl border border-slate-100" : ""}`}
-                       role="img"
-                       aria-label={logo.alt}
-                     >
-                       <img
-                         src={logo.src}
-                         alt={logo.alt}
-                         width={logo.width || undefined}
-                         height={logo.height || undefined}
-                         className={`${logo.h || "h-16"} w-auto grayscale hover:grayscale-0 transition-all duration-500 ease-linear drop-shadow focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-600`}
-                         decoding="async"
-                         loading="lazy"
-                       />
-                     </div>
-                   </li>
-                 ))}
-               </ul>
-             ))}
-           </div>
-         </div>
+          <div
+            ref={trackRef}
+            className="flex w-max items-center opacity-90 hover:opacity-100 transition-opacity py-6 px-2 sm:px-4 will-change-transform select-none"
+            style={{ transform: "translate3d(0,0,0)" }}
+          >
+            {sequences.map((seq, sIdx) => (
+              <ul
+                key={`seq-${sIdx}`}
+                ref={sIdx === 0 ? firstSeqRef : undefined}
+                className="flex w-max shrink-0 items-center gap-16 sm:gap-20 lg:gap-24"
+                role="list"
+              >
+                {seq.map((logo, idx) => (
+                  <li key={`logo-${sIdx}-${idx}`} className="shrink-0">
+                    <div
+                      className={`${"flex items-center justify-center"} ${logo.boxed ? "bg-white/90 backdrop-blur rounded-2xl p-6 shadow-xl border border-slate-100" : ""}`}
+                      role="img"
+                      aria-label={logo.alt}
+                    >
+                      <img
+                        src={logo.src}
+                        alt={logo.alt}
+                        width={logo.width || undefined}
+                        height={logo.height || undefined}
+                        className={`${logo.h || "h-16"} w-auto grayscale hover:grayscale-0 transition-all duration-500 ease-linear drop-shadow focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-600`}
+                        decoding="async"
+                        loading="lazy"
+                      />
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            ))}
+          </div>
+        </div>
       </div>
     </section>
   );

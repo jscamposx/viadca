@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from "react";
 
 // Hook simple para animaciones de scroll
 function useScrollAnimation(options = {}) {
@@ -7,9 +7,9 @@ function useScrollAnimation(options = {}) {
 
   const {
     threshold = 0.1,
-    rootMargin = '0px 0px -100px 0px',
+    rootMargin = "0px 0px -100px 0px",
     delay = 0,
-    triggerOnce = true
+    triggerOnce = true,
   } = options;
 
   useEffect(() => {
@@ -29,8 +29,8 @@ function useScrollAnimation(options = {}) {
       },
       {
         threshold,
-        rootMargin
-      }
+        rootMargin,
+      },
     );
 
     observer.observe(element);
@@ -49,7 +49,7 @@ function useScrollAnimation(options = {}) {
 function useSectionReveal(options = {}) {
   const sectionRef = useRef(null);
   const [isSectionVisible, setIsSectionVisible] = useState(false);
-  const { threshold = 0.05, rootMargin = '0px 0px -10% 0px' } = options;
+  const { threshold = 0.05, rootMargin = "0px 0px -10% 0px" } = options;
 
   useEffect(() => {
     if (isSectionVisible) return; // solo una vez
@@ -62,7 +62,7 @@ function useSectionReveal(options = {}) {
           setIsSectionVisible(true);
         }
       },
-      { threshold, rootMargin }
+      { threshold, rootMargin },
     );
 
     observer.observe(el);
@@ -79,12 +79,12 @@ function useSectionReveal(options = {}) {
 function usePrefersReducedMotion() {
   const [reduced, setReduced] = useState(false);
   useEffect(() => {
-    if (typeof window === 'undefined' || !window.matchMedia) return;
-    const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
+    if (typeof window === "undefined" || !window.matchMedia) return;
+    const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
     const handle = () => setReduced(mq.matches);
     handle();
-    mq.addEventListener('change', handle);
-    return () => mq.removeEventListener('change', handle);
+    mq.addEventListener("change", handle);
+    return () => mq.removeEventListener("change", handle);
   }, []);
   return reduced;
 }
@@ -92,74 +92,77 @@ function usePrefersReducedMotion() {
 // Clases CSS para diferentes tipos de animaciones
 const animationClasses = {
   fadeInUp: {
-    initial: 'opacity-0 translate-y-8',
-    animate: 'opacity-100 translate-y-0',
-    transition: 'transition-all duration-700 ease-out'
+    initial: "opacity-0 translate-y-8",
+    animate: "opacity-100 translate-y-0",
+    transition: "transition-all duration-700 ease-out",
   },
   fadeInLeft: {
-    initial: 'opacity-0 -translate-x-8',
-    animate: 'opacity-100 translate-x-0',
-    transition: 'transition-all duration-700 ease-out'
+    initial: "opacity-0 -translate-x-8",
+    animate: "opacity-100 translate-x-0",
+    transition: "transition-all duration-700 ease-out",
   },
   fadeInRight: {
-    initial: 'opacity-0 translate-x-8',
-    animate: 'opacity-100 translate-x-0',
-    transition: 'transition-all duration-700 ease-out'
+    initial: "opacity-0 translate-x-8",
+    animate: "opacity-100 translate-x-0",
+    transition: "transition-all duration-700 ease-out",
   },
   fadeIn: {
-    initial: 'opacity-0',
-    animate: 'opacity-100',
-    transition: 'transition-opacity duration-700 ease-out'
+    initial: "opacity-0",
+    animate: "opacity-100",
+    transition: "transition-opacity duration-700 ease-out",
   },
   scaleIn: {
-    initial: 'opacity-0 scale-95',
-    animate: 'opacity-100 scale-100',
-    transition: 'transition-all duration-700 ease-out'
+    initial: "opacity-0 scale-95",
+    animate: "opacity-100 scale-100",
+    transition: "transition-all duration-700 ease-out",
   },
   // Nuevas animaciones mejoradas para destinos
   slideUpCard: {
-    initial: 'opacity-0 translate-y-12 scale-95',
-    animate: 'opacity-100 translate-y-0 scale-100',
-    transition: 'transition-all duration-800 ease-[cubic-bezier(0.16,1,0.3,1)]'
+    initial: "opacity-0 translate-y-12 scale-95",
+    animate: "opacity-100 translate-y-0 scale-100",
+    transition: "transition-all duration-800 ease-[cubic-bezier(0.16,1,0.3,1)]",
   },
   floatIn: {
-    initial: 'opacity-0 translate-y-16 rotate-3',
-    animate: 'opacity-100 translate-y-0 rotate-0',
-    transition: 'transition-all duration-900 ease-[cubic-bezier(0.165,0.84,0.44,1)]'
+    initial: "opacity-0 translate-y-16 rotate-3",
+    animate: "opacity-100 translate-y-0 rotate-0",
+    transition:
+      "transition-all duration-900 ease-[cubic-bezier(0.165,0.84,0.44,1)]",
   },
   bounceIn: {
-    initial: 'opacity-0 scale-50 translate-y-8',
-    animate: 'opacity-100 scale-100 translate-y-0',
-    transition: 'transition-all duration-700 ease-[cubic-bezier(0.68,-0.55,0.265,1.55)]'
+    initial: "opacity-0 scale-50 translate-y-8",
+    animate: "opacity-100 scale-100 translate-y-0",
+    transition:
+      "transition-all duration-700 ease-[cubic-bezier(0.68,-0.55,0.265,1.55)]",
   },
   slideUpTitle: {
-    initial: 'opacity-0 translate-y-6 blur-sm',
-    animate: 'opacity-100 translate-y-0 blur-none',
-    transition: 'transition-all duration-800 ease-out'
+    initial: "opacity-0 translate-y-6 blur-sm",
+    animate: "opacity-100 translate-y-0 blur-none",
+    transition: "transition-all duration-800 ease-out",
   },
   destCard: {
-    initial: 'opacity-0 translate-y-10 scale-[0.98]',
-    animate: 'opacity-100 translate-y-0 scale-100',
-    transition: 'transition-all duration-600 ease-[cubic-bezier(.4,0,.2,1)] will-change-transform'
-  }
+    initial: "opacity-0 translate-y-10 scale-[0.98]",
+    animate: "opacity-100 translate-y-0 scale-100",
+    transition:
+      "transition-all duration-600 ease-[cubic-bezier(.4,0,.2,1)] will-change-transform",
+  },
 };
 
 // Componente wrapper para animaciones
-function AnimatedSection({ 
-  children, 
-  animation = 'fadeInUp', 
-  delay = 0, 
-  className = '',
+function AnimatedSection({
+  children,
+  animation = "fadeInUp",
+  delay = 0,
+  className = "",
   forceVisible = false, // NUEVO: fuerza la animación (para cuando la sección ya es visible)
   triggerOnce = true,
   stagger, // nuevo: tamaño del escalonado en ms
   index = 0, // nuevo: índice del item para escalonado
-  ...props 
+  ...props
 }) {
   const reducedMotion = usePrefersReducedMotion();
   const [ref, isVisible] = useScrollAnimation({ delay, triggerOnce });
   const animClasses = animationClasses[animation] || animationClasses.fadeInUp;
-  const show = reducedMotion ? true : (forceVisible || isVisible);
+  const show = reducedMotion ? true : forceVisible || isVisible;
   const style = {};
   if (!reducedMotion && stagger && show) {
     const totalDelay = index * stagger;
@@ -173,19 +176,10 @@ function AnimatedSection({
     : `${animClasses.transition} ${show ? animClasses.animate : animClasses.initial} ${className}`;
 
   return (
-    <div
-      ref={ref}
-      className={appliedClasses}
-      style={style}
-      {...props}
-    >
+    <div ref={ref} className={appliedClasses} style={style} {...props}>
       {children}
     </div>
   );
 }
 
-export {
-  useScrollAnimation,
-  useSectionReveal,
-  AnimatedSection
-};
+export { useScrollAnimation, useSectionReveal, AnimatedSection };

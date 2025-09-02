@@ -225,10 +225,7 @@ export const usePackageForm = (initialPackageData = null) => {
         "";
       const estado = getComp("administrative_area_level_1") || "";
       const pais = getComp("country") || "";
-      const display = formatted_address
-        .split(",")
-        .slice(0, 2)
-        .join(", ");
+      const display = formatted_address.split(",").slice(0, 2).join(", ");
       setFormData((prev) => ({
         ...prev,
         ...(selectionMode === "destino"
@@ -581,10 +578,10 @@ export const usePackageForm = (initialPackageData = null) => {
         return {
           ciudad: detailed.ciudad,
           estado: detailed.estado || null,
-            pais: detailed.pais || null,
-            destino_lat: parseFloat(lat),
-            destino_lng: parseFloat(lng),
-            orden,
+          pais: detailed.pais || null,
+          destino_lat: parseFloat(lat),
+          destino_lng: parseFloat(lng),
+          orden,
         };
       }
       const parts = (displayName || "").split(",").map((p) => p.trim());
@@ -618,20 +615,18 @@ export const usePackageForm = (initialPackageData = null) => {
           pais: formData.destino_pais,
         },
       ),
-      ...((formData.additionalDestinationsDetailed &&
+      ...(formData.additionalDestinationsDetailed &&
       formData.additionalDestinationsDetailed.length
         ? formData.additionalDestinationsDetailed.map((d, idx) =>
-            buildDestino(
-              d.ciudad,
-              d.lat,
-              d.lng,
-              idx + 2,
-              { ciudad: d.ciudad, estado: d.estado, pais: d.pais },
-            ),
+            buildDestino(d.ciudad, d.lat, d.lng, idx + 2, {
+              ciudad: d.ciudad,
+              estado: d.estado,
+              pais: d.pais,
+            }),
           )
         : (formData.additionalDestinations || []).map((d, idx) =>
             buildDestino(d.name, d.lat, d.lng, idx + 2),
-          ))),
+          )),
     ];
     const payload = {
       titulo: formData.titulo,

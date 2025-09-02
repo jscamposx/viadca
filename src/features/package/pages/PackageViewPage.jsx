@@ -33,13 +33,13 @@ import {
 } from "react-icons/fi";
 import { formatPrecio, sanitizeMoneda } from "../../../utils/priceUtils";
 import { useSEO } from "../../../hooks/useSEO";
-import { 
-  generateSEOTitle, 
-  generateSEODescription, 
+import {
+  generateSEOTitle,
+  generateSEODescription,
   generatePackageKeywords,
   generatePackageJsonLd,
   generatePackageOG,
-  generatePackageTwitter
+  generatePackageTwitter,
 } from "../../../utils/seoUtils";
 
 function LoadingSpinner() {
@@ -259,9 +259,15 @@ function PackageViewPage() {
   } else if (loading) {
     seoConfig = { title: "Cargando paquete | Viadca Viajes", noindex: true };
   } else if (error) {
-    seoConfig = { title: "Error al cargar paquete | Viadca Viajes", noindex: true };
+    seoConfig = {
+      title: "Error al cargar paquete | Viadca Viajes",
+      noindex: true,
+    };
   } else {
-    seoConfig = { title: "Paquete no encontrado | Viadca Viajes", noindex: true };
+    seoConfig = {
+      title: "Paquete no encontrado | Viadca Viajes",
+      noindex: true,
+    };
   }
   useSEO(seoConfig);
 
@@ -522,7 +528,9 @@ function PackageViewPage() {
                           Pronóstico del Clima
                         </h2>
                         <p className="text-gray-600">
-                          El tiempo en {paquete.destinos[0].ciudad || paquete.destinos[0].destino}
+                          El tiempo en{" "}
+                          {paquete.destinos[0].ciudad ||
+                            paquete.destinos[0].destino}
                         </p>
                       </div>
                     </div>
@@ -531,7 +539,10 @@ function PackageViewPage() {
                       <WeatherForecast
                         lat={paquete.destinos[0].destino_lat}
                         lon={paquete.destinos[0].destino_lng}
-                        cityName={paquete.destinos[0].ciudad || paquete.destinos[0].destino}
+                        cityName={
+                          paquete.destinos[0].ciudad ||
+                          paquete.destinos[0].destino
+                        }
                       />
                     </div>
                   </section>
@@ -552,8 +563,10 @@ function PackageViewPage() {
                     {paquete?.destinos && paquete.destinos.length > 1 && (
                       <div className="mt-3 p-3 bg-purple-50 rounded-xl border border-purple-100">
                         <span className="text-sm font-medium text-purple-700">
-                          Ruta: {" "}
-                          {paquete.destinos.map((d) => d.ciudad || d.destino).join(" → ")}
+                          Ruta:{" "}
+                          {paquete.destinos
+                            .map((d) => d.ciudad || d.destino)
+                            .join(" → ")}
                         </span>
                       </div>
                     )}

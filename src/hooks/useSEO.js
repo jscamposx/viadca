@@ -1,5 +1,5 @@
-import { useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useEffect } from "react";
+import { useLocation } from "react-router-dom";
 
 /**
  * Hook para gestionar etiquetas SEO dinámicas (title, meta, JSON-LD, canonical).
@@ -18,15 +18,15 @@ export function useSEO(config = {}) {
   const location = useLocation();
 
   useEffect(() => {
-    if (typeof document === 'undefined') return;
+    if (typeof document === "undefined") return;
 
     const {
       title,
-      siteName = 'Viadca Viajes',
+      siteName = "Viadca Viajes",
       description,
       keywords,
       canonical,
-      robots = 'index,follow',
+      robots = "index,follow",
       og = {},
       twitter = {},
       jsonLd = [],
@@ -41,32 +41,36 @@ export function useSEO(config = {}) {
       let selector = `meta[${attrName}='${attrValue}']`;
       let el = document.head.querySelector(selector);
       if (!el) {
-        el = document.createElement('meta');
+        el = document.createElement("meta");
         el.setAttribute(attrName, attrValue);
         document.head.appendChild(el);
       }
-      el.setAttribute('content', content);
+      el.setAttribute("content", content);
       return el;
     };
 
     // Description
-    ensureMeta('name', 'description', description);
+    ensureMeta("name", "description", description);
     // Keywords (no crítico pero puede ayudar en buscadores secundarios)
     if (keywords) {
-      ensureMeta('name', 'keywords', Array.isArray(keywords) ? keywords.join(', ') : keywords);
+      ensureMeta(
+        "name",
+        "keywords",
+        Array.isArray(keywords) ? keywords.join(", ") : keywords,
+      );
     }
     // Robots
-    ensureMeta('name', 'robots', noindex ? 'noindex,nofollow' : robots);
+    ensureMeta("name", "robots", noindex ? "noindex,nofollow" : robots);
 
     // Canonical
     if (canonical) {
       let link = document.head.querySelector("link[rel='canonical']");
       if (!link) {
-        link = document.createElement('link');
-        link.setAttribute('rel', 'canonical');
+        link = document.createElement("link");
+        link.setAttribute("rel", "canonical");
         document.head.appendChild(link);
       }
-      link.setAttribute('href', canonical);
+      link.setAttribute("href", canonical);
     }
 
     // Open Graph
@@ -75,28 +79,34 @@ export function useSEO(config = {}) {
       description,
       url: canonical || `https://www.viadca.app${location.pathname}`,
       site_name: siteName,
-      type: 'website',
+      type: "website",
     };
     Object.entries({ ...ogDefaults, ...og }).forEach(([k, v]) => {
       if (!v) return;
-      ensureMeta('property', `og:${k}`, v);
+      ensureMeta("property", `og:${k}`, v);
     });
 
     // Twitter
-    const twitterDefaults = { card: 'summary_large_image', title: fullTitle, description };
+    const twitterDefaults = {
+      card: "summary_large_image",
+      title: fullTitle,
+      description,
+    };
     Object.entries({ ...twitterDefaults, ...twitter }).forEach(([k, v]) => {
       if (!v) return;
-      ensureMeta('name', `twitter:${k}`, v);
+      ensureMeta("name", `twitter:${k}`, v);
     });
 
     // JSON-LD (eliminar previos creados por este hook)
-    const previous = document.head.querySelectorAll('script[data-dynamic-jsonld]');
+    const previous = document.head.querySelectorAll(
+      "script[data-dynamic-jsonld]",
+    );
     previous.forEach((p) => p.remove());
     const list = Array.isArray(jsonLd) ? jsonLd : [jsonLd];
     list.filter(Boolean).forEach((obj) => {
-      const script = document.createElement('script');
-      script.type = 'application/ld+json';
-      script.dataset.dynamicJsonld = 'true';
+      const script = document.createElement("script");
+      script.type = "application/ld+json";
+      script.dataset.dynamicJsonld = "true";
       script.textContent = JSON.stringify(obj);
       document.head.appendChild(script);
     });

@@ -54,9 +54,9 @@ const createCustomIcon = (color, destino, index) => {
 
 const RouteMap = ({ paquete }) => {
   const [mapKey, setMapKey] = useState(0);
-  const destinos = (paquete?.destinos || []).map(d => {
-    const label = d.ciudad || d.destino || d.nombre || '';
-    const composed = [d.ciudad, d.estado, d.pais].filter(Boolean).join(', ');
+  const destinos = (paquete?.destinos || []).map((d) => {
+    const label = d.ciudad || d.destino || d.nombre || "";
+    const composed = [d.ciudad, d.estado, d.pais].filter(Boolean).join(", ");
     return {
       label: composed || label,
       destino_lat: d.destino_lat || d.lat || d.latitude || null,
@@ -70,12 +70,18 @@ const RouteMap = ({ paquete }) => {
     let cancelled = false;
     (async () => {
       try {
-        await import('leaflet/dist/leaflet.css');
+        await import("leaflet/dist/leaflet.css");
       } catch (e) {
-        if (!cancelled) console.warn('No se pudo cargar el CSS de Leaflet de forma diferida', e);
+        if (!cancelled)
+          console.warn(
+            "No se pudo cargar el CSS de Leaflet de forma diferida",
+            e,
+          );
       }
     })();
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   useEffect(() => {

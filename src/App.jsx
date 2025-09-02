@@ -51,7 +51,9 @@ function AppRoutes() {
           <Route
             path="/preguntas-frecuentes"
             element={
-              <Suspense fallback={<div className="p-10 text-center">Cargando...</div>}>
+              <Suspense
+                fallback={<div className="p-10 text-center">Cargando...</div>}
+              >
                 <FaqPage />
               </Suspense>
             }

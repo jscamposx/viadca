@@ -297,7 +297,12 @@ export const ThumbnailImage = ({ src, alt = "Thumbnail", ...props }) => (
 );
 
 // Componente específico para imágenes de hero/banner
-export const HeroImage = ({ src, alt = "Hero image", fadeIn = false, ...props }) => (
+export const HeroImage = ({
+  src,
+  alt = "Hero image",
+  fadeIn = false,
+  ...props
+}) => (
   <OptimizedImage
     src={src}
     alt={alt}

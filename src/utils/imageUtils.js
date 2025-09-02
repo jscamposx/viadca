@@ -38,7 +38,7 @@ export const getImageUrl = (urlOrImage, options = {}) => {
     typeof url === "string" &&
     (url.startsWith("/uploads") || url.startsWith("uploads/"))
   ) {
-    return `${API_URL}/${url.replace(/^\/+/ , "")}`;
+    return `${API_URL}/${url.replace(/^\/+/, "")}`;
   }
 
   // NUEVO: devolver rutas absolutas del front (activos en /public) sin prefijo API

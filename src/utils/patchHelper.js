@@ -147,8 +147,10 @@ const hasDestinationChanges = (original, current) => {
     ciudad: origFirst.ciudad || origFirst.destino || original?.destino || "",
     estado: origFirst.estado || null,
     pais: origFirst.pais || null,
-    destino_lat: parseFloat(origFirst.destino_lat || original?.destino_lat) || null,
-    destino_lng: parseFloat(origFirst.destino_lng || original?.destino_lng) || null,
+    destino_lat:
+      parseFloat(origFirst.destino_lat || original?.destino_lat) || null,
+    destino_lng:
+      parseFloat(origFirst.destino_lng || original?.destino_lng) || null,
   };
   // Normalizar destino principal actual (tomar campos desglosados si existen)
   const currentDestino = {
@@ -167,21 +169,23 @@ const hasDestinationChanges = (original, current) => {
     lat: d.destino_lat || null,
     lng: d.destino_lng || null,
   }));
-  const currentAdditionalRaw = (current.additionalDestinationsDetailed && current.additionalDestinationsDetailed.length)
-    ? current.additionalDestinationsDetailed.map((d) => ({
-        ciudad: d.ciudad || d.name || "",
-        estado: d.estado || null,
-        pais: d.pais || null,
-        lat: d.lat || null,
-        lng: d.lng || null,
-      }))
-    : (current.additionalDestinations || []).map((d) => ({
-        ciudad: d.ciudad || d.name || "",
-        estado: d.estado || null,
-        pais: d.pais || null,
-        lat: d.lat || null,
-        lng: d.lng || null,
-      }));
+  const currentAdditionalRaw =
+    current.additionalDestinationsDetailed &&
+    current.additionalDestinationsDetailed.length
+      ? current.additionalDestinationsDetailed.map((d) => ({
+          ciudad: d.ciudad || d.name || "",
+          estado: d.estado || null,
+          pais: d.pais || null,
+          lat: d.lat || null,
+          lng: d.lng || null,
+        }))
+      : (current.additionalDestinations || []).map((d) => ({
+          ciudad: d.ciudad || d.name || "",
+          estado: d.estado || null,
+          pais: d.pais || null,
+          lat: d.lat || null,
+          lng: d.lng || null,
+        }));
   if (originalAdditional.length !== currentAdditionalRaw.length) return true;
   return !originalAdditional.every((orig, idx) => {
     const curr = currentAdditionalRaw[idx];
@@ -198,11 +202,21 @@ const hasDestinationChanges = (original, current) => {
 
 const buildDestinosPayload = (formData) => {
   const parseDisplay = (display) => {
-    if (!display) return { ciudad: '', estado: null, pais: null };
-    const parts = display.split(',').map(p => p.trim());
-    if (parts.length === 1) return { ciudad: parts[0], estado: null, pais: formData.destino_pais || null };
-    if (parts.length === 2) return { ciudad: parts[0], estado: null, pais: parts[1] };
-    return { ciudad: parts[0], estado: parts[1], pais: parts[parts.length - 1] };
+    if (!display) return { ciudad: "", estado: null, pais: null };
+    const parts = display.split(",").map((p) => p.trim());
+    if (parts.length === 1)
+      return {
+        ciudad: parts[0],
+        estado: null,
+        pais: formData.destino_pais || null,
+      };
+    if (parts.length === 2)
+      return { ciudad: parts[0], estado: null, pais: parts[1] };
+    return {
+      ciudad: parts[0],
+      estado: parts[1],
+      pais: parts[parts.length - 1],
+    };
   };
   const first = {
     ciudad: formData.destino_ciudad || parseDisplay(formData.destino).ciudad,
@@ -212,11 +226,13 @@ const buildDestinosPayload = (formData) => {
     destino_lng: parseFloat(formData.destino_lng) || null,
     orden: 1,
   };
-  const additional = (formData.additionalDestinationsDetailed && formData.additionalDestinationsDetailed.length
-    ? formData.additionalDestinationsDetailed
-    : (formData.additionalDestinations || [])
+  const additional = (
+    formData.additionalDestinationsDetailed &&
+    formData.additionalDestinationsDetailed.length
+      ? formData.additionalDestinationsDetailed
+      : formData.additionalDestinations || []
   ).map((d, idx) => ({
-    ciudad: d.ciudad || d.name || '',
+    ciudad: d.ciudad || d.name || "",
     estado: d.estado || null,
     pais: d.pais || null,
     destino_lat: parseFloat(d.lat) || null,

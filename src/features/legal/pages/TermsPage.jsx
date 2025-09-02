@@ -5,8 +5,10 @@ import { useContactActions } from "../../../hooks/useContactActions"; // nuevo
 
 const TermsPage = () => {
   const lastUpdate = "Agosto 2025";
-  const { openWhatsApp, getPhoneHref, onPhoneClick, ToastPortal } = useContactActions();
-  const whatsappMsg = "Hola, tengo dudas sobre sus términos y condiciones. ¿Podrían orientarme?";
+  const { openWhatsApp, getPhoneHref, onPhoneClick, ToastPortal } =
+    useContactActions();
+  const whatsappMsg =
+    "Hola, tengo dudas sobre sus términos y condiciones. ¿Podrían orientarme?";
 
   return (
     <PageTransition>
@@ -509,7 +511,9 @@ const TermsPage = () => {
                     ¿Dudas sobre estos términos?
                   </h3>
                   <p className="text-slate-600 mb-6">
-                    Si necesitas aclaraciones sobre condiciones, pagos, cancelaciones o responsabilidades, estamos listos para ayudarte y explicarte cada punto con transparencia.
+                    Si necesitas aclaraciones sobre condiciones, pagos,
+                    cancelaciones o responsabilidades, estamos listos para
+                    ayudarte y explicarte cada punto con transparencia.
                   </p>
                   <div className="flex flex-col sm:flex-row gap-4">
                     <button

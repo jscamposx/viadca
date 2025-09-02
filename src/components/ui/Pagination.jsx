@@ -56,7 +56,10 @@ const Pagination = ({
           </button>
 
           {/* Páginas */}
-          <div className="flex gap-1 max-w-full overflow-x-auto scrollbar-thin scrollbar-thumb-gray-300 px-1" aria-label="Lista de páginas">
+          <div
+            className="flex gap-1 max-w-full overflow-x-auto scrollbar-thin scrollbar-thumb-gray-300 px-1"
+            aria-label="Lista de páginas"
+          >
             {/* Primera */}
             {visiblePages[0] > 1 && (
               <>
@@ -68,7 +71,9 @@ const Pagination = ({
                   1
                 </button>
                 {visiblePages[0] > 2 && (
-                  <span className="px-1.5 py-1.5 text-gray-500 text-xs sm:text-sm select-none">…</span>
+                  <span className="px-1.5 py-1.5 text-gray-500 text-xs sm:text-sm select-none">
+                    …
+                  </span>
                 )}
               </>
             )}
@@ -94,7 +99,9 @@ const Pagination = ({
             {visiblePages[visiblePages.length - 1] < totalPages && (
               <>
                 {visiblePages[visiblePages.length - 1] < totalPages - 1 && (
-                  <span className="px-1.5 py-1.5 text-gray-500 text-xs sm:text-sm select-none">…</span>
+                  <span className="px-1.5 py-1.5 text-gray-500 text-xs sm:text-sm select-none">
+                    …
+                  </span>
                 )}
                 <button
                   type="button"

@@ -4,7 +4,8 @@ import { useContactActions } from "../../../hooks/useContactActions"; // nuevo h
 import OptimizedImage from "../../../components/ui/OptimizedImage.jsx";
 
 const Footer = ({ contactInfo, contactLoading, currentYear }) => {
-  const { openWhatsApp, getPhoneHref, onPhoneClick, ToastPortal } = useContactActions();
+  const { openWhatsApp, getPhoneHref, onPhoneClick, ToastPortal } =
+    useContactActions();
   const whatsappFooterMsg = "Hola, me gustaría planificar un viaje con Viadca.";
 
   return (
@@ -82,7 +83,10 @@ const Footer = ({ contactInfo, contactLoading, currentYear }) => {
           Información del pie de página
         </h2>
         {/* Main Content */}
-        <div className="grid lg:grid-cols-3 gap-12 lg:gap-16" role="presentation">
+        <div
+          className="grid lg:grid-cols-3 gap-12 lg:gap-16"
+          role="presentation"
+        >
           {/* Brand Section */}
           <div className="lg:col-span-1 space-y-6">
             <div className="space-y-4">
@@ -105,8 +109,8 @@ const Footer = ({ contactInfo, contactLoading, currentYear }) => {
               </h3>
               <p className="text-slate-700 leading-relaxed max-w-sm">
                 Tu agencia de viajes de confianza en Durango. Más de 15 años
-                creando experiencias inolvidables y conectando sueños con destinos
-                únicos alrededor del mundo.
+                creando experiencias inolvidables y conectando sueños con
+                destinos únicos alrededor del mundo.
               </p>
             </div>
 
@@ -309,7 +313,10 @@ const Footer = ({ contactInfo, contactLoading, currentYear }) => {
                         >
                           {contactInfo.telefono}
                         </a>
-                        <p className="sr-only">Haz click para llamar en móvil o copiar el número en escritorio.</p>
+                        <p className="sr-only">
+                          Haz click para llamar en móvil o copiar el número en
+                          escritorio.
+                        </p>
                       </div>
                     </div>
                   )}

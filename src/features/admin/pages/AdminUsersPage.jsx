@@ -970,7 +970,7 @@ const AdminUsersPage = () => {
 
         {/* Lista de usuarios */}
         <div className="rounded-xl sm:rounded-2xl  ">
-          {(!isInitialized || loading) ? (
+          {!isInitialized || loading ? (
             // Mientras no se haya completado la primera carga o haya una petición activa: skeleton
             renderSkeletonCards(10)
           ) : filteredUsers.length > 0 ? (
