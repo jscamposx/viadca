@@ -60,6 +60,7 @@ const OptimizedImage = ({
   const srcSet = useMemo(() => {
     if (!responsive || !src || hasError) return undefined;
 
+<<<<<<< HEAD
     const baseOptions = {
       width,
       height,
@@ -72,13 +73,22 @@ const OptimizedImage = ({
     // Si es Cloudinary, generar srcSet optimizado
     if (typeof src === "object" && src.cloudinary_public_id) {
       return cloudinaryService.generateSrcSet(src.cloudinary_public_id, baseOptions);
+=======
+    // Si es Cloudinary, generar srcSet optimizado
+    if (typeof src === "object" && src.cloudinary_public_id) {
+      return cloudinaryService.generateSrcSet(src.cloudinary_public_id);
+>>>>>>> a43597ef0d0800863cc9a06891b89c03d846e990
     }
 
     // Si es URL de Cloudinary, extraer public_id y generar srcSet
     if (typeof src === "string" && src.includes("cloudinary.com")) {
       const publicId = cloudinaryService.extractPublicId(src);
       if (publicId) {
+<<<<<<< HEAD
         return cloudinaryService.generateSrcSet(publicId, baseOptions);
+=======
+        return cloudinaryService.generateSrcSet(publicId);
+>>>>>>> a43597ef0d0800863cc9a06891b89c03d846e990
       }
     }
 
@@ -99,7 +109,11 @@ const OptimizedImage = ({
     }
 
     return undefined;
+<<<<<<< HEAD
   }, [responsive, src, hasError, responsiveUrls, width, height, quality, format, crop, gravity]);
+=======
+  }, [responsive, src, hasError, responsiveUrls]);
+>>>>>>> a43597ef0d0800863cc9a06891b89c03d846e990
 
   // Manejadores de eventos
   const handleLoad = useCallback(
