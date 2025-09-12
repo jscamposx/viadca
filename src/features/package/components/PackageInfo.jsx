@@ -75,10 +75,6 @@ const PackageInfo = ({ paquete }) => {
     });
   };
 
-  const pricePerDay = formatPrecio(
-    (paquete.precio_total || 0) / (paquete.duracion_dias || 1),
-    moneda,
-  );
   const precioTotalFormatted = formatPrecio(paquete?.precio_total, moneda);
 
   return (
@@ -116,17 +112,7 @@ const PackageInfo = ({ paquete }) => {
               )}
             </>
           }
-          subtitle={
-            <>
-              <span>{pricePerDay}</span>
-              {pricePerDay && (
-                <span className="ml-1 text-xs text-amber-700/80 font-semibold">
-                  ({moneda})
-                </span>
-              )}
-              <span className="ml-1">por día</span>
-            </>
-          }
+          subtitle={<span>Precio por persona</span>}
           colorClass="hover:bg-amber-50/30"
           gradientClass="bg-gradient-to-br from-amber-500 to-orange-600"
           index={1}

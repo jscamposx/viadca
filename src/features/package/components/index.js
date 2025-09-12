@@ -2,6 +2,7 @@ export { default as Error } from "./Error";
 export { default as ImageCarousel } from "./ImageCarousel";
 export { default as Itinerary } from "./Itinerary";
 export { default as Loading } from "./Loading";
+export { default as PackageSkeleton } from "./PackageSkeleton";
 export { default as NotFound } from "./NotFound";
 export { default as PackageHeader } from "./PackageHeader";
 export { default as PackageInfo } from "./PackageInfo";

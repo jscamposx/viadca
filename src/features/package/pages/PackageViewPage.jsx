@@ -10,6 +10,9 @@ import {
   HotelInfo,
 } from "../components";
 import WeatherForecast from "../components/WeatherForecast";
+import PackageSkeleton from "../components/PackageSkeleton";
+import { useContactActions } from "../../../hooks/useContactActions";
+import { useContactInfo } from "../../../hooks/useContactInfo";
 import {
   FiMapPin,
   FiCalendar,
@@ -243,6 +246,8 @@ function PackageViewPage() {
   const { paquete, loading, error } = usePackage(url);
   const [isLiked, setIsLiked] = useState(false);
   const [scrollY, setScrollY] = useState(0);
+  const { openWhatsApp, getPhoneHref, onPhoneClick, ToastPortal } = useContactActions();
+  const { contactInfo } = useContactInfo();
 
   // Preparar config SEO SIEMPRE antes de returns condicionales
   let seoConfig;
@@ -314,7 +319,12 @@ function PackageViewPage() {
     }
   };
 
-  if (loading) return <LoadingSpinner />;
+  if (loading) return (
+    <>
+      <ToastPortal />
+      <PackageSkeleton />
+    </>
+  );
   if (error)
     return (
       <ErrorMessage message={error} onRetry={() => window.location.reload()} />
@@ -333,6 +343,7 @@ function PackageViewPage() {
 
   return (
     <div className="bg-gradient-to-br from-slate-50 via-white to-blue-50 min-h-screen">
+      <ToastPortal />
       <div
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
           scrollY > 100
@@ -468,6 +479,12 @@ function PackageViewPage() {
                 <button
                   className="group bg-gradient-to-r from-blue-500 via-purple-500 to-blue-600 text-white font-bold py-4 px-8 rounded-2xl shadow-2xl hover:shadow-3xl hover:scale-105 transition-all duration-300 text-lg"
                   aria-label="Reservar aventura para este paquete turístico"
+                  onClick={() => {
+                    const codigo = paquete.codigo || url;
+                    const currentUrl = window.location.href;
+                    const msg = `Hola, me interesa el viaje "${paquete.titulo}" (código ${codigo}).\n¿Podrían compartir más detalles sobre itinerario, disponibilidad y lo que incluye?\nURL: ${currentUrl}\nGracias.`;
+                    openWhatsApp(msg);
+                  }}
                 >
                   <span className="flex items-center gap-3">
                     Reservar Aventura
@@ -856,6 +873,12 @@ function PackageViewPage() {
                   <button
                     className="group w-full bg-gradient-to-r from-blue-500 via-purple-500 to-blue-600 text-white font-bold py-4 px-6 rounded-2xl shadow-2xl hover:shadow-3xl hover:scale-[1.02] transition-all duration-300 mb-6 relative overflow-hidden"
                     aria-label="Reservar aventura para este paquete turístico"
+                    onClick={() => {
+                      const codigo = paquete.codigo || url;
+                      const currentUrl = window.location.href;
+                      const msg = `Hola, me interesa el viaje "${paquete.titulo}" (código ${codigo}).\n¿Podrían compartir más detalles sobre itinerario, disponibilidad y lo que incluye?\nURL: ${currentUrl}\nGracias.`;
+                      openWhatsApp(msg);
+                    }}
                   >
                     <div className="absolute inset-0 bg-gradient-to-r from-blue-600 via-purple-600 to-blue-700 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                     <span className="relative flex items-center justify-center gap-3 text-lg">
@@ -868,20 +891,23 @@ function PackageViewPage() {
                   </button>
 
                   <div className="grid grid-cols-2 gap-3 mb-6">
-                    <button
+                    <a
+                      href={getPhoneHref()}
+                      onClick={onPhoneClick}
                       className="flex items-center justify-center gap-2 p-3 bg-green-50 hover:bg-green-100 text-green-700 rounded-xl border border-green-200 transition-all duration-300 hover:scale-105"
                       aria-label="Llamar para más información"
                     >
                       <FiPhone className="w-4 h-4" aria-hidden="true" />
                       <span className="font-medium text-sm">Llamar</span>
-                    </button>
-                    <button
+                    </a>
+                    <a
+                      href={contactInfo?.email ? `mailto:${contactInfo.email}` : undefined}
                       className="flex items-center justify-center gap-2 p-3 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-xl border border-blue-200 transition-all duration-300 hover:scale-105"
                       aria-label="Enviar email para consultas"
                     >
                       <FiMail className="w-4 h-4" aria-hidden="true" />
                       <span className="font-medium text-sm">Email</span>
-                    </button>
+                    </a>
                   </div>
 
                   <div className="bg-gradient-to-br from-emerald-50 to-green-50 rounded-2xl p-6 border border-emerald-100">
