@@ -15,6 +15,7 @@ import PackageSkeleton from "../components/PackageSkeleton";
 import { useContactActions } from "../../../hooks/useContactActions";
 import { useContactInfo } from "../../../hooks/useContactInfo";
 import PageTransition from "../../../components/ui/PageTransition";
+import LightboxModal from "../../../components/ui/LightboxModal";
 import { AnimatedSection } from "../../../hooks/scrollAnimations";
 import Footer from "../../home/components/Footer";
 import TrustBar from "../../../components/ui/TrustBar";
@@ -256,6 +257,8 @@ function PackageViewPage() {
   const [isSmallScreen, setIsSmallScreen] = useState(false);
   const [incluyeOpen, setIncluyeOpen] = useState(false);
   const [noIncluyeOpen, setNoIncluyeOpen] = useState(false);
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [lightboxIndex, setLightboxIndex] = useState(0);
   const { openWhatsApp, getPhoneHref, onPhoneClick, ToastPortal, showToast } = useContactActions();
   const { contactInfo, loading: contactLoading } = useContactInfo();
 
@@ -499,18 +502,25 @@ function PackageViewPage() {
           style={!isSmallScreen ? { transform: `translateY(${scrollY * 0.2}px)` } : undefined}
         >
           <div className="absolute inset-0">
-            <ImageCarousel
+            <div className="relative z-10">
+              <ImageCarousel
               imagenes={paquete.imagenes}
               emptyStateTitle="Sin fotos del paquete"
               emptyStateDescription="Las imágenes de este paquete turístico se cargarán próximamente"
               enableSnap={true}
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
-            <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/40"></div>
+                overlayGradients={true}
+                forceGlobalFullscreenCTA={true}
+              onRequestFullscreen={(urls, index) => {
+                setLightboxIndex(index);
+                setLightboxOpen(true);
+              }}
+              onSlideChange={(i) => setLightboxIndex(i)}
+              />
+            </div>
           </div>
           
 
-          <div className="relative z-10 text-center text-white px-4 max-w-4xl mx-auto">
+          <div className="relative z-30 text-center text-white px-4 max-w-4xl mx-auto">
             <div className="space-y-5 sm:space-y-6">
 
               <h1 className="font-volkhov text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold leading-tight">
@@ -558,6 +568,33 @@ function PackageViewPage() {
             </div>
           </div>
         </div>
+
+        {/* Lightbox Global para imágenes del paquete */}
+        <LightboxModal
+          images={(paquete.imagenes || []).map((img) => {
+            // Resolver al máximo posible usando lógica del carrusel
+            const u = img?.contenido?.startsWith("data:")
+              ? img.contenido
+              : img?.url?.startsWith("http") || img?.url?.startsWith("data:")
+                ? img.url
+                : img?.contenido?.startsWith("http") || img?.contenido?.includes("://")
+                  ? img.contenido
+                  : img?.contenido && !img?.contenido?.includes("://") && !img?.contenido?.startsWith("http")
+                    ? `data:image/jpeg;base64,${img.contenido}`
+                    : img?.ruta
+                      ? `${import.meta.env.VITE_API_BASE_URL}${img.ruta}`
+                      : img?.nombre
+                        ? `${import.meta.env.VITE_API_BASE_URL}/uploads/images/${img.nombre.startsWith("/") ? img.nombre.slice(1) : img.nombre}`
+                        : img?.url
+                          ? `${import.meta.env.VITE_API_BASE_URL}${img.url}`
+                          : "";
+            return u;
+          })}
+          startIndex={lightboxIndex}
+          isOpen={lightboxOpen}
+          onClose={() => setLightboxOpen(false)}
+          onIndexChange={setLightboxIndex}
+        />
 
         <div className="max-w-7xl mx-auto px-4 py-12 relative z-10">
           <div className="grid grid-cols-1 xl:grid-cols-4 gap-8">

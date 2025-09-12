@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Carousel } from "react-responsive-carousel";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
-import { FiChevronLeft, FiChevronRight, FiCamera, FiEye } from "react-icons/fi";
+import { FiChevronLeft, FiChevronRight, FiCamera, FiEye, FiMaximize } from "react-icons/fi";
 import { FaHandPointer } from "react-icons/fa";
 
 const API_URL = import.meta.env.VITE_API_BASE_URL;
@@ -83,6 +83,10 @@ const ImageCarousel = ({
   emptyStateTitle,
   emptyStateDescription,
   enableSnap = false,
+  onRequestFullscreen, // (urls: string[], startIndex: number)
+  onSlideChange, // (index: number)
+  overlayGradients = false, // añade overlays internos (útil para hero)
+  forceGlobalFullscreenCTA = false, // dibuja un único CTA fuera de los slides
 }) => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
@@ -168,8 +172,11 @@ const ImageCarousel = ({
     : "";
   const snapSlide = enableSnap ? "sm:snap-none snap-center" : "";
 
+  // Resolver URLs para fullscreen
+  const resolvedUrls = validImages.map((img) => getOptimizedImageUrl(img));
+
   return (
-    <div className={`w-full h-full relative group ${snapWrapper}`}>
+  <div className={`w-full h-full relative group ${snapWrapper}`}>
       {isLoading && (
         <div className="absolute inset-0 z-30 bg-slate-200 flex items-center justify-center">
           <div className="flex flex-col sm:flex-row items-center space-y-2 sm:space-y-0 sm:space-x-3 px-4">
@@ -194,7 +201,10 @@ const ImageCarousel = ({
         swipeable={true}
         emulateTouch={true}
         selectedItem={currentSlide}
-        onChange={(index) => setCurrentSlide(index)}
+        onChange={(index) => {
+          setCurrentSlide(index);
+          onSlideChange?.(index);
+        }}
         renderArrowPrev={(onClickHandler, hasPrev) => (
           <CustomArrow
             direction="prev"
@@ -217,7 +227,7 @@ const ImageCarousel = ({
             imagen.id || imagen.nombre || imagen.contenido || index;
 
           return (
-            <div key={imageId} className={`w-full h-full relative ${snapSlide}`}>
+            <div key={imageId} className={`w-full h-full relative ${snapSlide} group/item`}>
               <img
                 className="w-full h-full object-cover transition-transform duration-700 hover:scale-105"
                 src={imageUrl}
@@ -231,29 +241,69 @@ const ImageCarousel = ({
                 loading={index === 0 ? "eager" : "lazy"}
                 fetchPriority={index === 0 ? "high" : "low"}
                 decoding={index === 0 ? "sync" : "async"}
+                onClick={() => onRequestFullscreen?.(resolvedUrls, index)}
+                style={{ cursor: onRequestFullscreen ? "pointer" : "default" }}
               />
+
+              {overlayGradients && (
+                <>
+                  <div className="pointer-events-none absolute inset-0 z-20 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
+                  <div className="pointer-events-none absolute inset-0 z-20 bg-gradient-to-b from-black/20 via-transparent to-black/40"></div>
+                </>
+              )}
+
+              {onRequestFullscreen && (
+                <div className="absolute bottom-3 right-3 z-[60] flex items-center pointer-events-auto">
+                  {/* Mobile: botón redondo */}
+                  <button
+                    type="button"
+                    aria-label="Ver a pantalla completa"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onRequestFullscreen?.(resolvedUrls, index);
+                    }}
+                    className="sm:hidden p-3 rounded-full bg-black/70 hover:bg-black/80 text-white border border-white/40 shadow-xl focus:outline-none focus:ring-2 focus:ring-white/70 active:scale-95 backdrop-blur-sm"
+                  >
+                    <FiMaximize className="w-5 h-5" />
+                  </button>
+                  {/* Desktop: pill con texto */}
+                  <button
+                    type="button"
+                    title="Ver a pantalla completa"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onRequestFullscreen?.(resolvedUrls, index);
+                    }}
+                    className="hidden sm:inline-flex items-center gap-2 px-3 md:px-4 py-2 md:py-2.5 rounded-full bg-black/70 hover:bg-black/80 text-white border border-white/40 shadow-xl focus:outline-none focus:ring-2 focus:ring-white/70 transition-all duration-200 backdrop-blur-sm"
+                  >
+                    <FiMaximize className="w-5 h-5" />
+                    <span className="text-sm">Pantalla completa</span>
+                  </button>
+                </div>
+              )}
             </div>
           );
         })}
       </Carousel>
 
-      {/* Hint táctil en mobile: sin óvalo, icono un poco más grande y texto/ícono saltan juntos */}
-      <div className="pointer-events-none absolute bottom-8 left-1/2 -translate-x-1/2 sm:hidden z-20">
-        <div className="flex flex-col items-center gap-2 text-white animate-bounce">
-          <span className="text-sm font-medium">Descubre más</span>
-          <FaHandPointer className="w-6 h-6 text-white" />
+      {/* CTA global de Pantalla completa (opcional) */}
+      {onRequestFullscreen && forceGlobalFullscreenCTA && (
+        <div className="absolute bottom-3 right-3 z-[80] pointer-events-auto">
+          <button
+            type="button"
+            title="Ver a pantalla completa"
+            aria-label="Ver a pantalla completa"
+            onClick={(e) => {
+              e.stopPropagation();
+              onRequestFullscreen?.(resolvedUrls, currentSlide);
+            }}
+            className="inline-flex items-center gap-2 px-3 md:px-4 py-2 md:py-2.5 rounded-full bg-black/80 hover:bg-black/90 text-white border border-white/40 shadow-2xl focus:outline-none focus:ring-2 focus:ring-white/70 transition-all duration-200 backdrop-blur-sm"
+          >
+            <FiMaximize className="w-5 h-5" />
+            <span className="hidden sm:inline text-sm">Pantalla completa</span>
+          </button>
         </div>
-      </div>
-
-      {/* Hint de interacción en desktop */}
-      <div className="pointer-events-none absolute bottom-4 right-4 hidden sm:block z-20 opacity-0 group-hover:opacity-100 transition-opacity">
-        <div className="flex items-center gap-2 bg-black/40 text-white text-xs px-3 py-1.5 rounded-full backdrop-blur-sm">
-          <span className="hidden md:inline">Arrastra o usa</span>
-          <span className="inline-flex items-center gap-1">
-            ← →
-          </span>
-        </div>
-      </div>
+      )}
 
       <div className="absolute bottom-2 sm:bottom-4 left-2 sm:left-4 bg-black/50 backdrop-blur-sm rounded-full px-2 sm:px-3 py-1 z-20">
         <div className="flex items-center space-x-1 sm:space-x-2 text-white text-xs sm:text-sm">
@@ -264,12 +314,6 @@ const ImageCarousel = ({
         </div>
       </div>
 
-      <div className="absolute top-2 sm:top-4 right-2 sm:right-4 bg-black/50 backdrop-blur-sm rounded-full px-2 sm:px-3 py-1 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-        <div className="flex items-center space-x-1 sm:space-x-2 text-white text-xs sm:text-sm">
-          <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-green-400 rounded-full animate-pulse"></div>
-          <span>Auto</span>
-        </div>
-      </div>
     </div>
   );
 };

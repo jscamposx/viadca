@@ -47,11 +47,18 @@ const InfoCard = ({
 const PackageInfo = ({ paquete }) => {
   const moneda = sanitizeMoneda(paquete.moneda);
 
-  const formatDate = (dateString) => {
-    if (!dateString) return "Por confirmar";
+  const toLocalDate = (dateString) => {
+    if (!dateString) return null;
     const d = new Date(dateString);
-    if (isNaN(d.getTime())) return "Por confirmar";
-    return d.toLocaleDateString("es-MX", {
+    if (isNaN(d.getTime())) return null;
+    // Normalizar quitando el desplazamiento de TZ para evitar off-by-one por UTC
+    const local = new Date(d.getTime() + d.getTimezoneOffset() * 60000);
+    return local;
+  };
+
+  const formatDate = (date) => {
+    if (!date) return "Por confirmar";
+    return date.toLocaleDateString("es-MX", {
       year: "numeric",
       month: "long",
       day: "numeric",
@@ -59,6 +66,16 @@ const PackageInfo = ({ paquete }) => {
   };
 
   const precioTotalFormatted = formatPrecio(paquete?.precio_total, moneda);
+
+  // Ajuste de fechas: usar duración para calcular fin y evitar +/-1 día
+  const inicio = toLocalDate(paquete.fecha_inicio);
+  let fin = null;
+  if (paquete?.duracion_dias && inicio) {
+    fin = new Date(inicio);
+    fin.setDate(fin.getDate() + Math.max((paquete.duracion_dias || 1) - 1, 0));
+  } else {
+    fin = toLocalDate(paquete.fecha_fin);
+  }
 
   return (
     <div className="space-y-8">
@@ -96,7 +113,7 @@ const PackageInfo = ({ paquete }) => {
         <InfoCard
           icon={<FiCalendar className="w-7 h-7" />}
           title="Fecha de Inicio"
-          value={formatDate(paquete.fecha_inicio)}
+          value={formatDate(inicio)}
           subtitle="Salida estimada"
           colorClass="hover:bg-emerald-50/30"
           gradientClass="bg-gradient-to-br from-emerald-500 to-green-600"
@@ -106,7 +123,7 @@ const PackageInfo = ({ paquete }) => {
         <InfoCard
           icon={<FiCalendar className="w-7 h-7" />}
           title="Fecha de Fin"
-          value={formatDate(paquete.fecha_fin)}
+          value={formatDate(fin)}
           subtitle="Regreso estimado"
           colorClass="hover:bg-purple-50/30"
           gradientClass="bg-gradient-to-br from-purple-500 to-indigo-600"

@@ -88,13 +88,12 @@
       }
     </script>
 
-    <!-- Preload del logo (usado en todas las páginas) -->
+    <!-- Prefetch del logo para evitar warning si no se usa inmediatamente -->
     <link
-      rel="preload"
-      as="image"
+      rel="prefetch"
       href="/viadcalogo.avif"
+      as="image"
       type="image/avif"
-      fetchpriority="high"
     />
   </head>
   <body>

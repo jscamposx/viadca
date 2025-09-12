@@ -1,4 +1,6 @@
 import ImageCarousel from "./ImageCarousel";
+import { useState } from "react";
+import LightboxModal from "../../../components/ui/LightboxModal";
 import { FiStar } from "react-icons/fi";
 
 const Star = ({ filled }) => (
@@ -22,6 +24,9 @@ const HotelInfo = ({ hotel }) => {
     return null;
   }
 
+  const [open, setOpen] = useState(false);
+  const [index, setIndex] = useState(0);
+
   return (
     <div className="flex flex-col h-full">
       <div>
@@ -44,8 +49,34 @@ const HotelInfo = ({ hotel }) => {
           emptyStateTitle="Sin fotos del hotel"
           emptyStateDescription="Las imágenes del hotel no están disponibles"
           enableSnap={true}
+          onRequestFullscreen={() => setOpen(true)}
+          onSlideChange={(i) => setIndex(i)}
         />
       </div>
+
+      <LightboxModal
+        images={(hotel.imagenes || []).map((img) =>
+          img?.contenido?.startsWith("data:")
+            ? img.contenido
+            : img?.url?.startsWith("http") || img?.url?.startsWith("data:")
+              ? img.url
+              : img?.contenido?.startsWith("http") || img?.contenido?.includes("://")
+                ? img.contenido
+                : img?.contenido && !img?.contenido?.includes("://") && !img?.contenido?.startsWith("http")
+                  ? `data:image/jpeg;base64,${img.contenido}`
+                  : img?.ruta
+                    ? `${import.meta.env.VITE_API_BASE_URL}${img.ruta}`
+                    : img?.nombre
+                      ? `${import.meta.env.VITE_API_BASE_URL}/uploads/images/${img.nombre.startsWith("/") ? img.nombre.slice(1) : img.nombre}`
+                      : img?.url
+                        ? `${import.meta.env.VITE_API_BASE_URL}${img.url}`
+                        : ""
+        )}
+        startIndex={index}
+        isOpen={open}
+        onClose={() => setOpen(false)}
+        onIndexChange={setIndex}
+      />
     </div>
   );
 };
