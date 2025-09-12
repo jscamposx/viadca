@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Carousel } from "react-responsive-carousel";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 import { FiChevronLeft, FiChevronRight, FiCamera, FiEye } from "react-icons/fi";
+import { FaHandPointer } from "react-icons/fa";
 
 const API_URL = import.meta.env.VITE_API_BASE_URL;
 
@@ -236,13 +237,13 @@ const ImageCarousel = ({
         })}
       </Carousel>
 
-      {/* Hint táctil en mobile */}
-      <div className="pointer-events-none absolute bottom-4 left-1/2 -translate-x-1/2 sm:hidden z-20">
-        <div className="flex items-center gap-2 bg-black/40 text-white text-xs px-3 py-1.5 rounded-full backdrop-blur-sm">
-          <span className="inline-block w-6 h-6 rounded-full bg-white/20 relative">
-            <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-3 h-3 bg-white rounded-full animate-pulse" />
-          </span>
-          Desliza
+      {/* Hint táctil en mobile: igual que desktop (mouse outline + texto), pero con mano */}
+      <div className="pointer-events-none absolute bottom-8 left-1/2 -translate-x-1/2 sm:hidden z-20">
+        <div className="flex flex-col items-center gap-2 text-white">
+          <span className="text-xs font-medium">Descubre más</span>
+          <div className="w-6 h-10 border-2 border-white/60 rounded-full flex justify-center">
+            <FaHandPointer className="w-4 h-4 mt-2 text-white animate-bounce" />
+          </div>
         </div>
       </div>
 
