@@ -61,7 +61,7 @@ const PackageCard = ({ paquete }) => {
         <OptimizedImage
           src={img}
           alt={paquete?.titulo || destinoPrincipal || "Paquete"}
-          className="w-full h-48 sm:h-52 md:h-56 lg:h-60 object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
+          className="w-full aspect-[16/9] sm:aspect-[16/9] md:aspect-[16/9] object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
           width={800}
           height={480}
           responsive
@@ -99,7 +99,7 @@ const PackageCard = ({ paquete }) => {
       </div>
       <div className="p-4 lg:p-5 flex-1 flex flex-col">
         <div className="flex justify-between items-start gap-3 mb-3">
-          <h3 className="font-bold text-base lg:text-lg text-slate-800 group-hover:text-blue-600 transition-colors leading-tight line-clamp-2 flex-1 min-h-[2.5rem]">
+          <h3 className="font-bold text-base lg:text-lg text-slate-800 group-hover:text-blue-600 transition-colors leading-tight line-clamp-2 flex-1">
             {paquete?.titulo || "Paquete"}
           </h3>
           <div className="text-right shrink-0">
@@ -323,11 +323,11 @@ const DestinationsPage = () => {
         ]}
       />
       <PageTransition>
-        <div className="flex flex-col min-h-screen bg-gradient-to-b from-slate-50 to-white">
+  <div className="flex flex-col min-h-screen bg-gradient-to-b from-slate-50 to-white overflow-x-hidden">
           {/* removido id=top */}
           <DestinationsHero />
           {/* Anchor para scroll desde el botón "Buscar paquetes" del hero */}
-          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 -mt-14 relative z-10 space-y-6">
+          <div id="top-search" className="max-w-6xl mx-auto px-3 xs:px-4 sm:px-6 lg:px-8 -mt-4 sm:-mt-10 md:-mt-14 relative z-10 space-y-6 scroll-mt-28">
             <PackagesSearchBar
               value={search}
               onChange={setSearch}
@@ -340,7 +340,7 @@ const DestinationsPage = () => {
             />
           </div>
           {/* Eliminado AlphaIndex */}
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 flex-1 w-full">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 sm:pt-10 flex-1 w-full">
             {error && (
               <div className="p-4 mb-6 bg-red-50 border border-red-200 text-red-600 rounded-xl text-sm">
                 {error}

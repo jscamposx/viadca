@@ -69,7 +69,7 @@ const PackagesSection = ({
         </AnimatedSection>
 
         {!showCarousel && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 lg:gap-7">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 sm:gap-6 lg:gap-7">
             {(progressive ? childArray.slice(0, visibleCount) : childArray)}
           </div>
         )}
@@ -78,12 +78,12 @@ const PackagesSection = ({
           <div className="relative group">
             <div
               ref={scrollRef}
-              className="flex gap-6 lg:gap-7 overflow-x-auto snap-x snap-mandatory pb-4 scrollbar-thin scrollbar-thumb-slate-300 hover:scrollbar-thumb-slate-400 scrollbar-track-transparent"
+              className="flex gap-4 sm:gap-6 lg:gap-7 overflow-x-auto snap-x snap-mandatory pb-4 scrollbar-thin scrollbar-thumb-slate-300 hover:scrollbar-thumb-slate-400 scrollbar-track-transparent"
             >
               {childArray.map((ch, i) => (
                 <div
                   key={i}
-                  className="snap-start shrink-0 w-[260px] sm:w-[300px] md:w-[320px] lg:w-[340px] first:ml-1 last:mr-1"
+                  className="snap-start shrink-0 w-[85%] sm:w-[300px] md:w-[320px] lg:w-[340px] first:ml-1 last:mr-1"
                 >
                   {ch}
                 </div>

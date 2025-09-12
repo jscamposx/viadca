@@ -37,7 +37,7 @@ const DestinationsHero = () => {
 
   return (
     <section
-      className="relative h-[70vh] min-h-[520px] w-full flex items-center justify-center overflow-hidden rounded-b-[3rem]"
+      className="relative h-[60vh] sm:h-[68vh] min-h-[420px] sm:min-h-[520px] w-full flex items-center justify-center overflow-hidden rounded-b-2xl sm:rounded-b-[3rem]"
       aria-label="Hero destinos"
     >
       {/* Video / Imagen */}
@@ -105,7 +105,7 @@ const DestinationsHero = () => {
       />
 
       {/* Contenido */}
-      <div className="relative z-10 max-w-6xl mx-auto px-6 text-center text-white">
+      <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 text-center text-white">
         <div
           className={`transition-all duration-700 ease-out ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"}`}
         >

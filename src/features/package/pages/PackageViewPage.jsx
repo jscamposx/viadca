@@ -427,16 +427,26 @@ function PackageViewPage() {
             </button>
 
             <div className="flex items-center gap-3">
-              <Badge
-                variant={scrollY > 100 ? "info" : "gradient"}
-                icon={FiMapPin}
+              <div
+                className={`flex items-center gap-2 px-3 py-2 rounded-xl transition-all duration-300 min-h-[44px] ${
+                  scrollY > 100
+                    ? "bg-gray-100/80 text-gray-700"
+                    : "bg-white/90 text-gray-700 shadow-lg"
+                } hover:scale-105 hover:shadow-md`}
+                aria-label="Destino del paquete"
               >
-                {paquete.destinos && paquete.destinos.length > 0
-                  ? paquete.destinos.length === 1
-                    ? paquete.destinos[0].ciudad || paquete.destinos[0].destino
-                    : `${paquete.destinos.length} destinos`
-                  : "Destino"}
-              </Badge>
+                <FiMapPin
+                  aria-hidden="true"
+                  className="w-5 h-5 text-gray-500"
+                />
+                <span className="truncate max-w-[10rem] sm:max-w-[16rem]">
+                  {paquete.destinos && paquete.destinos.length > 0
+                    ? paquete.destinos.length === 1
+                      ? paquete.destinos[0].ciudad || paquete.destinos[0].destino
+                      : `${paquete.destinos.length} destinos`
+                    : "Destino"}
+                </span>
+              </div>
 
               <div className="flex items-center gap-2">
                 <button

@@ -176,8 +176,7 @@ const OptimizedImage = ({
         ref={imgRef}
         className={`bg-gray-200 animate-pulse flex items-center justify-center ${className}`}
         style={{
-          width: width || "auto",
-          height: height || "250px",
+          // Evitar romper el layout con tamaños fijos; sólo sugerimos aspect-ratio si existe
           aspectRatio: width && height ? `${width}/${height}` : undefined,
         }}
         {...props}
@@ -195,8 +194,6 @@ const OptimizedImage = ({
       <div
         className={`bg-gray-100 border-2 border-dashed border-gray-300 flex items-center justify-center ${className}`}
         style={{
-          width: width || "auto",
-          height: height || "250px",
           aspectRatio: width && height ? `${width}/${height}` : undefined,
         }}
         {...props}
@@ -224,15 +221,11 @@ const OptimizedImage = ({
   // Mostrar placeholder mientras carga
   if (!isLoaded && placeholder && placeholderUrl) {
     return (
-      <div className="relative">
-        <div
-          className={`bg-gray-200 animate-pulse absolute inset-0 flex items-center justify-center ${className}`}
-          style={{
-            width: width || "auto",
-            height: height || "250px",
-            aspectRatio: width && height ? `${width}/${height}` : undefined,
-          }}
-        >
+      <div
+        className={`relative ${className}`}
+        style={{ aspectRatio: width && height ? `${width}/${height}` : undefined }}
+      >
+        <div className="bg-gray-200 animate-pulse absolute inset-0 flex items-center justify-center">
           <span className="text-gray-400 text-sm">Cargando...</span>
         </div>
         <img
