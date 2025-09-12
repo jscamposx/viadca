@@ -48,6 +48,7 @@ import {
   generatePackageJsonLd,
   generatePackageOG,
   generatePackageTwitter,
+  generateOGExtras,
 } from "../../../utils/seoUtils";
 
 function LoadingSpinner() {
@@ -262,7 +263,15 @@ function PackageViewPage() {
       description: generateSEODescription(paquete),
       keywords: generatePackageKeywords(paquete),
       canonical: `https://www.viadca.app/paquetes/${url}`,
+      siteName: "Viadca Viajes",
+      robots: "index,follow",
+      googlebot:
+        "index,follow,max-snippet:-1,max-image-preview:large,max-video-preview:-1",
+      themeColor: "#2563eb",
+      locale: "es_MX",
+      addHreflangEsMx: true,
       og: generatePackageOG(paquete, url),
+      ogExtra: generateOGExtras(paquete, url),
       twitter: generatePackageTwitter(paquete),
       jsonLd: generatePackageJsonLd(paquete, url),
     };
@@ -651,7 +660,7 @@ function PackageViewPage() {
                   </div>
 
                   <div className="bg-gradient-to-br from-amber-50/50 to-orange-50/50 rounded-2xl p-6 backdrop-blur-sm">
-                    <div className="h-80 rounded-xl overflow-hidden shadow-lg">
+                    <div className="h-72 sm:h-96 md:h-[28rem] lg:h-[34rem] xl:h-[40rem] rounded-xl overflow-hidden shadow-lg">
                       <HotelInfo hotel={paquete.hotel} />
                     </div>
                   </div>
@@ -813,8 +822,8 @@ function PackageViewPage() {
                     {paquete.anticipo && parseFloat(paquete.anticipo) > 0 && (
                       <div className="mb-6 lg:mb-8 p-4 lg:p-5 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl border border-blue-100">
                         <div className="flex items-center mb-4">
-                          <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-xl flex items-center justify-center mr-3 shadow-lg">
-                            <FiDollarSign className="w-5 h-5 text-white" />
+                          <div className="w-10 h-10 md:w-12 md:h-12 aspect-square bg-gradient-to-r from-blue-500 to-indigo-500 rounded-xl flex items-center justify-center mr-3 shadow-lg flex-shrink-0">
+                            <FiDollarSign className="w-5 h-5 md:w-6 md:h-6 text-white" />
                           </div>
                           <h3 className="font-bold text-blue-900">Anticipo requerido</h3>
                         </div>
@@ -826,47 +835,7 @@ function PackageViewPage() {
                       </div>
                     )}
 
-                    <div className="space-y-5 lg:space-y-6 mb-6 lg:mb-8">
-                      <h3 className="font-bold text-gray-900 text-lg">Highlights del paquete</h3>
-
-                      <div className="space-y-3 lg:space-y-0 lg:grid lg:grid-cols-2 lg:gap-4">
-                        <div className="flex items-center gap-4 p-3 bg-gradient-to-r from-emerald-50 to-green-50 rounded-xl border border-emerald-100">
-                          <div className="w-8 h-8 bg-gradient-to-r from-emerald-500 to-green-500 rounded-lg flex items-center justify-center shadow-lg">
-                            <FiClock className="w-4 h-4 text-white" />
-                          </div>
-                          <span className="text-gray-700 font-medium">{paquete.duracion_dias} días de aventura</span>
-                        </div>
-
-                        {paquete.hotel && (
-                          <div className="flex items-center gap-4 p-3 bg-gradient-to-r from-amber-50 to-orange-50 rounded-xl border border-amber-100">
-                            <div className="w-8 h-8 bg-gradient-to-r from-amber-500 to-orange-500 rounded-lg flex items-center justify-center shadow-lg">
-                              <FiStar className="w-4 h-4 text-white" />
-                            </div>
-                            <span className="text-gray-700 font-medium">Hotel {paquete.hotel.estrellas} estrellas</span>
-                          </div>
-                        )}
-
-                        {paquete.destinos && (
-                          <div className="flex items-center gap-4 p-3 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl border border-blue-100">
-                            <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-lg flex items-center justify-center shadow-lg">
-                              <FiMapPin className="w-4 h-4 text-white" />
-                            </div>
-                            <span className="text-gray-700 font-medium">
-                              {paquete.destinos.length} destino
-                              {paquete.destinos.length > 1 ? "s" : ""} increíble
-                              {paquete.destinos.length > 1 ? "s" : ""}
-                            </span>
-                          </div>
-                        )}
-
-                        <div className="flex items-center gap-4 p-3 bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl border border-purple-100">
-                          <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg flex items-center justify-center shadow-lg">
-                            <FiShield className="w-4 h-4 text-white" />
-                          </div>
-                          <span className="text-gray-700 font-medium">100% seguro y confiable</span>
-                        </div>
-                      </div>
-                    </div>
+                    {/* Highlights del paquete removido a solicitud */}
 
                     <button
                       className="group w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold py-4 px-6 rounded-2xl shadow-2xl hover:shadow-3xl hover:scale-[1.02] transition-all duration-300 mb-6 relative overflow-hidden hover:from-blue-700 hover:to-indigo-700"
@@ -889,52 +858,23 @@ function PackageViewPage() {
                       <a
                         href={getPhoneHref()}
                         onClick={onPhoneClick}
-                        className="flex items-center justify-center gap-2 p-3 bg-green-50 hover:bg-green-100 text-green-700 rounded-xl border border-green-200 transition-all duration-300 hover:scale-105"
+                        className="flex items-center justify-center gap-3 h-11 md:h-12 min-h-[44px] leading-none bg-green-50 hover:bg-green-100 text-green-700 rounded-xl border border-green-200 transition-all duration-300 hover:scale-105"
                         aria-label="Llamar para más información"
                       >
-                        <FiPhone className="w-4 h-4" aria-hidden="true" />
-                        <span className="font-medium text-sm">Llamar</span>
+                        <FiPhone className="w-5 h-5 flex-shrink-0" aria-hidden="true" />
+                        <span className="font-medium text-sm md:text-base">Llamar</span>
                       </a>
                       <a
                         href={contactInfo?.email ? `mailto:${contactInfo.email}` : undefined}
-                        className="flex items-center justify-center gap-2 p-3 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-xl border border-blue-200 transition-all duration-300 hover:scale-105"
+                        className="flex items-center justify-center gap-3 h-11 md:h-12 min-h-[44px] leading-none bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-xl border border-blue-200 transition-all duration-300 hover:scale-105"
                         aria-label="Enviar email para consultas"
                       >
-                        <FiMail className="w-4 h-4" aria-hidden="true" />
-                        <span className="font-medium text-sm">Email</span>
+                        <FiMail className="w-5 h-5 flex-shrink-0" aria-hidden="true" />
+                        <span className="font-medium text-sm md:text-base">Email</span>
                       </a>
                     </div>
 
-                    <div className="bg-gradient-to-br from-emerald-50 to-green-50 rounded-2xl p-6 border border-emerald-100">
-                      <div className="flex items-center justify-center mb-4">
-                        <div className="flex items-center gap-2">
-                          {[...Array(5)].map((_, i) => (
-                            <FiStar key={i} className="w-5 h-5 text-yellow-400 fill-current" />
-                          ))}
-                          <span className="ml-2 font-bold text-gray-700 text-lg">4.9</span>
-                        </div>
-                      </div>
-
-                      <div className="text-center space-y-2">
-                        <p className="font-bold text-gray-800">+1,000 viajeros satisfechos</p>
-                        <p className="text-gray-600 text-sm">"Una experiencia inolvidable"</p>
-
-                        <div className="flex items-center justify-center gap-4 mt-4 pt-4 border-t border-emerald-200">
-                          <div className="flex items-center gap-2">
-                            <FiShield className="w-4 h-4 text-emerald-600" />
-                            <span className="text-xs text-emerald-700 font-medium">Seguro</span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <FiAward className="w-4 h-4 text-emerald-600" />
-                            <span className="text-xs text-emerald-700 font-medium">Calidad</span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <FiUsers className="w-4 h-4 text-emerald-600" />
-                            <span className="text-xs text-emerald-700 font-medium">Confianza</span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
+                    {/* Bloque de reseñas/comentarios removido a solicitud */}
                   </div>
                 </AnimatedSection>
               </div>

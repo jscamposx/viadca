@@ -141,11 +141,11 @@ export const generateSEOTitle = (paquete) => {
     ? ` desde ${formatPrecio(paquete.precio_total, sanitizeMoneda(paquete.moneda))} ${sanitizeMoneda(paquete.moneda)}`
     : "";
 
-  const title = `${paquete.titulo}${destinoStr} - ${paquete.duracion_dias} días${precioStr} | Viadca Viajes`;
+  const title = `${paquete.titulo} · ${paquete.duracion_dias} días${precioStr} | Viadca Viajes`;
 
-  // Limitar a 60 caracteres para Google
-  return title.length > 60
-    ? `${paquete.titulo}${destinoStr} - ${paquete.duracion_dias} días | Viadca`
+  // Limitar a ~60-65 caracteres para Google sin perder contexto de marca
+  return title.length > 65
+    ? `${paquete.titulo} · ${paquete.duracion_dias} días | Viadca Viajes`
     : title;
 };
 
@@ -189,6 +189,31 @@ export const generatePackageJsonLd = (paquete, url) => {
     paquete.destinos?.map((d) => d.ciudad || d.destino).filter(Boolean) || [];
 
   return [
+    // Organization (para reforzar entidad)
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      name: "Viadca Viajes",
+      url: "https://www.viadca.app",
+      logo: "https://www.viadca.app/viadcalogo.avif",
+      sameAs: [
+        "https://www.facebook.com/viadcaviajes",
+        "https://www.instagram.com/viadca.viajes",
+      ],
+    },
+
+    // WebSite (para búsquedas de sitio)
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      name: "Viadca Viajes",
+      url: "https://www.viadca.app",
+      potentialAction: {
+        "@type": "SearchAction",
+        target: "https://www.viadca.app/buscar?q={search_term_string}",
+        "query-input": "required name=search_term_string",
+      },
+    },
     // Breadcrumb
     {
       "@context": "https://schema.org",
@@ -221,7 +246,7 @@ export const generatePackageJsonLd = (paquete, url) => {
       "@type": "Product",
       name: paquete.titulo,
       description: generateSEODescription(paquete),
-      image: (paquete.imagenes || []).map((i) => i.url).slice(0, 6),
+  image: (paquete.imagenes || []).map((i) => i.url).filter(Boolean).slice(0, 6),
       sku: paquete.codigo || url,
       brand: { "@type": "Brand", name: "Viadca Viajes" },
       category: "Travel Package",
@@ -245,6 +270,9 @@ export const generatePackageJsonLd = (paquete, url) => {
           name: "Viadca Viajes",
           url: "https://www.viadca.app",
         },
+        priceValidUntil: new Date(Date.now() + 1000 * 60 * 60 * 24 * 30)
+          .toISOString()
+          .split("T")[0],
       },
       additionalProperty: [
         ...(paquete.hotel
@@ -355,4 +383,35 @@ export const generatePackageTwitter = (paquete) => {
     image:
       paquete.imagenes?.[0]?.url || "https://www.viadca.app/viadca-preview.jpg",
   };
+};
+
+/**
+ * Genera OG extra para metas más ricas (múltiples imágenes, producto)
+ */
+export const generateOGExtras = (paquete, url) => {
+  if (!paquete) return [];
+  const images = (paquete.imagenes || [])
+    .map((i) => i.url)
+    .filter(Boolean)
+    .slice(0, 5);
+
+  const moneda = sanitizeMoneda(paquete.moneda) || "MXN";
+  const extras = [];
+
+  images.forEach((img) => {
+    extras.push({ property: "og:image", content: img });
+  });
+
+  // Metas específicas de producto
+  if (paquete.precio_total) {
+    extras.push({ property: "product:price:amount", content: String(paquete.precio_total) });
+    extras.push({ property: "product:price:currency", content: moneda });
+    extras.push({ property: "product:availability", content: paquete.activo ? "in stock" : "discontinued" });
+  }
+
+  if (url) {
+    extras.push({ property: "og:url", content: `https://www.viadca.app/paquetes/${url}` });
+  }
+
+  return extras;
 };

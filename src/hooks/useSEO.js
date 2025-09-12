@@ -27,10 +27,18 @@ export function useSEO(config = {}) {
       keywords,
       canonical,
       robots = "index,follow",
+      googlebot,
       og = {},
+      ogExtra = [],
       twitter = {},
+      twitterExtra = [],
       jsonLd = [],
       noindex = false,
+      themeColor,
+      author = "Viadca Viajes",
+      publisher = "Viadca Viajes",
+      locale = "es_MX",
+      addHreflangEsMx = true,
     } = config;
 
     const fullTitle = title ? `${title}` : siteName;
@@ -61,6 +69,14 @@ export function useSEO(config = {}) {
     }
     // Robots
     ensureMeta("name", "robots", noindex ? "noindex,nofollow" : robots);
+    if (googlebot) ensureMeta("name", "googlebot", googlebot);
+
+    // Autor y publisher
+    ensureMeta("name", "author", author);
+    ensureMeta("name", "publisher", publisher);
+
+    // Theme color (PWA/SEO indirecto)
+    if (themeColor) ensureMeta("name", "theme-color", themeColor);
 
     // Canonical
     if (canonical) {
@@ -73,6 +89,20 @@ export function useSEO(config = {}) {
       link.setAttribute("href", canonical);
     }
 
+    // Hreflang básico (es-MX)
+    if (canonical && addHreflangEsMx) {
+      let alt = document.head.querySelector(
+        "link[rel='alternate'][hreflang='es-MX']",
+      );
+      if (!alt) {
+        alt = document.createElement("link");
+        alt.setAttribute("rel", "alternate");
+        alt.setAttribute("hreflang", "es-MX");
+        document.head.appendChild(alt);
+      }
+      alt.setAttribute("href", canonical);
+    }
+
     // Open Graph
     const ogDefaults = {
       title: fullTitle,
@@ -80,11 +110,21 @@ export function useSEO(config = {}) {
       url: canonical || `https://www.viadca.app${location.pathname}`,
       site_name: siteName,
       type: "website",
+      locale,
     };
     Object.entries({ ...ogDefaults, ...og }).forEach(([k, v]) => {
       if (!v) return;
       ensureMeta("property", `og:${k}`, v);
     });
+
+    // Open Graph extra (propiedades completas como product:price:amount)
+    if (Array.isArray(ogExtra)) {
+      ogExtra
+        .filter((m) => m && m.property && m.content)
+        .forEach(({ property, content }) => {
+          ensureMeta("property", property, content);
+        });
+    }
 
     // Twitter
     const twitterDefaults = {
@@ -96,6 +136,14 @@ export function useSEO(config = {}) {
       if (!v) return;
       ensureMeta("name", `twitter:${k}`, v);
     });
+
+    if (Array.isArray(twitterExtra)) {
+      twitterExtra
+        .filter((m) => m && m.name && m.content)
+        .forEach(({ name, content }) => {
+          ensureMeta("name", name, content);
+        });
+    }
 
     // JSON-LD (eliminar previos creados por este hook)
     const previous = document.head.querySelectorAll(
