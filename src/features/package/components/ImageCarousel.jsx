@@ -237,13 +237,11 @@ const ImageCarousel = ({
         })}
       </Carousel>
 
-      {/* Hint táctil en mobile: igual que desktop (mouse outline + texto), pero con mano */}
+      {/* Hint táctil en mobile: sin óvalo, icono un poco más grande y texto/ícono saltan juntos */}
       <div className="pointer-events-none absolute bottom-8 left-1/2 -translate-x-1/2 sm:hidden z-20">
-        <div className="flex flex-col items-center gap-2 text-white">
-          <span className="text-xs font-medium">Descubre más</span>
-          <div className="w-6 h-10 border-2 border-white/60 rounded-full flex justify-center">
-            <FaHandPointer className="w-4 h-4 mt-2 text-white animate-bounce" />
-          </div>
+        <div className="flex flex-col items-center gap-2 text-white animate-bounce">
+          <span className="text-sm font-medium">Descubre más</span>
+          <FaHandPointer className="w-6 h-6 text-white" />
         </div>
       </div>
 

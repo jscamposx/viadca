@@ -485,7 +485,7 @@ function PackageViewPage() {
 
       <main className="relative">
         <div
-          className="relative h-screen flex items-center justify-center overflow-hidden"
+          className="relative min-h-[100svh] h-[100dvh] flex items-center justify-center overflow-hidden"
           style={!isSmallScreen ? { transform: `translateY(${scrollY * 0.2}px)` } : undefined}
         >
           <div className="absolute inset-0">
@@ -810,21 +810,26 @@ function PackageViewPage() {
               <div className="sticky top-24 space-y-6 lg:space-y-7">
                 <AnimatedSection animation="fadeInUp" delay={150}>
                   <div className="bg-white/95 backdrop-blur rounded-2xl shadow-xl p-5 lg:p-6 xl:p-7 border border-gray-100">
-                    <div className="text-center space-y-3 mb-5">
+                    <div className="text-center space-y-3 mb-5 max-w-full overflow-x-hidden">
                       {paquete.descuento && parseFloat(paquete.descuento) > 0 ? (
                         <>
-                          <span className="block text-xl font-semibold text-gray-400 line-through">
-                            {precioOriginalFormatted}
+                          <div className="inline-flex flex-wrap items-baseline justify-center gap-x-2 max-w-full">
+                            <span className="text-base sm:text-lg font-semibold text-gray-400 line-through leading-snug">
+                              {precioOriginalFormatted}
+                            </span>
                             {precioOriginalFormatted && (
-                              <span className="ml-1 text-xs text-gray-500 font-medium">({moneda})</span>
+                              <span className="text-[11px] sm:text-xs text-gray-500 font-medium">({moneda})</span>
                             )}
-                          </span>
-                          <span className="block text-3xl lg:text-4xl font-extrabold bg-gradient-to-r from-emerald-600 to-green-600 bg-clip-text text-transparent">
-                            {precioTotalFormatted}
+                          </div>
+
+                          <div className="inline-flex flex-wrap items-baseline justify-center gap-x-2 max-w-full">
+                            <span className="text-2xl sm:text-3xl lg:text-4xl font-extrabold bg-gradient-to-r from-emerald-600 to-green-600 bg-clip-text text-transparent leading-snug break-words">
+                              {precioTotalFormatted}
+                            </span>
                             {precioTotalFormatted && (
-                              <span className="ml-2 text-sm text-emerald-700 font-semibold">{moneda}</span>
+                              <span className="text-sm text-emerald-700 font-semibold">{moneda}</span>
                             )}
-                          </span>
+                          </div>
                           <span className="block text-gray-500 text-sm">por persona</span>
                           <div className="inline-flex items-center px-3 py-1.5 bg-gradient-to-r from-red-500 to-pink-500 text-white rounded-full text-xs font-bold shadow">
                             <FiAward className="w-4 h-4 mr-1.5" />
@@ -834,25 +839,27 @@ function PackageViewPage() {
                         </>
                       ) : (
                         <>
-                          <span className="block text-3xl lg:text-4xl font-extrabold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                            {precioTotalFormatted}
+                          <div className="inline-flex flex-wrap items-baseline justify-center gap-x-2 max-w-full">
+                            <span className="text-2xl sm:text-3xl lg:text-4xl font-extrabold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent leading-snug break-words">
+                              {precioTotalFormatted}
+                            </span>
                             {precioTotalFormatted && (
-                              <span className="ml-2 text-sm text-blue-700 font-semibold">{moneda}</span>
+                              <span className="text-sm text-blue-700 font-semibold">{moneda}</span>
                             )}
-                          </span>
+                          </div>
                           <span className="block text-gray-500 text-sm">por persona</span>
                         </>
                       )}
-                      <p className="text-gray-600 text-xs font-medium mx-auto max-w-[22rem]">Los precios pueden variar según disponibilidad</p>
+                      <p className="text-gray-600 text-xs font-medium mx-auto max-w-[22rem] px-2">Los precios pueden variar según disponibilidad</p>
                     </div>
 
                     {paquete.anticipo && parseFloat(paquete.anticipo) > 0 && (
-                      <div className="mb-5 flex items-center gap-4 rounded-xl border border-blue-100/80 bg-blue-50/70 p-3">
+                      <div className="mb-5 flex items-center gap-4 rounded-xl border border-blue-100/80 bg-blue-50/70 p-3 flex-wrap">
                         <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-lg flex items-center justify-center text-white shadow-md shrink-0">
                           <FiDollarSign className="w-7 h-7" />
                         </div>
                         <div className="flex-1">
-                          <div className="flex items-center gap-2.5">
+                          <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
                             <h3 className="font-bold text-blue-900 text-sm">Anticipo requerido</h3>
                             <span className="text-sm font-bold text-blue-700">
                               {formatPrecio(paquete.anticipo, moneda)}
