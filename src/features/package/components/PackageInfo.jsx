@@ -1,10 +1,4 @@
-import {
-  FiClock,
-  FiSend,
-  FiDollarSign,
-  FiCalendar,
-  FiTrendingUp,
-} from "react-icons/fi";
+import { FiDollarSign, FiCalendar, FiAlertTriangle } from "react-icons/fi";
 import { formatPrecio, sanitizeMoneda } from "../../../utils/priceUtils";
 
 const InfoCard = ({
@@ -17,10 +11,8 @@ const InfoCard = ({
   index,
 }) => (
   <div
-    className={`group relative overflow-hidden bg-white rounded-2xl shadow-lg border border-slate-200/50 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 cursor-pointer backdrop-blur-sm ${colorClass}`}
-    style={{
-      animationDelay: `${index * 150}ms`,
-    }}
+    className={`group relative overflow-hidden bg-white rounded-2xl shadow-lg border border-slate-200/50 hover:shadow-xl transition-all duration-300 backdrop-blur-sm ${colorClass}`}
+    style={{ animationDelay: `${index * 150}ms` }}
   >
     <div
       className={`absolute inset-0 opacity-0 group-hover:opacity-10 transition-opacity duration-300 ${gradientClass}`}
@@ -48,19 +40,7 @@ const InfoCard = ({
       <div className="absolute top-4 right-4 w-8 h-8 bg-gradient-to-br from-white/20 to-white/10 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
     </div>
 
-    <div
-      className={`absolute bottom-0 left-0 right-0 h-1 ${gradientClass} transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300`}
-    ></div>
-  </div>
-);
-
-const StatBadge = ({ icon, value, label }) => (
-  <div className="flex items-center space-x-2 px-4 py-2 bg-white/80 rounded-full border border-slate-200/50 backdrop-blur-sm">
-    <div className="text-slate-600">{icon}</div>
-    <div className="text-sm">
-      <span className="font-bold text-slate-800">{value}</span>
-      <span className="text-slate-500 ml-1">{label}</span>
-    </div>
+    <div className={`absolute bottom-0 left-0 right-0 h-1 ${gradientClass} transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300`}></div>
   </div>
 );
 
@@ -68,7 +48,10 @@ const PackageInfo = ({ paquete }) => {
   const moneda = sanitizeMoneda(paquete.moneda);
 
   const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString("es-MX", {
+    if (!dateString) return "Por confirmar";
+    const d = new Date(dateString);
+    if (isNaN(d.getTime())) return "Por confirmar";
+    return d.toLocaleDateString("es-MX", {
       year: "numeric",
       month: "long",
       day: "numeric",
@@ -84,7 +67,7 @@ const PackageInfo = ({ paquete }) => {
           Información del Paquete
         </h2>
         <p className="text-slate-600 max-w-2xl mx-auto">
-          Todo lo que necesitas saber sobre tu próxima aventura
+          Detalles clave de tu viaje: duración, fechas y precio por persona
         </p>
       </div>
 
@@ -93,7 +76,7 @@ const PackageInfo = ({ paquete }) => {
           icon={<FiCalendar className="w-7 h-7" />}
           title="Duración Total"
           value={`${paquete.duracion_dias} días`}
-          subtitle={`${(paquete.duracion_dias || 1) - 1} noches de aventura`}
+          subtitle={`${Math.max((paquete.duracion_dias || 1) - 1, 0)} noches`}
           colorClass="hover:bg-blue-50/30"
           gradientClass="bg-gradient-to-br from-blue-500 to-cyan-600"
           index={0}
@@ -122,7 +105,7 @@ const PackageInfo = ({ paquete }) => {
           icon={<FiCalendar className="w-7 h-7" />}
           title="Fecha de Inicio"
           value={formatDate(paquete.fecha_inicio)}
-          subtitle="Salida programada"
+          subtitle="Salida estimada"
           colorClass="hover:bg-emerald-50/30"
           gradientClass="bg-gradient-to-br from-emerald-500 to-green-600"
           index={2}
@@ -132,55 +115,22 @@ const PackageInfo = ({ paquete }) => {
           icon={<FiCalendar className="w-7 h-7" />}
           title="Fecha de Fin"
           value={formatDate(paquete.fecha_fin)}
-          subtitle="Regreso programado"
+          subtitle="Regreso estimado"
           colorClass="hover:bg-purple-50/30"
           gradientClass="bg-gradient-to-br from-purple-500 to-indigo-600"
           index={3}
         />
       </div>
 
-      <div className="flex flex-wrap justify-center gap-4 pt-6">
-        <StatBadge
-          icon={<FiTrendingUp className="w-4 h-4" />}
-          value="4.9"
-          label="rating"
-        />
-        <StatBadge
-          icon={<FiClock className="w-4 h-4" />}
-          value="24/7"
-          label="soporte"
-        />
-        <StatBadge
-          icon={<FiSend className="w-4 h-4" />}
-          value="100%"
-          label="garantía"
-        />
-      </div>
-
-      <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-6 border border-blue-200/50">
-        <div className="flex items-start space-x-3">
-          <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
-            <svg
-              className="w-4 h-4 text-blue-600"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-              />
-            </svg>
+      <div className="rounded-2xl p-6 border border-amber-200 bg-amber-50/70">
+        <div className="flex items-start gap-3">
+          <div className="w-8 h-8 bg-amber-100 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+            <FiAlertTriangle className="w-4 h-4 text-amber-700" />
           </div>
           <div>
-            <h4 className="font-semibold text-blue-900 mb-1">
-              💡 Precio todo incluido
-            </h4>
-            <p className="text-blue-800 text-sm leading-relaxed">
-              Este precio incluye alojamiento, actividades y guía especializado.
-              Sin costos ocultos ni sorpresas.
+            <h4 className="font-semibold text-amber-900 mb-1">Importante</h4>
+            <p className="text-amber-800 text-sm leading-relaxed">
+              Los precios pueden variar según disponibilidad, temporada y tipo de cambio. Confirma el costo final al reservar.
             </p>
           </div>
         </div>

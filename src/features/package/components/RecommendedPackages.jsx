@@ -102,13 +102,13 @@ const DestinationCard = React.memo(function DestinationCard({ p, compact = false
 
   return (
     <article
-      className={`bg-white rounded-xl shadow-md ${compact ? "min-w-[250px] w-[250px] snap-start" : "shadow-lg"} hover:shadow-xl hover:shadow-blue-500/10 transition-all duration-500 hover:-translate-y-2 hover:scale-[1.02] overflow-hidden border border-slate-100 group h-full flex flex-col transform-gpu`}
+      className={`bg-white rounded-xl shadow-md ${compact ? "min-w-[250px] w-[250px] snap-start" : "shadow-lg"} md:hover:shadow-xl md:hover:shadow-blue-500/10 transition-all duration-500 md:hover:-translate-y-2 md:hover:scale-[1.02] overflow-hidden border border-slate-100 group h-full flex flex-col transform-gpu`}
     >
       <div className="relative overflow-hidden">
         <OptimizedImage
           src={img}
           alt={p?.titulo || destinoPrincipal}
-          className={`w-full ${imgHeight} object-cover group-hover:scale-110 transition-transform duration-700 ease-[cubic-bezier(0.25,0.46,0.45,0.94)]`}
+          className={`w-full ${imgHeight} object-cover md:group-hover:scale-110 transition-transform duration-700 ease-[cubic-bezier(0.25,0.46,0.45,0.94)]`}
           width={800}
           height={480}
           responsive
@@ -117,7 +117,7 @@ const DestinationCard = React.memo(function DestinationCard({ p, compact = false
           placeholder={true}
         />
         <div
-          className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500"
+          className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent opacity-0 md:group-hover:opacity-100 transition-all duration-500"
           aria-hidden="true"
         ></div>
         <div className="absolute top-3 right-3 flex flex-col items-end gap-2">
@@ -134,7 +134,7 @@ const DestinationCard = React.memo(function DestinationCard({ p, compact = false
             </span>
           )}
         </div>
-        <div className="absolute bottom-2 left-2 opacity-0 group-hover:opacity-100 transition-all duration-500 transform translate-y-2 group-hover:translate-y-0">
+        <div className="absolute bottom-2 left-2 opacity-0 md:group-hover:opacity-100 transition-all duration-500 transform translate-y-2 md:group-hover:translate-y-0">
           <span className="bg-white/90 backdrop-blur-sm text-slate-800 px-2 py-1 rounded-lg text-[11px] font-medium flex items-center gap-1.5 shadow border border-white/30">
             <FiMapPin className="w-3.5 h-3.5 text-blue-600" aria-hidden="true" />
             {destinoPrincipal}

@@ -54,6 +54,25 @@ const createCustomIcon = (color, destino, index) => {
 
 const RouteMap = ({ paquete }) => {
   const [mapKey, setMapKey] = useState(0);
+  const MAPTILER_KEY = import.meta.env.VITE_MAPTILER_KEY;
+  const ES_TILE_URL = import.meta.env.VITE_ES_TILE_URL; // Permite inyectar un tile provider en español
+
+  // Selección de proveedor de tiles priorizando español
+  let tileUrl = "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
+  let tileAttribution =
+    '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
+  let tileMaxZoom = 18;
+
+  if (ES_TILE_URL) {
+    tileUrl = ES_TILE_URL;
+    tileAttribution += " | Fuente personalizada ES";
+  } else if (MAPTILER_KEY) {
+    // MapTiler Streets con idioma español; requiere clave gratuita en VITE_MAPTILER_KEY
+    tileUrl = `https://api.maptiler.com/maps/streets-v2/256/{z}/{x}/{y}.png?key=${MAPTILER_KEY}&lang=es`;
+    tileAttribution =
+      '<a href="https://www.maptiler.com/copyright/" target="_blank" rel="noopener">&copy; MapTiler</a> & <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>';
+    tileMaxZoom = 20;
+  }
   const destinos = (paquete?.destinos || []).map((d) => {
     const label = d.ciudad || d.destino || d.nombre || "";
     const composed = [d.ciudad, d.estado, d.pais].filter(Boolean).join(", ");
@@ -104,7 +123,8 @@ const RouteMap = ({ paquete }) => {
           pin.style.boxShadow = "0 4px 12px rgba(0,0,0,0.15)";
         });
 
-        pin.title = `📍 Destino ${index}: ${location}`;
+        // Título siempre en español, sin emojis
+        pin.title = `Destino ${index}: ${location}`;
       });
     }, 1000);
 
@@ -201,11 +221,7 @@ const RouteMap = ({ paquete }) => {
         className="z-10"
         scrollWheelZoom={true}
       >
-        <TileLayer
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-          maxZoom={18}
-        />
+        <TileLayer attribution={tileAttribution} url={tileUrl} maxZoom={tileMaxZoom} />
 
         {destinosConCoordenadas.map((dest, index) => {
           const lat = parseFloat(dest.destino_lat);
@@ -228,7 +244,7 @@ const RouteMap = ({ paquete }) => {
                   </div>
 
                   <p className="text-base text-blue-600 font-medium mb-2">
-                    📍 {dest.label}
+                    {dest.label}
                   </p>
 
                   {dest.descripcion && (

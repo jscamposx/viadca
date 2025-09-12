@@ -252,7 +252,8 @@ function PackageViewPage() {
   const { paquete, loading, error } = usePackage(url);
   const [isLiked, setIsLiked] = useState(false);
   const [scrollY, setScrollY] = useState(0);
-  const { openWhatsApp, getPhoneHref, onPhoneClick, ToastPortal } = useContactActions();
+  const [isSmallScreen, setIsSmallScreen] = useState(false);
+  const { openWhatsApp, getPhoneHref, onPhoneClick, ToastPortal, showToast } = useContactActions();
   const { contactInfo, loading: contactLoading } = useContactInfo();
 
   // Preparar config SEO SIEMPRE antes de returns condicionales
@@ -296,6 +297,14 @@ function PackageViewPage() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  // Detectar pantallas pequeñas para ajustar parallax y otros detalles de UX
+  useEffect(() => {
+    const check = () => setIsSmallScreen(window.innerWidth < 768);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
+
   const isMobile = () => {
     if (navigator.userAgentData?.mobile) {
       return true;
@@ -323,13 +332,36 @@ function PackageViewPage() {
         }
       }
     } else {
+      // Desktop: copiar al portapapeles y mostrar toast
+      const urlText = window.location.href;
+      let copied = false;
       try {
-        await navigator.clipboard.writeText(window.location.href);
-        alert("¡Enlace copiado al portapapeles!");
+        if (navigator.clipboard?.writeText) {
+          await navigator.clipboard.writeText(urlText);
+          copied = true;
+        } else {
+          throw new Error("Clipboard API no disponible");
+        }
       } catch (err) {
-        console.error("No se pudo copiar el enlace:", err);
-        alert("Error al copiar el enlace.");
+        // Fallback con input temporal
+        try {
+          const tmp = document.createElement("input");
+          tmp.value = urlText;
+          document.body.appendChild(tmp);
+          tmp.select();
+          document.execCommand("copy");
+          document.body.removeChild(tmp);
+          copied = true;
+        } catch (e) {
+          console.error("No se pudo copiar el enlace:", err, e);
+        }
       }
+
+      showToast(
+        copied
+          ? "Enlace copiado al portapapeles"
+          : "No se pudo copiar el enlace. Intenta manualmente."
+      );
     }
   };
 
@@ -370,7 +402,7 @@ function PackageViewPage() {
           <div className="flex items-center justify-between">
             <button
               onClick={() => window.history.back()}
-              className={`group flex items-center gap-3 px-4 py-2 rounded-xl transition-all duration-300 ${
+              className={`group flex items-center gap-3 px-4 py-2 rounded-xl min-h-[44px] transition-all duration-300 ${
                 scrollY > 100
                   ? "bg-gray-100/80 hover:bg-gray-200/80 text-gray-700"
                   : "bg-white/90 hover:bg-white text-gray-700 shadow-lg"
@@ -378,7 +410,7 @@ function PackageViewPage() {
               aria-label="Volver a la página anterior"
             >
               <FiArrowLeft
-                className="w-5 h-5 group-hover:-translate-x-1 transition-transform duration-300"
+                className="w-5 h-5 md:group-hover:-translate-x-1 transition-transform duration-300"
                 aria-hidden="true"
               />
               <span className="font-medium hidden sm:block">Volver</span>
@@ -399,7 +431,7 @@ function PackageViewPage() {
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => setIsLiked(!isLiked)}
-                  className={`group p-3 rounded-xl transition-all duration-300 ${
+                  className={`group p-3 rounded-xl transition-all duration-300 min-w-[44px] min-h-[44px] flex items-center justify-center ${
                     isLiked
                       ? "bg-red-100/80 text-red-500 scale-110"
                       : scrollY > 100
@@ -415,7 +447,7 @@ function PackageViewPage() {
                     className={`w-5 h-5 transition-all duration-300 ${
                       isLiked
                         ? "fill-current scale-110"
-                        : "group-hover:scale-110"
+                        : "md:group-hover:scale-110"
                     }`}
                     aria-hidden="true"
                   />
@@ -423,7 +455,7 @@ function PackageViewPage() {
 
                 <button
                   onClick={handleShare}
-                  className={`group p-3 rounded-xl transition-all duration-300 ${
+                  className={`group p-3 rounded-xl transition-all duration-300 min-w-[44px] min-h-[44px] flex items-center justify-center ${
                     scrollY > 100
                       ? "bg-gray-100/80 hover:bg-blue-100/80 hover:text-blue-500 text-gray-500"
                       : "bg-white/90 hover:bg-blue-100/80 hover:text-blue-500 text-gray-500 shadow-lg"
@@ -431,7 +463,7 @@ function PackageViewPage() {
                   aria-label="Compartir paquete"
                 >
                   <FiShare2
-                    className="w-5 h-5 group-hover:scale-110 transition-transform duration-300"
+                    className="w-5 h-5 md:group-hover:scale-110 transition-transform duration-300"
                     aria-hidden="true"
                   />
                 </button>
@@ -443,10 +475,8 @@ function PackageViewPage() {
 
       <main className="relative">
         <div
-          className="relative h-[88vh] sm:h-[92vh] flex items-center justify-center overflow-hidden"
-          style={{
-            transform: `translateY(${scrollY * 0.2}px)`,
-          }}
+          className="relative h-[78vh] sm:h-[92vh] flex items-center justify-center overflow-hidden"
+          style={!isSmallScreen ? { transform: `translateY(${scrollY * 0.2}px)` } : undefined}
         >
           <div className="absolute inset-0">
             <ImageCarousel
@@ -504,7 +534,7 @@ function PackageViewPage() {
                   <span className="flex items-center gap-3">
                     Reservar Aventura
                     <FiCalendar
-                      className="w-5 h-5 group-hover:scale-110 transition-transform duration-300"
+                      className="w-5 h-5 md:group-hover:scale-110 transition-transform duration-300"
                       aria-hidden="true"
                     />
                   </span>
@@ -527,9 +557,9 @@ function PackageViewPage() {
           <div className="grid grid-cols-1 xl:grid-cols-4 gap-8">
             <div className="xl:col-span-3 space-y-8">
               <AnimatedSection animation="fadeInUp" stagger={100}>
-                <section className="group bg-white/80 backdrop-blur-xl rounded-3xl shadow-xl p-8 border border-white/20 hover:shadow-2xl transition-all duration-500">
+                <section className="group bg-white/80 backdrop-blur-xl rounded-3xl shadow-xl p-6 md:p-8 border border-white/20 hover:shadow-2xl transition-all duration-500">
                 <div className="flex items-start gap-6 mb-8">
-                  <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-500 rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                  <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-500 rounded-2xl flex items-center justify-center shadow-lg md:group-hover:scale-110 transition-transform duration-300">
                     <FiInfo className="w-8 h-8 text-white" />
                   </div>
                   <div className="flex-1">
@@ -542,7 +572,7 @@ function PackageViewPage() {
                   </div>
                 </div>
 
-                <div className="bg-gradient-to-br from-blue-50/50 to-purple-50/50 rounded-2xl p-6 backdrop-blur-sm">
+                <div className="bg-gradient-to-br from-blue-50/50 to-purple-50/50 rounded-2xl p-5 md:p-6 backdrop-blur-sm">
                   <PackageInfo paquete={paquete} />
                 </div>
                 </section>
@@ -553,9 +583,9 @@ function PackageViewPage() {
                 paquete.destinos[0]?.destino_lat &&
                 paquete.destinos[0]?.destino_lng && (
                   <AnimatedSection animation="fadeInUp" delay={150}>
-                  <section className="group bg-white/80 backdrop-blur-xl rounded-3xl shadow-xl p-8 border border-white/20 hover:shadow-2xl transition-all duration-500">
+                  <section className="group bg-white/80 backdrop-blur-xl rounded-3xl shadow-xl p-6 md:p-8 border border-white/20 hover:shadow-2xl transition-all duration-500">
                     <div className="flex items-start gap-6 mb-8">
-                      <div className="w-16 h-16 bg-gradient-to-br from-orange-400 to-yellow-500 rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                      <div className="w-16 h-16 bg-gradient-to-br from-orange-400 to-yellow-500 rounded-2xl flex items-center justify-center shadow-lg md:group-hover:scale-110 transition-transform duration-300">
                         <FiSun className="w-8 h-8 text-white" />
                       </div>
                       <div className="flex-1">
@@ -570,7 +600,7 @@ function PackageViewPage() {
                       </div>
                     </div>
 
-                    <div className="bg-gradient-to-br from-orange-50/50 to-yellow-50/50 rounded-2xl p-6 backdrop-blur-sm">
+                    <div className="bg-gradient-to-br from-orange-50/50 to-yellow-50/50 rounded-2xl p-5 md:p-6 backdrop-blur-sm">
                       <WeatherForecast
                         lat={paquete.destinos[0].destino_lat}
                         lon={paquete.destinos[0].destino_lng}
@@ -585,9 +615,9 @@ function PackageViewPage() {
                 )}
 
               <AnimatedSection animation="fadeInUp" delay={200}>
-              <section className="group bg-white/80 backdrop-blur-xl rounded-3xl shadow-xl p-8 border border-white/20 hover:shadow-2xl transition-all duration-500">
+              <section className="group bg-white/80 backdrop-blur-xl rounded-3xl shadow-xl p-6 md:p-8 border border-white/20 hover:shadow-2xl transition-all duration-500">
                 <div className="flex items-start gap-6 mb-8">
-                  <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-500 rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                  <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-500 rounded-2xl flex items-center justify-center shadow-lg md:group-hover:scale-110 transition-transform duration-300">
                     <FiMapPin className="w-8 h-8 text-white" />
                   </div>
                   <div className="flex-1">
@@ -610,8 +640,8 @@ function PackageViewPage() {
                   </div>
                 </div>
 
-                <div className="bg-gradient-to-br from-purple-50/50 to-pink-50/50 rounded-2xl p-6 backdrop-blur-sm overflow-hidden">
-                  <div className="h-96 rounded-xl overflow-hidden shadow-lg">
+                <div className="bg-gradient-to-br from-purple-50/50 to-pink-50/50 rounded-2xl p-5 md:p-6 backdrop-blur-sm overflow-hidden">
+                  <div className="h-64 sm:h-80 md:h-96 rounded-xl overflow-hidden shadow-lg">
                     <RouteMap paquete={paquete} />
                   </div>
                 </div>
@@ -620,9 +650,9 @@ function PackageViewPage() {
 
               {paquete.itinerarios && paquete.itinerarios.length > 0 && (
                 <AnimatedSection animation="fadeInUp" delay={250}>
-                <section className="group bg-white/80 backdrop-blur-xl rounded-3xl shadow-xl p-8 border border-white/20 hover:shadow-2xl transition-all duration-500">
+                <section className="group bg-white/80 backdrop-blur-xl rounded-3xl shadow-xl p-6 md:p-8 border border-white/20 hover:shadow-2xl transition-all duration-500">
                   <div className="flex items-start gap-6 mb-8">
-                    <div className="w-16 h-16 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                    <div className="w-16 h-16 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-2xl flex items-center justify-center shadow-lg md:group-hover:scale-110 transition-transform duration-300">
                       <FiCalendar className="w-8 h-8 text-white" />
                     </div>
                     <div className="flex-1">
@@ -635,7 +665,7 @@ function PackageViewPage() {
                     </div>
                   </div>
 
-                  <div className="bg-gradient-to-br from-emerald-50/50 to-teal-50/50 rounded-2xl p-6 backdrop-blur-sm">
+                  <div className="bg-gradient-to-br from-emerald-50/50 to-teal-50/50 rounded-2xl p-5 md:p-6 backdrop-blur-sm">
                     <Itinerary itinerario={paquete.itinerarios} />
                   </div>
                 </section>
@@ -644,9 +674,9 @@ function PackageViewPage() {
 
               {paquete.hotel && (
                 <AnimatedSection animation="fadeInUp" delay={300}>
-                <section className="group bg-white/80 backdrop-blur-xl rounded-3xl shadow-xl p-8 border border-white/20 hover:shadow-2xl transition-all duration-500">
+                <section className="group bg-white/80 backdrop-blur-xl rounded-3xl shadow-xl p-6 md:p-8 border border-white/20 hover:shadow-2xl transition-all duration-500">
                   <div className="flex items-start gap-6 mb-8">
-                    <div className="w-16 h-16 bg-gradient-to-br from-amber-500 to-orange-500 rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                    <div className="w-16 h-16 bg-gradient-to-br from-amber-500 to-orange-500 rounded-2xl flex items-center justify-center shadow-lg md:group-hover:scale-110 transition-transform duration-300">
                       <FiHome className="w-8 h-8 text-white" />
                     </div>
                     <div className="flex-1">
@@ -659,7 +689,7 @@ function PackageViewPage() {
                     </div>
                   </div>
 
-                  <div className="bg-gradient-to-br from-amber-50/50 to-orange-50/50 rounded-2xl p-6 backdrop-blur-sm">
+                  <div className="bg-gradient-to-br from-amber-50/50 to-orange-50/50 rounded-2xl p-5 md:p-6 backdrop-blur-sm">
                     <div className="h-72 sm:h-96 md:h-[28rem] lg:h-[34rem] xl:h-[40rem] rounded-xl overflow-hidden shadow-lg">
                       <HotelInfo hotel={paquete.hotel} />
                     </div>
@@ -673,7 +703,7 @@ function PackageViewPage() {
                   <AnimatedSection animation="fadeInUp" delay={100}>
                   <section className="group bg-white/80 backdrop-blur-xl rounded-3xl shadow-xl p-6 border border-white/20 hover:shadow-2xl transition-all duration-500">
                     <div className="flex items-center gap-4 mb-6">
-                      <div className="w-12 h-12 bg-gradient-to-br from-amber-400 to-orange-400 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                      <div className="w-12 h-12 bg-gradient-to-br from-amber-400 to-orange-400 rounded-xl flex items-center justify-center shadow-lg md:group-hover:scale-110 transition-transform duration-300">
                         <FiInfo className="w-6 h-6 text-white" />
                       </div>
                       <div>
@@ -699,7 +729,7 @@ function PackageViewPage() {
                   <AnimatedSection animation="fadeInUp" delay={150}>
                   <section className="group bg-white/80 backdrop-blur-xl rounded-3xl shadow-xl p-6 border border-white/20 hover:shadow-2xl transition-all duration-500">
                     <div className="flex items-center gap-4 mb-6">
-                      <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                      <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-xl flex items-center justify-center shadow-lg md:group-hover:scale-110 transition-transform duration-300">
                         <FiCheckSquare className="w-6 h-6 text-white" />
                       </div>
                       <div>
@@ -723,14 +753,14 @@ function PackageViewPage() {
                   <AnimatedSection animation="fadeInUp" delay={200}>
                   <section className="group bg-white/80 backdrop-blur-xl rounded-3xl shadow-xl p-6 border border-white/20 hover:shadow-2xl transition-all duration-500">
                     <div className="flex items-center gap-4 mb-6">
-                      <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-green-500 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                      <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-green-500 rounded-xl flex items-center justify-center shadow-lg md:group-hover:scale-110 transition-transform duration-300">
                         <FiCheck className="w-6 h-6 text-white" />
                       </div>
                       <div>
                         <h3 className="font-volkhov text-xl sm:text-2xl font-bold text-gray-900">
                           ¿Qué Incluye?
                         </h3>
-                        <p className="text-gray-600 text-sm">Todo incluido</p>
+                        <p className="text-gray-600 text-sm">Servicios contemplados</p>
                       </div>
                     </div>
 
@@ -747,7 +777,7 @@ function PackageViewPage() {
                   <AnimatedSection animation="fadeInUp" delay={250}>
                   <section className="group bg-white/80 backdrop-blur-xl rounded-3xl shadow-xl p-6 border border-white/20 hover:shadow-2xl transition-all duration-500">
                     <div className="flex items-center gap-4 mb-6">
-                      <div className="w-12 h-12 bg-gradient-to-br from-gray-500 to-slate-500 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                      <div className="w-12 h-12 bg-gradient-to-br from-gray-500 to-slate-500 rounded-xl flex items-center justify-center shadow-lg md:group-hover:scale-110 transition-transform duration-300">
                         <FiX className="w-6 h-6 text-white" />
                       </div>
                       <div>
@@ -816,7 +846,7 @@ function PackageViewPage() {
                         </div>
                       )}
 
-                      <p className="text-gray-600 font-medium mt-4 px-4 py-2 bg-gray-50 rounded-xl">Precio todo incluido</p>
+                      <p className="text-gray-600 font-medium mt-4 px-4 py-2 bg-gray-50 rounded-xl">Los precios pueden variar según disponibilidad</p>
                     </div>
 
                     {paquete.anticipo && parseFloat(paquete.anticipo) > 0 && (
@@ -849,7 +879,7 @@ function PackageViewPage() {
                     >
                       <div className="absolute inset-0 bg-gradient-to-r from-blue-700 to-indigo-700 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                       <span className="relative flex items-center justify-center gap-3 text-lg">
-                        <FiCalendar className="w-5 h-5 group-hover:scale-110 transition-transform duration-300" aria-hidden="true" />
+                        <FiCalendar className="w-5 h-5 md:group-hover:scale-110 transition-transform duration-300" aria-hidden="true" />
                         Reservar Aventura
                       </span>
                     </button>
@@ -888,6 +918,9 @@ function PackageViewPage() {
         <div className="h-px bg-gradient-to-r from-transparent via-blue-200/60 to-transparent" />
       </div>
 
+      {/* Espacio para no chocar con CTA móvil fijo */}
+      <div className="h-20 sm:hidden" />
+
       {/* Más paquetes recomendados */}
       <RecommendedPackages currentCodigoUrl={url} />
 
@@ -902,7 +935,7 @@ function PackageViewPage() {
       />
 
       {/* CTA pegajosa en móviles */}
-      <div className="fixed bottom-4 left-0 right-0 px-4 sm:hidden z-50">
+      <div className="fixed left-0 right-0 px-4 sm:hidden z-50" style={{ bottom: "calc(env(safe-area-inset-bottom, 0px) + 1rem)" }}>
         <button
           onClick={() => {
             const codigo = paquete.codigo || url;
