@@ -4,7 +4,7 @@ import FaqSchema from "../components/FaqSchema";
 import { useSEO } from "../../../hooks/useSEO";
 import Footer from "../../home/components/Footer";
 import { useContactInfo } from "../../../hooks/useContactInfo";
-import { useNavigate, useLocation } from "react-router-dom";
+import UnifiedNav from "../../../components/layout/UnifiedNav";
 import { useContactActions } from "../../../hooks/useContactActions"; // nuevo
 
 // Estructuramos las FAQs en categorías con preguntas y respuestas.
@@ -161,9 +161,6 @@ export default function FaqPage() {
 
   const { contactInfo, loading: contactLoading } = useContactInfo();
   const currentYear = new Date().getFullYear();
-  const navigate = useNavigate();
-  const location = useLocation();
-  const from = location.state && location.state.from;
   const { openWhatsApp, getPhoneHref, onPhoneClick, ToastPortal } =
     useContactActions();
   const whatsappMsg =
@@ -204,36 +201,16 @@ export default function FaqPage() {
 
   return (
     <>
-      {/* Barra superior: solo botón Volver, sticky para mobile */}
-      <nav className="sticky top-2 sm:top-3 lg:top-4 z-40 bg-white/80 backdrop-blur-sm border-b border-slate-200 rounded-xl mx-2 sm:mx-4 lg:mx-6" aria-label="Volver">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-1.5 lg:py-1">
-          <button
-            type="button"
-            onClick={() => {
-              if (window?.history?.length > 1) {
-                navigate(-1);
-              } else {
-                navigate("/");
-              }
-            }}
-            className="group inline-flex items-center gap-2 px-3.5 py-1.5 lg:px-4 lg:py-2 rounded-full text-slate-800 bg-white shadow-sm ring-1 ring-slate-300 hover:bg-blue-50 hover:text-blue-700 hover:ring-blue-300 transition active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600"
-            aria-label="Regresar"
-            title="Regresar"
-          >
-            <span className="inline-flex items-center justify-center w-7 h-7 lg:w-8 lg:h-8 rounded-full bg-slate-50 text-slate-600 ring-1 ring-slate-200 group-hover:bg-blue-100 group-hover:text-blue-700 group-hover:ring-blue-200 transition">
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-              </svg>
-            </span>
-            <span className="text-sm lg:text-base font-medium tracking-wide">Regresar</span>
-          </button>
-        </div>
-      </nav>
+      {/* Navbar unificada con links a secciones */}
+      <UnifiedNav
+        transparentOnTop={false}
+        sectionLinks={toc.map((t) => ({ id: t.id, label: t.title }))}
+      />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
       />
-  <main className="min-h-screen bg-white pt-6 sm:pt-8 lg:pt-8 pb-12 sm:pb-16 lg:pb-20 px-4 sm:px-6 lg:px-8">
+      <main className="min-h-screen bg-white pt-24 sm:pt-28 lg:pt-28 pb-12 sm:pb-16 lg:pb-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto grid lg:grid-cols-4 gap-10">
           {/* Sidebar índice */}
           <aside className="lg:col-span-1 hidden lg:block">
@@ -258,7 +235,7 @@ export default function FaqPage() {
 
           {/* Contenido principal */}
           <div className="lg:col-span-3 space-y-16">
-            <header className="space-y-6 max-w-3xl">
+            <header className="space-y-6 max-w-3xl lg:mt-8">
               <AnimatedSection animation="fadeInUp">
                 <p className="text-sm font-semibold uppercase tracking-wide text-blue-600">
                   Centro de Ayuda

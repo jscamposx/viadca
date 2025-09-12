@@ -27,10 +27,7 @@ const UnifiedNav = ({
   const location = useLocation();
   const headerRef = useRef(null);
   const [activeSectionId, setActiveSectionId] = useState(null);
-  const hasSectionNav =
-    sectionLinks &&
-    sectionLinks.length > 0 &&
-    location.pathname.startsWith("/paquetes");
+  const hasSectionNav = sectionLinks && sectionLinks.length > 0;
   const [headerHeight, setHeaderHeight] = useState(0);
 
   useEffect(() => {
@@ -124,7 +121,7 @@ const UnifiedNav = ({
         const el = document.getElementById(id);
         if (!el) continue;
         const rect = el.getBoundingClientRect();
-        if (rect.top - (headerHeight + 16) <= 0) {
+        if (rect.top - (headerHeight + 24) <= 0) {
           current = id;
         } else {
           break;
@@ -141,7 +138,7 @@ const UnifiedNav = ({
     const el = document.getElementById(id);
     if (!el) return;
     const y =
-      window.scrollY + el.getBoundingClientRect().top - (headerHeight + 12);
+      window.scrollY + el.getBoundingClientRect().top - (headerHeight + 24);
     window.scrollTo({ top: y < 0 ? 0 : y, behavior: "smooth" });
   };
 
