@@ -141,15 +141,11 @@ const RouteMap = ({ paquete }) => {
 
   if (destinosConCoordenadas.length === 0) {
     return (
-      <div className="bg-white rounded-xl p-6 border border-gray-100 min-h-[280px] flex items-center justify-center">
-        <div className="text-center">
+      <div className="h-full flex items-center justify-center">
+        <div className="text-center p-6">
           <FiMapPin className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-          <h4 className="text-lg font-medium text-gray-700 mb-2">
-            Mapa no disponible
-          </h4>
-          <p className="text-gray-500">
-            Este paquete aún no tiene coordenadas geográficas configuradas.
-          </p>
+          <h4 className="text-lg font-medium text-gray-700 mb-2">Mapa no disponible</h4>
+          <p className="text-gray-500">Este paquete aún no tiene coordenadas geográficas configuradas.</p>
         </div>
       </div>
     );
@@ -212,7 +208,7 @@ const RouteMap = ({ paquete }) => {
   ]);
 
   return (
-    <div className="relative bg-white rounded-xl overflow-hidden border border-gray-100 h-80">
+    <div className="relative h-full">
       <MapContainer
         key={mapKey}
         center={mapCenter}

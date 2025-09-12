@@ -236,6 +236,26 @@ const ImageCarousel = ({
         })}
       </Carousel>
 
+      {/* Hint táctil en mobile */}
+      <div className="pointer-events-none absolute bottom-4 left-1/2 -translate-x-1/2 sm:hidden z-20">
+        <div className="flex items-center gap-2 bg-black/40 text-white text-xs px-3 py-1.5 rounded-full backdrop-blur-sm">
+          <span className="inline-block w-6 h-6 rounded-full bg-white/20 relative">
+            <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-3 h-3 bg-white rounded-full animate-pulse" />
+          </span>
+          Desliza
+        </div>
+      </div>
+
+      {/* Hint de interacción en desktop */}
+      <div className="pointer-events-none absolute bottom-4 right-4 hidden sm:block z-20 opacity-0 group-hover:opacity-100 transition-opacity">
+        <div className="flex items-center gap-2 bg-black/40 text-white text-xs px-3 py-1.5 rounded-full backdrop-blur-sm">
+          <span className="hidden md:inline">Arrastra o usa</span>
+          <span className="inline-flex items-center gap-1">
+            ← →
+          </span>
+        </div>
+      </div>
+
       <div className="absolute bottom-2 sm:bottom-4 left-2 sm:left-4 bg-black/50 backdrop-blur-sm rounded-full px-2 sm:px-3 py-1 z-20">
         <div className="flex items-center space-x-1 sm:space-x-2 text-white text-xs sm:text-sm">
           <FiEye className="w-3 h-3 sm:w-4 sm:h-4" />

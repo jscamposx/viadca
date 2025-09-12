@@ -485,7 +485,7 @@ function PackageViewPage() {
 
       <main className="relative">
         <div
-          className="relative h-[78vh] sm:h-[92vh] flex items-center justify-center overflow-hidden"
+          className="relative h-screen flex items-center justify-center overflow-hidden"
           style={!isSmallScreen ? { transform: `translateY(${scrollY * 0.2}px)` } : undefined}
         >
           <div className="absolute inset-0">
@@ -500,7 +500,7 @@ function PackageViewPage() {
           </div>
           
 
-          <div className="relative z-10 text-center text-white px-4 max-w-4xl mx-auto translate-y-[-5vh] sm:translate-y-0">
+          <div className="relative z-10 text-center text-white px-4 max-w-4xl mx-auto">
             <div className="space-y-5 sm:space-y-6">
 
               <h1 className="font-volkhov text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold leading-tight">
@@ -847,12 +847,12 @@ function PackageViewPage() {
                     </div>
 
                     {paquete.anticipo && parseFloat(paquete.anticipo) > 0 && (
-                      <div className="mb-5 flex items-center gap-3 rounded-xl border border-blue-100/80 bg-blue-50/70 p-3">
-                        <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-lg flex items-center justify-center text-white shadow">
-                          <FiDollarSign className="w-5 h-5" />
+                      <div className="mb-5 flex items-center gap-4 rounded-xl border border-blue-100/80 bg-blue-50/70 p-3">
+                        <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-lg flex items-center justify-center text-white shadow-md shrink-0">
+                          <FiDollarSign className="w-7 h-7" />
                         </div>
                         <div className="flex-1">
-                          <div className="flex items-baseline gap-2">
+                          <div className="flex items-center gap-2.5">
                             <h3 className="font-bold text-blue-900 text-sm">Anticipo requerido</h3>
                             <span className="text-sm font-bold text-blue-700">
                               {formatPrecio(paquete.anticipo, moneda)}
