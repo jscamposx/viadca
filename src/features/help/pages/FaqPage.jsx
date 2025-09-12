@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { AnimatedSection } from "../../../hooks/scrollAnimations";
+import { AnimatedSection, useSectionReveal } from "../../../hooks/scrollAnimations";
 import FaqSchema from "../components/FaqSchema";
 import { useSEO } from "../../../hooks/useSEO";
 import Footer from "../../home/components/Footer";
@@ -204,49 +204,36 @@ export default function FaqPage() {
 
   return (
     <>
-      {/* Breadcrumb visual */}
-      <nav
-        className="bg-white/70 backdrop-blur-sm border-b border-slate-200"
-        aria-label="Breadcrumb"
-      >
-        <ol
-          className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center gap-2 text-sm py-2"
-          itemScope
-          itemType="https://schema.org/BreadcrumbList"
-        >
-          <li
-            itemProp="itemListElement"
-            itemScope
-            itemType="https://schema.org/ListItem"
+      {/* Barra superior: solo botón Volver, sticky para mobile */}
+      <nav className="sticky top-2 sm:top-3 lg:top-4 z-40 bg-white/80 backdrop-blur-sm border-b border-slate-200 rounded-xl mx-2 sm:mx-4 lg:mx-6" aria-label="Volver">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-1.5 lg:py-1">
+          <button
+            type="button"
+            onClick={() => {
+              if (window?.history?.length > 1) {
+                navigate(-1);
+              } else {
+                navigate("/");
+              }
+            }}
+            className="group inline-flex items-center gap-2 px-3.5 py-1.5 lg:px-4 lg:py-2 rounded-full text-slate-800 bg-white shadow-sm ring-1 ring-slate-300 hover:bg-blue-50 hover:text-blue-700 hover:ring-blue-300 transition active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600"
+            aria-label="Regresar"
+            title="Regresar"
           >
-            <a
-              href="/"
-              itemProp="item"
-              className="text-blue-600 hover:underline"
-            >
-              <span itemProp="name">Inicio</span>
-            </a>
-            <meta itemProp="position" content="1" />
-          </li>
-          <li aria-hidden="true" className="text-slate-400">
-            /
-          </li>
-          <li
-            itemProp="itemListElement"
-            itemScope
-            itemType="https://schema.org/ListItem"
-            className="text-slate-600"
-          >
-            <span itemProp="name">Preguntas Frecuentes</span>
-            <meta itemProp="position" content="2" />
-          </li>
-        </ol>
+            <span className="inline-flex items-center justify-center w-7 h-7 lg:w-8 lg:h-8 rounded-full bg-slate-50 text-slate-600 ring-1 ring-slate-200 group-hover:bg-blue-100 group-hover:text-blue-700 group-hover:ring-blue-200 transition">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              </svg>
+            </span>
+            <span className="text-sm lg:text-base font-medium tracking-wide">Regresar</span>
+          </button>
+        </div>
       </nav>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
       />
-      <main className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-rose-50 py-12 sm:py-16 lg:py-20 px-4 sm:px-6 lg:px-8">
+  <main className="min-h-screen bg-white pt-6 sm:pt-8 lg:pt-8 pb-12 sm:pb-16 lg:pb-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto grid lg:grid-cols-4 gap-10">
           {/* Sidebar índice */}
           <aside className="lg:col-span-1 hidden lg:block">
@@ -287,44 +274,23 @@ export default function FaqPage() {
               </AnimatedSection>
             </header>
 
-            {faqCategories.map((cat) => (
-              <section
-                key={cat.id}
-                id={cat.id}
-                aria-labelledby={`${cat.id}-heading`}
-                className="space-y-8 scroll-mt-28"
-              >
-                <AnimatedSection animation="fadeInUp" className="space-y-3">
-                  <h2
-                    id={`${cat.id}-heading`}
-                    className="text-2xl sm:text-3xl font-bold text-slate-800"
+            {/* Navegación de categorías para mobile */}
+            <div className="lg:hidden -mt-2">
+              <div className="flex gap-2 overflow-x-auto no-scrollbar py-2 pr-2">
+                {toc.map((item) => (
+                  <a
+                    key={item.id}
+                    href={`#${item.id}`}
+                    className="shrink-0 px-3 py-1.5 rounded-full text-sm bg-slate-50 text-slate-700 ring-1 ring-slate-200 hover:bg-blue-50 hover:text-blue-700 hover:ring-blue-200"
                   >
-                    {cat.title}
-                  </h2>
-                  <p className="text-slate-600 max-w-2xl">{cat.description}</p>
-                </AnimatedSection>
-                <div className="space-y-4">
-                  {cat.faqs.map((f, idx) => (
-                    <AnimatedSection
-                      key={idx}
-                      animation="fadeInUp"
-                      delay={idx * 80}
-                    >
-                      <article
-                        className="bg-white/80 backdrop-blur rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition px-5 py-5 sm:px-6"
-                        onClick={() => handleFaqClick(f.q)}
-                      >
-                        <h3 className="font-semibold text-slate-800 text-lg">
-                          {f.q}
-                        </h3>
-                        <p className="mt-2 text-slate-600 leading-relaxed text-sm sm:text-base whitespace-pre-line">
-                          {f.a}
-                        </p>
-                      </article>
-                    </AnimatedSection>
-                  ))}
-                </div>
-              </section>
+                    {item.title}
+                  </a>
+                ))}
+              </div>
+            </div>
+
+            {faqCategories.map((cat) => (
+              <FaqCategorySection key={cat.id} cat={cat} onFaqClick={handleFaqClick} />
             ))}
           </div>
         </div>
@@ -333,29 +299,29 @@ export default function FaqPage() {
 
         {/* CTA de contacto */}
         <section className="max-w-5xl mx-auto mt-24">
-          <div className="relative overflow-hidden rounded-3xl p-8 sm:p-12 bg-gradient-to-r from-blue-600 via-indigo-600 to-rose-600 text-white shadow-2xl">
-            <div
-              className="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_20%_20%,#ffffff33,transparent_60%)]"
-              aria-hidden="true"
-            />
+          <div className="relative overflow-hidden rounded-3xl p-8 sm:p-12 bg-white text-slate-800 shadow-2xl ring-1 ring-slate-200">
+            <div className="pointer-events-none" aria-hidden="true">
+              <div className="absolute -top-24 -right-24 w-80 h-80 bg-gradient-to-br from-blue-300/60 to-rose-300/60 rounded-full blur-3xl opacity-60" />
+              <div className="absolute -bottom-28 -left-24 w-80 h-80 bg-gradient-to-br from-indigo-300/60 to-teal-300/60 rounded-full blur-3xl opacity-60" />
+            </div>
             <div className="relative z-10 flex flex-col lg:flex-row gap-10 items-start lg:items-center">
               <div className="flex-1 space-y-4">
-                <h2 className="text-3xl sm:text-4xl font-bold font-volkhov leading-tight">
+                <h2 className="text-3xl sm:text-4xl font-bold font-volkhov leading-tight text-slate-900">
                   ¿Aún necesitas ayuda?
                 </h2>
-                <p className="text-base sm:text-lg text-indigo-100 max-w-2xl">
+                <p className="text-base sm:text-lg text-slate-600 max-w-2xl">
                   Escríbenos y un asesor te responderá personalmente para
                   planificar tu viaje o aclarar cualquier duda que no
                   encontraste en esta sección.
                 </p>
-                <ul className="flex flex-wrap gap-3 text-xs text-indigo-100/80">
-                  <li className="px-3 py-1 rounded-full bg-white/10 backdrop-blur">
+                <ul className="flex flex-wrap gap-3 text-xs text-slate-600">
+                  <li className="px-3 py-1 rounded-full bg-blue-50 text-blue-700">
                     Asesoría personalizada
                   </li>
-                  <li className="px-3 py-1 rounded-full bg-white/10 backdrop-blur">
+                  <li className="px-3 py-1 rounded-full bg-rose-50 text-rose-700">
                     Respuestas rápidas
                   </li>
-                  <li className="px-3 py-1 rounded-full bg-white/10 backdrop-blur">
+                  <li className="px-3 py-1 rounded-full bg-indigo-50 text-indigo-700">
                     Experiencia en viajes
                   </li>
                 </ul>
@@ -364,7 +330,7 @@ export default function FaqPage() {
                 <button
                   type="button"
                   onClick={() => openWhatsApp(whatsappMsg)}
-                  className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-white text-blue-700 font-medium shadow-lg hover:shadow-xl hover:scale-[1.03] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-white transition"
+                  className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-blue-600 text-white font-medium shadow-lg hover:shadow-xl hover:scale-[1.03] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2 transition"
                 >
                   <svg
                     className="w-5 h-5"
@@ -384,7 +350,7 @@ export default function FaqPage() {
                 <a
                   href={getPhoneHref()}
                   onClick={onPhoneClick}
-                  className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-blue-700/20 hover:bg-blue-700/30 text-white font-medium shadow-lg hover:shadow-xl hover:scale-[1.03] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-white transition"
+                  className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-700 font-medium shadow-lg hover:shadow-xl hover:scale-[1.03] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2 transition"
                 >
                   <svg
                     className="w-5 h-5"
@@ -414,5 +380,58 @@ export default function FaqPage() {
       />
       <ToastPortal />
     </>
+  );
+}
+
+// Subcomponente para manejar la animación por sección y escalonado de preguntas
+function FaqCategorySection({ cat, onFaqClick }) {
+  const [sectionRef, visible] = useSectionReveal({ threshold: 0.05, rootMargin: "0px 0px -10% 0px" });
+  return (
+    <section
+      ref={sectionRef}
+      id={cat.id}
+      aria-labelledby={`${cat.id}-heading`}
+      className="space-y-8 scroll-mt-28"
+    >
+      <AnimatedSection animation="fadeInUp" className="space-y-3" forceVisible={visible}>
+        <h2
+          id={`${cat.id}-heading`}
+          className="text-2xl sm:text-3xl font-bold text-slate-800"
+        >
+          {cat.title}
+        </h2>
+        <p className="text-slate-600 max-w-2xl">{cat.description}</p>
+      </AnimatedSection>
+      <div className="space-y-4">
+        {cat.faqs.map((f, idx) => (
+          <AnimatedSection
+            key={idx}
+            animation="fadeInUp"
+            forceVisible={visible}
+            stagger={90}
+            index={idx}
+          >
+            <details
+              className="group bg-white rounded-xl border border-slate-200 shadow-sm transition overflow-hidden"
+              onToggle={(e) => e.target.open && onFaqClick(f.q)}
+            >
+              <summary className="list-none px-5 py-4 sm:px-6 cursor-pointer flex items-center justify-between gap-4 select-none focus-visible:outline-none">
+                <h3 className="font-semibold text-slate-800 text-base sm:text-lg">{f.q}</h3>
+                <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-slate-50 text-slate-500 ring-1 ring-slate-200 group-open:rotate-180 transition">
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </span>
+              </summary>
+              <div className="px-5 pb-5 sm:px-6 -mt-1">
+                <p className="text-slate-600 leading-relaxed text-sm sm:text-base whitespace-pre-line">
+                  {f.a}
+                </p>
+              </div>
+            </details>
+          </AnimatedSection>
+        ))}
+      </div>
+    </section>
   );
 }
