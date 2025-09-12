@@ -82,7 +82,6 @@ class CloudinaryService {
 
     let transformations = [];
 
-<<<<<<< HEAD
     // Manejo individual de width/height para evitar h_auto inválido
     if (width !== undefined && width !== null && width !== "auto") {
       transformations.push(`w_${width}`);
@@ -97,13 +96,6 @@ class CloudinaryService {
         ? "scale"
         : crop;
     if (effectiveCrop) transformations.push(`c_${effectiveCrop}`);
-=======
-    if (width !== "auto" || height !== "auto") {
-      transformations.push(`w_${width},h_${height}`);
-    }
-
-    if (crop) transformations.push(`c_${crop}`);
->>>>>>> a43597ef0d0800863cc9a06891b89c03d846e990
     if (gravity && gravity !== "auto") transformations.push(`g_${gravity}`);
 
     if (quality) transformations.push(`q_${quality}`);
@@ -257,16 +249,11 @@ class CloudinaryService {
     }
   }
 
-<<<<<<< HEAD
   generateSrcSet(publicId, baseOptions = {}) {
-=======
-  generateSrcSet(publicId) {
->>>>>>> a43597ef0d0800863cc9a06891b89c03d846e990
     if (!publicId) return "";
 
     const sizes = [400, 800, 1200, 1600];
 
-<<<<<<< HEAD
     // Si se proporciona width y height base, mantener la relación de aspecto en las variantes
     const baseWidth =
       baseOptions.width !== undefined && baseOptions.width !== "auto"
@@ -289,15 +276,6 @@ class CloudinaryService {
         }
 
         const url = this.getOptimizedImageUrl(publicId, opts);
-=======
-    return sizes
-      .map((size) => {
-        const url = this.getOptimizedImageUrl(publicId, {
-          width: size,
-          quality: "auto",
-          format: "auto",
-        });
->>>>>>> a43597ef0d0800863cc9a06891b89c03d846e990
         return `${url} ${size}w`;
       })
       .join(", ");

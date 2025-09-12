@@ -134,7 +134,6 @@
   transform: translateZ(0);
 }
 
-<<<<<<< HEAD
 /* Reducir movimiento para usuarios que lo prefieren
    Nota: si el elemento <html> tiene la clase .allow-motion, NO se aplican estas reglas
    (permite forzar animaciones en desarrollo o por preferencia del usuario). */
@@ -146,29 +145,13 @@
   :root:not(.allow-motion) .animate-scale-in,
   :root:not(.allow-motion) .animate-slide-in-bottom,
   :root:not(.allow-motion) .animate-bounce-in {
-=======
-/* Reducir movimiento para usuarios que lo prefieren */
-@media (prefers-reduced-motion: reduce) {
-  .animate-fade-in-up,
-  .animate-fade-in-left,
-  .animate-fade-in-right,
-  .animate-fade-in,
-  .animate-scale-in,
-  .animate-slide-in-bottom,
-  .animate-bounce-in {
->>>>>>> a43597ef0d0800863cc9a06891b89c03d846e990
     animation: none;
     opacity: 1;
     transform: none;
   }
 
-<<<<<<< HEAD
   :root:not(.allow-motion) .transition-smooth,
   :root:not(.allow-motion) .transition-bounce {
-=======
-  .transition-smooth,
-  .transition-bounce {
->>>>>>> a43597ef0d0800863cc9a06891b89c03d846e990
     transition: none;
   }
 }

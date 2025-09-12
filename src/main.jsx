@@ -1,14 +1,9 @@
-<<<<<<< HEAD
 import { StrictMode, useEffect, useState } from "react";
-=======
-import { StrictMode } from "react";
->>>>>>> a43597ef0d0800863cc9a06891b89c03d846e990
 import { createRoot } from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 import "./index.css";
 import App from "./App.jsx";
 import ErrorBoundary from "./components/ErrorBoundary.jsx"; // añadido
-<<<<<<< HEAD
 import { MotionConfig } from "framer-motion";
 
 function Root() {
@@ -48,15 +43,5 @@ function Root() {
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <Root />
-=======
-
-createRoot(document.getElementById("root")).render(
-  <StrictMode>
-    <BrowserRouter>
-      <ErrorBoundary>
-        <App />
-      </ErrorBoundary>
-    </BrowserRouter>
->>>>>>> a43597ef0d0800863cc9a06891b89c03d846e990
   </StrictMode>,
 );

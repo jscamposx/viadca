@@ -497,11 +497,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-<<<<<<< HEAD
   :root:not(.allow-motion) .skeleton-shimmer::after {
-=======
-  .skeleton-shimmer::after {
->>>>>>> a43597ef0d0800863cc9a06891b89c03d846e990
     animation: none;
   }
 }
