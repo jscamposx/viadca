@@ -10,13 +10,10 @@ import {
   FiLock,
   FiRefreshCw,
   FiKey,
-  FiSettings,
   FiShield,
   FiLogOut,
-  FiGlobe,
-  FiBell,
 } from "react-icons/fi";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../../../contexts/AuthContext";
 import authService from "../../../api/authService";
 import PageTransition from "../../../components/ui/PageTransition";
@@ -24,6 +21,7 @@ import PageTransition from "../../../components/ui/PageTransition";
 const UserProfilePage = () => {
   const { user, updateProfile, logout } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({ nombre: "", correo: "" });
   const [loading, setLoading] = useState(false);
@@ -144,9 +142,10 @@ const UserProfilePage = () => {
     }
   };
 
+  // Utilidad para construir iniciales del usuario
   const getInitials = (name) => {
     if (!name) return "U";
-    const parts = name.trim().split(" ");
+    const parts = name.trim().split(/\s+/);
     if (parts.length === 1) return parts[0].charAt(0).toUpperCase();
     return (parts[0].charAt(0) + parts[1].charAt(0)).toUpperCase();
   };
@@ -154,107 +153,110 @@ const UserProfilePage = () => {
   return (
     <PageTransition>
       <div className="min-h-screen bg-gray-50">
-        {/* Header estilo moderno */}
-        <header className="bg-white shadow-sm">
+        {/* Header mínimo con solo "Volver" */}
+        <header className="bg-white/90 backdrop-blur supports-[backdrop-filter]:bg-white/70 border-b border-gray-200 sticky top-0 z-40">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex justify-between items-center py-4">
-              <div className="flex items-center">
-                <button
-                  onClick={() => navigate(-1)}
-                  className="flex items-center text-gray-600 hover:text-gray-900 mr-4"
+            <div className="flex justify-between items-center py-3">
+              <button
+                onClick={() => {
+                  const fromState = location.state?.from;
+                  const referrer = document.referrer;
+                  if (fromState && typeof fromState === "string") {
+                    navigate(fromState, { replace: true });
+                    return;
+                  }
+                  if (referrer && new URL(referrer).origin === window.location.origin) {
+                    // Solo navegar si el referrer es del mismo origen
+                    navigate(-1);
+                    return;
+                  }
+                  // Fallback al home
+                  navigate("/", { replace: true });
+                }}
+                className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white/80 px-3 py-2 text-slate-700 hover:text-blue-700 hover:border-blue-300 hover:bg-white shadow-sm transition focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-600/40"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-4 w-4"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
                 >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-5 w-5"
-                    viewBox="0 0 20 20"
-                    fill="currentColor"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                </button>
-                <h1 className="text-xl font-bold text-gray-900">MiApp</h1>
-              </div>
-              <div className="flex items-center space-x-4">
-                <button className="p-2 rounded-full hover:bg-gray-100 text-gray-600">
-                  <FiBell className="w-5 h-5" />
-                </button>
-                <button className="p-2 rounded-full hover:bg-gray-100 text-gray-600">
-                  <FiSettings className="w-5 h-5" />
-                </button>
-                <div className="w-8 h-8 rounded-full bg-blue-500 text-white flex items-center justify-center text-sm font-medium">
-                  {getInitials(user?.nombre || "U")}
-                </div>
-              </div>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+                </svg>
+                <span className="text-sm font-medium">Volver</span>
+              </button>
+              {/* Sin logo ni iconos adicionales en la página de perfil */}
+              <div />
             </div>
           </div>
         </header>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          {/* Encabezado del perfil */}
-          <div className="bg-white rounded-xl shadow overflow-hidden">
-            <div className="relative h-48 bg-gradient-to-r from-blue-500 to-indigo-600">
-              <div className="absolute -bottom-16 left-8">
-                <div className="bg-white p-1 rounded-full shadow-lg">
-                  <div className="w-28 h-28 rounded-full bg-gray-200 border-4 border-white flex items-center justify-center text-4xl font-bold text-gray-600">
-                    {isInitialLoading
-                      ? "..."
-                      : getInitials(
-                          user?.nombre ||
-                            user?.nombre_completo ||
-                            user?.nombreCompleto ||
-                            user?.usuario,
-                        )}
+          {/* Encabezado del perfil (look atractivo, con avatar de iniciales) */}
+          <div className="relative rounded-2xl overflow-hidden shadow border border-blue-100/60 bg-gradient-to-r from-blue-50 to-indigo-50">
+            <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-blue-500 via-indigo-500 to-cyan-500" aria-hidden="true" />
+            <div className="px-3 sm:px-8 py-4 sm:py-6">
+              <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
+                  <span className="inline-flex items-center justify-center w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-white border border-slate-200 shadow-sm">
+                    <span className="text-lg sm:text-xl font-extrabold text-slate-800">
+                      {getInitials(
+                        user?.nombre ||
+                          user?.nombre_completo ||
+                          user?.nombreCompleto ||
+                          user?.usuario ||
+                          "U",
+                      )}
+                    </span>
+                  </span>
+                  <div>
+                    <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-slate-900 to-blue-700">
+                      {user?.nombre || user?.nombre_completo || "Tu Perfil"}
+                    </h1>
+                    <div className="flex flex-wrap items-center mt-2 gap-2">
+                      <span className="text-slate-700 flex items-center break-all">
+                        <FiMail className="mr-1.5 h-4 w-4" />
+                        {user?.correo || user?.email}
+                      </span>
+                      {isVerified ? (
+                        <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-800 border border-green-200">
+                          <FiCheckCircle className="mr-1.5 h-4 w-4" /> Verificado
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-yellow-100 text-yellow-800 border border-yellow-200">
+                          <FiClock className="mr-1.5 h-4 w-4" /> No verificado
+                        </span>
+                      )}
+                      <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-800 border border-blue-200">
+                        <FiUser className="mr-1.5 h-4 w-4" />
+                        {(user?.rol || "usuario").toString().toUpperCase()}
+                      </span>
+                    </div>
                   </div>
                 </div>
-              </div>
-              <div className="absolute right-6 top-6">
-                <button
-                  onClick={() => setIsEditing(true)}
-                  className="flex items-center px-4 py-2 bg-white/20 backdrop-blur-sm rounded-lg text-white hover:bg-white/30 transition"
-                >
-                  <FiEdit className="mr-2" /> Editar perfil
-                </button>
-              </div>
-            </div>
-            <div className="pt-20 px-8 pb-6">
-              <div>
-                <h1 className="text-2xl font-bold text-gray-900">
-                  {user?.nombre || user?.nombre_completo || "Tu Perfil"}
-                </h1>
-                <div className="flex items-center mt-2 space-x-3">
-                  <span className="text-gray-600 flex items-center">
-                    <FiMail className="mr-1.5 h-4 w-4" />
-                    {user?.correo || user?.email}
-                  </span>
-                  {isVerified ? (
-                    <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                      <FiCheckCircle className="mr-1.5 h-4 w-4" /> Verificado
-                    </span>
-                  ) : (
-                    <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
-                      <FiClock className="mr-1.5 h-4 w-4" /> No verificado
-                    </span>
+                <div className="mt-2 md:mt-0">
+                  {!isEditing && (
+                    <button
+                      onClick={() => setIsEditing(true)}
+                      className="inline-flex items-center justify-center px-4 py-2 rounded-lg bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow hover:shadow-md hover:from-blue-600 hover:to-blue-700 transition w-full sm:w-auto"
+                    >
+                      <FiEdit className="mr-2" /> Editar perfil
+                    </button>
                   )}
-                  <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                    <FiUser className="mr-1.5 h-4 w-4" />
-                    {(user?.rol || "usuario").toString().toUpperCase()}
-                  </span>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Tabs de navegación */}
-          <div className="mt-8">
+          {/* Tabs de navegación (solo 2, desplazables en móvil) */}
+          <div className="mt-4 sm:mt-8">
             <div className="border-b border-gray-200">
-              <nav className="flex space-x-8">
+              <nav className="flex gap-4 sm:gap-8 overflow-x-auto whitespace-nowrap px-1 -mx-1">
                 <button
                   onClick={() => setActiveTab("profile")}
-                  className={`py-4 px-1 border-b-2 font-medium text-sm ${
+                  className={`py-3 sm:py-4 px-2 sm:px-3 border-b-2 font-medium text-sm ${
                     activeTab === "profile"
                       ? "border-blue-500 text-blue-600"
                       : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
@@ -264,23 +266,13 @@ const UserProfilePage = () => {
                 </button>
                 <button
                   onClick={() => setActiveTab("security")}
-                  className={`py-4 px-1 border-b-2 font-medium text-sm ${
+                  className={`py-3 sm:py-4 px-2 sm:px-3 border-b-2 font-medium text-sm ${
                     activeTab === "security"
                       ? "border-blue-500 text-blue-600"
                       : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
                   }`}
                 >
                   Seguridad
-                </button>
-                <button
-                  onClick={() => setActiveTab("settings")}
-                  className={`py-4 px-1 border-b-2 font-medium text-sm ${
-                    activeTab === "settings"
-                      ? "border-blue-500 text-blue-600"
-                      : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
-                  }`}
-                >
-                  Configuración
                 </button>
               </nav>
             </div>
@@ -315,7 +307,7 @@ const UserProfilePage = () => {
           {/* Contenido de la pestaña activa */}
           {activeTab === "profile" ? (
             <div className="mt-6 bg-white rounded-xl shadow overflow-hidden">
-              <div className="px-8 py-6">
+              <div className="px-3 sm:px-8 py-5 sm:py-6">
                 {isEditing ? (
                   <form onSubmit={handleSubmit} className="space-y-6 max-w-2xl">
                     <div className="grid grid-cols-1 gap-y-6 gap-x-8 sm:grid-cols-6">
@@ -499,9 +491,10 @@ const UserProfilePage = () => {
             </div>
           ) : activeTab === "security" ? (
             <div className="mt-6 bg-white rounded-xl shadow overflow-hidden">
-              <div className="px-8 py-6">
+              <div className="px-3 sm:px-8 py-5 sm:py-6">
                 <div className="max-w-3xl space-y-6">
-                  <div className="p-6 bg-gray-50 rounded-xl hover:bg-white transition-all duration-300 border border-gray-200">
+                  <div className="relative p-6 bg-white rounded-2xl transition-all duration-300 border border-slate-200 hover:shadow-md">
+                    <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-blue-500 via-indigo-500 to-cyan-500 rounded-t-2xl" aria-hidden="true" />
                     <div className="flex items-start">
                       <div className="flex-shrink-0 p-2 bg-blue-100 rounded-lg text-blue-600">
                         <FiLock className="h-6 w-6" />
@@ -553,7 +546,8 @@ const UserProfilePage = () => {
                     </div>
                   </div>
 
-                  <div className="p-6 bg-gray-50 rounded-xl hover:bg-white transition-all duration-300 border border-gray-200">
+                  <div className="relative p-6 bg-white rounded-2xl transition-all duration-300 border border-slate-200 hover:shadow-md">
+                    <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-green-500 via-emerald-500 to-lime-400 rounded-t-2xl" aria-hidden="true" />
                     <div className="flex items-start">
                       <div className="flex-shrink-0 p-2 bg-green-100 rounded-lg text-green-600">
                         <FiShield className="h-6 w-6" />
@@ -571,7 +565,8 @@ const UserProfilePage = () => {
                     </div>
                   </div>
 
-                  <div className="p-6 bg-gray-50 rounded-xl hover:bg-white transition-all duration-300 border border-gray-200">
+                  <div className="relative p-6 bg-white rounded-2xl transition-all duration-300 border border-slate-200 hover:shadow-md">
+                    <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-indigo-500 via-blue-500 to-cyan-500 rounded-t-2xl" aria-hidden="true" />
                     <div className="flex items-start">
                       <div className="flex-shrink-0 p-2 bg-indigo-100 rounded-lg text-indigo-600">
                         <FiRefreshCw className="h-6 w-6" />
@@ -626,112 +621,9 @@ const UserProfilePage = () => {
               </div>
             </div>
           ) : (
+            // Fallback: si hubiera otro valor de tab, mostramos el perfil
             <div className="mt-6 bg-white rounded-xl shadow overflow-hidden">
-              <div className="px-8 py-6">
-                <div className="max-w-3xl">
-                  <h2 className="text-xl font-medium text-gray-900 mb-6">
-                    Configuración de la cuenta
-                  </h2>
-
-                  <div className="space-y-6">
-                    <div className="p-5 bg-gray-50 rounded-xl border border-gray-200">
-                      <h3 className="text-lg font-medium text-gray-900 mb-3 flex items-center">
-                        <FiGlobe className="mr-2 text-blue-500" />
-                        Preferencias de idioma
-                      </h3>
-                      <p className="text-sm text-gray-600 mb-4">
-                        Selecciona tu idioma preferido para la interfaz de
-                        usuario.
-                      </p>
-                      <div className="relative">
-                        <select className="block w-full pl-3 pr-10 py-3 text-base border border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-lg">
-                          <option>Español</option>
-                          <option>English</option>
-                          <option>Português</option>
-                          <option>Français</option>
-                        </select>
-                      </div>
-                    </div>
-
-                    <div className="p-5 bg-gray-50 rounded-xl border border-gray-200">
-                      <h3 className="text-lg font-medium text-gray-900 mb-3 flex items-center">
-                        <FiBell className="mr-2 text-blue-500" />
-                        Notificaciones
-                      </h3>
-                      <p className="text-sm text-gray-600 mb-4">
-                        Controla cómo y cuándo recibes notificaciones.
-                      </p>
-                      <div className="space-y-4">
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <p className="text-sm font-medium text-gray-900">
-                              Notificaciones por correo
-                            </p>
-                            <p className="text-sm text-gray-500">
-                              Recibe notificaciones importantes por correo
-                              electrónico
-                            </p>
-                          </div>
-                          <button className="relative inline-flex flex-shrink-0 h-6 w-11 border-2 border-transparent rounded-full cursor-pointer transition-colors ease-in-out duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 bg-blue-600">
-                            <span className="translate-x-5 pointer-events-none inline-block h-5 w-5 rounded-full bg-white shadow transform ring-0 transition ease-in-out duration-200"></span>
-                          </button>
-                        </div>
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <p className="text-sm font-medium text-gray-900">
-                              Notificaciones push
-                            </p>
-                            <p className="text-sm text-gray-500">
-                              Recibe notificaciones en este dispositivo
-                            </p>
-                          </div>
-                          <button className="relative inline-flex flex-shrink-0 h-6 w-11 border-2 border-transparent rounded-full cursor-pointer transition-colors ease-in-out duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 bg-gray-200">
-                            <span className="translate-x-0 pointer-events-none inline-block h-5 w-5 rounded-full bg-white shadow transform ring-0 transition ease-in-out duration-200"></span>
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="p-5 bg-gray-50 rounded-xl border border-gray-200">
-                      <h3 className="text-lg font-medium text-gray-900 mb-3 flex items-center">
-                        <FiShield className="mr-2 text-blue-500" />
-                        Privacidad
-                      </h3>
-                      <p className="text-sm text-gray-600 mb-4">
-                        Controla cómo otros usuarios ven tu información.
-                      </p>
-                      <div className="space-y-4">
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <p className="text-sm font-medium text-gray-900">
-                              Perfil público
-                            </p>
-                            <p className="text-sm text-gray-500">
-                              Permite que otros usuarios vean tu perfil
-                            </p>
-                          </div>
-                          <button className="relative inline-flex flex-shrink-0 h-6 w-11 border-2 border-transparent rounded-full cursor-pointer transition-colors ease-in-out duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 bg-blue-600">
-                            <span className="translate-x-5 pointer-events-none inline-block h-5 w-5 rounded-full bg-white shadow transform ring-0 transition ease-in-out duration-200"></span>
-                          </button>
-                        </div>
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <p className="text-sm font-medium text-gray-900">
-                              Mostrar actividad
-                            </p>
-                            <p className="text-sm text-gray-500">
-                              Permite que otros vean tu actividad reciente
-                            </p>
-                          </div>
-                          <button className="relative inline-flex flex-shrink-0 h-6 w-11 border-2 border-transparent rounded-full cursor-pointer transition-colors ease-in-out duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 bg-gray-200">
-                            <span className="translate-x-0 pointer-events-none inline-block h-5 w-5 rounded-full bg-white shadow transform ring-0 transition ease-in-out duration-200"></span>
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
+              <div className="px-4 sm:px-8 py-6">Contenido no disponible</div>
             </div>
           )}
         </div>

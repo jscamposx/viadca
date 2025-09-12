@@ -344,6 +344,7 @@ const UnifiedNav = ({
                       )}
                       <Link
                         to="/perfil"
+                        state={{ from: `${location.pathname}${location.search}${location.hash}` }}
                         onClick={() => setUserMenuOpen(false)}
                         className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-slate-700 hover:text-blue-700 hover:bg-blue-50/70 transition"
                       >
@@ -507,6 +508,7 @@ const UnifiedNav = ({
                     )}
                     <Link
                       to="/perfil"
+                      state={{ from: `${location.pathname}${location.search}${location.hash}` }}
                       onClick={() => setMobileOpen(false)}
                       className={`flex items-center gap-3 py-3 px-4 rounded-xl font-medium ${transparentOnTop && !isScrolled ? "text-white/90 hover:text-white hover:bg-white/10" : "text-slate-700 hover:text-blue-600 hover:bg-blue-50/70"}`}
                     >

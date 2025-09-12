@@ -638,6 +638,7 @@ const Home = () => {
                         )}
                         <Link
                           to="/perfil"
+                          state={{ from: `${window.location.pathname}${window.location.search}${window.location.hash}` }}
                           onClick={closeUserMenu}
                           className="group flex items-center gap-3 rounded-xl px-3 py-2.5 text-slate-700 hover:text-blue-700 hover:bg-blue-50/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600/60 transition-all"
                           role="menuitem"

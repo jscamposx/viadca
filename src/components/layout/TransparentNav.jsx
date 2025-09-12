@@ -127,6 +127,7 @@ const TransparentNav = ({ solidOnScroll = 80, overlay = true }) => {
                   )}
                   <Link
                     to="/perfil"
+                    state={{ from: `${location.pathname}${location.search}${location.hash}` }}
                     className="block px-3 py-2 rounded-lg hover:bg-slate-100 text-sm"
                     onClick={() => setUserMenuOpen(false)}
                   >
@@ -218,6 +219,7 @@ const TransparentNav = ({ solidOnScroll = 80, overlay = true }) => {
               )}
               <Link
                 to="/perfil"
+                state={{ from: `${location.pathname}${location.search}${location.hash}` }}
                 onClick={() => setMenuOpen(false)}
                 className="block px-3 py-2 rounded-lg hover:bg-white/10 text-sm"
               >
