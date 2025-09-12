@@ -30,6 +30,7 @@ import TermsPage from "./features/legal/pages/TermsPage";
 import CookiesPage from "./features/legal/pages/CookiesPage";
 import React, { Suspense } from "react";
 const FaqPage = React.lazy(() => import("./features/help/pages/FaqPage"));
+import FaqPageSkeleton from "./features/help/components/FaqPageSkeleton";
 import ScrollToTop from "./components/ui/ScrollToTop";
 
 function AppRoutes() {
@@ -51,9 +52,7 @@ function AppRoutes() {
           <Route
             path="/preguntas-frecuentes"
             element={
-              <Suspense
-                fallback={<div className="p-10 text-center">Cargando...</div>}
-              >
+              <Suspense fallback={<FaqPageSkeleton />}>
                 <FaqPage />
               </Suspense>
             }

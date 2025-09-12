@@ -174,15 +174,18 @@ const OptimizedImage = ({
     return (
       <div
         ref={imgRef}
-        className={`bg-gray-200 animate-pulse flex items-center justify-center ${className}`}
+        className={`bg-gray-200 skeleton-shimmer rounded ${className}`}
         style={{
           // Evitar romper el layout con tamaños fijos; sólo sugerimos aspect-ratio si existe
           aspectRatio: width && height ? `${width}/${height}` : undefined,
         }}
+        aria-busy={placeholder ? "true" : undefined}
+        aria-live="polite"
         {...props}
       >
+        {/* Skeleton puro, sin texto visible */}
         {placeholder && (
-          <span className="text-gray-400 text-sm">Cargando...</span>
+          <div className="w-full h-full bg-gray-200" aria-hidden="true" />
         )}
       </div>
     );
@@ -225,9 +228,11 @@ const OptimizedImage = ({
         className={`relative ${className}`}
         style={{ aspectRatio: width && height ? `${width}/${height}` : undefined }}
       >
-        <div className="bg-gray-200 animate-pulse absolute inset-0 flex items-center justify-center">
-          <span className="text-gray-400 text-sm">Cargando...</span>
-        </div>
+        {/* Capa skeleton con shimmer mientras la imagen carga */}
+        <div
+          className="absolute inset-0 bg-gray-200 skeleton-shimmer rounded"
+          aria-hidden="true"
+        />
         <img
           src={processedUrl}
           alt={alt}
@@ -241,6 +246,7 @@ const OptimizedImage = ({
           loading={priority ? "eager" : lazy ? "lazy" : "eager"}
           fetchPriority={priority ? "high" : undefined}
           decoding={priority ? "sync" : "async"}
+          aria-busy="true"
           {...props}
         />
       </div>
