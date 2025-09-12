@@ -449,8 +449,8 @@ const Footer = ({ contactInfo, contactLoading, currentYear }) => {
               <div className="mt-4 p-4 bg-white/60 backdrop-blur-sm rounded-xl border border-white/80">
                 <p className="text-sm text-slate-700 leading-relaxed">
                   {contactInfo.direccion
-                    ? `📍 Nos encontramos en ${contactInfo.direccion}. ¡Te esperamos para planificar tu próxima aventura!`
-                    : "📍 Contáctanos para conocer nuestra ubicación exacta y agendar una visita."}
+                    ? `Nos encontramos en ${contactInfo.direccion}. Te esperamos para planificar tu próxima aventura.`
+                    : "Contáctanos para conocer nuestra ubicación exacta y agendar una visita."}
                 </p>
               </div>
             </div>

@@ -9,10 +9,15 @@ import {
   RouteMap,
   HotelInfo,
 } from "../components";
+import { RecommendedPackages } from "../components";
 import WeatherForecast from "../components/WeatherForecast";
 import PackageSkeleton from "../components/PackageSkeleton";
 import { useContactActions } from "../../../hooks/useContactActions";
 import { useContactInfo } from "../../../hooks/useContactInfo";
+import PageTransition from "../../../components/ui/PageTransition";
+import { AnimatedSection } from "../../../hooks/scrollAnimations";
+import Footer from "../../home/components/Footer";
+import TrustBar from "../../../components/ui/TrustBar";
 import {
   FiMapPin,
   FiCalendar,
@@ -247,7 +252,7 @@ function PackageViewPage() {
   const [isLiked, setIsLiked] = useState(false);
   const [scrollY, setScrollY] = useState(0);
   const { openWhatsApp, getPhoneHref, onPhoneClick, ToastPortal } = useContactActions();
-  const { contactInfo } = useContactInfo();
+  const { contactInfo, loading: contactLoading } = useContactInfo();
 
   // Preparar config SEO SIEMPRE antes de returns condicionales
   let seoConfig;
@@ -342,7 +347,8 @@ function PackageViewPage() {
   );
 
   return (
-    <div className="bg-gradient-to-br from-slate-50 via-white to-blue-50 min-h-screen">
+    <PageTransition className="bg-gradient-to-br from-slate-50 via-white to-blue-50 min-h-screen">
+      {/* Toast global para acciones de contacto */}
       <ToastPortal />
       <div
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
@@ -428,9 +434,9 @@ function PackageViewPage() {
 
       <main className="relative">
         <div
-          className="relative h-screen flex items-center justify-center overflow-hidden"
+          className="relative h-[88vh] sm:h-[92vh] flex items-center justify-center overflow-hidden"
           style={{
-            transform: `translateY(${scrollY * 0.5}px)`,
+            transform: `translateY(${scrollY * 0.2}px)`,
           }}
         >
           <div className="absolute inset-0">
@@ -444,7 +450,7 @@ function PackageViewPage() {
           </div>
 
           <div className="relative z-10 text-center text-white px-4 max-w-4xl mx-auto">
-            <div className="space-y-6 animate-fade-in">
+            <div className="space-y-6">
               <div className="flex flex-wrap justify-center gap-3 mb-8">
                 <Badge variant="gradient" icon={FiCalendar}>
                   {paquete.duracion_dias} días
@@ -464,7 +470,7 @@ function PackageViewPage() {
                 )}
               </div>
 
-              <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold leading-tight">
+              <h1 className="font-volkhov text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold leading-tight">
                 <span className="bg-gradient-to-r from-white via-blue-100 to-purple-100 bg-clip-text text-transparent">
                   {paquete.titulo}
                 </span>
@@ -477,7 +483,7 @@ function PackageViewPage() {
 
               <div className="pt-8">
                 <button
-                  className="group bg-gradient-to-r from-blue-500 via-purple-500 to-blue-600 text-white font-bold py-4 px-8 rounded-2xl shadow-2xl hover:shadow-3xl hover:scale-105 transition-all duration-300 text-lg"
+                  className="group bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold py-4 px-8 rounded-2xl shadow-2xl hover:shadow-3xl hover:scale-105 transition-all duration-300 text-lg hover:from-blue-700 hover:to-indigo-700"
                   aria-label="Reservar aventura para este paquete turístico"
                   onClick={() => {
                     const codigo = paquete.codigo || url;
@@ -508,16 +514,17 @@ function PackageViewPage() {
           </div>
         </div>
 
-        <div className="container mx-auto px-4 py-12 relative z-10">
+        <div className="max-w-7xl mx-auto px-4 py-12 relative z-10">
           <div className="grid grid-cols-1 xl:grid-cols-4 gap-8">
             <div className="xl:col-span-3 space-y-8">
-              <section className="group bg-white/80 backdrop-blur-xl rounded-3xl shadow-xl p-8 border border-white/20 hover:shadow-2xl transition-all duration-500">
+              <AnimatedSection animation="fadeInUp" stagger={100}>
+                <section className="group bg-white/80 backdrop-blur-xl rounded-3xl shadow-xl p-8 border border-white/20 hover:shadow-2xl transition-all duration-500">
                 <div className="flex items-start gap-6 mb-8">
                   <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-500 rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
                     <FiInfo className="w-8 h-8 text-white" />
                   </div>
                   <div className="flex-1">
-                    <h2 className="text-2xl font-bold text-gray-900 mb-2">
+                    <h2 className="font-volkhov text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
                       Información del Paquete
                     </h2>
                     <p className="text-gray-600">
@@ -529,19 +536,21 @@ function PackageViewPage() {
                 <div className="bg-gradient-to-br from-blue-50/50 to-purple-50/50 rounded-2xl p-6 backdrop-blur-sm">
                   <PackageInfo paquete={paquete} />
                 </div>
-              </section>
+                </section>
+              </AnimatedSection>
 
               {paquete.destinos &&
                 paquete.destinos.length > 0 &&
                 paquete.destinos[0]?.destino_lat &&
                 paquete.destinos[0]?.destino_lng && (
+                  <AnimatedSection animation="fadeInUp" delay={150}>
                   <section className="group bg-white/80 backdrop-blur-xl rounded-3xl shadow-xl p-8 border border-white/20 hover:shadow-2xl transition-all duration-500">
                     <div className="flex items-start gap-6 mb-8">
                       <div className="w-16 h-16 bg-gradient-to-br from-orange-400 to-yellow-500 rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
                         <FiSun className="w-8 h-8 text-white" />
                       </div>
                       <div className="flex-1">
-                        <h2 className="text-2xl font-bold text-gray-900 mb-2">
+                        <h2 className="font-volkhov text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
                           Pronóstico del Clima
                         </h2>
                         <p className="text-gray-600">
@@ -563,15 +572,17 @@ function PackageViewPage() {
                       />
                     </div>
                   </section>
+                  </AnimatedSection>
                 )}
 
+              <AnimatedSection animation="fadeInUp" delay={200}>
               <section className="group bg-white/80 backdrop-blur-xl rounded-3xl shadow-xl p-8 border border-white/20 hover:shadow-2xl transition-all duration-500">
                 <div className="flex items-start gap-6 mb-8">
                   <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-500 rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
                     <FiMapPin className="w-8 h-8 text-white" />
                   </div>
                   <div className="flex-1">
-                    <h2 className="text-2xl font-bold text-gray-900 mb-2">
+                    <h2 className="font-volkhov text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
                       Ruta del Viaje
                     </h2>
                     <p className="text-gray-600">
@@ -596,15 +607,17 @@ function PackageViewPage() {
                   </div>
                 </div>
               </section>
+              </AnimatedSection>
 
               {paquete.itinerarios && paquete.itinerarios.length > 0 && (
+                <AnimatedSection animation="fadeInUp" delay={250}>
                 <section className="group bg-white/80 backdrop-blur-xl rounded-3xl shadow-xl p-8 border border-white/20 hover:shadow-2xl transition-all duration-500">
                   <div className="flex items-start gap-6 mb-8">
                     <div className="w-16 h-16 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
                       <FiCalendar className="w-8 h-8 text-white" />
                     </div>
                     <div className="flex-1">
-                      <h2 className="text-2xl font-bold text-gray-900 mb-2">
+                      <h2 className="font-volkhov text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
                         Itinerario Detallado
                       </h2>
                       <p className="text-gray-600">
@@ -617,16 +630,18 @@ function PackageViewPage() {
                     <Itinerary itinerario={paquete.itinerarios} />
                   </div>
                 </section>
+                </AnimatedSection>
               )}
 
               {paquete.hotel && (
+                <AnimatedSection animation="fadeInUp" delay={300}>
                 <section className="group bg-white/80 backdrop-blur-xl rounded-3xl shadow-xl p-8 border border-white/20 hover:shadow-2xl transition-all duration-500">
                   <div className="flex items-start gap-6 mb-8">
                     <div className="w-16 h-16 bg-gradient-to-br from-amber-500 to-orange-500 rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
                       <FiHome className="w-8 h-8 text-white" />
                     </div>
                     <div className="flex-1">
-                      <h2 className="text-2xl font-bold text-gray-900 mb-2">
+                      <h2 className="font-volkhov text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
                         Tu Alojamiento
                       </h2>
                       <p className="text-gray-600">
@@ -641,17 +656,19 @@ function PackageViewPage() {
                     </div>
                   </div>
                 </section>
+                </AnimatedSection>
               )}
 
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 {paquete.notas && (
-                  <section className="group bg-white/80 backdrop-blur-xl rounded-3xl shadow- xl p-6 border border-white/20 hover:shadow-2xl transition-all duration-500">
+                  <AnimatedSection animation="fadeInUp" delay={100}>
+                  <section className="group bg-white/80 backdrop-blur-xl rounded-3xl shadow-xl p-6 border border-white/20 hover:shadow-2xl transition-all duration-500">
                     <div className="flex items-center gap-4 mb-6">
                       <div className="w-12 h-12 bg-gradient-to-br from-amber-400 to-orange-400 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
                         <FiInfo className="w-6 h-6 text-white" />
                       </div>
                       <div>
-                        <h3 className="text-xl font-bold text-gray-900">
+                        <h3 className="font-volkhov text-xl sm:text-2xl font-bold text-gray-900">
                           Notas Importantes
                         </h3>
                         <p className="text-gray-600 text-sm">
@@ -666,16 +683,18 @@ function PackageViewPage() {
                       </p>
                     </div>
                   </section>
+                  </AnimatedSection>
                 )}
 
                 {paquete.requisitos && (
+                  <AnimatedSection animation="fadeInUp" delay={150}>
                   <section className="group bg-white/80 backdrop-blur-xl rounded-3xl shadow-xl p-6 border border-white/20 hover:shadow-2xl transition-all duration-500">
                     <div className="flex items-center gap-4 mb-6">
                       <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
                         <FiCheckSquare className="w-6 h-6 text-white" />
                       </div>
                       <div>
-                        <h3 className="text-xl font-bold text-gray-900">
+                        <h3 className="font-volkhov text-xl sm:text-2xl font-bold text-gray-900">
                           Requisitos
                         </h3>
                         <p className="text-gray-600 text-sm">
@@ -688,16 +707,18 @@ function PackageViewPage() {
                       <Requirements requisitos={paquete.requisitos} />
                     </div>
                   </section>
+                  </AnimatedSection>
                 )}
 
                 {paquete.incluye && (
+                  <AnimatedSection animation="fadeInUp" delay={200}>
                   <section className="group bg-white/80 backdrop-blur-xl rounded-3xl shadow-xl p-6 border border-white/20 hover:shadow-2xl transition-all duration-500">
                     <div className="flex items-center gap-4 mb-6">
                       <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-green-500 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
                         <FiCheck className="w-6 h-6 text-white" />
                       </div>
                       <div>
-                        <h3 className="text-xl font-bold text-gray-900">
+                        <h3 className="font-volkhov text-xl sm:text-2xl font-bold text-gray-900">
                           ¿Qué Incluye?
                         </h3>
                         <p className="text-gray-600 text-sm">Todo incluido</p>
@@ -710,16 +731,18 @@ function PackageViewPage() {
                       </p>
                     </div>
                   </section>
+                  </AnimatedSection>
                 )}
 
                 {paquete.no_incluye && (
+                  <AnimatedSection animation="fadeInUp" delay={250}>
                   <section className="group bg-white/80 backdrop-blur-xl rounded-3xl shadow-xl p-6 border border-white/20 hover:shadow-2xl transition-all duration-500">
                     <div className="flex items-center gap-4 mb-6">
                       <div className="w-12 h-12 bg-gradient-to-br from-gray-500 to-slate-500 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
                         <FiX className="w-6 h-6 text-white" />
                       </div>
                       <div>
-                        <h3 className="text-xl font-bold text-gray-900">
+                        <h3 className="font-volkhov text-xl sm:text-2xl font-bold text-gray-900">
                           No Incluye
                         </h3>
                         <p className="text-gray-600 text-sm">
@@ -734,234 +757,226 @@ function PackageViewPage() {
                       </p>
                     </div>
                   </section>
+                  </AnimatedSection>
                 )}
               </div>
             </div>
 
             <aside className="xl:col-span-1">
-              <div className="sticky top-32 space-y-6">
-                <div className="group bg-white/90 backdrop-blur-xl rounded-3xl shadow-2xl p-8 border border-white/30 hover:shadow-3xl transition-all duration-500">
-                  <div className="text-center mb-8">
-                    {paquete.descuento && parseFloat(paquete.descuento) > 0 ? (
-                      <div className="space-y-4">
-                        <div className="relative">
-                          <span className="text-2xl font-bold text-gray-400 line-through">
-                            {precioOriginalFormatted}
-                            {precioOriginalFormatted && (
-                              <span className="ml-2 text-xs text-gray-500 font-medium">
-                                ({moneda})
-                              </span>
-                            )}
-                          </span>
-                          <div className="absolute -top-2 -right-2 w-4 h-4 bg-red-500 rounded-full animate-pulse"></div>
-                        </div>
+              <div className="sticky top-24 space-y-6 lg:space-y-7">
+                <AnimatedSection animation="fadeInUp" delay={150}>
+                  <div className="group bg-white/90 backdrop-blur-xl rounded-3xl shadow-2xl p-6 lg:p-7 xl:p-8 border border-white/30 hover:shadow-3xl transition-all duration-500">
+                    <div className="text-center mb-6 lg:mb-8">
+                      {paquete.descuento && parseFloat(paquete.descuento) > 0 ? (
+                        <div className="space-y-4">
+                          <div className="relative">
+                            <span className="text-2xl font-bold text-gray-400 line-through">
+                              {precioOriginalFormatted}
+                              {precioOriginalFormatted && (
+                                <span className="ml-2 text-xs text-gray-500 font-medium">({moneda})</span>
+                              )}
+                            </span>
+                            <div className="absolute -top-2 -right-2 w-4 h-4 bg-red-500 rounded-full animate-pulse"></div>
+                          </div>
 
-                        <div className="relative">
-                          <span className="text-4xl lg:text-5xl font-bold bg-gradient-to-r from-emerald-600 to-green-600 bg-clip-text text-transparent">
+                          <div className="relative">
+                            <span className="text-3xl lg:text-4xl font-bold bg-gradient-to-r from-emerald-600 to-green-600 bg-clip-text text-transparent">
+                              {precioTotalFormatted}
+                              {precioTotalFormatted && (
+                                <span className="ml-2 text-sm text-emerald-700 font-semibold">{moneda}</span>
+                              )}
+                            </span>
+                            <span className="block text-gray-500 font-medium mt-2">por persona</span>
+                          </div>
+
+                          <div className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-red-500 to-pink-500 text-white rounded-full text-sm font-bold shadow-lg">
+                            <FiAward className="w-4 h-4 mr-2" />
+                            ¡Ahorras {formatPrecio(paquete.descuento, moneda)}
+                            <span className="ml-1">({moneda})</span>!
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="space-y-4">
+                          <span className="text-3xl lg:text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
                             {precioTotalFormatted}
                             {precioTotalFormatted && (
-                              <span className="ml-2 text-sm text-emerald-700 font-semibold">
-                                {moneda}
-                              </span>
+                              <span className="ml-2 text-sm text-blue-700 font-semibold">{moneda}</span>
                             )}
                           </span>
-                          <span className="block text-gray-500 font-medium mt-2">
-                            por persona
-                          </span>
+                          <span className="block text-gray-500 font-medium">por persona</span>
                         </div>
+                      )}
 
-                        <div className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-red-500 to-pink-500 text-white rounded-full text-sm font-bold shadow-lg">
-                          <FiAward className="w-4 h-4 mr-2" />
-                          ¡Ahorras {formatPrecio(paquete.descuento, moneda)}
-                          <span className="ml-1">({moneda})</span>!
+                      <p className="text-gray-600 font-medium mt-4 px-4 py-2 bg-gray-50 rounded-xl">Precio todo incluido</p>
+                    </div>
+
+                    {paquete.anticipo && parseFloat(paquete.anticipo) > 0 && (
+                      <div className="mb-6 lg:mb-8 p-4 lg:p-5 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl border border-blue-100">
+                        <div className="flex items-center mb-4">
+                          <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-xl flex items-center justify-center mr-3 shadow-lg">
+                            <FiDollarSign className="w-5 h-5 text-white" />
+                          </div>
+                          <h3 className="font-bold text-blue-900">Anticipo requerido</h3>
                         </div>
-                      </div>
-                    ) : (
-                      <div className="space-y-4">
-                        <span className="text-4xl lg:text-5xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                          {precioTotalFormatted}
-                          {precioTotalFormatted && (
-                            <span className="ml-2 text-sm text-blue-700 font-semibold">
-                              {moneda}
-                            </span>
-                          )}
-                        </span>
-                        <span className="block text-gray-500 font-medium">
-                          por persona
-                        </span>
+                        <p className="text-2xl lg:text-3xl font-bold text-blue-700 mb-2">
+                          {formatPrecio(paquete.anticipo, moneda)}
+                          <span className="ml-2 text-sm text-blue-700 font-semibold">{moneda}</span>
+                        </p>
+                        <p className="text-blue-600 text-sm">Para asegurar tu reservación</p>
                       </div>
                     )}
 
-                    <p className="text-gray-600 font-medium mt-4 px-4 py-2 bg-gray-50 rounded-xl">
-                      💎 Precio todo incluido
-                    </p>
-                  </div>
+                    <div className="space-y-5 lg:space-y-6 mb-6 lg:mb-8">
+                      <h3 className="font-bold text-gray-900 text-lg">Highlights del paquete</h3>
 
-                  {paquete.anticipo && parseFloat(paquete.anticipo) > 0 && (
-                    <div className="mb-8 p-6 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl border border-blue-100">
-                      <div className="flex items-center mb-4">
-                        <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-xl flex items-center justify-center mr-3 shadow-lg">
-                          <FiDollarSign className="w-5 h-5 text-white" />
-                        </div>
-                        <h3 className="font-bold text-blue-900">
-                          Anticipo requerido
-                        </h3>
-                      </div>
-                      <p className="text-3xl font-bold text-blue-700 mb-2">
-                        {formatPrecio(paquete.anticipo, moneda)}
-                        <span className="ml-2 text-sm text-blue-700 font-semibold">
-                          {moneda}
-                        </span>
-                      </p>
-                      <p className="text-blue-600 text-sm">
-                        Para asegurar tu reservación
-                      </p>
-                    </div>
-                  )}
-
-                  <div className="space-y-6 mb-8">
-                    <h3 className="font-bold text-gray-900 text-lg flex items-center gap-2">
-                      <span className="text-2xl">✨</span>
-                      Highlights del paquete
-                    </h3>
-
-                    <div className="space-y-4">
-                      <div className="flex items-center gap-4 p-3 bg-gradient-to-r from-emerald-50 to-green-50 rounded-xl border border-emerald-100">
-                        <div className="w-8 h-8 bg-gradient-to-r from-emerald-500 to-green-500 rounded-lg flex items-center justify-center shadow-lg">
-                          <FiClock className="w-4 h-4 text-white" />
-                        </div>
-                        <span className="text-gray-700 font-medium">
-                          {paquete.duracion_dias} días de aventura
-                        </span>
-                      </div>
-
-                      {paquete.hotel && (
-                        <div className="flex items-center gap-4 p-3 bg-gradient-to-r from-amber-50 to-orange-50 rounded-xl border border-amber-100">
-                          <div className="w-8 h-8 bg-gradient-to-r from-amber-500 to-orange-500 rounded-lg flex items-center justify-center shadow-lg">
-                            <FiStar className="w-4 h-4 text-white" />
+                      <div className="space-y-3 lg:space-y-0 lg:grid lg:grid-cols-2 lg:gap-4">
+                        <div className="flex items-center gap-4 p-3 bg-gradient-to-r from-emerald-50 to-green-50 rounded-xl border border-emerald-100">
+                          <div className="w-8 h-8 bg-gradient-to-r from-emerald-500 to-green-500 rounded-lg flex items-center justify-center shadow-lg">
+                            <FiClock className="w-4 h-4 text-white" />
                           </div>
-                          <span className="text-gray-700 font-medium">
-                            Hotel {paquete.hotel.estrellas} estrellas ⭐
-                          </span>
+                          <span className="text-gray-700 font-medium">{paquete.duracion_dias} días de aventura</span>
                         </div>
-                      )}
 
-                      {paquete.destinos && (
-                        <div className="flex items-center gap-4 p-3 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl border border-blue-100">
-                          <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-lg flex items-center justify-center shadow-lg">
-                            <FiMapPin className="w-4 h-4 text-white" />
+                        {paquete.hotel && (
+                          <div className="flex items-center gap-4 p-3 bg-gradient-to-r from-amber-50 to-orange-50 rounded-xl border border-amber-100">
+                            <div className="w-8 h-8 bg-gradient-to-r from-amber-500 to-orange-500 rounded-lg flex items-center justify-center shadow-lg">
+                              <FiStar className="w-4 h-4 text-white" />
+                            </div>
+                            <span className="text-gray-700 font-medium">Hotel {paquete.hotel.estrellas} estrellas</span>
                           </div>
-                          <span className="text-gray-700 font-medium">
-                            {paquete.destinos.length} destino
-                            {paquete.destinos.length > 1 ? "s" : ""} increíble
-                            {paquete.destinos.length > 1 ? "s" : ""}
-                          </span>
-                        </div>
-                      )}
+                        )}
 
-                      <div className="flex items-center gap-4 p-3 bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl border border-purple-100">
-                        <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg flex items-center justify-center shadow-lg">
-                          <FiShield className="w-4 h-4 text-white" />
+                        {paquete.destinos && (
+                          <div className="flex items-center gap-4 p-3 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl border border-blue-100">
+                            <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-lg flex items-center justify-center shadow-lg">
+                              <FiMapPin className="w-4 h-4 text-white" />
+                            </div>
+                            <span className="text-gray-700 font-medium">
+                              {paquete.destinos.length} destino
+                              {paquete.destinos.length > 1 ? "s" : ""} increíble
+                              {paquete.destinos.length > 1 ? "s" : ""}
+                            </span>
+                          </div>
+                        )}
+
+                        <div className="flex items-center gap-4 p-3 bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl border border-purple-100">
+                          <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg flex items-center justify-center shadow-lg">
+                            <FiShield className="w-4 h-4 text-white" />
+                          </div>
+                          <span className="text-gray-700 font-medium">100% seguro y confiable</span>
                         </div>
-                        <span className="text-gray-700 font-medium">
-                          100% seguro y confiable
-                        </span>
                       </div>
                     </div>
-                  </div>
 
-                  <button
-                    className="group w-full bg-gradient-to-r from-blue-500 via-purple-500 to-blue-600 text-white font-bold py-4 px-6 rounded-2xl shadow-2xl hover:shadow-3xl hover:scale-[1.02] transition-all duration-300 mb-6 relative overflow-hidden"
-                    aria-label="Reservar aventura para este paquete turístico"
-                    onClick={() => {
-                      const codigo = paquete.codigo || url;
-                      const currentUrl = window.location.href;
-                      const msg = `Hola, me interesa el viaje "${paquete.titulo}" (código ${codigo}).\n¿Podrían compartir más detalles sobre itinerario, disponibilidad y lo que incluye?\nURL: ${currentUrl}\nGracias.`;
-                      openWhatsApp(msg);
-                    }}
-                  >
-                    <div className="absolute inset-0 bg-gradient-to-r from-blue-600 via-purple-600 to-blue-700 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                    <span className="relative flex items-center justify-center gap-3 text-lg">
-                      <FiCalendar
-                        className="w-5 h-5 group-hover:scale-110 transition-transform duration-300"
-                        aria-hidden="true"
-                      />
-                      Reservar Aventura
-                    </span>
-                  </button>
-
-                  <div className="grid grid-cols-2 gap-3 mb-6">
-                    <a
-                      href={getPhoneHref()}
-                      onClick={onPhoneClick}
-                      className="flex items-center justify-center gap-2 p-3 bg-green-50 hover:bg-green-100 text-green-700 rounded-xl border border-green-200 transition-all duration-300 hover:scale-105"
-                      aria-label="Llamar para más información"
+                    <button
+                      className="group w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold py-4 px-6 rounded-2xl shadow-2xl hover:shadow-3xl hover:scale-[1.02] transition-all duration-300 mb-6 relative overflow-hidden hover:from-blue-700 hover:to-indigo-700"
+                      aria-label="Reservar aventura para este paquete turístico"
+                      onClick={() => {
+                        const codigo = paquete.codigo || url;
+                        const currentUrl = window.location.href;
+                        const msg = `Hola, me interesa el viaje "${paquete.titulo}" (código ${codigo}).\n¿Podrían compartir más detalles sobre itinerario, disponibilidad y lo que incluye?\nURL: ${currentUrl}\nGracias.`;
+                        openWhatsApp(msg);
+                      }}
                     >
-                      <FiPhone className="w-4 h-4" aria-hidden="true" />
-                      <span className="font-medium text-sm">Llamar</span>
-                    </a>
-                    <a
-                      href={contactInfo?.email ? `mailto:${contactInfo.email}` : undefined}
-                      className="flex items-center justify-center gap-2 p-3 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-xl border border-blue-200 transition-all duration-300 hover:scale-105"
-                      aria-label="Enviar email para consultas"
-                    >
-                      <FiMail className="w-4 h-4" aria-hidden="true" />
-                      <span className="font-medium text-sm">Email</span>
-                    </a>
-                  </div>
+                      <div className="absolute inset-0 bg-gradient-to-r from-blue-700 to-indigo-700 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                      <span className="relative flex items-center justify-center gap-3 text-lg">
+                        <FiCalendar className="w-5 h-5 group-hover:scale-110 transition-transform duration-300" aria-hidden="true" />
+                        Reservar Aventura
+                      </span>
+                    </button>
 
-                  <div className="bg-gradient-to-br from-emerald-50 to-green-50 rounded-2xl p-6 border border-emerald-100">
-                    <div className="flex items-center justify-center mb-4">
-                      <div className="flex items-center gap-2">
-                        {[...Array(5)].map((_, i) => (
-                          <FiStar
-                            key={i}
-                            className="w-5 h-5 text-yellow-400 fill-current"
-                          />
-                        ))}
-                        <span className="ml-2 font-bold text-gray-700 text-lg">
-                          4.9
-                        </span>
-                      </div>
+                    <div className="grid grid-cols-2 gap-3 mb-6">
+                      <a
+                        href={getPhoneHref()}
+                        onClick={onPhoneClick}
+                        className="flex items-center justify-center gap-2 p-3 bg-green-50 hover:bg-green-100 text-green-700 rounded-xl border border-green-200 transition-all duration-300 hover:scale-105"
+                        aria-label="Llamar para más información"
+                      >
+                        <FiPhone className="w-4 h-4" aria-hidden="true" />
+                        <span className="font-medium text-sm">Llamar</span>
+                      </a>
+                      <a
+                        href={contactInfo?.email ? `mailto:${contactInfo.email}` : undefined}
+                        className="flex items-center justify-center gap-2 p-3 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-xl border border-blue-200 transition-all duration-300 hover:scale-105"
+                        aria-label="Enviar email para consultas"
+                      >
+                        <FiMail className="w-4 h-4" aria-hidden="true" />
+                        <span className="font-medium text-sm">Email</span>
+                      </a>
                     </div>
 
-                    <div className="text-center space-y-2">
-                      <p className="font-bold text-gray-800">
-                        +1,000 viajeros satisfechos
-                      </p>
-                      <p className="text-gray-600 text-sm">
-                        "Una experiencia inolvidable" ⭐
-                      </p>
+                    <div className="bg-gradient-to-br from-emerald-50 to-green-50 rounded-2xl p-6 border border-emerald-100">
+                      <div className="flex items-center justify-center mb-4">
+                        <div className="flex items-center gap-2">
+                          {[...Array(5)].map((_, i) => (
+                            <FiStar key={i} className="w-5 h-5 text-yellow-400 fill-current" />
+                          ))}
+                          <span className="ml-2 font-bold text-gray-700 text-lg">4.9</span>
+                        </div>
+                      </div>
 
-                      <div className="flex items-center justify-center gap-4 mt-4 pt-4 border-t border-emerald-200">
-                        <div className="flex items-center gap-2">
-                          <FiShield className="w-4 h-4 text-emerald-600" />
-                          <span className="text-xs text-emerald-700 font-medium">
-                            Seguro
-                          </span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <FiAward className="w-4 h-4 text-emerald-600" />
-                          <span className="text-xs text-emerald-700 font-medium">
-                            Calidad
-                          </span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <FiUsers className="w-4 h-4 text-emerald-600" />
-                          <span className="text-xs text-emerald-700 font-medium">
-                            Confianza
-                          </span>
+                      <div className="text-center space-y-2">
+                        <p className="font-bold text-gray-800">+1,000 viajeros satisfechos</p>
+                        <p className="text-gray-600 text-sm">"Una experiencia inolvidable"</p>
+
+                        <div className="flex items-center justify-center gap-4 mt-4 pt-4 border-t border-emerald-200">
+                          <div className="flex items-center gap-2">
+                            <FiShield className="w-4 h-4 text-emerald-600" />
+                            <span className="text-xs text-emerald-700 font-medium">Seguro</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <FiAward className="w-4 h-4 text-emerald-600" />
+                            <span className="text-xs text-emerald-700 font-medium">Calidad</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <FiUsers className="w-4 h-4 text-emerald-600" />
+                            <span className="text-xs text-emerald-700 font-medium">Confianza</span>
+                          </div>
                         </div>
                       </div>
                     </div>
                   </div>
-                </div>
+                </AnimatedSection>
               </div>
             </aside>
           </div>
         </div>
       </main>
-    </div>
+
+      {/* Divisor suave */}
+      <div className="max-w-7xl mx-auto px-4">
+        <div className="h-px bg-gradient-to-r from-transparent via-blue-200/60 to-transparent" />
+      </div>
+
+      {/* Más paquetes recomendados */}
+      <RecommendedPackages currentCodigoUrl={url} />
+
+      {/* Trust bar (confianza) */}
+      <TrustBar />
+
+      {/* Footer del sitio (mismo del Home) */}
+      <Footer
+        contactInfo={contactInfo}
+        contactLoading={contactLoading}
+        currentYear={new Date().getFullYear()}
+      />
+
+      {/* CTA pegajosa en móviles */}
+      <div className="fixed bottom-4 left-0 right-0 px-4 sm:hidden z-50">
+        <button
+          onClick={() => {
+            const codigo = paquete.codigo || url;
+            const currentUrl = window.location.href;
+            const msg = `Hola, me interesa el viaje "${paquete.titulo}" (código ${codigo}).\n¿Podrían compartir más detalles sobre itinerario, disponibilidad y lo que incluye?\nURL: ${currentUrl}\nGracias.`;
+            openWhatsApp(msg);
+          }}
+          className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold py-4 rounded-2xl shadow-xl hover:shadow-2xl active:scale-[.98] transition-all"
+          aria-label="Reservar Aventura"
+        >
+          Reservar Aventura
+        </button>
+      </div>
+    </PageTransition>
   );
 }
 

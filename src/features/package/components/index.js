@@ -11,3 +11,4 @@ export { default as RouteMap } from "./RouteMap";
 export { default as HotelInfo } from "./HotelInfo";
 export { default as WheaterForecast } from "./WeatherForecast";
 export { default as MayoristasInfo } from "./MayoristasInfo";
+export { default as RecommendedPackages } from "./RecommendedPackages";
