@@ -553,24 +553,19 @@ function PackageViewPage() {
           <div className="grid grid-cols-1 xl:grid-cols-4 gap-8">
             <div className="xl:col-span-3 space-y-8">
               <AnimatedSection animation="fadeInUp" stagger={100}>
-                <section className="group bg-white/80 backdrop-blur-xl rounded-3xl shadow-xl p-6 md:p-8 border border-white/20 hover:shadow-2xl transition-all duration-500">
-                <div className="flex items-start gap-6 mb-8">
-                  <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-500 rounded-2xl flex items-center justify-center shadow-lg md:group-hover:scale-110 transition-transform duration-300">
-                    <FiInfo className="w-8 h-8 text-white" />
+                <section className="bg-white/90 backdrop-blur rounded-2xl shadow-xl p-6 md:p-7 border border-gray-100/70">
+                  <div className="flex items-start gap-5 mb-4">
+                    <div className="w-14 h-14 bg-gradient-to-br from-blue-500 to-purple-500 rounded-xl flex items-center justify-center shadow-md">
+                      <FiInfo className="w-7 h-7 text-white" />
+                    </div>
+                    <div className="flex-1">
+                      <h2 className="font-volkhov text-2xl sm:text-3xl font-bold text-gray-900 leading-tight">
+                        Información del Paquete
+                      </h2>
+                      <p className="text-gray-600 text-sm sm:text-base">Todo lo que necesitas saber sobre tu aventura</p>
+                    </div>
                   </div>
-                  <div className="flex-1">
-                    <h2 className="font-volkhov text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
-                      Información del Paquete
-                    </h2>
-                    <p className="text-gray-600">
-                      Todo lo que necesitas saber sobre tu aventura
-                    </p>
-                  </div>
-                </div>
-
-                <div className="bg-gradient-to-br from-blue-50/50 to-purple-50/50 rounded-2xl p-5 md:p-6 backdrop-blur-sm">
                   <PackageInfo paquete={paquete} />
-                </div>
                 </section>
               </AnimatedSection>
 
@@ -579,118 +574,100 @@ function PackageViewPage() {
                 paquete.destinos[0]?.destino_lat &&
                 paquete.destinos[0]?.destino_lng && (
                   <AnimatedSection animation="fadeInUp" delay={150}>
-                  <section className="group bg-white/80 backdrop-blur-xl rounded-3xl shadow-xl p-6 md:p-8 border border-white/20 hover:shadow-2xl transition-all duration-500">
-                    <div className="flex items-start gap-6 mb-8">
-                      <div className="w-16 h-16 bg-gradient-to-br from-orange-400 to-yellow-500 rounded-2xl flex items-center justify-center shadow-lg md:group-hover:scale-110 transition-transform duration-300">
-                        <FiSun className="w-8 h-8 text-white" />
+                    <section className="bg-white/90 backdrop-blur rounded-2xl shadow-xl p-6 md:p-7 border border-gray-100/70">
+                      <div className="flex items-start gap-5 mb-4">
+                        <div className="w-14 h-14 bg-gradient-to-br from-orange-400 to-yellow-500 rounded-xl flex items-center justify-center shadow-md">
+                          <FiSun className="w-7 h-7 text-white" />
+                        </div>
+                        <div className="flex-1">
+                          <h2 className="font-volkhov text-2xl sm:text-3xl font-bold text-gray-900 leading-tight">
+                            Pronóstico del Clima
+                          </h2>
+                          <p className="text-gray-600 text-sm sm:text-base">
+                            El tiempo en {paquete.destinos[0].ciudad || paquete.destinos[0].destino}
+                          </p>
+                        </div>
                       </div>
-                      <div className="flex-1">
-                        <h2 className="font-volkhov text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
-                          Pronóstico del Clima
-                        </h2>
-                        <p className="text-gray-600">
-                          El tiempo en{" "}
-                          {paquete.destinos[0].ciudad ||
-                            paquete.destinos[0].destino}
-                        </p>
-                      </div>
-                    </div>
 
-                    <div className="bg-gradient-to-br from-orange-50/50 to-yellow-50/50 rounded-2xl p-5 md:p-6 backdrop-blur-sm">
                       <WeatherForecast
                         lat={paquete.destinos[0].destino_lat}
                         lon={paquete.destinos[0].destino_lng}
-                        cityName={
-                          paquete.destinos[0].ciudad ||
-                          paquete.destinos[0].destino
-                        }
+                        cityName={paquete.destinos[0].ciudad || paquete.destinos[0].destino}
                       />
-                    </div>
-                  </section>
+                    </section>
                   </AnimatedSection>
                 )}
 
               <AnimatedSection animation="fadeInUp" delay={200}>
-              <section className="group bg-white/80 backdrop-blur-xl rounded-3xl shadow-xl p-6 md:p-8 border border-white/20 hover:shadow-2xl transition-all duration-500">
-                <div className="flex items-start gap-6 mb-8">
-                  <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-500 rounded-2xl flex items-center justify-center shadow-lg md:group-hover:scale-110 transition-transform duration-300">
-                    <FiMapPin className="w-8 h-8 text-white" />
+                <section className="bg-white/90 backdrop-blur rounded-2xl shadow-xl p-6 md:p-7 border border-gray-100/70">
+                  <div className="flex items-start gap-5 mb-5">
+                    <div className="w-14 h-14 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl flex items-center justify-center shadow-md">
+                      <FiMapPin className="w-7 h-7 text-white" />
+                    </div>
+                    <div className="flex-1">
+                      <h2 className="font-volkhov text-2xl sm:text-3xl font-bold text-gray-900 leading-tight">
+                        Ruta del Viaje
+                      </h2>
+                      <p className="text-gray-600 text-sm sm:text-base">Explora todos los destinos de tu aventura</p>
+                      {paquete?.destinos && paquete.destinos.length > 1 && (
+                        <div className="mt-3 px-3 py-2 rounded-lg border border-purple-100 bg-purple-50/70">
+                          <span className="text-sm font-medium text-purple-700">
+                            Ruta: {paquete.destinos.map((d) => d.ciudad || d.destino).join(" → ")}
+                          </span>
+                        </div>
+                      )}
+                    </div>
                   </div>
-                  <div className="flex-1">
-                    <h2 className="font-volkhov text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
-                      Ruta del Viaje
-                    </h2>
-                    <p className="text-gray-600">
-                      Explora todos los destinos de tu aventura
-                    </p>
-                    {paquete?.destinos && paquete.destinos.length > 1 && (
-                      <div className="mt-3 p-3 bg-purple-50 rounded-xl border border-purple-100">
-                        <span className="text-sm font-medium text-purple-700">
-                          Ruta:{" "}
-                          {paquete.destinos
-                            .map((d) => d.ciudad || d.destino)
-                            .join(" → ")}
-                        </span>
-                      </div>
-                    )}
-                  </div>
-                </div>
 
-                <div className="bg-gradient-to-br from-purple-50/50 to-pink-50/50 rounded-2xl p-5 md:p-6 backdrop-blur-sm overflow-hidden">
-                  <div className="h-64 sm:h-80 md:h-96 rounded-xl overflow-hidden shadow-lg">
+                  <div className="h-64 sm:h-80 md:h-96 rounded-xl overflow-hidden border border-gray-100 shadow-lg">
                     <RouteMap paquete={paquete} />
                   </div>
-                </div>
-              </section>
+                </section>
               </AnimatedSection>
 
               {paquete.itinerarios && paquete.itinerarios.length > 0 && (
                 <AnimatedSection animation="fadeInUp" delay={250}>
-                <section className="group bg-white/80 backdrop-blur-xl rounded-3xl shadow-xl p-6 md:p-8 border border-white/20 hover:shadow-2xl transition-all duration-500">
-                  <div className="flex items-start gap-6 mb-8">
-                    <div className="w-16 h-16 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-2xl flex items-center justify-center shadow-lg md:group-hover:scale-110 transition-transform duration-300">
-                      <FiCalendar className="w-8 h-8 text-white" />
+                  <section className="bg-white/90 backdrop-blur rounded-2xl shadow-xl p-6 md:p-7 border border-gray-100/70">
+                    <div className="flex items-start gap-5 mb-4">
+                      <div className="w-14 h-14 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-xl flex items-center justify-center shadow-md">
+                        <FiCalendar className="w-7 h-7 text-white" />
+                      </div>
+                      <div className="flex-1">
+                        <h2 className="font-volkhov text-2xl sm:text-3xl font-bold text-gray-900 leading-tight">
+                          Itinerario Detallado
+                        </h2>
+                        <p className="text-gray-600 text-sm sm:text-base">
+                          Tu aventura día a día, planificada con precisión
+                        </p>
+                      </div>
                     </div>
-                    <div className="flex-1">
-                      <h2 className="font-volkhov text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
-                        Itinerario Detallado
-                      </h2>
-                      <p className="text-gray-600">
-                        Tu aventura día a día, planificada con precisión
-                      </p>
-                    </div>
-                  </div>
 
-                  <div className="bg-gradient-to-br from-emerald-50/50 to-teal-50/50 rounded-2xl p-5 md:p-6 backdrop-blur-sm">
                     <Itinerary itinerario={paquete.itinerarios} />
-                  </div>
-                </section>
+                  </section>
                 </AnimatedSection>
               )}
 
               {paquete.hotel && (
                 <AnimatedSection animation="fadeInUp" delay={300}>
-                <section className="group bg-white/80 backdrop-blur-xl rounded-3xl shadow-xl p-6 md:p-8 border border-white/20 hover:shadow-2xl transition-all duration-500">
-                  <div className="flex items-start gap-6 mb-8">
-                    <div className="w-16 h-16 bg-gradient-to-br from-amber-500 to-orange-500 rounded-2xl flex items-center justify-center shadow-lg md:group-hover:scale-110 transition-transform duration-300">
-                      <FiHome className="w-8 h-8 text-white" />
+                  <section className="bg-white/90 backdrop-blur rounded-2xl shadow-xl p-6 md:p-7 border border-gray-100/70">
+                    <div className="flex items-start gap-5 mb-4">
+                      <div className="w-14 h-14 bg-gradient-to-br from-amber-500 to-orange-500 rounded-xl flex items-center justify-center shadow-md">
+                        <FiHome className="w-7 h-7 text-white" />
+                      </div>
+                      <div className="flex-1">
+                        <h2 className="font-volkhov text-2xl sm:text-3xl font-bold text-gray-900 leading-tight">
+                          Tu Alojamiento
+                        </h2>
+                        <p className="text-gray-600 text-sm sm:text-base">
+                          Comodidad y estilo durante tu estadía
+                        </p>
+                      </div>
                     </div>
-                    <div className="flex-1">
-                      <h2 className="font-volkhov text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
-                        Tu Alojamiento
-                      </h2>
-                      <p className="text-gray-600">
-                        Comodidad y estilo durante tu estadía
-                      </p>
-                    </div>
-                  </div>
 
-                  <div className="bg-gradient-to-br from-amber-50/50 to-orange-50/50 rounded-2xl p-5 md:p-6 backdrop-blur-sm">
-                    <div className="h-72 sm:h-96 md:h-[28rem] lg:h-[34rem] xl:h-[40rem] rounded-xl overflow-hidden shadow-lg">
+                    <div className="h-72 sm:h-96 md:h-[28rem] lg:h-[34rem] xl:h-[40rem] rounded-xl overflow-hidden border border-gray-100 shadow-lg">
                       <HotelInfo hotel={paquete.hotel} />
                     </div>
-                  </div>
-                </section>
+                  </section>
                 </AnimatedSection>
               )}
 
@@ -832,71 +809,63 @@ function PackageViewPage() {
             <aside className="xl:col-span-1">
               <div className="sticky top-24 space-y-6 lg:space-y-7">
                 <AnimatedSection animation="fadeInUp" delay={150}>
-                  <div className="group bg-white/90 backdrop-blur-xl rounded-3xl shadow-2xl p-6 lg:p-7 xl:p-8 border border-white/30 hover:shadow-3xl transition-all duration-500">
-                    <div className="text-center mb-6 lg:mb-8">
+                  <div className="bg-white/95 backdrop-blur rounded-2xl shadow-xl p-5 lg:p-6 xl:p-7 border border-gray-100">
+                    <div className="text-center space-y-3 mb-5">
                       {paquete.descuento && parseFloat(paquete.descuento) > 0 ? (
-                        <div className="space-y-4">
-                          <div className="relative">
-                            <span className="text-2xl font-bold text-gray-400 line-through">
-                              {precioOriginalFormatted}
-                              {precioOriginalFormatted && (
-                                <span className="ml-2 text-xs text-gray-500 font-medium">({moneda})</span>
-                              )}
-                            </span>
-                            <div className="absolute -top-2 -right-2 w-4 h-4 bg-red-500 rounded-full animate-pulse"></div>
+                        <>
+                          <span className="block text-xl font-semibold text-gray-400 line-through">
+                            {precioOriginalFormatted}
+                            {precioOriginalFormatted && (
+                              <span className="ml-1 text-xs text-gray-500 font-medium">({moneda})</span>
+                            )}
+                          </span>
+                          <span className="block text-3xl lg:text-4xl font-extrabold bg-gradient-to-r from-emerald-600 to-green-600 bg-clip-text text-transparent">
+                            {precioTotalFormatted}
+                            {precioTotalFormatted && (
+                              <span className="ml-2 text-sm text-emerald-700 font-semibold">{moneda}</span>
+                            )}
+                          </span>
+                          <span className="block text-gray-500 text-sm">por persona</span>
+                          <div className="inline-flex items-center px-3 py-1.5 bg-gradient-to-r from-red-500 to-pink-500 text-white rounded-full text-xs font-bold shadow">
+                            <FiAward className="w-4 h-4 mr-1.5" />
+                            Ahorras {formatPrecio(paquete.descuento, moneda)}
+                            <span className="ml-1">({moneda})</span>
                           </div>
-
-                          <div className="relative">
-                            <span className="text-3xl lg:text-4xl font-bold bg-gradient-to-r from-emerald-600 to-green-600 bg-clip-text text-transparent">
-                              {precioTotalFormatted}
-                              {precioTotalFormatted && (
-                                <span className="ml-2 text-sm text-emerald-700 font-semibold">{moneda}</span>
-                              )}
-                            </span>
-                            <span className="block text-gray-500 font-medium mt-2">por persona</span>
-                          </div>
-
-                          <div className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-red-500 to-pink-500 text-white rounded-full text-sm font-bold shadow-lg">
-                            <FiAward className="w-4 h-4 mr-2" />
-                            ¡Ahorras {formatPrecio(paquete.descuento, moneda)}
-                            <span className="ml-1">({moneda})</span>!
-                          </div>
-                        </div>
+                        </>
                       ) : (
-                        <div className="space-y-4">
-                          <span className="text-3xl lg:text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                        <>
+                          <span className="block text-3xl lg:text-4xl font-extrabold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
                             {precioTotalFormatted}
                             {precioTotalFormatted && (
                               <span className="ml-2 text-sm text-blue-700 font-semibold">{moneda}</span>
                             )}
                           </span>
-                          <span className="block text-gray-500 font-medium">por persona</span>
-                        </div>
+                          <span className="block text-gray-500 text-sm">por persona</span>
+                        </>
                       )}
-
-                      <p className="text-gray-600 font-medium mt-4 px-4 py-2 bg-gray-50 rounded-xl">Los precios pueden variar según disponibilidad</p>
+                      <p className="text-gray-600 text-xs font-medium mx-auto max-w-[22rem]">Los precios pueden variar según disponibilidad</p>
                     </div>
 
                     {paquete.anticipo && parseFloat(paquete.anticipo) > 0 && (
-                      <div className="mb-6 lg:mb-8 p-4 lg:p-5 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl border border-blue-100">
-                        <div className="flex items-center mb-4">
-                          <div className="w-10 h-10 md:w-12 md:h-12 aspect-square bg-gradient-to-r from-blue-500 to-indigo-500 rounded-xl flex items-center justify-center mr-3 shadow-lg flex-shrink-0">
-                            <FiDollarSign className="w-5 h-5 md:w-6 md:h-6 text-white" />
-                          </div>
-                          <h3 className="font-bold text-blue-900">Anticipo requerido</h3>
+                      <div className="mb-5 flex items-center gap-3 rounded-xl border border-blue-100/80 bg-blue-50/70 p-3">
+                        <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-lg flex items-center justify-center text-white shadow">
+                          <FiDollarSign className="w-5 h-5" />
                         </div>
-                        <p className="text-2xl lg:text-3xl font-bold text-blue-700 mb-2">
-                          {formatPrecio(paquete.anticipo, moneda)}
-                          <span className="ml-2 text-sm text-blue-700 font-semibold">{moneda}</span>
-                        </p>
-                        <p className="text-blue-600 text-sm">Para asegurar tu reservación</p>
+                        <div className="flex-1">
+                          <div className="flex items-baseline gap-2">
+                            <h3 className="font-bold text-blue-900 text-sm">Anticipo requerido</h3>
+                            <span className="text-sm font-bold text-blue-700">
+                              {formatPrecio(paquete.anticipo, moneda)}
+                            </span>
+                            <span className="text-[11px] text-blue-700 font-semibold">{moneda}</span>
+                          </div>
+                          <p className="text-blue-600 text-xs">Para asegurar tu reservación</p>
+                        </div>
                       </div>
                     )}
 
-                    {/* Highlights del paquete removido a solicitud */}
-
                     <button
-                      className="group w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold py-4 px-6 rounded-2xl shadow-2xl hover:shadow-3xl hover:scale-[1.02] transition-all duration-300 mb-6 relative overflow-hidden hover:from-blue-700 hover:to-indigo-700"
+                      className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold py-3 px-5 rounded-xl shadow-xl hover:shadow-2xl hover:scale-[1.01] transition-all duration-300 mb-4 hover:from-blue-700 hover:to-indigo-700"
                       aria-label="Reservar aventura para este paquete turístico"
                       onClick={() => {
                         const codigo = paquete.codigo || url;
@@ -905,34 +874,31 @@ function PackageViewPage() {
                         openWhatsApp(msg);
                       }}
                     >
-                      <div className="absolute inset-0 bg-gradient-to-r from-blue-700 to-indigo-700 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                      <span className="relative flex items-center justify-center gap-3 text-lg">
-                        <FiCalendar className="w-5 h-5 md:group-hover:scale-110 transition-transform duration-300" aria-hidden="true" />
+                      <span className="flex items-center justify-center gap-2 text-base">
+                        <FiCalendar className="w-5 h-5" aria-hidden="true" />
                         Reservar Aventura
                       </span>
                     </button>
 
-                    <div className="grid grid-cols-2 gap-3 mb-6">
+                    <div className="grid grid-cols-2 gap-2">
                       <a
                         href={getPhoneHref()}
                         onClick={onPhoneClick}
-                        className="flex items-center justify-center gap-3 h-11 md:h-12 min-h-[44px] leading-none bg-green-50 hover:bg-green-100 text-green-700 rounded-xl border border-green-200 transition-all duration-300 hover:scale-105"
+                        className="flex items-center justify-center gap-2 h-11 min-h-[44px] bg-green-50 hover:bg-green-100 text-green-700 rounded-lg border border-green-200 transition-all duration-200"
                         aria-label="Llamar para más información"
                       >
-                        <FiPhone className="w-5 h-5 flex-shrink-0" aria-hidden="true" />
-                        <span className="font-medium text-sm md:text-base">Llamar</span>
+                        <FiPhone className="w-5 h-5" aria-hidden="true" />
+                        <span className="font-medium text-sm">Llamar</span>
                       </a>
                       <a
                         href={contactInfo?.email ? `mailto:${contactInfo.email}` : undefined}
-                        className="flex items-center justify-center gap-3 h-11 md:h-12 min-h-[44px] leading-none bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-xl border border-blue-200 transition-all duration-300 hover:scale-105"
+                        className="flex items-center justify-center gap-2 h-11 min-h-[44px] bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-lg border border-blue-200 transition-all duration-200"
                         aria-label="Enviar email para consultas"
                       >
-                        <FiMail className="w-5 h-5 flex-shrink-0" aria-hidden="true" />
-                        <span className="font-medium text-sm md:text-base">Email</span>
+                        <FiMail className="w-5 h-5" aria-hidden="true" />
+                        <span className="font-medium text-sm">Email</span>
                       </a>
                     </div>
-
-                    {/* Bloque de reseñas/comentarios removido a solicitud */}
                   </div>
                 </AnimatedSection>
               </div>

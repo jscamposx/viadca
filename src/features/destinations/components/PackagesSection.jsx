@@ -1,4 +1,4 @@
-import React, { useRef, useCallback } from "react";
+import React, { useRef, useCallback, useEffect, useState } from "react";
 import { AnimatedSection } from "../../../hooks/scrollAnimations";
 import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
 
@@ -8,6 +8,9 @@ const PackagesSection = ({
   description,
   children,
   carousel = false,
+  progressive = false,
+  initialCount = 8,
+  step = 8,
 }) => {
   const scrollRef = useRef(null);
   const scrollBy = useCallback((dir) => {
@@ -19,9 +22,36 @@ const PackagesSection = ({
 
   const childArray = React.Children.toArray(children);
   const showCarousel = carousel && childArray.length > 1; // activar solo si hay más de un item
+  const [visibleCount, setVisibleCount] = useState(
+    progressive ? Math.min(initialCount, childArray.length) : childArray.length,
+  );
+
+  const sentinelRef = useRef(null);
+  useEffect(() => {
+    if (!progressive) return;
+    setVisibleCount(Math.min(initialCount, childArray.length));
+  }, [childArray.length, initialCount, progressive]);
+
+  useEffect(() => {
+    if (!progressive) return;
+    const sentinel = sentinelRef.current;
+    if (!sentinel) return;
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const e of entries) {
+          if (e.isIntersecting) {
+            setVisibleCount((c) => Math.min(c + step, childArray.length));
+          }
+        }
+      },
+      { rootMargin: "200px 0px", threshold: 0.01 },
+    );
+    io.observe(sentinel);
+    return () => io.disconnect();
+  }, [progressive, childArray.length, step]);
 
   return (
-    <section id={id} className="py-14 sm:py-16 lg:py-20">
+    <section id={id} className="py-14 sm:py-16 lg:py-20 scroll-mt-28">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <AnimatedSection animation="fadeInUp" className="mb-10">
           <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-6">
@@ -35,18 +65,12 @@ const PackagesSection = ({
                 </p>
               )}
             </div>
-            <a
-              href="#top"
-              className="text-sm font-medium text-blue-600 hover:text-blue-700 hover:underline self-start sm:self-auto"
-            >
-              Volver arriba
-            </a>
           </div>
         </AnimatedSection>
 
         {!showCarousel && (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 lg:gap-7">
-            {children}
+            {(progressive ? childArray.slice(0, visibleCount) : childArray)}
           </div>
         )}
 
@@ -82,6 +106,19 @@ const PackagesSection = ({
             >
               <FiChevronRight className="w-5 h-5" />
             </button>
+          </div>
+        )}
+
+        {/* Sentinel para carga progresiva */}
+        {progressive && !showCarousel && (
+          <div ref={sentinelRef} className="mt-6">
+            {visibleCount < childArray.length && (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 lg:gap-7">
+                {Array.from({ length: Math.min(step, childArray.length - visibleCount) }).map((_, i) => (
+                  <div key={i} className="h-72 bg-slate-100 rounded-xl animate-pulse border border-slate-200" />
+                ))}
+              </div>
+            )}
           </div>
         )}
       </div>

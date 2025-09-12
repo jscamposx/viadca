@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useMemo, useRef } from "react";
+import { createPortal } from "react-dom";
 import DestinationsHero from "../components/DestinationsHero";
 import PackagesSearchBar from "../components/PackagesSearchBar";
 import PackagesSection from "../components/PackagesSection";
@@ -273,33 +274,37 @@ const DestinationsPage = () => {
   // Construir secciones: Favoritos + País
   const sections = useMemo(() => {
     const favoritos = filteredData.filter((p) => !!p.favorito);
-    const resto = filteredData.filter((p) => !p.favorito);
-    const countryMap = new Map();
-    resto.forEach((p) => {
-      const country = getCountry(p) || "Otros";
-      if (!countryMap.has(country)) countryMap.set(country, []);
-      countryMap.get(country).push(p);
-    });
+    const mexicoNames = ["mexico", "méxico", "méjico"];
+    const fueraMexico = filteredData.filter(
+      (p) => !mexicoNames.includes((getCountry(p) || "").toLowerCase()),
+    );
+    const todos = filteredData;
 
-    const countrySections = Array.from(countryMap.entries())
-      .sort((a, b) => a[0].localeCompare(b[0]))
-      .map(([country, items]) => ({
-        key: `country-${country}`,
-        title: country,
-        description: `Paquetes para ${country}`,
-        items,
-      }));
-
-    const finalSections = [];
+    const list = [];
+    // Orden solicitado: Favoritos, Fuera de México, Todos
     if (favoritos.length) {
-      finalSections.push({
+      list.push({
         key: "favoritos",
-        title: "Nuestros favoritos",
+        title: "Favoritos",
         description: "Paquetes destacados por el equipo",
         items: favoritos,
       });
     }
-    return [...finalSections, ...countrySections];
+    if (fueraMexico.length) {
+      list.push({
+        key: "fuera-mexico",
+        title: "Fuera de México",
+        description: "Paquetes para viajar al extranjero",
+        items: fueraMexico,
+      });
+    }
+    list.push({
+      key: "todos",
+      title: "Todos",
+      description: "Todos los paquetes disponibles",
+      items: todos,
+    });
+    return list;
   }, [filteredData]);
 
   const { contactInfo, loading: contactLoading } = useContactInfo();
@@ -312,8 +317,9 @@ const DestinationsPage = () => {
         transparentOnTop
         showScrollProgress
         sectionLinks={[
-          { id: "top-search", label: "Buscar" },
           { id: "favoritos", label: "Favoritos" },
+          { id: "fuera-mexico", label: "Fuera de México" },
+          { id: "todos", label: "Todos" },
         ]}
       />
       <PageTransition>
@@ -321,10 +327,7 @@ const DestinationsPage = () => {
           {/* removido id=top */}
           <DestinationsHero />
           {/* Anchor para scroll desde el botón "Buscar paquetes" del hero */}
-          <div
-            id="top-search"
-            className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 -mt-14 relative z-10 space-y-6"
-          >
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 -mt-14 relative z-10 space-y-6">
             <PackagesSearchBar
               value={search}
               onChange={setSearch}
@@ -362,7 +365,10 @@ const DestinationsPage = () => {
                   id={section.key}
                   title={section.title}
                   description={section.description}
-                  carousel={section.items.length > 6}
+                  carousel={section.key !== "todos" && section.items.length > 1}
+                  progressive={section.key === "todos"}
+                  initialCount={12}
+                  step={8}
                 >
                   {section.items.map((p, i) => (
                     <AnimatedSection
@@ -396,10 +402,39 @@ const DestinationsPage = () => {
             contactLoading={contactLoading}
             currentYear={currentYear}
           />
+          {/* Botón flotante volver arriba */}
+          <ScrollTopButton />
         </div>
       </PageTransition>
     </>
   );
+};
+
+// Botón flotante para volver arriba
+const ScrollTopButton = () => {
+  const [visible, setVisible] = useState(false);
+  useEffect(() => {
+    const onScroll = () => {
+      setVisible(window.scrollY > 400);
+    };
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+  const btn = (
+    <button
+      type="button"
+      onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+      aria-label="Volver arriba"
+      className={`fixed bottom-6 right-4 sm:right-6 z-[100000] inline-flex items-center gap-2 rounded-full px-4 py-2 shadow-lg border transition-all focus:outline-none focus:ring-2 focus:ring-blue-600 ${visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6 pointer-events-none"} bg-white/95 border-slate-200 text-slate-700 hover:bg-blue-600 hover:text-white`}
+    >
+      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+      </svg>
+      <span className="text-sm font-medium hidden sm:inline">Arriba</span>
+    </button>
+  );
+  return createPortal(btn, document.body);
 };
 
 export default DestinationsPage;

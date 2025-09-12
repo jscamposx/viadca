@@ -115,13 +115,26 @@ const UnifiedNav = ({
   useEffect(() => {
     if (!hasSectionNav) return;
     const ids = sectionLinks.map((s) => s.id);
+    const getScrollMarginTop = (el) => {
+      try {
+        const smt = parseFloat(
+          window.getComputedStyle(el).scrollMarginTop || "0"
+        );
+        return isNaN(smt) ? 0 : smt;
+      } catch {
+        return 0;
+      }
+    };
     const onScroll = () => {
       let current = ids[0];
       for (const id of ids) {
         const el = document.getElementById(id);
         if (!el) continue;
         const rect = el.getBoundingClientRect();
-        if (rect.top - (headerHeight + 24) <= 0) {
+        // Usar scroll-margin-top de la sección para alinear el umbral con los anclajes CSS
+        const smt = getScrollMarginTop(el);
+        const offset = smt || headerHeight + 24;
+        if (rect.top - offset <= 1) {
           current = id;
         } else {
           break;
@@ -137,9 +150,23 @@ const UnifiedNav = ({
   const scrollToSection = (id) => {
     const el = document.getElementById(id);
     if (!el) return;
-    const y =
-      window.scrollY + el.getBoundingClientRect().top - (headerHeight + 24);
-    window.scrollTo({ top: y < 0 ? 0 : y, behavior: "smooth" });
+    // Delegar el offset al CSS scroll-margin-top de cada sección para unificar comportamiento
+    try {
+      // Si la sección no define scroll-margin-top, aplicamos un fallback manual
+      const smt = parseFloat(
+        (window.getComputedStyle(el).scrollMarginTop || "0").toString()
+      );
+      if (isNaN(smt) || smt === 0) {
+        const y = window.scrollY + el.getBoundingClientRect().top - (headerHeight + 24);
+        window.scrollTo({ top: y < 0 ? 0 : y, behavior: "smooth" });
+      } else {
+        el.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    } catch {
+      // Fallback por si scrollIntoView no está disponible
+      const y = window.scrollY + el.getBoundingClientRect().top;
+      window.scrollTo({ top: y < 0 ? 0 : y, behavior: "smooth" });
+    }
   };
 
   return (

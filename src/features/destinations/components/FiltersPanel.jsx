@@ -45,9 +45,30 @@ const FiltersPanel = ({ open, onClose, onApply, initial }) => {
     onClose?.();
   };
 
+  // Bloquear scroll del body al abrir y compensar ancho del scrollbar para evitar salto de layout
+  useEffect(() => {
+    if (open) {
+      const sbw = window.innerWidth - document.documentElement.clientWidth;
+      const prevOverflow = document.body.style.overflow;
+      const prevPaddingRight = document.body.style.paddingRight;
+      document.body.dataset.prevOverflow = prevOverflow || "";
+      document.body.dataset.prevPaddingRight = prevPaddingRight || "";
+      document.body.style.overflow = "hidden";
+      if (sbw > 0) {
+        document.body.style.paddingRight = `${sbw}px`;
+      }
+      return () => {
+        document.body.style.overflow = document.body.dataset.prevOverflow || "";
+        document.body.style.paddingRight = document.body.dataset.prevPaddingRight || "";
+        delete document.body.dataset.prevOverflow;
+        delete document.body.dataset.prevPaddingRight;
+      };
+    }
+  }, [open]);
+
   return (
     <div
-      className={`fixed inset-0 z-50 ${open ? "" : "pointer-events-none"}`}
+      className={`fixed inset-0 z-50 ${open ? "" : "pointer-events-none"} overflow-hidden`}
       aria-hidden={!open}
     >
       <div
@@ -55,7 +76,7 @@ const FiltersPanel = ({ open, onClose, onApply, initial }) => {
         onClick={onClose}
       />
       <aside
-        className={`absolute right-0 top-0 h-full w-full sm:w-[420px] bg-white shadow-2xl transition-transform duration-500 flex flex-col rounded-none sm:rounded-l-3xl border-l border-slate-200 ${open ? "translate-x-0" : "translate-x-full"}`}
+        className={`absolute right-0 top-0 h-full w-full sm:w-[420px] max-w-full bg-white shadow-2xl transition-transform duration-500 flex flex-col rounded-none sm:rounded-l-3xl border-l border-slate-200 ${open ? "translate-x-0" : "translate-x-full"}`}
         role="dialog"
         aria-modal="true"
         aria-label="Filtros de paquetes"

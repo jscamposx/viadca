@@ -368,7 +368,7 @@ function FaqCategorySection({ cat, onFaqClick }) {
       ref={sectionRef}
       id={cat.id}
       aria-labelledby={`${cat.id}-heading`}
-      className="space-y-8 scroll-mt-28"
+      className="space-y-8 scroll-mt-24 sm:scroll-mt-28"
     >
       <AnimatedSection animation="fadeInUp" className="space-y-3" forceVisible={visible}>
         <h2
