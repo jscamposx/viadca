@@ -1,0 +1,36 @@
+User-agent: *
+Allow: /
+
+# Sitemaps
+Sitemap: https://www.viadca.app/sitemap.xml
+
+# Disallow admin areas and auth pages
+Disallow: /admin
+Disallow: /iniciar-sesion
+Disallow: /registro
+Disallow: /verificar-correo
+Disallow: /recuperar-contraseña
+Disallow: /restablecer-contraseña
+Disallow: /login
+Disallow: /dashboard
+Disallow: /auth
+
+# Allow important public pages
+Allow: /paquetes
+Allow: /destinos
+Allow: /contacto
+Allow: /preguntas-frecuentes
+
+# SEO optimizations
+Crawl-delay: 1
+
+# Additional directives for better indexing
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+Disallow: /aprobacion-pendiente
+Disallow: /perfil
+
+Sitemap: https://www.viadca.app/sitemap.xml

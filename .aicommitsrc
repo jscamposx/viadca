@@ -1,0 +1,6 @@
+{
+  "locale": "es",
+  "generate": 5,
+  "type": "conventional",
+  "prompt": "Genera un mensaje de commit en español siguiendo la convención de commits. El mensaje debe estar en español y ser descriptivo pero conciso. Usa los siguientes tipos:\n\n- feat: nueva funcionalidad\n- fix: corrección de errores\n- docs: documentación\n- style: formato, espacios en blanco, etc.\n- refactor: refactorización del código\n- test: agregar o modificar tests\n- chore: tareas de mantenimiento\n\nEjemplos:\nfeat: agregar componente de búsqueda de hoteles\nfix: corregir error en la validación de formularios\ndocs: actualizar documentación del API\n\nGenera el mensaje basándote en los cambios realizados:"
+}

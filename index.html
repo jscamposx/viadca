@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta
+      name="google-site-verification"
+      content="wtwpQ1S3gKAQHZE23o1gWthFKj6laz8Fx8nJrOlEaNI"
+    />
+    <meta charset="UTF-8" />
+    <link
+      rel="icon"
+      type="image/svg+xml"
+      href="/viadca-icon.avif"
+      style="border-radius: 15px"
+    />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- CSS crítico inline -->
+
+    <!-- Preconnects críticos -->
+    <link rel="preconnect" href="https://api.jscamposx.dev" />
+    <link rel="preconnect" href="https://images.pexels.com" />
+    <link rel="preconnect" href="https://res.cloudinary.com" />
+    <link rel="preconnect" href="https://unpkg.com" />
+    <!-- Notas: Evitar preloads con hash fijo. Vite se encarga de inyectar el CSS generado
+         a partir de los imports (por ejemplo, src/index.css). Un preload con nombre fijo
+         como /assets/index-*.css puede quedar desactualizado y provocar falta de estilos. -->
+    <title>Viadca Viajes - Tu próxima aventura comienza aquí</title>
+    <meta
+      name="description"
+      content="En Viadca, convertimos sus sueños de viajar en realidad. Con atención personalizada y paquetes exclusivos, te llevamos a los destinos más fascinantes."
+    />
+    <meta
+      name="keywords"
+      content="Viadca, agencia de viajes, viajes a medida, destinos, paquetes de viaje, Zafiro Tours, Durango"
+    />
+    <meta
+      name="robots"
+      content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1"
+    />
+    <link rel="canonical" href="https://www.viadca.app/" />
+    <meta name="theme-color" content="#0b4fa3" />
+    <link rel="sitemap" type="application/xml" href="/sitemap.xml" />
+
+    <meta property="og:locale" content="es_ES" />
+    <meta property="og:site_name" content="Viadca Viajes" />
+    <meta property="og:title" content="Viadca Viajes - Tu Próxima Aventura" />
+    <meta
+      property="og:description"
+      content="Explora destinos increíbles y vive experiencias únicas con nuestros paquetes de viaje a medida. ¡Tu aventura comienza aquí!"
+    />
+    <meta
+      property="og:image"
+      content="https://www.viadca.app/viadca-preview.jpg"
+    />
+    <meta property="og:url" content="https://www.viadca.app" />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Viadca Viajes - Tu Próxima Aventura" />
+    <meta
+      name="twitter:description"
+      content="Explora destinos increíbles y vive experiencias únicas con nuestros paquetes de viaje a medida. Tu aventura comienza aquí."
+    />
+    <meta
+      name="twitter:image"
+      content="https://www.viadca.app/viadca-preview.jpg"
+    />
+
+    <script id="ld-org" type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": "Viadca Viajes",
+        "url": "https://www.viadca.app/",
+        "logo": "https://www.viadca.app/viadca-preview.jpg",
+        "sameAs": ["https://www.facebook.com/", "https://www.instagram.com/"]
+      }
+    </script>
+    <script id="ld-website" type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "Viadca Viajes",
+        "url": "https://www.viadca.app/",
+        "potentialAction": {
+          "@type": "SearchAction",
+          "target": "https://www.viadca.app/buscar?q={search_term_string}",
+          "query-input": "required name=search_term_string"
+        }
+      }
+    </script>
+
+    <!-- Preload del logo (usado en todas las páginas) -->
+    <link
+      rel="preload"
+      as="image"
+      href="/viadcalogo.avif"
+      type="image/avif"
+      fetchpriority="high"
+    />
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>

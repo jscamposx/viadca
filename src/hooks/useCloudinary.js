@@ -1,0 +1,267 @@
+import { useState, useCallback, useRef } from "react";
+import { cloudinaryService } from "../services/cloudinaryService.js";
+
+export const useCloudinary = () => {
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [error, setError] = useState(null);
+  const [uploadedImages, setUploadedImages] = useState([]);
+
+  const abortControllerRef = useRef(null);
+
+  const uploadImage = useCallback(
+    async (file, folder = "viajes_app", options = {}) => {
+      try {
+        setIsUploading(true);
+        setError(null);
+        setUploadProgress(0);
+
+        if (!cloudinaryService.validateImageFile(file)) {
+          throw new Error(
+            "Archivo no válido. Solo se permiten imágenes JPG, PNG, WebP y GIF menores a 10MB.",
+          );
+        }
+
+        const {
+          autoResize = true,
+          maxWidth = 1920,
+          maxHeight = 1080,
+          quality = 0.9,
+        } = options;
+
+        let fileToUpload = file;
+        if (autoResize) {
+          setUploadProgress(10);
+          fileToUpload = await cloudinaryService.resizeImage(file, {
+            maxWidth,
+            maxHeight,
+            quality,
+          });
+        }
+
+        setUploadProgress(30);
+
+        const result = await cloudinaryService.uploadImage(
+          fileToUpload,
+          folder,
+        );
+
+        setUploadProgress(100);
+        const uploadedImage = {
+          ...result.data,
+          originalFile: file,
+          uploadedAt: new Date().toISOString(),
+        };
+
+        setUploadedImages((prev) => [...prev, uploadedImage]);
+
+        return uploadedImage;
+      } catch (err) {
+        console.error("Error subiendo imagen:", err);
+        setError(err.message || "Error desconocido al subir imagen");
+        throw err;
+      } finally {
+        setIsUploading(false);
+        setUploadProgress(0);
+      }
+    },
+    [],
+  );
+
+  const uploadMultipleImages = useCallback(
+    async (files, folder = "viajes_app", options = {}) => {
+      try {
+        setIsUploading(true);
+        setError(null);
+        setUploadProgress(0);
+
+        const filesArray = Array.from(files);
+        const {
+          autoResize = true,
+          maxWidth = 1920,
+          maxHeight = 1080,
+          quality = 0.9,
+          onProgress,
+        } = options;
+
+        const invalidFiles = filesArray.filter(
+          (file) => !cloudinaryService.validateImageFile(file),
+        );
+        if (invalidFiles.length > 0) {
+          throw new Error(
+            `Archivos no válidos: ${invalidFiles.map((f) => f.name).join(", ")}`,
+          );
+        }
+
+        const results = [];
+        const totalFiles = filesArray.length;
+
+        for (let i = 0; i < filesArray.length; i++) {
+          const file = filesArray[i];
+
+          try {
+            let fileToUpload = file;
+            if (autoResize) {
+              fileToUpload = await cloudinaryService.resizeImage(file, {
+                maxWidth,
+                maxHeight,
+                quality,
+              });
+            }
+
+            const result = await cloudinaryService.uploadImage(
+              fileToUpload,
+              folder,
+            );
+
+            const uploadedImage = {
+              ...result.data,
+              originalFile: file,
+              uploadedAt: new Date().toISOString(),
+            };
+
+            results.push(uploadedImage);
+
+            const progress = Math.round(((i + 1) / totalFiles) * 100);
+            setUploadProgress(progress);
+            onProgress?.(progress, i + 1, totalFiles);
+          } catch (fileError) {
+            console.error(`Error subiendo ${file.name}:`, fileError);
+            results.push({
+              error: fileError.message,
+              file,
+              success: false,
+            });
+          }
+        }
+
+        const successful = results.filter((r) => !r.error);
+        const failed = results.filter((r) => r.error);
+
+        if (successful.length > 0) {
+          setUploadedImages((prev) => [...prev, ...successful]);
+        }
+
+        if (failed.length > 0) {
+          const errorMessages = failed
+            .map((f) => `${f.file.name}: ${f.error}`)
+            .join("\n");
+          setError(`Algunos archivos fallaron:\n${errorMessages}`);
+        }
+
+        return {
+          successful,
+          failed,
+          total: totalFiles,
+        };
+      } catch (err) {
+        console.error("Error subiendo múltiples imágenes:", err);
+        setError(err.message || "Error desconocido al subir imágenes");
+        throw err;
+      } finally {
+        setIsUploading(false);
+        setUploadProgress(0);
+      }
+    },
+    [],
+  );
+
+  const deleteImage = useCallback(async (publicId) => {
+    try {
+      setError(null);
+
+      await cloudinaryService.deleteImage(publicId);
+
+      setUploadedImages((prev) =>
+        prev.filter((img) => img.public_id !== publicId),
+      );
+
+      return true;
+    } catch (err) {
+      console.error("Error eliminando imagen:", err);
+      setError(err.message || "Error desconocido al eliminar imagen");
+      throw err;
+    }
+  }, []);
+
+  const getOptimizedUrl = useCallback((publicIdOrImage, options = {}) => {
+    if (!publicIdOrImage) return null;
+
+    if (typeof publicIdOrImage === "object") {
+      return cloudinaryService.processImageUrl(publicIdOrImage, options);
+    }
+
+    return cloudinaryService.getOptimizedImageUrl(publicIdOrImage, options);
+  }, []);
+
+  const getResponsiveUrls = useCallback((publicIdOrImage) => {
+    if (!publicIdOrImage) return null;
+
+    if (
+      typeof publicIdOrImage === "object" &&
+      publicIdOrImage.cloudinary_public_id
+    ) {
+      return cloudinaryService.getResponsiveImageUrls(
+        publicIdOrImage.cloudinary_public_id,
+      );
+    }
+
+    return cloudinaryService.getResponsiveImageUrls(publicIdOrImage);
+  }, []);
+
+  const generateSrcSet = useCallback((publicId) => {
+    if (!publicId) return "";
+    return cloudinaryService.generateSrcSet(publicId);
+  }, []);
+
+  const clearState = useCallback(() => {
+    setUploadedImages([]);
+    setError(null);
+    setUploadProgress(0);
+    setIsUploading(false);
+  }, []);
+
+  const cancelUpload = useCallback(() => {
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+    setIsUploading(false);
+    setUploadProgress(0);
+  }, []);
+
+  const validateFile = useCallback((file) => {
+    return cloudinaryService.validateImageFile(file);
+  }, []);
+
+  const resizeImage = useCallback(async (file, options = {}) => {
+    return cloudinaryService.resizeImage(file, options);
+  }, []);
+
+  return {
+    isUploading,
+    uploadProgress,
+    error,
+    uploadedImages,
+
+    uploadImage,
+    uploadMultipleImages,
+    deleteImage,
+
+    getOptimizedUrl,
+    getResponsiveUrls,
+    generateSrcSet,
+
+    validateFile,
+    resizeImage,
+    clearState,
+    cancelUpload,
+
+    hasUploads: uploadedImages.length > 0,
+    totalUploads: uploadedImages.length,
+    lastUpload: uploadedImages[uploadedImages.length - 1] || null,
+
+    cloudinaryService,
+  };
+};
+
+export default useCloudinary;
