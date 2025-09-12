@@ -232,7 +232,8 @@ function Badge({ children, variant = "default", icon: Icon }) {
     warning: "bg-amber-100/80 text-amber-700 border-amber-200/50",
     info: "bg-blue-100/80 text-blue-700 border-blue-200/50",
     gradient:
-      "bg-gradient-to-r from-blue-500 to-purple-500 text-white border-transparent shadow-lg",
+      // Fondo blanco para máxima legibilidad sobre el hero
+      "bg-white/90 text-slate-800 border-gray-200/60 shadow-md",
   };
 
   return (
@@ -253,6 +254,8 @@ function PackageViewPage() {
   const [isLiked, setIsLiked] = useState(false);
   const [scrollY, setScrollY] = useState(0);
   const [isSmallScreen, setIsSmallScreen] = useState(false);
+  const [incluyeOpen, setIncluyeOpen] = useState(false);
+  const [noIncluyeOpen, setNoIncluyeOpen] = useState(false);
   const { openWhatsApp, getPhoneHref, onPhoneClick, ToastPortal, showToast } = useContactActions();
   const { contactInfo, loading: contactLoading } = useContactInfo();
 
@@ -387,6 +390,13 @@ function PackageViewPage() {
     moneda,
   );
 
+  // Preparar textos y detección de “contenido largo” para acordeones en móvil
+  const incluyeText = (paquete?.incluye || "").toString().trim();
+  const noIncluyeText = (paquete?.no_incluye || "").toString().trim();
+  const isLongText = (t) => t.length > 240 || t.split(/\r?\n/).length > 4;
+  const incluyeHasMore = isLongText(incluyeText);
+  const noIncluyeHasMore = isLongText(noIncluyeText);
+
   return (
     <PageTransition className="bg-gradient-to-br from-slate-50 via-white to-blue-50 min-h-screen">
       {/* Toast global para acciones de contacto */}
@@ -483,31 +493,15 @@ function PackageViewPage() {
               imagenes={paquete.imagenes}
               emptyStateTitle="Sin fotos del paquete"
               emptyStateDescription="Las imágenes de este paquete turístico se cargarán próximamente"
+              enableSnap={true}
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
             <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/40"></div>
           </div>
+          
 
-          <div className="relative z-10 text-center text-white px-4 max-w-4xl mx-auto">
-            <div className="space-y-6">
-              <div className="flex flex-wrap justify-center gap-3 mb-8">
-                <Badge variant="gradient" icon={FiCalendar}>
-                  {paquete.duracion_dias} días
-                </Badge>
-                {paquete.precio_total && (
-                  <Badge variant="gradient" icon={FiDollarSign}>
-                    {formatPrecio(paquete.precio_total, moneda)}
-                    <span className="ml-2 text-xs opacity-90 font-semibold tracking-wide">
-                      ({moneda})
-                    </span>
-                  </Badge>
-                )}
-                {paquete.hotel && (
-                  <Badge variant="gradient" icon={FiStar}>
-                    Hotel {paquete.hotel.estrellas}★
-                  </Badge>
-                )}
-              </div>
+          <div className="relative z-10 text-center text-white px-4 max-w-4xl mx-auto translate-y-[-5vh] sm:translate-y-0">
+            <div className="space-y-5 sm:space-y-6">
 
               <h1 className="font-volkhov text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold leading-tight">
                 <span className="bg-gradient-to-r from-white via-blue-100 to-purple-100 bg-clip-text text-transparent">
@@ -515,12 +509,14 @@ function PackageViewPage() {
                 </span>
               </h1>
 
-              <p className="text-xl sm:text-2xl text-blue-100 max-w-2xl mx-auto leading-relaxed">
+              {/* Info compacta removida a solicitud */}
+
+              <p className="text-lg sm:text-2xl text-blue-100 max-w-2xl mx-auto leading-relaxed">
                 Descubre una experiencia única que combina aventura, cultura y
                 momentos inolvidables
               </p>
 
-              <div className="pt-8">
+              <div className="pt-6 md:pt-8">
                 <button
                   className="group bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold py-4 px-8 rounded-2xl shadow-2xl hover:shadow-3xl hover:scale-105 transition-all duration-300 text-lg hover:from-blue-700 hover:to-indigo-700"
                   aria-label="Reservar aventura para este paquete turístico"
@@ -543,7 +539,7 @@ function PackageViewPage() {
             </div>
           </div>
 
-          <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 text-white animate-bounce">
+          <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 text-white animate-bounce hidden sm:block">
             <div className="flex flex-col items-center gap-2">
               <span className="text-sm font-medium">Descubre más</span>
               <div className="w-6 h-10 border-2 border-white/50 rounded-full flex justify-center">
@@ -765,9 +761,25 @@ function PackageViewPage() {
                     </div>
 
                     <div className="bg-gradient-to-br from-emerald-50/50 to-green-50/50 rounded-xl p-4 backdrop-blur-sm">
-                      <p className="text-gray-700 leading-relaxed text-sm">
-                        {paquete.incluye}
-                      </p>
+                      <div
+                        id="incluye-content"
+                        className={`${incluyeOpen || !incluyeHasMore ? "max-h-none" : "max-h-24 overflow-hidden sm:max-h-none sm:overflow-visible"}`}
+                      >
+                        <p className="text-gray-700 leading-relaxed text-sm whitespace-pre-line">{incluyeText}</p>
+                      </div>
+                      {incluyeHasMore && (
+                        <div className="mt-2 sm:hidden text-right">
+                          <button
+                            type="button"
+                            onClick={() => setIncluyeOpen((v) => !v)}
+                            className="text-blue-700 font-semibold text-sm hover:underline"
+                            aria-expanded={incluyeOpen}
+                            aria-controls="incluye-content"
+                          >
+                            {incluyeOpen ? "Ver menos" : "Ver más"}
+                          </button>
+                        </div>
+                      )}
                     </div>
                   </section>
                   </AnimatedSection>
@@ -791,9 +803,25 @@ function PackageViewPage() {
                     </div>
 
                     <div className="bg-gradient-to-br from-gray-50/50 to-slate-50/50 rounded-xl p-4 backdrop-blur-sm">
-                      <p className="text-gray-700 leading-relaxed text-sm">
-                        {paquete.no_incluye}
-                      </p>
+                      <div
+                        id="no-incluye-content"
+                        className={`${noIncluyeOpen || !noIncluyeHasMore ? "max-h-none" : "max-h-24 overflow-hidden sm:max-h-none sm:overflow-visible"}`}
+                      >
+                        <p className="text-gray-700 leading-relaxed text-sm whitespace-pre-line">{noIncluyeText}</p>
+                      </div>
+                      {noIncluyeHasMore && (
+                        <div className="mt-2 sm:hidden text-right">
+                          <button
+                            type="button"
+                            onClick={() => setNoIncluyeOpen((v) => !v)}
+                            className="text-blue-700 font-semibold text-sm hover:underline"
+                            aria-expanded={noIncluyeOpen}
+                            aria-controls="no-incluye-content"
+                          >
+                            {noIncluyeOpen ? "Ver menos" : "Ver más"}
+                          </button>
+                        </div>
+                      )}
                     </div>
                   </section>
                   </AnimatedSection>
@@ -934,21 +962,7 @@ function PackageViewPage() {
         currentYear={new Date().getFullYear()}
       />
 
-      {/* CTA pegajosa en móviles */}
-      <div className="fixed left-0 right-0 px-4 sm:hidden z-50" style={{ bottom: "calc(env(safe-area-inset-bottom, 0px) + 1rem)" }}>
-        <button
-          onClick={() => {
-            const codigo = paquete.codigo || url;
-            const currentUrl = window.location.href;
-            const msg = `Hola, me interesa el viaje "${paquete.titulo}" (código ${codigo}).\n¿Podrían compartir más detalles sobre itinerario, disponibilidad y lo que incluye?\nURL: ${currentUrl}\nGracias.`;
-            openWhatsApp(msg);
-          }}
-          className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold py-4 rounded-2xl shadow-xl hover:shadow-2xl active:scale-[.98] transition-all"
-          aria-label="Reservar Aventura"
-        >
-          Reservar Aventura
-        </button>
-      </div>
+      {/* CTA pegajosa en móviles eliminada por preferencia de diseño */}
     </PageTransition>
   );
 }

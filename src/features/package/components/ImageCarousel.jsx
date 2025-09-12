@@ -81,6 +81,7 @@ const ImageCarousel = ({
   imagenes,
   emptyStateTitle,
   emptyStateDescription,
+  enableSnap = false,
 }) => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
@@ -161,8 +162,13 @@ const ImageCarousel = ({
     );
   }
 
+  const snapWrapper = enableSnap
+    ? "sm:overflow-hidden overflow-x-auto snap-x snap-mandatory"
+    : "";
+  const snapSlide = enableSnap ? "sm:snap-none snap-center" : "";
+
   return (
-    <div className="w-full h-full relative group">
+    <div className={`w-full h-full relative group ${snapWrapper}`}>
       {isLoading && (
         <div className="absolute inset-0 z-30 bg-slate-200 flex items-center justify-center">
           <div className="flex flex-col sm:flex-row items-center space-y-2 sm:space-y-0 sm:space-x-3 px-4">
@@ -202,7 +208,7 @@ const ImageCarousel = ({
             isVisible={hasNext && validImages.length > 1}
           />
         )}
-        className="h-full [&_.carousel]:h-full [&_.carousel_.slider-wrapper]:h-full [&_.carousel_.slider]:h-full [&_.carousel_.slide]:h-full [&_.carousel-slider]:overflow-visible"
+        className={`h-full [&_.carousel]:h-full [&_.carousel_.slider-wrapper]:h-full [&_.carousel_.slider]:h-full [&_.carousel_.slide]:h-full [&_.carousel-slider]:overflow-visible ${enableSnap ? "[&_.carousel_.slide]:snap-center" : ""}`}
       >
         {validImages.map((imagen, index) => {
           const imageUrl = getOptimizedImageUrl(imagen);
@@ -210,7 +216,7 @@ const ImageCarousel = ({
             imagen.id || imagen.nombre || imagen.contenido || index;
 
           return (
-            <div key={imageId} className="w-full h-full relative">
+            <div key={imageId} className={`w-full h-full relative ${snapSlide}`}>
               <img
                 className="w-full h-full object-cover transition-transform duration-700 hover:scale-105"
                 src={imageUrl}

@@ -43,6 +43,7 @@ const HotelInfo = ({ hotel }) => {
           imagenes={hotel.imagenes || []}
           emptyStateTitle="Sin fotos del hotel"
           emptyStateDescription="Las imágenes del hotel no están disponibles"
+          enableSnap={true}
         />
       </div>
     </div>
