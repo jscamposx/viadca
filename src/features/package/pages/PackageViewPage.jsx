@@ -414,7 +414,23 @@ function PackageViewPage() {
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <button
-              onClick={() => window.history.back()}
+              onClick={() => {
+                // Si hay historial real, intentar regresar manteniendo sección/hash
+                const hasHistory = window.history.length > 1;
+                if (hasHistory) {
+                  const prev = document.referrer;
+                  // Si venimos de la misma página (sin navegación real), hacer fallback a home
+                  const sameOrigin = prev && new URL(prev, window.location.origin).origin === window.location.origin;
+                  const samePath = sameOrigin && new URL(prev, window.location.origin).pathname === window.location.pathname;
+                  if (!prev || samePath) {
+                    window.location.assign("/");
+                  } else {
+                    window.history.back();
+                  }
+                } else {
+                  window.location.assign("/");
+                }
+              }}
               className={`group flex items-center gap-3 px-4 py-2 rounded-xl min-h-[44px] transition-all duration-300 ${
                 scrollY > 100
                   ? "bg-gray-100/80 hover:bg-gray-200/80 text-gray-700"
@@ -969,7 +985,7 @@ function PackageViewPage() {
       <div className="h-20 sm:hidden" />
 
       {/* Más paquetes recomendados */}
-      <RecommendedPackages currentCodigoUrl={url} />
+  <RecommendedPackages currentCodigoUrl={url} currentId={paquete?.id} />
 
       {/* Trust bar (confianza) */}
       <TrustBar />

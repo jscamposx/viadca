@@ -219,7 +219,7 @@ const MoreDestinationsCard = ({ compact = false }) => (
   </Link>
 );
 
-export default function RecommendedPackages({ currentCodigoUrl }) {
+export default function RecommendedPackages({ currentCodigoUrl, currentId }) {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -234,7 +234,27 @@ export default function RecommendedPackages({ currentCodigoUrl }) {
       const { data } = await apiClient.get("/paquetes/listado");
       const list = Array.isArray(data) ? data : [];
       const activos = list.filter((p) => p?.activo !== false);
-      const filtered = activos.filter((p) => p?.codigoUrl !== currentCodigoUrl);
+      // Normalización robusta para evitar recomendar el mismo paquete
+      const normalize = (v) =>
+        typeof v === "string" ? decodeURIComponent(v).trim().toLowerCase() : "";
+      const currentCode = normalize(currentCodigoUrl);
+
+      // Filtrar el paquete actual por codigoUrl (case-insensitive) o por id
+      const prelimFiltered = activos.filter((p) => {
+        const code = normalize(p?.codigoUrl);
+        const sameCode = currentCode && code === currentCode;
+        const sameId = currentId != null && p?.id === currentId;
+        return !(sameCode || sameId);
+      });
+
+      // Deduplicar por codigoUrl normalizado para evitar repetidos
+      const seen = new Set();
+      const filtered = prelimFiltered.filter((p) => {
+        const key = normalize(p?.codigoUrl) || String(p?.id ?? "");
+        if (seen.has(key)) return false;
+        seen.add(key);
+        return true;
+      });
       // Normalizar y priorizar favoritos
       const normalized = filtered.map((p, idx) => ({
         ...p,
@@ -254,7 +274,7 @@ export default function RecommendedPackages({ currentCodigoUrl }) {
     } finally {
       setLoading(false);
     }
-  }, [currentCodigoUrl]);
+  }, [currentCodigoUrl, currentId]);
 
   useEffect(() => {
     loadData();
