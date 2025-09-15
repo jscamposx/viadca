@@ -400,6 +400,52 @@
   }
 }
 
+/* Indicador de deslizamiento horizontal (mobile) */
+@keyframes swipe-x {
+  0%, 100% {
+    transform: translateX(0);
+    opacity: 0.7;
+  }
+  50% {
+    transform: translateX(12px);
+    opacity: 1;
+  }
+}
+
+.animate-swipe-x {
+  animation: swipe-x 1.2s ease-in-out infinite;
+}
+
+/* Bounce vertical más suave para indicadores compactos */
+@keyframes bounce-y-soft {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+.animate-bounce-y-soft {
+  animation: bounce-y-soft 1.4s ease-in-out infinite;
+}
+
+/* Animación para indicar deslizamiento hacia abajo */
+@keyframes swipe-down {
+  0%, 100% {
+    transform: translateY(0);
+    opacity: 0.85;
+  }
+  50% {
+    transform: translateY(10px);
+    opacity: 1;
+  }
+}
+
+.animate-swipe-down {
+  animation: swipe-down 1.2s ease-in-out infinite;
+}
+
 @keyframes submitPulse {
   0%,
   100% {
