@@ -20,14 +20,6 @@ export function useSEO(config = {}) {
   useEffect(() => {
     if (typeof document === "undefined") return;
 
-    console.log("🔍 SEO: Configurando meta tags con:", {
-      title: config.title,
-      description: config.description,
-      og: config.og ? Object.keys(config.og) : null,
-      twitter: config.twitter ? Object.keys(config.twitter) : null,
-      hasJsonLd: Array.isArray(config.jsonLd) && config.jsonLd.length > 0,
-    });
-
     const {
       title,
       siteName = "Viadca Viajes",
@@ -52,7 +44,6 @@ export function useSEO(config = {}) {
     const fullTitle = title ? `${title}` : siteName;
     if (fullTitle) {
       document.title = fullTitle;
-      console.log("✅ SEO: Título actualizado:", fullTitle);
     }
 
     const ensureMeta = (attrName, attrValue, content) => {
@@ -124,21 +115,17 @@ export function useSEO(config = {}) {
       locale,
     };
     const ogMerged = { ...ogDefaults, ...og };
-    console.log("🔍 SEO: Configurando Open Graph:", ogMerged);
     
     Object.entries(ogMerged).forEach(([k, v]) => {
       if (!v) return;
-      console.log(`✅ SEO: Meta OG - og:${k}:`, v);
       ensureMeta("property", `og:${k}`, v);
     });
 
     // Open Graph extra (propiedades completas como product:price:amount)
     if (Array.isArray(ogExtra)) {
-      console.log("🔍 SEO: OG Extra props:", ogExtra.length);
       ogExtra
         .filter((m) => m && m.property && m.content)
         .forEach(({ property, content }) => {
-          console.log(`✅ SEO: Meta OG Extra - ${property}:`, content);
           ensureMeta("property", property, content);
         });
     }

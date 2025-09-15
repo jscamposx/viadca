@@ -11,24 +11,13 @@ const FALLBACK_OG_IMAGE = `${SITE_ORIGIN}/HomePage/Hero-Image.avif`;
 
 // Resolver URL de imagen para SEO/OG (debe ser absoluta, no data:)
 const resolveImageUrlForSEO = (img) => {
-  console.log("🔍 SEO: Resolviendo imagen para OG:", {
-    img,
-    hasUrl: !!img?.url,
-    hasRuta: !!img?.ruta,
-    hasNombre: !!img?.nombre,
-    hasContenido: !!img?.contenido,
-    tipo: img?.tipo,
-  });
-
   if (!img) {
-    console.log("⚠️ SEO: Sin imagen, usando fallback");
     return FALLBACK_OG_IMAGE;
   }
 
   // Verificar URLs de Cloudinary
   if (img.cloudinary_url) {
     if (/^https?:\/\//i.test(img.cloudinary_url)) {
-      console.log("✅ SEO: URL Cloudinary absoluta encontrada:", img.cloudinary_url);
       return img.cloudinary_url;
     }
   }
@@ -36,54 +25,41 @@ const resolveImageUrlForSEO = (img) => {
   // Preferir URLs absolutas válidas
   if (img.url) {
     if (/^https?:\/\//i.test(img.url)) {
-      console.log("✅ SEO: URL absoluta encontrada:", img.url);
       return img.url;
     }
     
     // Evitar convertir data: URIs
     if (img.url.startsWith("data:")) {
-      console.log("⚠️ SEO: URL es data URI, usando fallback");
       return FALLBACK_OG_IMAGE;
     }
     
-    const resolvedUrl = `${API_BASE}${img.url.startsWith("/") ? "" : "/"}${img.url}`;
-    console.log("🔧 SEO: URL relativa convertida a absoluta:", resolvedUrl);
-    return resolvedUrl;
+    return `${API_BASE}${img.url.startsWith("/") ? "" : "/"}${img.url}`;
   }
 
   // También verificar el campo 'contenido' que veo que se usa en el sistema
   if (img.contenido) {
     if (/^https?:\/\//i.test(img.contenido)) {
-      console.log("✅ SEO: URL absoluta en contenido:", img.contenido);
       return img.contenido;
     }
     
     // Evitar data: URIs y content base64
     if (img.contenido.startsWith("data:") || img.contenido.length > 500) {
-      console.log("⚠️ SEO: Contenido es data URI o muy largo, usando fallback");
       return FALLBACK_OG_IMAGE;
     }
     
-    const resolvedUrl = `${API_BASE}${img.contenido.startsWith("/") ? "" : "/"}${img.contenido}`;
-    console.log("🔧 SEO: Contenido convertido a URL absoluta:", resolvedUrl);
-    return resolvedUrl;
+    return `${API_BASE}${img.contenido.startsWith("/") ? "" : "/"}${img.contenido}`;
   }
 
   if (img.ruta) {
-    const resolvedUrl = `${API_BASE}${img.ruta.startsWith("/") ? "" : "/"}${img.ruta}`;
-    console.log("🔧 SEO: Ruta convertida a URL absoluta:", resolvedUrl);
-    return resolvedUrl;
+    return `${API_BASE}${img.ruta.startsWith("/") ? "" : "/"}${img.ruta}`;
   }
 
   if (img.nombre) {
     const nm = img.nombre.startsWith("/") ? img.nombre.slice(1) : img.nombre;
-    const resolvedUrl = `${API_BASE}/uploads/images/${nm}`;
-    console.log("🔧 SEO: Nombre convertido a URL absoluta:", resolvedUrl);
-    return resolvedUrl;
+    return `${API_BASE}/uploads/images/${nm}`;
   }
 
   // Evitar data: URIs para sociales; usar fallback del sitio
-  console.log("⚠️ SEO: No se pudo resolver imagen, usando fallback:", FALLBACK_OG_IMAGE);
   return FALLBACK_OG_IMAGE;
 };
 
@@ -423,17 +399,6 @@ export const generatePackageJsonLd = (paquete, url) => {
  * Genera Open Graph optimizado para un paquete
  */
 export const generatePackageOG = (paquete, url) => {
-  console.log("🔍 SEO: Generando OG para paquete:", {
-    paquete: {
-      titulo: paquete?.titulo,
-      precio_total: paquete?.precio_total,
-      moneda: paquete?.moneda,
-      imagenes: paquete?.imagenes?.length,
-      primeraImagen: paquete?.imagenes?.[0],
-    },
-    url,
-  });
-
   if (!paquete) return {};
 
   const destinos =
@@ -453,7 +418,6 @@ export const generatePackageOG = (paquete, url) => {
       const resolved = resolveImageUrlForSEO(img);
       if (resolved && resolved !== FALLBACK_OG_IMAGE) {
         firstImage = resolved;
-        console.log("✅ SEO: Imagen principal seleccionada:", firstImage);
         break;
       }
     }
@@ -462,7 +426,7 @@ export const generatePackageOG = (paquete, url) => {
   const alt = paquete.titulo || "Paquete de viaje - Viadca Viajes";
   const updated = new Date().toISOString();
 
-  const ogData = {
+  return {
     type: "product",
     title: `${paquete.titulo}${destinoStr} - ${paquete.duracion_dias} días`,
     description: `Descubre ${paquete.titulo} con Viadca Viajes${precioStr}. ¡Reserva ahora!`,
@@ -476,16 +440,8 @@ export const generatePackageOG = (paquete, url) => {
       price_currency: sanitizeMoneda(paquete.moneda) || "MXN",
     },
   };
-
-  console.log("✅ SEO: OG generado:", {
-    title: ogData.title,
-    image: ogData.image,
-    description: ogData.description,
-    isUsingFallback: ogData.image === FALLBACK_OG_IMAGE,
-  });
-
-  return ogData;
 };
+
 
 /**
  * Genera configuración Twitter Card para un paquete
