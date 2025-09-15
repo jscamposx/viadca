@@ -175,7 +175,7 @@ export default function LightboxModal({
       <button
         aria-label="Cerrar"
         onClick={onClose}
-        className="absolute top-4 right-4 p-2 rounded-full bg-white/10 hover:bg-white/20 text-white border border-white/20 shadow-md"
+        className="absolute top-3 right-3 p-3 rounded-full bg-black/40 hover:bg-black/50 text-white border border-white/20 shadow-lg backdrop-blur-sm touch-manipulation"
       >
         <FiX className="w-6 h-6" />
       </button>
@@ -185,16 +185,16 @@ export default function LightboxModal({
           <button
             aria-label="Anterior"
             onClick={goPrev}
-            className="absolute left-4 md:left-6 p-2 md:p-3 rounded-full bg-white/10 hover:bg-white/20 text-white border border-white/20 shadow-md"
+            className="absolute top-1/2 -translate-y-1/2 left-3 md:left-6 w-12 h-12 md:w-14 md:h-14 rounded-full bg-black/40 hover:bg-black/50 text-white border border-white/20 shadow-lg backdrop-blur-sm flex items-center justify-center touch-manipulation"
           >
-            <FiChevronLeft className="w-6 h-6 md:w-7 md:h-7" />
+            <FiChevronLeft className="w-7 h-7 md:w-8 md:h-8" />
           </button>
           <button
             aria-label="Siguiente"
             onClick={goNext}
-            className="absolute right-4 md:right-6 p-2 md:p-3 rounded-full bg-white/10 hover:bg-white/20 text-white border border-white/20 shadow-md"
+            className="absolute top-1/2 -translate-y-1/2 right-3 md:right-6 w-12 h-12 md:w-14 md:h-14 rounded-full bg-black/40 hover:bg-black/50 text-white border border-white/20 shadow-lg backdrop-blur-sm flex items-center justify-center touch-manipulation"
           >
-            <FiChevronRight className="w-6 h-6 md:w-7 md:h-7" />
+            <FiChevronRight className="w-7 h-7 md:w-8 md:h-8" />
           </button>
         </>
       )}
@@ -222,7 +222,7 @@ export default function LightboxModal({
       </div>
 
       {/* Indicador */}
-      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 text-white/90 text-sm bg-white/10 px-3 py-1 rounded-full border border-white/20">
+      <div className="absolute bottom-3 left-1/2 -translate-x-1/2 text-white/90 text-sm bg-black/30 px-3 py-1 rounded-full border border-white/20 backdrop-blur-sm">
         {index + 1} / {images.length}
       </div>
     </div>,
