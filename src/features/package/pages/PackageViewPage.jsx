@@ -19,6 +19,7 @@ import LightboxModal from "../../../components/ui/LightboxModal";
 import { AnimatedSection } from "../../../hooks/scrollAnimations";
 import Footer from "../../home/components/Footer";
 import TrustBar from "../../../components/ui/TrustBar";
+import ExpandableContent from "../../../components/ui/ExpandableContent.jsx";
 import {
   FiMapPin,
   FiCalendar,
@@ -255,8 +256,7 @@ function PackageViewPage() {
   const [isLiked, setIsLiked] = useState(false);
   const [scrollY, setScrollY] = useState(0);
   const [isSmallScreen, setIsSmallScreen] = useState(false);
-  const [incluyeOpen, setIncluyeOpen] = useState(false);
-  const [noIncluyeOpen, setNoIncluyeOpen] = useState(false);
+  // Estados legacy eliminados en favor de ExpandableContent
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState(0);
   const { openWhatsApp, getPhoneHref, onPhoneClick, ToastPortal, showToast } = useContactActions();
@@ -514,7 +514,7 @@ function PackageViewPage() {
 
       <main className="relative">
         <div
-          className="relative min-h-[100svh] h-[100dvh] flex items-center justify-center overflow-hidden"
+          className="relative min-h-[70svh] sm:min-h-[80svh] md:min-h-[100svh] h-[100dvh] flex items-center justify-center overflow-hidden"
           style={!isSmallScreen ? { transform: `translateY(${scrollY * 0.2}px)` } : undefined}
         >
           <div className="absolute inset-0">
@@ -736,7 +736,7 @@ function PackageViewPage() {
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 {paquete.notas && (
                   <AnimatedSection animation="fadeInUp" delay={100}>
-                  <section className="group bg-white/80 backdrop-blur-xl rounded-3xl shadow-xl p-6 border border-white/20 hover:shadow-2xl transition-all duration-500">
+                  <section className="group bg-white/80 backdrop-blur-xl rounded-3xl shadow-xl p-6 border border-white/20 hover:shadow-2xl transition-all duration-500 h-full flex flex-col">
                     <div className="flex items-center gap-4 mb-6">
                       <div className="w-12 h-12 bg-gradient-to-br from-amber-400 to-orange-400 rounded-xl flex items-center justify-center shadow-lg md:group-hover:scale-110 transition-transform duration-300">
                         <FiInfo className="w-6 h-6 text-white" />
@@ -751,10 +751,12 @@ function PackageViewPage() {
                       </div>
                     </div>
 
-                    <div className="bg-gradient-to-br from-amber-50/50 to-orange-50/50 rounded-xl p-4 backdrop-blur-sm">
-                      <p className="text-gray-700 leading-relaxed text-sm">
-                        {paquete.notas}
-                      </p>
+                    <div className="bg-gradient-to-br from-amber-50/50 to-orange-50/50 rounded-xl p-0 backdrop-blur-sm flex-1">
+                      <ExpandableContent collapsedHeight={192} className="p-4">
+                        <p className="text-gray-700 leading-relaxed text-sm whitespace-pre-line">
+                          {paquete.notas}
+                        </p>
+                      </ExpandableContent>
                     </div>
                   </section>
                   </AnimatedSection>
@@ -762,7 +764,7 @@ function PackageViewPage() {
 
                 {paquete.requisitos && (
                   <AnimatedSection animation="fadeInUp" delay={150}>
-                  <section className="group bg-white/80 backdrop-blur-xl rounded-3xl shadow-xl p-6 border border-white/20 hover:shadow-2xl transition-all duration-500">
+                  <section className="group bg-white/80 backdrop-blur-xl rounded-3xl shadow-xl p-6 border border-white/20 hover:shadow-2xl transition-all duration-500 h-full flex flex-col">
                     <div className="flex items-center gap-4 mb-6">
                       <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-xl flex items-center justify-center shadow-lg md:group-hover:scale-110 transition-transform duration-300">
                         <FiCheckSquare className="w-6 h-6 text-white" />
@@ -799,26 +801,10 @@ function PackageViewPage() {
                       </div>
                     </div>
 
-                    <div className="bg-gradient-to-br from-emerald-50/50 to-green-50/50 rounded-xl p-4 backdrop-blur-sm">
-                      <div
-                        id="incluye-content"
-                        className={`${incluyeOpen || !incluyeHasMore ? "max-h-none" : "max-h-24 overflow-hidden sm:max-h-none sm:overflow-visible"}`}
-                      >
+                    <div className="bg-gradient-to-br from-emerald-50/50 to-green-50/50 rounded-xl p-0 backdrop-blur-sm flex-1">
+                      <ExpandableContent collapsedHeight={192} className="p-4">
                         <p className="text-gray-700 leading-relaxed text-sm whitespace-pre-line">{incluyeText}</p>
-                      </div>
-                      {incluyeHasMore && (
-                        <div className="mt-2 sm:hidden text-right">
-                          <button
-                            type="button"
-                            onClick={() => setIncluyeOpen((v) => !v)}
-                            className="text-blue-700 font-semibold text-sm hover:underline"
-                            aria-expanded={incluyeOpen}
-                            aria-controls="incluye-content"
-                          >
-                            {incluyeOpen ? "Ver menos" : "Ver más"}
-                          </button>
-                        </div>
-                      )}
+                      </ExpandableContent>
                     </div>
                   </section>
                   </AnimatedSection>
@@ -826,7 +812,7 @@ function PackageViewPage() {
 
                 {paquete.no_incluye && (
                   <AnimatedSection animation="fadeInUp" delay={250}>
-                  <section className="group bg-white/80 backdrop-blur-xl rounded-3xl shadow-xl p-6 border border-white/20 hover:shadow-2xl transition-all duration-500">
+                  <section className="group bg-white/80 backdrop-blur-xl rounded-3xl shadow-xl p-6 border border-white/20 hover:shadow-2xl transition-all duration-500 h-full flex flex-col">
                     <div className="flex items-center gap-4 mb-6">
                       <div className="w-12 h-12 bg-gradient-to-br from-gray-500 to-slate-500 rounded-xl flex items-center justify-center shadow-lg md:group-hover:scale-110 transition-transform duration-300">
                         <FiX className="w-6 h-6 text-white" />
@@ -841,26 +827,10 @@ function PackageViewPage() {
                       </div>
                     </div>
 
-                    <div className="bg-gradient-to-br from-gray-50/50 to-slate-50/50 rounded-xl p-4 backdrop-blur-sm">
-                      <div
-                        id="no-incluye-content"
-                        className={`${noIncluyeOpen || !noIncluyeHasMore ? "max-h-none" : "max-h-24 overflow-hidden sm:max-h-none sm:overflow-visible"}`}
-                      >
+                    <div className="bg-gradient-to-br from-gray-50/50 to-slate-50/50 rounded-xl p-0 backdrop-blur-sm flex-1">
+                      <ExpandableContent collapsedHeight={192} className="p-4">
                         <p className="text-gray-700 leading-relaxed text-sm whitespace-pre-line">{noIncluyeText}</p>
-                      </div>
-                      {noIncluyeHasMore && (
-                        <div className="mt-2 sm:hidden text-right">
-                          <button
-                            type="button"
-                            onClick={() => setNoIncluyeOpen((v) => !v)}
-                            className="text-blue-700 font-semibold text-sm hover:underline"
-                            aria-expanded={noIncluyeOpen}
-                            aria-controls="no-incluye-content"
-                          >
-                            {noIncluyeOpen ? "Ver menos" : "Ver más"}
-                          </button>
-                        </div>
-                      )}
+                      </ExpandableContent>
                     </div>
                   </section>
                   </AnimatedSection>

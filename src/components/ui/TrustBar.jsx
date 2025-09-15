@@ -37,7 +37,10 @@ const items = [
 export default function TrustBar({ className = "" }) {
   return (
     <section className={`relative py-8 sm:py-10 lg:py-12 ${className}`}>
-      <div className="absolute inset-0 bg-gradient-to-b from-slate-50 via-white to-slate-50" aria-hidden="true" />
+      <div
+        className="absolute inset-0 bg-gradient-to-b sm:bg-gradient-to-r from-slate-50/90 via-white/95 to-slate-50/90 sm:from-slate-50 sm:via-white sm:to-slate-50"
+        aria-hidden="true"
+      />
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4 lg:gap-5">
           {items.map(({ icon: Icon, title, subtitle, gradient }, i) => (

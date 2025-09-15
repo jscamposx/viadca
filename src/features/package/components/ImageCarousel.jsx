@@ -245,7 +245,7 @@ const ImageCarousel = ({
 
               {onRequestFullscreen && (
                 <div className="absolute bottom-3 right-3 z-20 flex items-center pointer-events-auto">
-                  {/* Mobile: botón redondo */}
+                  {/* Mobile: botón redondo SIEMPRE visible y blanco */}
                   <button
                     type="button"
                     aria-label="Ver a pantalla completa"
@@ -253,11 +253,11 @@ const ImageCarousel = ({
                       e.stopPropagation();
                       onRequestFullscreen?.(resolvedUrls, index);
                     }}
-                    className="sm:hidden p-3 rounded-full bg-black/60 hover:bg-black/70 text-white border border-white/20 shadow-md focus:outline-none focus:ring-2 focus:ring-white/60 active:scale-95"
+                    className="sm:hidden p-3 rounded-full bg-white text-slate-900 hover:bg-white shadow-lg border border-white/80 focus:outline-none focus:ring-2 focus:ring-white/70 active:scale-95"
                   >
                     <FiMaximize className="w-5 h-5" />
                   </button>
-                  {/* Desktop: pill con texto */}
+                  {/* Desktop: pill con texto SIEMPRE visible y blanco */}
                   <button
                     type="button"
                     title="Ver a pantalla completa"
@@ -265,7 +265,7 @@ const ImageCarousel = ({
                       e.stopPropagation();
                       onRequestFullscreen?.(resolvedUrls, index);
                     }}
-                    className="hidden sm:inline-flex items-center gap-2 px-3 py-2 rounded-full bg-black/50 hover:bg-black/60 text-white border border-white/20 shadow-md focus:outline-none focus:ring-2 focus:ring-white/60 opacity-0 group-hover:opacity-100 transition-all duration-200 translate-y-1 group-hover:translate-y-0"
+                    className="hidden sm:inline-flex items-center gap-2 px-3 py-2 rounded-full bg-white text-slate-900 hover:bg-white shadow-lg border border-white/80 focus:outline-none focus:ring-2 focus:ring-white/70"
                   >
                     <FiMaximize className="w-5 h-5" />
                     <span className="text-sm">Pantalla completa</span>
