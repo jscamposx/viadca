@@ -175,10 +175,11 @@ const ImageCarousel = ({
     );
   }
 
-  const snapWrapper = enableSnap
+  const snapEnabled = enableSnap && !(isMobile && disableMobileSwipe);
+  const snapWrapper = snapEnabled
     ? "sm:overflow-hidden overflow-x-auto snap-x snap-mandatory"
     : "";
-  const snapSlide = enableSnap ? "sm:snap-none snap-center" : "";
+  const snapSlide = snapEnabled ? "sm:snap-none snap-center" : "";
 
   // Resolver URLs para fullscreen
   const resolvedUrls = validImages.map((img) => getOptimizedImageUrl(img));
@@ -235,7 +236,7 @@ const ImageCarousel = ({
                 />
               )
         }
-        className={`h-full [&_.carousel]:h-full [&_.carousel_.slider-wrapper]:h-full [&_.carousel_.slider]:h-full [&_.carousel_.slide]:h-full [&_.carousel-slider]:overflow-visible ${enableSnap ? "[&_.carousel_.slide]:snap-center" : ""}`}
+        className={`h-full [&_.carousel]:h-full [&_.carousel_.slider-wrapper]:h-full [&_.carousel_.slider]:h-full [&_.carousel_.slide]:h-full [&_.carousel-slider]:overflow-visible ${snapEnabled ? "[&_.carousel_.slide]:snap-center" : ""}`}
       >
         {validImages.map((imagen, index) => {
           const imageUrl = getOptimizedImageUrl(imagen);

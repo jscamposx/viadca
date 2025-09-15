@@ -11,8 +11,8 @@ function useScrollAnimation(options = {}) {
     window.matchMedia("(max-width: 640px)").matches;
 
   const {
-    threshold = isMobile ? 0.2 : 0.1,
-    rootMargin = isMobile ? "0px 0px -15% 0px" : "0px 0px -100px 0px",
+    threshold = isMobile ? 0.05 : 0.1,
+    rootMargin = isMobile ? "0px 0px 15% 0px" : "0px 0px -100px 0px",
     delay = 0,
     triggerOnce = true,
   } = options;
@@ -174,17 +174,17 @@ function AnimatedSection({
   const show = reducedMotion ? true : forceVisible || isVisible;
   const style = {};
   if (!reducedMotion && stagger && show) {
-    const cap = isMobile ? 500 : 900;
+    const cap = isMobile ? 300 : 900;
     const totalDelay = index * stagger;
     style.transitionDelay = `${Math.min(totalDelay, cap)}ms`;
   } else if (!reducedMotion && delay) {
-    // En mobile, evitar delays largos
-    style.transitionDelay = `${Math.min(delay, isMobile ? 300 : delay)}ms`;
+    // En mobile, evitar delays largos (máx 150ms)
+    style.transitionDelay = `${Math.min(delay, isMobile ? 150 : delay)}ms`;
   }
 
   // Reducir duración y suavizar en mobile para que se sienta más natural
   if (!reducedMotion && isMobile) {
-    style.transitionDuration = "450ms";
+    style.transitionDuration = "380ms";
     style.transitionTimingFunction = "cubic-bezier(.4,0,.2,1)";
   }
 

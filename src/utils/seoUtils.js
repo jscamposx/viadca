@@ -4,6 +4,34 @@
 
 import { sanitizeMoneda, formatPrecio } from "./priceUtils";
 
+// Dominio del sitio para construir URLs absolutas
+const SITE_ORIGIN = "https://www.viadca.app";
+const API_BASE = (import.meta?.env?.VITE_API_BASE_URL || SITE_ORIGIN).replace(/\/$/, "");
+const FALLBACK_OG_IMAGE = `${SITE_ORIGIN}/HomePage/Hero-Image.avif`;
+
+// Resolver URL de imagen para SEO/OG (debe ser absoluta, no data:)
+const resolveImageUrlForSEO = (img) => {
+  if (!img) return null;
+
+  // Preferir URLs absolutas válidas
+  if (img.url) {
+    if (/^https?:\/\//i.test(img.url)) return img.url;
+    return `${API_BASE}${img.url.startsWith("/") ? "" : "/"}${img.url}`;
+  }
+
+  if (img.ruta) {
+    return `${API_BASE}${img.ruta.startsWith("/") ? "" : "/"}${img.ruta}`;
+  }
+
+  if (img.nombre) {
+    const nm = img.nombre.startsWith("/") ? img.nombre.slice(1) : img.nombre;
+    return `${API_BASE}/uploads/images/${nm}`;
+  }
+
+  // Evitar data: URIs para sociales; usar fallback del sitio
+  return FALLBACK_OG_IMAGE;
+};
+
 /**
  * Genera keywords optimizadas para un paquete
  */
@@ -188,6 +216,11 @@ export const generatePackageJsonLd = (paquete, url) => {
   const destinos =
     paquete.destinos?.map((d) => d.ciudad || d.destino).filter(Boolean) || [];
 
+  const resolvedImages = (paquete.imagenes || [])
+    .map((i) => resolveImageUrlForSEO(i))
+    .filter(Boolean)
+    .slice(0, 6);
+
   return [
     // Organization (para reforzar entidad)
     {
@@ -245,8 +278,8 @@ export const generatePackageJsonLd = (paquete, url) => {
       "@context": "https://schema.org",
       "@type": "Product",
       name: paquete.titulo,
-      description: generateSEODescription(paquete),
-  image: (paquete.imagenes || []).map((i) => i.url).filter(Boolean).slice(0, 6),
+    description: generateSEODescription(paquete),
+  image: resolvedImages.length ? resolvedImages : [FALLBACK_OG_IMAGE],
       sku: paquete.codigo || url,
       brand: { "@type": "Brand", name: "Viadca Viajes" },
       category: "Travel Package",
@@ -347,12 +380,13 @@ export const generatePackageOG = (paquete, url) => {
     ? ` desde ${formatPrecio(paquete.precio_total, sanitizeMoneda(paquete.moneda))} ${sanitizeMoneda(paquete.moneda)}`
     : "";
 
+  const firstImage = resolveImageUrlForSEO(paquete.imagenes?.[0]) || FALLBACK_OG_IMAGE;
+
   return {
     type: "product",
     title: `${paquete.titulo}${destinoStr} - ${paquete.duracion_dias} días`,
     description: `Descubre ${paquete.titulo} con Viadca Viajes${precioStr}. ¡Reserva ahora!`,
-    image:
-      paquete.imagenes?.[0]?.url || "https://www.viadca.app/viadca-preview.jpg",
+    image: firstImage,
     product: {
       price_amount: paquete.precio_total,
       price_currency: sanitizeMoneda(paquete.moneda) || "MXN",
@@ -376,12 +410,13 @@ export const generatePackageTwitter = (paquete) => {
     ? ` desde ${formatPrecio(paquete.precio_total, sanitizeMoneda(paquete.moneda))} ${sanitizeMoneda(paquete.moneda)}`
     : "";
 
+  const firstImage = resolveImageUrlForSEO(paquete.imagenes?.[0]) || FALLBACK_OG_IMAGE;
+
   return {
     card: "summary_large_image",
     title: `${paquete.titulo}${destinoStr}`,
     description: `${paquete.duracion_dias} días de aventura${precioStr}. ¡Reserva con Viadca Viajes!`,
-    image:
-      paquete.imagenes?.[0]?.url || "https://www.viadca.app/viadca-preview.jpg",
+    image: firstImage,
   };
 };
 
@@ -391,12 +426,25 @@ export const generatePackageTwitter = (paquete) => {
 export const generateOGExtras = (paquete, url) => {
   if (!paquete) return [];
   const images = (paquete.imagenes || [])
-    .map((i) => i.url)
+    .map((i) => resolveImageUrlForSEO(i))
     .filter(Boolean)
     .slice(0, 5);
 
   const moneda = sanitizeMoneda(paquete.moneda) || "MXN";
   const extras = [];
+
+  // Imágenes adicionales para OG (múltiples og:image)
+  if (images.length > 1) {
+    images.slice(1).forEach((img) => {
+      extras.push({ property: "og:image", content: img });
+    });
+  }
+
+  // Metas de producto (Open Graph Product)
+  if (paquete.precio_total) {
+    extras.push({ property: "product:price:amount", content: `${paquete.precio_total}` });
+    extras.push({ property: "product:price:currency", content: sanitizeMoneda(paquete.moneda) || "MXN" });
+  }
 
   images.forEach((img) => {
     extras.push({ property: "og:image", content: img });
