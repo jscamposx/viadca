@@ -258,7 +258,7 @@ const ImageCarousel = ({
               e.stopPropagation();
               onRequestFullscreen?.(resolvedUrls, currentSlide);
             }}
-            className="flex items-center justify-center p-2 sm:p-2 rounded-full bg-black/50 hover:bg-black/60 text-white border border-white/20 shadow-md"
+            className="flex items-center justify-center p-3 sm:p-2 rounded-full bg-black/60 hover:bg-black/70 text-white border border-white/20 shadow-md"
           >
             <FiMaximize className="w-5 h-5" />
           </button>

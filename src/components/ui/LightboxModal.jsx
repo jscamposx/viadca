@@ -182,20 +182,47 @@ export default function LightboxModal({
 
       {images.length > 1 && (
         <>
+          {/* Botones laterales: visibles solo en desktop/tablet */}
           <button
             aria-label="Anterior"
             onClick={goPrev}
-            className="absolute top-1/2 -translate-y-1/2 left-3 md:left-6 w-12 h-12 md:w-14 md:h-14 rounded-full bg-black/40 hover:bg-black/50 text-white border border-white/20 shadow-lg backdrop-blur-sm flex items-center justify-center touch-manipulation"
+            className="hidden md:flex absolute top-1/2 -translate-y-1/2 left-3 md:left-6 w-12 h-12 md:w-14 md:h-14 rounded-full bg-black/40 hover:bg-black/50 text-white border border-white/20 shadow-lg backdrop-blur-sm items-center justify-center touch-manipulation"
           >
             <FiChevronLeft className="w-7 h-7 md:w-8 md:h-8" />
           </button>
           <button
             aria-label="Siguiente"
             onClick={goNext}
-            className="absolute top-1/2 -translate-y-1/2 right-3 md:right-6 w-12 h-12 md:w-14 md:h-14 rounded-full bg-black/40 hover:bg-black/50 text-white border border-white/20 shadow-lg backdrop-blur-sm flex items-center justify-center touch-manipulation"
+            className="hidden md:flex absolute top-1/2 -translate-y-1/2 right-3 md:right-6 w-12 h-12 md:w-14 md:h-14 rounded-full bg-black/40 hover:bg-black/50 text-white border border-white/20 shadow-lg backdrop-blur-sm items-center justify-center touch-manipulation"
           >
             <FiChevronRight className="w-7 h-7 md:w-8 md:h-8" />
           </button>
+
+          {/* Barra inferior en móvil con controles e indicador */}
+          <div
+            className="md:hidden absolute inset-x-0 bottom-0 flex justify-center pointer-events-none"
+            style={{ paddingBottom: 'max(8px, env(safe-area-inset-bottom))' }}
+          >
+            <div className="pointer-events-auto mb-1 bg-black/50 backdrop-blur-sm rounded-full border border-white/20 shadow-lg flex items-center gap-6 px-3 py-2">
+              <button
+                aria-label="Anterior"
+                onClick={goPrev}
+                className="w-11 h-11 rounded-full bg-white/5 hover:bg-white/10 text-white flex items-center justify-center"
+              >
+                <FiChevronLeft className="w-7 h-7" />
+              </button>
+              <span className="text-white/90 text-sm min-w-[64px] text-center">
+                {index + 1} / {images.length}
+              </span>
+              <button
+                aria-label="Siguiente"
+                onClick={goNext}
+                className="w-11 h-11 rounded-full bg-white/5 hover:bg-white/10 text-white flex items-center justify-center"
+              >
+                <FiChevronRight className="w-7 h-7" />
+              </button>
+            </div>
+          </div>
         </>
       )}
 
@@ -221,8 +248,8 @@ export default function LightboxModal({
         />
       </div>
 
-      {/* Indicador */}
-      <div className="absolute bottom-3 left-1/2 -translate-x-1/2 text-white/90 text-sm bg-black/30 px-3 py-1 rounded-full border border-white/20 backdrop-blur-sm">
+      {/* Indicador: solo en desktop/tablet (en móvil está en la barra inferior) */}
+      <div className="hidden md:block absolute bottom-3 left-1/2 -translate-x-1/2 text-white/90 text-sm bg-black/30 px-3 py-1 rounded-full border border-white/20 backdrop-blur-sm">
         {index + 1} / {images.length}
       </div>
     </div>,

@@ -726,7 +726,7 @@ function PackageViewPage() {
                       </div>
                     </div>
 
-                    <div className="h-72 sm:h-96 md:h-[28rem] lg:h-[34rem] xl:h-[40rem] rounded-xl overflow-hidden border border-gray-100 shadow-lg">
+                    <div className="h-[26rem] sm:h-[28rem] md:h-[30rem] lg:h-[34rem] xl:h-[40rem] rounded-xl overflow-hidden border border-gray-100 shadow-lg">
                       <HotelInfo hotel={paquete.hotel} />
                     </div>
                   </section>
