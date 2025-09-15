@@ -524,6 +524,7 @@ function PackageViewPage() {
               emptyStateTitle="Sin fotos del paquete"
               emptyStateDescription="Las imágenes de este paquete turístico se cargarán próximamente"
               enableSnap={true}
+              disableMobileSwipe={true}
               onRequestFullscreen={(urls, index) => {
                 setLightboxIndex(index);
                 setLightboxOpen(true);

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Carousel } from "react-responsive-carousel";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 import { FiChevronLeft, FiChevronRight, FiCamera, FiEye, FiMaximize } from "react-icons/fi";
@@ -85,10 +85,20 @@ const ImageCarousel = ({
   enableSnap = false,
   onRequestFullscreen, // (urls: string[], startIndex: number)
   onSlideChange, // (index: number)
+  disableMobileSwipe = false, // si true, en mobile se desactiva swipe horizontal y flechas
 }) => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [invalidImages, setInvalidImages] = useState(new Set());
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const mq = window.matchMedia?.("(max-width: 640px)");
+    const update = () => setIsMobile(!!mq?.matches);
+    update();
+    mq?.addEventListener?.("change", update);
+    return () => mq?.removeEventListener?.("change", update);
+  }, []);
 
   const handleImageError = (imageId) => {
     setInvalidImages((prev) => new Set([...prev, imageId]));
@@ -196,27 +206,35 @@ const ImageCarousel = ({
         autoPlay={true}
         interval={8000}
         transitionTime={600}
-        swipeable={true}
-        emulateTouch={true}
+        swipeable={isMobile && disableMobileSwipe ? false : true}
+        emulateTouch={isMobile && disableMobileSwipe ? false : true}
         selectedItem={currentSlide}
         onChange={(index) => {
           setCurrentSlide(index);
           onSlideChange?.(index);
         }}
-        renderArrowPrev={(onClickHandler, hasPrev) => (
-          <CustomArrow
-            direction="prev"
-            onClick={onClickHandler}
-            isVisible={hasPrev && validImages.length > 1}
-          />
-        )}
-        renderArrowNext={(onClickHandler, hasNext) => (
-          <CustomArrow
-            direction="next"
-            onClick={onClickHandler}
-            isVisible={hasNext && validImages.length > 1}
-          />
-        )}
+        renderArrowPrev={(onClickHandler, hasPrev) =>
+          isMobile && disableMobileSwipe
+            ? null
+            : (
+                <CustomArrow
+                  direction="prev"
+                  onClick={onClickHandler}
+                  isVisible={hasPrev && validImages.length > 1}
+                />
+              )
+        }
+        renderArrowNext={(onClickHandler, hasNext) =>
+          isMobile && disableMobileSwipe
+            ? null
+            : (
+                <CustomArrow
+                  direction="next"
+                  onClick={onClickHandler}
+                  isVisible={hasNext && validImages.length > 1}
+                />
+              )
+        }
         className={`h-full [&_.carousel]:h-full [&_.carousel_.slider-wrapper]:h-full [&_.carousel_.slider]:h-full [&_.carousel_.slide]:h-full [&_.carousel-slider]:overflow-visible ${enableSnap ? "[&_.carousel_.slide]:snap-center" : ""}`}
       >
         {validImages.map((imagen, index) => {

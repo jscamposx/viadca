@@ -5,9 +5,14 @@ function useScrollAnimation(options = {}) {
   const elementRef = useRef(null);
   const [isVisible, setIsVisible] = useState(false);
 
+  const isMobile =
+    typeof window !== "undefined" &&
+    typeof window.matchMedia === "function" &&
+    window.matchMedia("(max-width: 640px)").matches;
+
   const {
-    threshold = 0.1,
-    rootMargin = "0px 0px -100px 0px",
+    threshold = isMobile ? 0.2 : 0.1,
+    rootMargin = isMobile ? "0px 0px -15% 0px" : "0px 0px -100px 0px",
     delay = 0,
     triggerOnce = true,
   } = options;
@@ -94,7 +99,7 @@ const animationClasses = {
   fadeInUp: {
     initial: "opacity-0 translate-y-8",
     animate: "opacity-100 translate-y-0",
-    transition: "transition-all duration-700 ease-out",
+    transition: "transition-all duration-700 ease-out will-change-transform",
   },
   fadeInLeft: {
     initial: "opacity-0 -translate-x-8",
@@ -160,15 +165,27 @@ function AnimatedSection({
   ...props
 }) {
   const reducedMotion = usePrefersReducedMotion();
+  const isMobile =
+    typeof window !== "undefined" &&
+    typeof window.matchMedia === "function" &&
+    window.matchMedia("(max-width: 640px)").matches;
   const [ref, isVisible] = useScrollAnimation({ delay, triggerOnce });
   const animClasses = animationClasses[animation] || animationClasses.fadeInUp;
   const show = reducedMotion ? true : forceVisible || isVisible;
   const style = {};
   if (!reducedMotion && stagger && show) {
+    const cap = isMobile ? 500 : 900;
     const totalDelay = index * stagger;
-    style.transitionDelay = `${Math.min(totalDelay, 900)}ms`;
+    style.transitionDelay = `${Math.min(totalDelay, cap)}ms`;
   } else if (!reducedMotion && delay) {
-    style.transitionDelay = `${delay}ms`;
+    // En mobile, evitar delays largos
+    style.transitionDelay = `${Math.min(delay, isMobile ? 300 : delay)}ms`;
+  }
+
+  // Reducir duración y suavizar en mobile para que se sienta más natural
+  if (!reducedMotion && isMobile) {
+    style.transitionDuration = "450ms";
+    style.transitionTimingFunction = "cubic-bezier(.4,0,.2,1)";
   }
 
   const appliedClasses = reducedMotion
