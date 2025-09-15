@@ -20,6 +20,11 @@ import Testimonials from "../components/Testimonials";
 import Logos from "../components/Logos";
 import Footer from "../components/Footer";
 import { useSEO } from "../../../hooks/useSEO";
+import { 
+  generateHomepageOG, 
+  generateHomepageTwitter, 
+  generateHomepageJsonLd 
+} from "../../../utils/seoUtils";
 import OptimizedImage from "../../../components/ui/OptimizedImage.jsx"; // añadido
 
 // Estilos CSS-in-JS para animaciones móviles
@@ -394,39 +399,9 @@ const Home = () => {
       "turismo Durango",
     ],
     canonical: "https://www.viadca.app/",
-    og: { image: "https://www.viadca.app/viadca-preview.jpg" },
-    jsonLd: [
-      {
-        "@context": "https://schema.org",
-        "@type": "WebPage",
-        name: "Agencia de Viajes en Durango | Viadca",
-        description:
-          "Agencia de viajes en Durango especializada en paquetes personalizados, destinos nacionales e internacionales, vuelos, hoteles y experiencias únicas.",
-        url: "https://www.viadca.app/",
-      },
-      {
-        "@context": "https://schema.org",
-        "@type": "FAQPage",
-        mainEntity: [
-          {
-            "@type": "Question",
-            name: "¿Ofrecen paquetes a destinos internacionales?",
-            acceptedAnswer: {
-              "@type": "Answer",
-              text: "Sí, contamos con paquetes a múltiples destinos internacionales que incluyen vuelos, hospedaje y experiencias guiadas.",
-            },
-          },
-          {
-            "@type": "Question",
-            name: "¿Puedo financiar mi viaje?",
-            acceptedAnswer: {
-              "@type": "Answer",
-              text: "Ofrecemos opciones de anticipo y pago posterior según el paquete y la disponibilidad. Consulta con un asesor.",
-            },
-          },
-        ],
-      },
-    ],
+    og: generateHomepageOG(),
+    twitter: generateHomepageTwitter(),
+    jsonLd: generateHomepageJsonLd(),
   });
 
   return (
