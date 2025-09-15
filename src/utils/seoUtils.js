@@ -381,12 +381,18 @@ export const generatePackageOG = (paquete, url) => {
     : "";
 
   const firstImage = resolveImageUrlForSEO(paquete.imagenes?.[0]) || FALLBACK_OG_IMAGE;
+  const alt = paquete.titulo || "Paquete de viaje - Viadca Viajes";
+  const updated = new Date().toISOString();
 
   return {
     type: "product",
     title: `${paquete.titulo}${destinoStr} - ${paquete.duracion_dias} días`,
     description: `Descubre ${paquete.titulo} con Viadca Viajes${precioStr}. ¡Reserva ahora!`,
     image: firstImage,
+    "image:alt": alt,
+    "image:width": "1200",
+    "image:height": "630",
+    updated_time: updated,
     product: {
       price_amount: paquete.precio_total,
       price_currency: sanitizeMoneda(paquete.moneda) || "MXN",
@@ -411,12 +417,16 @@ export const generatePackageTwitter = (paquete) => {
     : "";
 
   const firstImage = resolveImageUrlForSEO(paquete.imagenes?.[0]) || FALLBACK_OG_IMAGE;
+  const alt = paquete.titulo || "Paquete de viaje - Viadca Viajes";
 
   return {
     card: "summary_large_image",
     title: `${paquete.titulo}${destinoStr}`,
     description: `${paquete.duracion_dias} días de aventura${precioStr}. ¡Reserva con Viadca Viajes!`,
     image: firstImage,
+    site: "@viadcaviajes",
+    creator: "@viadcaviajes",
+    "image:alt": alt,
   };
 };
 
@@ -444,6 +454,10 @@ export const generateOGExtras = (paquete, url) => {
   if (paquete.precio_total) {
     extras.push({ property: "product:price:amount", content: `${paquete.precio_total}` });
     extras.push({ property: "product:price:currency", content: sanitizeMoneda(paquete.moneda) || "MXN" });
+  }
+  if (typeof paquete.activo !== "undefined") {
+    const avail = paquete.activo ? "in stock" : "out of stock";
+    extras.push({ property: "product:availability", content: avail });
   }
 
   images.forEach((img) => {
