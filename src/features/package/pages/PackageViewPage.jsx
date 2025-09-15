@@ -502,25 +502,24 @@ function PackageViewPage() {
           style={!isSmallScreen ? { transform: `translateY(${scrollY * 0.2}px)` } : undefined}
         >
           <div className="absolute inset-0">
-            <div className="relative z-10">
-              <ImageCarousel
+            <ImageCarousel
               imagenes={paquete.imagenes}
               emptyStateTitle="Sin fotos del paquete"
               emptyStateDescription="Las imágenes de este paquete turístico se cargarán próximamente"
               enableSnap={true}
-                overlayGradients={true}
-                forceGlobalFullscreenCTA={true}
               onRequestFullscreen={(urls, index) => {
                 setLightboxIndex(index);
                 setLightboxOpen(true);
               }}
               onSlideChange={(i) => setLightboxIndex(i)}
-              />
-            </div>
+            />
+            {/* Overlays no bloquean clics */}
+            <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
+            <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/40"></div>
           </div>
           
 
-          <div className="relative z-30 text-center text-white px-4 max-w-4xl mx-auto">
+          <div className="relative z-10 text-center text-white px-4 max-w-4xl mx-auto">
             <div className="space-y-5 sm:space-y-6">
 
               <h1 className="font-volkhov text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold leading-tight">

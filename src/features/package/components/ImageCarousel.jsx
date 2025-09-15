@@ -85,8 +85,6 @@ const ImageCarousel = ({
   enableSnap = false,
   onRequestFullscreen, // (urls: string[], startIndex: number)
   onSlideChange, // (index: number)
-  overlayGradients = false, // añade overlays internos (útil para hero)
-  forceGlobalFullscreenCTA = false, // dibuja un único CTA fuera de los slides
 }) => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
@@ -176,7 +174,7 @@ const ImageCarousel = ({
   const resolvedUrls = validImages.map((img) => getOptimizedImageUrl(img));
 
   return (
-  <div className={`w-full h-full relative group ${snapWrapper}`}>
+    <div className={`w-full h-full relative group ${snapWrapper}`}>
       {isLoading && (
         <div className="absolute inset-0 z-30 bg-slate-200 flex items-center justify-center">
           <div className="flex flex-col sm:flex-row items-center space-y-2 sm:space-y-0 sm:space-x-3 px-4">
@@ -227,7 +225,7 @@ const ImageCarousel = ({
             imagen.id || imagen.nombre || imagen.contenido || index;
 
           return (
-            <div key={imageId} className={`w-full h-full relative ${snapSlide} group/item`}>
+            <div key={imageId} className={`w-full h-full relative ${snapSlide}`}>
               <img
                 className="w-full h-full object-cover transition-transform duration-700 hover:scale-105"
                 src={imageUrl}
@@ -242,18 +240,11 @@ const ImageCarousel = ({
                 fetchPriority={index === 0 ? "high" : "low"}
                 decoding={index === 0 ? "sync" : "async"}
                 onClick={() => onRequestFullscreen?.(resolvedUrls, index)}
-                style={{ cursor: onRequestFullscreen ? "pointer" : "default" }}
+                style={{ cursor: onRequestFullscreen ? "zoom-in" : "default" }}
               />
 
-              {overlayGradients && (
-                <>
-                  <div className="pointer-events-none absolute inset-0 z-20 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
-                  <div className="pointer-events-none absolute inset-0 z-20 bg-gradient-to-b from-black/20 via-transparent to-black/40"></div>
-                </>
-              )}
-
               {onRequestFullscreen && (
-                <div className="absolute bottom-3 right-3 z-[60] flex items-center pointer-events-auto">
+                <div className="absolute bottom-3 right-3 z-20 flex items-center pointer-events-auto">
                   {/* Mobile: botón redondo */}
                   <button
                     type="button"
@@ -262,7 +253,7 @@ const ImageCarousel = ({
                       e.stopPropagation();
                       onRequestFullscreen?.(resolvedUrls, index);
                     }}
-                    className="sm:hidden p-3 rounded-full bg-black/70 hover:bg-black/80 text-white border border-white/40 shadow-xl focus:outline-none focus:ring-2 focus:ring-white/70 active:scale-95 backdrop-blur-sm"
+                    className="sm:hidden p-3 rounded-full bg-black/60 hover:bg-black/70 text-white border border-white/20 shadow-md focus:outline-none focus:ring-2 focus:ring-white/60 active:scale-95"
                   >
                     <FiMaximize className="w-5 h-5" />
                   </button>
@@ -274,7 +265,7 @@ const ImageCarousel = ({
                       e.stopPropagation();
                       onRequestFullscreen?.(resolvedUrls, index);
                     }}
-                    className="hidden sm:inline-flex items-center gap-2 px-3 md:px-4 py-2 md:py-2.5 rounded-full bg-black/70 hover:bg-black/80 text-white border border-white/40 shadow-xl focus:outline-none focus:ring-2 focus:ring-white/70 transition-all duration-200 backdrop-blur-sm"
+                    className="hidden sm:inline-flex items-center gap-2 px-3 py-2 rounded-full bg-black/50 hover:bg-black/60 text-white border border-white/20 shadow-md focus:outline-none focus:ring-2 focus:ring-white/60 opacity-0 group-hover:opacity-100 transition-all duration-200 translate-y-1 group-hover:translate-y-0"
                   >
                     <FiMaximize className="w-5 h-5" />
                     <span className="text-sm">Pantalla completa</span>
@@ -285,25 +276,6 @@ const ImageCarousel = ({
           );
         })}
       </Carousel>
-
-      {/* CTA global de Pantalla completa (opcional) */}
-      {onRequestFullscreen && forceGlobalFullscreenCTA && (
-        <div className="absolute bottom-3 right-3 z-[80] pointer-events-auto">
-          <button
-            type="button"
-            title="Ver a pantalla completa"
-            aria-label="Ver a pantalla completa"
-            onClick={(e) => {
-              e.stopPropagation();
-              onRequestFullscreen?.(resolvedUrls, currentSlide);
-            }}
-            className="inline-flex items-center gap-2 px-3 md:px-4 py-2 md:py-2.5 rounded-full bg-black/80 hover:bg-black/90 text-white border border-white/40 shadow-2xl focus:outline-none focus:ring-2 focus:ring-white/70 transition-all duration-200 backdrop-blur-sm"
-          >
-            <FiMaximize className="w-5 h-5" />
-            <span className="hidden sm:inline text-sm">Pantalla completa</span>
-          </button>
-        </div>
-      )}
 
       <div className="absolute bottom-2 sm:bottom-4 left-2 sm:left-4 bg-black/50 backdrop-blur-sm rounded-full px-2 sm:px-3 py-1 z-20">
         <div className="flex items-center space-x-1 sm:space-x-2 text-white text-xs sm:text-sm">
