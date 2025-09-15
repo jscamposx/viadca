@@ -302,7 +302,7 @@ const Steps = () => {
                     Desde
                   </div>
                   <div className="text-lg sm:text-2xl font-bold text-green-600">
-                    $2,500
+                    $92,500 MXN
                   </div>
                 </div>
               </div>
