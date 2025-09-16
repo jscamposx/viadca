@@ -43,7 +43,8 @@ const HotelInfo = ({ hotel }) => {
           </p>
         )}
       </div>
-      <div className="mt-3 sm:mt-4 rounded-xl overflow-hidden shadow-lg flex-grow min-h-[16rem] sm:min-h-[18rem] md:min-h-[22rem]">
+      {/* Ajuste: se quita el redondeado superior para que no parezca una card independiente */}
+      <div className="mt-2 sm:mt-3 rounded-b-xl overflow-hidden shadow-md flex-grow min-h-[16rem] sm:min-h-[18rem] md:min-h-[22rem]">
         <ImageCarousel
           imagenes={hotel.imagenes || []}
           emptyStateTitle="Sin fotos del hotel"

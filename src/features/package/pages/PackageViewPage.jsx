@@ -734,7 +734,8 @@ function PackageViewPage() {
                       </div>
                     </div>
 
-                    <div className="h-[26rem] sm:h-[28rem] md:h-[30rem] lg:h-[34rem] xl:h-[40rem] rounded-xl overflow-hidden border border-gray-100 shadow-lg">
+                    {/* Ajuste visual: eliminar borde/sombra/redondeado para integrar con la card principal */}
+                    <div className="h-[26rem] sm:h-[28rem] md:h-[30rem] lg:h-[34rem] xl:h-[40rem] overflow-hidden">
                       <HotelInfo hotel={paquete.hotel} />
                     </div>
                   </section>
