@@ -1,6 +1,8 @@
 import { Link } from "react-router-dom";
 import { useAllPackages } from "../../package/hooks/useAllPackages";
 import { useMayoristas } from "../hooks/useMayoristas";
+import { useEffect, useState } from "react";
+import api from "../../../api";
 import {
   FiRefreshCw,
   FiPackage,
@@ -47,11 +49,60 @@ const AdminDashboard = () => {
   const { paquetes, loading: paquetesLoading } = useAllPackages();
   const { mayoristas, loading: mayoristasLoading } = useMayoristas();
   const loading = paquetesLoading || mayoristasLoading;
-  const totalPaquetes = paquetes?.length || 0;
-  const totalMayoristas = mayoristas?.length || 0;
-  const activos = Array.isArray(paquetes)
-    ? paquetes.filter((p) => p.activo).length
-    : 0;
+
+  const [pkgStats, setPkgStats] = useState({ total: 0, paquetes: 0, activos: 0, inactivos: 0 });
+  const [mayStats, setMayStats] = useState({ total: 0, mayoristas: 0, activos: 0, inactivos: 0 });
+
+  useEffect(() => {
+    let mounted = true;
+    const loadStats = async () => {
+      try {
+        const [pResp, mResp] = await Promise.allSettled([
+          api.packages?.getPaquetesStatsOverview?.(),
+          api.mayoristas?.getMayoristasStatsOverview?.(),
+        ]);
+        if (mounted) {
+          if (pResp.status === 'fulfilled') {
+            const d = pResp.value?.data ?? pResp.value;
+            setPkgStats({
+              total: d?.total ?? d?.paquetes ?? 0,
+              paquetes: d?.paquetes ?? d?.total ?? 0,
+              activos: d?.activos ?? 0,
+              inactivos: d?.inactivos ?? 0,
+            });
+          } else {
+            // fallback
+            setPkgStats({
+              total: paquetes?.length || 0,
+              paquetes: paquetes?.length || 0,
+              activos: Array.isArray(paquetes) ? paquetes.filter(p=>p.activo).length : 0,
+              inactivos: 0,
+            });
+          }
+          if (mResp.status === 'fulfilled') {
+            const d = mResp.value?.data ?? mResp.value;
+            setMayStats({
+              total: d?.total ?? d?.mayoristas ?? 0,
+              mayoristas: d?.mayoristas ?? d?.total ?? 0,
+              activos: d?.activos ?? 0,
+              inactivos: d?.inactivos ?? 0,
+            });
+          } else {
+            setMayStats({
+              total: mayoristas?.length || 0,
+              mayoristas: mayoristas?.length || 0,
+              activos: 0,
+              inactivos: 0,
+            });
+          }
+        }
+      } catch (e) {
+        if (mounted && import.meta.env.DEV) console.warn('Error cargando stats dashboard', e);
+      }
+    };
+    loadStats();
+    return () => { mounted = false; };
+  }, [paquetes, mayoristas]);
 
   return (
     <div className="min-h-screen bg-gray-50 p-3 sm:p-4 lg:p-6">
@@ -64,7 +115,7 @@ const AdminDashboard = () => {
                 Panel Administrativo
               </h1>
               <p className="text-gray-600 mt-1 sm:mt-2 text-sm sm:text-base line-clamp-2">
-                Gestión central: paquetes ({totalPaquetes}), activos ({activos}), mayoristas ({totalMayoristas}).
+                Gestión central y herramientas rápidas de administración.
               </p>
             </div>
             <div className="w-full sm:w-auto lg:w-auto flex items-center justify-center lg:justify-end gap-2">
@@ -91,26 +142,12 @@ const AdminDashboard = () => {
         </div>
 
         {/* Stat cards */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <StatCard icon={FiPackage} label="Paquetes" value={totalPaquetes} />
-            <StatCard
-              icon={FiDownload}
-              label="Activos"
-              value={activos}
-              accent="bg-emerald-50 text-emerald-600"
-            />
-          <StatCard
-            icon={FiUsers}
-            label="Mayoristas"
-            value={totalMayoristas}
-            accent="bg-indigo-50 text-indigo-600"
-          />
-          <StatCard
-            icon={FiClipboard}
-            label="Cotizaciones (sesión)"
-            value={typeof window !== 'undefined' && window.localStorage.getItem('cotizador_paquetes') ? JSON.parse(window.localStorage.getItem('cotizador_paquetes')).length : 0}
-            accent="bg-amber-50 text-amber-600"
-          />
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+          <StatCard icon={FiPackage} label="Paquetes" value={pkgStats.paquetes} />
+          <StatCard icon={FiDownload} label="Activos" value={pkgStats.activos} accent="bg-emerald-50 text-emerald-600" />
+          <StatCard icon={FiClipboard} label="Inactivos" value={pkgStats.inactivos} accent="bg-rose-50 text-rose-600" />
+          <StatCard icon={FiUsers} label="Mayoristas" value={mayStats.mayoristas} accent="bg-indigo-50 text-indigo-600" />
+          <StatCard icon={FiLayers} label="Cotizaciones" value={typeof window !== 'undefined' && window.localStorage.getItem('cotizador_paquetes') ? JSON.parse(window.localStorage.getItem('cotizador_paquetes')).length : 0} accent="bg-amber-50 text-amber-600" />
         </div>
 
         <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 items-start">
