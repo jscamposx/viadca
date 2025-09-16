@@ -736,7 +736,7 @@ const AdminMayoristasPage = () => {
                 <div className="absolute inset-0 rounded-full bg-gradient-to-br from-purple-500/20 to-indigo-500/20 animate-ping"></div>
               </div>
 
-              <h3 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-800 mb-3 sm:mb-4">
+              <h3 className="text-xl sm:text-2xl lg:text-3xl font-bold text-indigo-700 mb-3 sm:mb-4">
                 No se encontraron mayoristas
               </h3>
 

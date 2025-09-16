@@ -39,7 +39,7 @@ export default function AdminHeaderCard({
                 <Icon className="w-5 h-5" />
               </span>
             )}
-            <h1 className="text-2xl sm:text-3xl lg:text-3xl font-extrabold text-gray-900 tracking-tight leading-tight">
+            <h1 className="text-2xl sm:text-3xl lg:text-3xl font-extrabold text-indigo-700 tracking-tight leading-tight">
               {title}
             </h1>
           </div>

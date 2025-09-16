@@ -209,7 +209,7 @@ export default function PackageLookupPanel() {
     <div className="relative p-5 lg:p-7">
       <div className="absolute inset-0 opacity-60 pointer-events-none bg-gradient-to-br from-white/40 via-white/20 to-white/10" />
       <div className="relative mb-6 space-y-1">
-  <h2 className="text-lg sm:text-xl font-extrabold tracking-tight text-gray-900 flex items-center gap-2">
+  <h2 className="text-lg sm:text-xl font-extrabold tracking-tight text-indigo-700 flex items-center gap-2">
           <span className="p-2 rounded-lg bg-blue-50 text-blue-600 shadow-sm">
             <FiFileText className="w-5 h-5" />
           </span>

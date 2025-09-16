@@ -153,7 +153,7 @@ const AdminDashboard = () => {
         <div className="glass-panel glass-border-gradient rounded-2xl shadow-lg p-4 sm:p-6 fade-slide-up">
           <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center gap-6">
             <div className="flex-1 min-w-0 space-y-2">
-              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-gray-900 tracking-tight leading-tight">
+              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-indigo-700 tracking-tight leading-tight">
                 Panel Administrativo
               </h1>
               <p className="text-gray-600/90 text-sm sm:text-base max-w-2xl">

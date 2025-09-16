@@ -119,7 +119,7 @@ const Hero = () => {
                     className="font-volkhov font-bold leading-tight text-slate-800 text-[clamp(2rem,6vw,3.4rem)] sm:text-5xl md:text-6xl xl:text-7xl tracking-tight"
                   >
                     <span className="block">Vive experiencias</span>
-                    <span className="block text-slate-900">
+                    <span className="block text-indigo-700">
                       extraordinarias,
                     </span>
                     <span className="block">viaja sin límites</span>
