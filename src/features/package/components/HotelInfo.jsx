@@ -60,9 +60,12 @@ const HotelInfo = ({ hotel }) => {
             ? img.contenido
             : img?.url?.startsWith("http") || img?.url?.startsWith("data:")
               ? img.url
-              : img?.contenido?.startsWith("http") || img?.contenido?.includes("://")
+              : img?.contenido?.startsWith("http") ||
+                  img?.contenido?.includes("://")
                 ? img.contenido
-                : img?.contenido && !img?.contenido?.includes("://") && !img?.contenido?.startsWith("http")
+                : img?.contenido &&
+                    !img?.contenido?.includes("://") &&
+                    !img?.contenido?.startsWith("http")
                   ? `data:image/jpeg;base64,${img.contenido}`
                   : img?.ruta
                     ? `${import.meta.env.VITE_API_BASE_URL}${img.ruta}`
@@ -70,7 +73,7 @@ const HotelInfo = ({ hotel }) => {
                       ? `${import.meta.env.VITE_API_BASE_URL}/uploads/images/${img.nombre.startsWith("/") ? img.nombre.slice(1) : img.nombre}`
                       : img?.url
                         ? `${import.meta.env.VITE_API_BASE_URL}${img.url}`
-                        : ""
+                        : "",
         )}
         startIndex={index}
         isOpen={open}

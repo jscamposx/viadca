@@ -6,7 +6,10 @@ import { sanitizeMoneda, formatPrecio } from "./priceUtils";
 
 // Dominio del sitio para construir URLs absolutas
 const SITE_ORIGIN = "https://www.viadca.app";
-const API_BASE = (import.meta?.env?.VITE_API_BASE_URL || SITE_ORIGIN).replace(/\/$/, "");
+const API_BASE = (import.meta?.env?.VITE_API_BASE_URL || SITE_ORIGIN).replace(
+  /\/$/,
+  "",
+);
 const FALLBACK_OG_IMAGE = `${SITE_ORIGIN}/HomePage/Hero-Image.avif`;
 
 // Resolver URL de imagen para SEO/OG (debe ser absoluta, no data:)
@@ -27,12 +30,12 @@ const resolveImageUrlForSEO = (img) => {
     if (/^https?:\/\//i.test(img.url)) {
       return img.url;
     }
-    
+
     // Evitar convertir data: URIs
     if (img.url.startsWith("data:")) {
       return FALLBACK_OG_IMAGE;
     }
-    
+
     return `${API_BASE}${img.url.startsWith("/") ? "" : "/"}${img.url}`;
   }
 
@@ -41,12 +44,12 @@ const resolveImageUrlForSEO = (img) => {
     if (/^https?:\/\//i.test(img.contenido)) {
       return img.contenido;
     }
-    
+
     // Evitar data: URIs y content base64
     if (img.contenido.startsWith("data:") || img.contenido.length > 500) {
       return FALLBACK_OG_IMAGE;
     }
-    
+
     return `${API_BASE}${img.contenido.startsWith("/") ? "" : "/"}${img.contenido}`;
   }
 
@@ -309,8 +312,8 @@ export const generatePackageJsonLd = (paquete, url) => {
       "@context": "https://schema.org",
       "@type": "Product",
       name: paquete.titulo,
-    description: generateSEODescription(paquete),
-  image: resolvedImages.length ? resolvedImages : [FALLBACK_OG_IMAGE],
+      description: generateSEODescription(paquete),
+      image: resolvedImages.length ? resolvedImages : [FALLBACK_OG_IMAGE],
       sku: paquete.codigo || url,
       brand: { "@type": "Brand", name: "Viadca Viajes" },
       category: "Travel Package",
@@ -414,7 +417,8 @@ export const generatePackageOG = (paquete, url) => {
   // Intentar resolver múltiples imágenes como fallback
   let firstImage = FALLBACK_OG_IMAGE;
   if (paquete.imagenes && paquete.imagenes.length > 0) {
-    for (const img of paquete.imagenes.slice(0, 3)) { // Probar hasta 3 imágenes
+    for (const img of paquete.imagenes.slice(0, 3)) {
+      // Probar hasta 3 imágenes
       const resolved = resolveImageUrlForSEO(img);
       if (resolved && resolved !== FALLBACK_OG_IMAGE) {
         firstImage = resolved;
@@ -442,7 +446,6 @@ export const generatePackageOG = (paquete, url) => {
   };
 };
 
-
 /**
  * Genera configuración Twitter Card para un paquete
  */
@@ -459,7 +462,8 @@ export const generatePackageTwitter = (paquete) => {
     ? ` desde ${formatPrecio(paquete.precio_total, sanitizeMoneda(paquete.moneda))} ${sanitizeMoneda(paquete.moneda)}`
     : "";
 
-  const firstImage = resolveImageUrlForSEO(paquete.imagenes?.[0]) || FALLBACK_OG_IMAGE;
+  const firstImage =
+    resolveImageUrlForSEO(paquete.imagenes?.[0]) || FALLBACK_OG_IMAGE;
   const alt = paquete.titulo || "Paquete de viaje - Viadca Viajes";
 
   return {
@@ -495,8 +499,14 @@ export const generateOGExtras = (paquete, url) => {
 
   // Metas de producto (Open Graph Product)
   if (paquete.precio_total) {
-    extras.push({ property: "product:price:amount", content: `${paquete.precio_total}` });
-    extras.push({ property: "product:price:currency", content: sanitizeMoneda(paquete.moneda) || "MXN" });
+    extras.push({
+      property: "product:price:amount",
+      content: `${paquete.precio_total}`,
+    });
+    extras.push({
+      property: "product:price:currency",
+      content: sanitizeMoneda(paquete.moneda) || "MXN",
+    });
   }
   if (typeof paquete.activo !== "undefined") {
     const avail = paquete.activo ? "in stock" : "out of stock";
@@ -509,13 +519,22 @@ export const generateOGExtras = (paquete, url) => {
 
   // Metas específicas de producto
   if (paquete.precio_total) {
-    extras.push({ property: "product:price:amount", content: String(paquete.precio_total) });
+    extras.push({
+      property: "product:price:amount",
+      content: String(paquete.precio_total),
+    });
     extras.push({ property: "product:price:currency", content: moneda });
-    extras.push({ property: "product:availability", content: paquete.activo ? "in stock" : "discontinued" });
+    extras.push({
+      property: "product:availability",
+      content: paquete.activo ? "in stock" : "discontinued",
+    });
   }
 
   if (url) {
-    extras.push({ property: "og:url", content: `https://www.viadca.app/paquetes/${url}` });
+    extras.push({
+      property: "og:url",
+      content: `https://www.viadca.app/paquetes/${url}`,
+    });
   }
 
   return extras;
@@ -528,7 +547,8 @@ export const generateHomepageOG = () => {
   return {
     type: "website",
     title: "Viadca Viajes - Tu próxima aventura comienza aquí",
-    description: "En Viadca, convertimos sus sueños de viajar en realidad. Con atención personalizada y paquetes exclusivos, te llevamos a los destinos más fascinantes.",
+    description:
+      "En Viadca, convertimos sus sueños de viajar en realidad. Con atención personalizada y paquetes exclusivos, te llevamos a los destinos más fascinantes.",
     image: FALLBACK_OG_IMAGE,
     "image:alt": "Viadca Viajes - Agencia de viajes en Durango",
     "image:width": "1200",
@@ -546,7 +566,8 @@ export const generateHomepageTwitter = () => {
   return {
     card: "summary_large_image",
     title: "Viadca Viajes - Tu próxima aventura comienza aquí",
-    description: "En Viadca, convertimos sus sueños de viajar en realidad. Con atención personalizada y paquetes exclusivos, te llevamos a los destinos más fascinantes.",
+    description:
+      "En Viadca, convertimos sus sueños de viajar en realidad. Con atención personalizada y paquetes exclusivos, te llevamos a los destinos más fascinantes.",
     image: FALLBACK_OG_IMAGE,
     site: "@viadcaviajes",
     creator: "@viadcaviajes",
@@ -568,7 +589,8 @@ export const generateHomepageJsonLd = () => {
       url: "https://www.viadca.app",
       logo: "https://www.viadca.app/viadcalogo.avif",
       image: FALLBACK_OG_IMAGE,
-      description: "Agencia de viajes especializada en paquetes turísticos personalizados desde Durango, México.",
+      description:
+        "Agencia de viajes especializada en paquetes turísticos personalizados desde Durango, México.",
       address: {
         "@type": "PostalAddress",
         addressLocality: "Durango",
@@ -588,7 +610,11 @@ export const generateHomepageJsonLd = () => {
         "@type": "Country",
         name: "México",
       },
-      serviceType: ["Paquetes turísticos", "Viajes organizados", "Tours personalizados"],
+      serviceType: [
+        "Paquetes turísticos",
+        "Viajes organizados",
+        "Tours personalizados",
+      ],
     },
     // WebSite para búsquedas
     {
@@ -596,7 +622,8 @@ export const generateHomepageJsonLd = () => {
       "@type": "WebSite",
       name: "Viadca Viajes",
       url: "https://www.viadca.app",
-      description: "Portal de viajes con paquetes turísticos exclusivos desde Durango, México.",
+      description:
+        "Portal de viajes con paquetes turísticos exclusivos desde Durango, México.",
       publisher: {
         "@type": "TravelAgency",
         name: "Viadca Viajes",

@@ -59,7 +59,8 @@ const FiltersPanel = ({ open, onClose, onApply, initial }) => {
       }
       return () => {
         document.body.style.overflow = document.body.dataset.prevOverflow || "";
-        document.body.style.paddingRight = document.body.dataset.prevPaddingRight || "";
+        document.body.style.paddingRight =
+          document.body.dataset.prevPaddingRight || "";
         delete document.body.dataset.prevOverflow;
         delete document.body.dataset.prevPaddingRight;
       };

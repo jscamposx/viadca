@@ -1,7 +1,13 @@
 import { useEffect, useState } from "react";
 import { Carousel } from "react-responsive-carousel";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
-import { FiChevronLeft, FiChevronRight, FiCamera, FiEye, FiMaximize } from "react-icons/fi";
+import {
+  FiChevronLeft,
+  FiChevronRight,
+  FiCamera,
+  FiEye,
+  FiMaximize,
+} from "react-icons/fi";
 import { FaHandPointer } from "react-icons/fa";
 
 const API_URL = import.meta.env.VITE_API_BASE_URL;
@@ -215,26 +221,22 @@ const ImageCarousel = ({
           onSlideChange?.(index);
         }}
         renderArrowPrev={(onClickHandler, hasPrev) =>
-          isMobile && disableMobileSwipe
-            ? null
-            : (
-                <CustomArrow
-                  direction="prev"
-                  onClick={onClickHandler}
-                  isVisible={hasPrev && validImages.length > 1}
-                />
-              )
+          isMobile && disableMobileSwipe ? null : (
+            <CustomArrow
+              direction="prev"
+              onClick={onClickHandler}
+              isVisible={hasPrev && validImages.length > 1}
+            />
+          )
         }
         renderArrowNext={(onClickHandler, hasNext) =>
-          isMobile && disableMobileSwipe
-            ? null
-            : (
-                <CustomArrow
-                  direction="next"
-                  onClick={onClickHandler}
-                  isVisible={hasNext && validImages.length > 1}
-                />
-              )
+          isMobile && disableMobileSwipe ? null : (
+            <CustomArrow
+              direction="next"
+              onClick={onClickHandler}
+              isVisible={hasNext && validImages.length > 1}
+            />
+          )
         }
         className={`h-full [&_.carousel]:h-full [&_.carousel_.slider-wrapper]:h-full [&_.carousel_.slider]:h-full [&_.carousel_.slide]:h-full [&_.carousel-slider]:overflow-visible ${snapEnabled ? "[&_.carousel_.slide]:snap-center" : ""}`}
       >
@@ -244,7 +246,10 @@ const ImageCarousel = ({
             imagen.id || imagen.nombre || imagen.contenido || index;
 
           return (
-            <div key={imageId} className={`w-full h-full relative ${snapSlide}`}>
+            <div
+              key={imageId}
+              className={`w-full h-full relative ${snapSlide}`}
+            >
               <img
                 className="w-full h-full object-cover transition-transform duration-700 hover:scale-105"
                 src={imageUrl}
@@ -292,7 +297,6 @@ const ImageCarousel = ({
           </span>
         </div>
       </div>
-
     </div>
   );
 };

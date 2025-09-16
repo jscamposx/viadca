@@ -1,5 +1,11 @@
 import React from "react";
-import { FiShield, FiHeadphones, FiThumbsUp, FiZap, FiCheckCircle } from "react-icons/fi";
+import {
+  FiShield,
+  FiHeadphones,
+  FiThumbsUp,
+  FiZap,
+  FiCheckCircle,
+} from "react-icons/fi";
 
 const items = [
   {
@@ -48,12 +54,18 @@ export default function TrustBar({ className = "" }) {
               key={i}
               className="group relative overflow-hidden rounded-2xl bg-white/80 backdrop-blur-sm border border-white/60 shadow-sm md:hover:shadow-lg transition-all duration-300 p-3 sm:p-4"
             >
-              <div className={`w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-gradient-to-br ${gradient} text-white flex items-center justify-center shadow-md mb-2 sm:mb-3`}>
+              <div
+                className={`w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-gradient-to-br ${gradient} text-white flex items-center justify-center shadow-md mb-2 sm:mb-3`}
+              >
                 <Icon className="w-5 h-5" aria-hidden="true" />
               </div>
               <div>
-                <div className="text-[13px] sm:text-sm font-semibold text-slate-800">{title}</div>
-                <div className="text-[11px] sm:text-xs text-slate-600">{subtitle}</div>
+                <div className="text-[13px] sm:text-sm font-semibold text-slate-800">
+                  {title}
+                </div>
+                <div className="text-[11px] sm:text-xs text-slate-600">
+                  {subtitle}
+                </div>
               </div>
             </div>
           ))}

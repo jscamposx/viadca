@@ -40,7 +40,9 @@ const InfoCard = ({
       <div className="absolute top-4 right-4 w-8 h-8 bg-gradient-to-br from-white/20 to-white/10 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
     </div>
 
-    <div className={`absolute bottom-0 left-0 right-0 h-1 ${gradientClass} transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300`}></div>
+    <div
+      className={`absolute bottom-0 left-0 right-0 h-1 ${gradientClass} transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300`}
+    ></div>
   </div>
 );
 
@@ -62,7 +64,6 @@ const PackageInfo = ({ paquete }) => {
 
   return (
     <div className="space-y-8">
-
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <InfoCard
           icon={<FiCalendar className="w-7 h-7" />}
@@ -122,7 +123,8 @@ const PackageInfo = ({ paquete }) => {
           <div>
             <h4 className="font-semibold text-amber-900 mb-1">Importante</h4>
             <p className="text-amber-800 text-sm leading-relaxed">
-              Los precios pueden variar según disponibilidad, temporada y tipo de cambio. Confirma el costo final al reservar.
+              Los precios pueden variar según disponibilidad, temporada y tipo
+              de cambio. Confirma el costo final al reservar.
             </p>
           </div>
         </div>

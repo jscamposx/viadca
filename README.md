@@ -1,4 +1,5 @@
 <<<<<<< HEAD
+
 # VIADCA – Frontend (React + Vite + Tailwind + Framer Motion)
 
 Este proyecto es el frontend de VIADCA construido con Vite, React 19, Tailwind v4 y Framer Motion.
@@ -40,6 +41,7 @@ Si notas que las animaciones/transiciones no funcionan:
 Si después de esto siguen sin funcionar, abre un issue con la página, el componente y el paso exacto para reproducir.
 
 =======
+
 # React + Vite
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
@@ -52,4 +54,5 @@ Currently, two official plugins are available:
 ## Expanding the ESLint configuration
 
 If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
->>>>>>> a43597ef0d0800863cc9a06891b89c03d846e990
+
+> > > > > > > a43597ef0d0800863cc9a06891b89c03d846e990

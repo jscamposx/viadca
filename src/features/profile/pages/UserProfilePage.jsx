@@ -165,7 +165,10 @@ const UserProfilePage = () => {
                     navigate(fromState, { replace: true });
                     return;
                   }
-                  if (referrer && new URL(referrer).origin === window.location.origin) {
+                  if (
+                    referrer &&
+                    new URL(referrer).origin === window.location.origin
+                  ) {
                     // Solo navegar si el referrer es del mismo origen
                     navigate(-1);
                     return;
@@ -183,7 +186,11 @@ const UserProfilePage = () => {
                   stroke="currentColor"
                   strokeWidth="2"
                 >
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M15 19l-7-7 7-7"
+                  />
                 </svg>
                 <span className="text-sm font-medium">Volver</span>
               </button>
@@ -196,7 +203,10 @@ const UserProfilePage = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           {/* Encabezado del perfil (look atractivo, con avatar de iniciales) */}
           <div className="relative rounded-2xl overflow-hidden shadow border border-blue-100/60 bg-gradient-to-r from-blue-50 to-indigo-50">
-            <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-blue-500 via-indigo-500 to-cyan-500" aria-hidden="true" />
+            <div
+              className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-blue-500 via-indigo-500 to-cyan-500"
+              aria-hidden="true"
+            />
             <div className="px-3 sm:px-8 py-4 sm:py-6">
               <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                 <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
@@ -222,7 +232,8 @@ const UserProfilePage = () => {
                       </span>
                       {isVerified ? (
                         <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-800 border border-green-200">
-                          <FiCheckCircle className="mr-1.5 h-4 w-4" /> Verificado
+                          <FiCheckCircle className="mr-1.5 h-4 w-4" />{" "}
+                          Verificado
                         </span>
                       ) : (
                         <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-yellow-100 text-yellow-800 border border-yellow-200">
@@ -494,7 +505,10 @@ const UserProfilePage = () => {
               <div className="px-3 sm:px-8 py-5 sm:py-6">
                 <div className="max-w-3xl space-y-6">
                   <div className="relative p-6 bg-white rounded-2xl transition-all duration-300 border border-slate-200 hover:shadow-md">
-                    <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-blue-500 via-indigo-500 to-cyan-500 rounded-t-2xl" aria-hidden="true" />
+                    <div
+                      className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-blue-500 via-indigo-500 to-cyan-500 rounded-t-2xl"
+                      aria-hidden="true"
+                    />
                     <div className="flex items-start">
                       <div className="flex-shrink-0 p-2 bg-blue-100 rounded-lg text-blue-600">
                         <FiLock className="h-6 w-6" />
@@ -547,7 +561,10 @@ const UserProfilePage = () => {
                   </div>
 
                   <div className="relative p-6 bg-white rounded-2xl transition-all duration-300 border border-slate-200 hover:shadow-md">
-                    <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-green-500 via-emerald-500 to-lime-400 rounded-t-2xl" aria-hidden="true" />
+                    <div
+                      className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-green-500 via-emerald-500 to-lime-400 rounded-t-2xl"
+                      aria-hidden="true"
+                    />
                     <div className="flex items-start">
                       <div className="flex-shrink-0 p-2 bg-green-100 rounded-lg text-green-600">
                         <FiShield className="h-6 w-6" />
@@ -566,7 +583,10 @@ const UserProfilePage = () => {
                   </div>
 
                   <div className="relative p-6 bg-white rounded-2xl transition-all duration-300 border border-slate-200 hover:shadow-md">
-                    <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-indigo-500 via-blue-500 to-cyan-500 rounded-t-2xl" aria-hidden="true" />
+                    <div
+                      className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-indigo-500 via-blue-500 to-cyan-500 rounded-t-2xl"
+                      aria-hidden="true"
+                    />
                     <div className="flex items-start">
                       <div className="flex-shrink-0 p-2 bg-indigo-100 rounded-lg text-indigo-600">
                         <FiRefreshCw className="h-6 w-6" />

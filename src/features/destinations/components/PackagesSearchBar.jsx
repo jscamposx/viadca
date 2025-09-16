@@ -3,7 +3,7 @@ import { FiSearch, FiSliders } from "react-icons/fi";
 
 const PackagesSearchBar = ({ value, onChange, onOpenFilters }) => {
   return (
-  <div className="w-full max-w-full flex flex-col sm:flex-row gap-4 items-stretch sm:items-center bg-white/70 backdrop-blur-md rounded-2xl p-4 max-[360px]:p-3 shadow-[0_8px_30px_-10px_rgba(0,0,0,0.15)] border border-white/50">
+    <div className="w-full max-w-full flex flex-col sm:flex-row gap-4 items-stretch sm:items-center bg-white/70 backdrop-blur-md rounded-2xl p-4 max-[360px]:p-3 shadow-[0_8px_30px_-10px_rgba(0,0,0,0.15)] border border-white/50">
       <div className="flex-1 min-w-0 relative">
         <FiSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
         <input

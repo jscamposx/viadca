@@ -115,7 +115,7 @@ export function useSEO(config = {}) {
       locale,
     };
     const ogMerged = { ...ogDefaults, ...og };
-    
+
     Object.entries(ogMerged).forEach(([k, v]) => {
       if (!v) return;
       ensureMeta("property", `og:${k}`, v);

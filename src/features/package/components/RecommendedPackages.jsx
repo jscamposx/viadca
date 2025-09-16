@@ -7,7 +7,14 @@ import {
   AnimatedSection,
   useSectionReveal,
 } from "../../../hooks/scrollAnimations";
-import { FiArrowRight, FiClock, FiGlobe, FiMapPin, FiPackage, FiPlus } from "react-icons/fi";
+import {
+  FiArrowRight,
+  FiClock,
+  FiGlobe,
+  FiMapPin,
+  FiPackage,
+  FiPlus,
+} from "react-icons/fi";
 import { FaShip, FaRoute } from "react-icons/fa";
 
 // Badge config (copiado del Home para mantener consistencia visual)
@@ -69,7 +76,10 @@ const getBadgeConfig = (rawType) => {
   };
 };
 
-const DestinationCard = React.memo(function DestinationCard({ p, compact = false }) {
+const DestinationCard = React.memo(function DestinationCard({
+  p,
+  compact = false,
+}) {
   const img =
     p?.primera_imagen ||
     "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1200&q=80&auto=format&fit=crop";
@@ -136,28 +146,42 @@ const DestinationCard = React.memo(function DestinationCard({ p, compact = false
         </div>
         <div className="absolute bottom-2 left-2 opacity-0 md:group-hover:opacity-100 transition-all duration-500 transform translate-y-2 md:group-hover:translate-y-0">
           <span className="bg-white/90 backdrop-blur-sm text-slate-800 px-2 py-1 rounded-lg text-[11px] font-medium flex items-center gap-1.5 shadow border border-white/30">
-            <FiMapPin className="w-3.5 h-3.5 text-blue-600" aria-hidden="true" />
+            <FiMapPin
+              className="w-3.5 h-3.5 text-blue-600"
+              aria-hidden="true"
+            />
             {destinoPrincipal}
           </span>
         </div>
       </div>
 
-      <div className={`p-4 ${compact ? "flex-1 flex flex-col" : "lg:p-5 flex-1 flex flex-col"}`}>
+      <div
+        className={`p-4 ${compact ? "flex-1 flex flex-col" : "lg:p-5 flex-1 flex flex-col"}`}
+      >
         <div className="flex justify-between items-start gap-3 mb-2">
           <h3 className="font-bold text-sm sm:text-base lg:text-lg text-slate-800 group-hover:text-blue-600 transition-colors leading-snug line-clamp-2 flex-1 min-h-[2.2rem]">
             {p?.titulo || "Paquete"}
           </h3>
           <div className="text-right shrink-0">
-            <span className="text-[10px] text-slate-500 block uppercase tracking-wide">Desde</span>
+            <span className="text-[10px] text-slate-500 block uppercase tracking-wide">
+              Desde
+            </span>
             <div className="flex items-baseline gap-0.5 justify-end">
-              <span className="uppercase text-[10px] font-semibold tracking-wide text-slate-500">{moneda}</span>
-              <div className="font-bold text-base text-blue-700 leading-tight">{precio || "—"}</div>
+              <span className="uppercase text-[10px] font-semibold tracking-wide text-slate-500">
+                {moneda}
+              </span>
+              <div className="font-bold text-base text-blue-700 leading-tight">
+                {precio || "—"}
+              </div>
             </div>
           </div>
         </div>
         {!compact && (
           <div className="flex items-center text-slate-600 mb-3 text-xs sm:text-sm">
-            <FiClock className="w-4 h-4 mr-1.5 text-slate-400 shrink-0" aria-hidden="true" />
+            <FiClock
+              className="w-4 h-4 mr-1.5 text-slate-400 shrink-0"
+              aria-hidden="true"
+            />
             <span className="truncate">{duracion}</span>
           </div>
         )}
@@ -185,7 +209,9 @@ const DestinationCardSkeleton = ({ compact = false }) => (
     className={`relative overflow-hidden bg-white rounded-xl border border-slate-100 ${compact ? "" : "shadow-md"} motion-safe:animate-pulse h-full flex flex-col ${compact ? "min-w-[250px] w-[250px] snap-start" : ""} skeleton-shimmer`}
     aria-hidden="true"
   >
-    <div className={`w-full ${compact ? "h-40" : "h-48 sm:h-52 md:h-56 lg:h-60"} bg-slate-200`} />
+    <div
+      className={`w-full ${compact ? "h-40" : "h-48 sm:h-52 md:h-56 lg:h-60"} bg-slate-200`}
+    />
     <div className="p-4 flex-1 flex flex-col">
       <div className="flex justify-between items-start mb-2">
         <div className="h-4 w-32 bg-slate-200 rounded" />
@@ -210,8 +236,12 @@ const MoreDestinationsCard = ({ compact = false }) => (
     <div className="relative bg-gradient-to-br from-blue-100/70 to-indigo-100/70 p-4 lg:p-5 rounded-full mb-4 lg:mb-6 ring-1 ring-blue-200/60 group-hover:from-blue-200 group-hover:to-indigo-200 transition-all duration-500">
       <FiPlus className="w-8 h-8 lg:w-10 lg:h-10 text-blue-600 group-hover:scale-110 group-hover:text-indigo-600 transition-transform duration-500" />
     </div>
-    <h3 className="relative font-bold text-base lg:text-xl text-slate-800 mb-2 lg:mb-3 tracking-tight">Más destinos</h3>
-    <p className="relative text-slate-600 text-xs lg:text-sm leading-relaxed mb-4 lg:mb-6 max-w-[200px] lg:max-w-[240px]">Descubre experiencias únicas ahora.</p>
+    <h3 className="relative font-bold text-base lg:text-xl text-slate-800 mb-2 lg:mb-3 tracking-tight">
+      Más destinos
+    </h3>
+    <p className="relative text-slate-600 text-xs lg:text-sm leading-relaxed mb-4 lg:mb-6 max-w-[200px] lg:max-w-[240px]">
+      Descubre experiencias únicas ahora.
+    </p>
     <span className="relative inline-flex items-center gap-2 px-4 py-2 lg:px-5 lg:py-3 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold text-xs lg:text-sm tracking-wide shadow hover:shadow-lg transition-all group-hover:from-blue-500 group-hover:to-indigo-500">
       Ver todos
       <FiArrowRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />
@@ -303,28 +333,33 @@ export default function RecommendedPackages({ currentCodigoUrl, currentId }) {
         </AnimatedSection>
 
         {error && (
-          <div role="alert" className="mb-8 p-4 rounded-xl bg-red-50 border border-red-200 text-red-700 text-center">
+          <div
+            role="alert"
+            className="mb-8 p-4 rounded-xl bg-red-50 border border-red-200 text-red-700 text-center"
+          >
             {error}
           </div>
         )}
 
         {/* Desktop Grid */}
         <div className="hidden sm:grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 sm:gap-6 lg:gap-7">
-          {loading && Array.from({ length: MAX_VISIBLE }).map((_, i) => (
-            <DestinationCardSkeleton key={`rec-skeleton-${i}`} />
-          ))}
-          {!loading && displayItems.map((p, index) => (
-            <AnimatedSection
-              key={p.codigoUrl || p.titulo || index}
-              animation="destCard"
-              index={index}
-              stagger={90}
-              className="h-full will-change-transform"
-              forceVisible={sectionVisible}
-            >
-              <DestinationCard p={p} />
-            </AnimatedSection>
-          ))}
+          {loading &&
+            Array.from({ length: MAX_VISIBLE }).map((_, i) => (
+              <DestinationCardSkeleton key={`rec-skeleton-${i}`} />
+            ))}
+          {!loading &&
+            displayItems.map((p, index) => (
+              <AnimatedSection
+                key={p.codigoUrl || p.titulo || index}
+                animation="destCard"
+                index={index}
+                stagger={90}
+                className="h-full will-change-transform"
+                forceVisible={sectionVisible}
+              >
+                <DestinationCard p={p} />
+              </AnimatedSection>
+            ))}
           {!loading && hasMore && (
             <AnimatedSection
               animation="destCard"
@@ -341,20 +376,22 @@ export default function RecommendedPackages({ currentCodigoUrl, currentId }) {
         {/* Mobile listado vertical */}
         <div className="sm:hidden mt-2">
           <div className="space-y-5">
-            {loading && Array.from({ length: MAX_VISIBLE }).map((_, i) => (
-              <DestinationCardSkeleton key={`rec-mob-skeleton-${i}`} />
-            ))}
-            {!loading && displayItems.map((p, i) => (
-              <AnimatedSection
-                key={p.codigoUrl || p.titulo || i}
-                animation="fadeInUp"
-                delay={100 + i * 140}
-                forceVisible={sectionVisible}
-                className="will-change-transform"
-              >
-                <DestinationCard p={p} />
-              </AnimatedSection>
-            ))}
+            {loading &&
+              Array.from({ length: MAX_VISIBLE }).map((_, i) => (
+                <DestinationCardSkeleton key={`rec-mob-skeleton-${i}`} />
+              ))}
+            {!loading &&
+              displayItems.map((p, i) => (
+                <AnimatedSection
+                  key={p.codigoUrl || p.titulo || i}
+                  animation="fadeInUp"
+                  delay={100 + i * 140}
+                  forceVisible={sectionVisible}
+                  className="will-change-transform"
+                >
+                  <DestinationCard p={p} />
+                </AnimatedSection>
+              ))}
           </div>
           {!loading && hasMore && (
             <div className="mt-8 text-center">
@@ -376,7 +413,8 @@ export default function RecommendedPackages({ currentCodigoUrl, currentId }) {
               No hay recomendaciones disponibles
             </h3>
             <p className="text-slate-500 text-sm sm:text-base max-w-md mx-auto">
-              Estamos trabajando en agregar nuevas opciones para ti. ¡Vuelve pronto!
+              Estamos trabajando en agregar nuevas opciones para ti. ¡Vuelve
+              pronto!
             </p>
           </div>
         )}

@@ -118,7 +118,7 @@ const UnifiedNav = ({
     const getScrollMarginTop = (el) => {
       try {
         const smt = parseFloat(
-          window.getComputedStyle(el).scrollMarginTop || "0"
+          window.getComputedStyle(el).scrollMarginTop || "0",
         );
         return isNaN(smt) ? 0 : smt;
       } catch {
@@ -154,10 +154,11 @@ const UnifiedNav = ({
     try {
       // Si la sección no define scroll-margin-top, aplicamos un fallback manual
       const smt = parseFloat(
-        (window.getComputedStyle(el).scrollMarginTop || "0").toString()
+        (window.getComputedStyle(el).scrollMarginTop || "0").toString(),
       );
       if (isNaN(smt) || smt === 0) {
-        const y = window.scrollY + el.getBoundingClientRect().top - (headerHeight + 24);
+        const y =
+          window.scrollY + el.getBoundingClientRect().top - (headerHeight + 24);
         window.scrollTo({ top: y < 0 ? 0 : y, behavior: "smooth" });
       } else {
         el.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -344,7 +345,9 @@ const UnifiedNav = ({
                       )}
                       <Link
                         to="/perfil"
-                        state={{ from: `${location.pathname}${location.search}${location.hash}` }}
+                        state={{
+                          from: `${location.pathname}${location.search}${location.hash}`,
+                        }}
                         onClick={() => setUserMenuOpen(false)}
                         className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-slate-700 hover:text-blue-700 hover:bg-blue-50/70 transition"
                       >
@@ -508,7 +511,9 @@ const UnifiedNav = ({
                     )}
                     <Link
                       to="/perfil"
-                      state={{ from: `${location.pathname}${location.search}${location.hash}` }}
+                      state={{
+                        from: `${location.pathname}${location.search}${location.hash}`,
+                      }}
                       onClick={() => setMobileOpen(false)}
                       className={`flex items-center gap-3 py-3 px-4 rounded-xl font-medium ${transparentOnTop && !isScrolled ? "text-white/90 hover:text-white hover:bg-white/10" : "text-slate-700 hover:text-blue-600 hover:bg-blue-50/70"}`}
                     >

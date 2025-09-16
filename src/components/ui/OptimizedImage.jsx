@@ -71,7 +71,10 @@ const OptimizedImage = ({
 
     // Si es Cloudinary, generar srcSet optimizado
     if (typeof src === "object" && src.cloudinary_public_id) {
-      return cloudinaryService.generateSrcSet(src.cloudinary_public_id, baseOptions);
+      return cloudinaryService.generateSrcSet(
+        src.cloudinary_public_id,
+        baseOptions,
+      );
     }
 
     // Si es URL de Cloudinary, extraer public_id y generar srcSet
@@ -99,7 +102,18 @@ const OptimizedImage = ({
     }
 
     return undefined;
-  }, [responsive, src, hasError, responsiveUrls, width, height, quality, format, crop, gravity]);
+  }, [
+    responsive,
+    src,
+    hasError,
+    responsiveUrls,
+    width,
+    height,
+    quality,
+    format,
+    crop,
+    gravity,
+  ]);
 
   // Manejadores de eventos
   const handleLoad = useCallback(
@@ -226,7 +240,9 @@ const OptimizedImage = ({
     return (
       <div
         className={`relative ${className}`}
-        style={{ aspectRatio: width && height ? `${width}/${height}` : undefined }}
+        style={{
+          aspectRatio: width && height ? `${width}/${height}` : undefined,
+        }}
       >
         {/* Capa skeleton con shimmer mientras la imagen carga */}
         <div

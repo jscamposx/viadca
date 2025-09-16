@@ -95,7 +95,13 @@ export default function LightboxModal({
     const onTouchMove = (e) => {
       if (pinchRef.current.active && e.touches.length === 2) {
         const newDist = getDistance(e.touches[0], e.touches[1]);
-        const newScale = Math.min(3, Math.max(1, (newDist / pinchRef.current.dist) * pinchRef.current.startScale));
+        const newScale = Math.min(
+          3,
+          Math.max(
+            1,
+            (newDist / pinchRef.current.dist) * pinchRef.current.startScale,
+          ),
+        );
         setScale(newScale);
         moved = true;
         return;
@@ -137,10 +143,16 @@ export default function LightboxModal({
         lastTouchRef.current = { t: now, x, y };
       }
 
-      if (isSwiping && !pinchRef.current.active && scale === 1 && e.changedTouches.length === 1) {
+      if (
+        isSwiping &&
+        !pinchRef.current.active &&
+        scale === 1 &&
+        e.changedTouches.length === 1
+      ) {
         const dx = e.changedTouches[0].clientX - startX;
         if (Math.abs(dx) > 50) {
-          if (dx < 0) goNext(); else goPrev();
+          if (dx < 0) goNext();
+          else goPrev();
         }
       }
 
@@ -201,7 +213,7 @@ export default function LightboxModal({
           {/* Barra inferior en móvil con controles e indicador */}
           <div
             className="md:hidden absolute inset-x-0 bottom-0 flex justify-center pointer-events-none"
-            style={{ paddingBottom: 'max(8px, env(safe-area-inset-bottom))' }}
+            style={{ paddingBottom: "max(8px, env(safe-area-inset-bottom))" }}
           >
             <div className="pointer-events-auto mb-1 bg-black/50 backdrop-blur-sm rounded-full border border-white/20 shadow-lg flex items-center gap-6 px-3 py-2">
               <button
@@ -227,7 +239,10 @@ export default function LightboxModal({
       )}
 
       {/* Contenido */}
-      <div ref={imgWrapperRef} className="max-w-[95vw] max-h-[85vh] w-full h-full flex items-center justify-center px-4 select-none overflow-hidden">
+      <div
+        ref={imgWrapperRef}
+        className="max-w-[95vw] max-h-[85vh] w-full h-full flex items-center justify-center px-4 select-none overflow-hidden"
+      >
         <img
           ref={imgRef}
           src={images[index]}
@@ -238,7 +253,9 @@ export default function LightboxModal({
             transform: `translate(${translate.x}px, ${translate.y}px) scale(${scale})`,
             maxWidth: scale === 1 ? "100%" : "none",
             maxHeight: scale === 1 ? "100%" : "none",
-            transition: pinchRef.current.active ? "none" : "transform 150ms ease-out",
+            transition: pinchRef.current.active
+              ? "none"
+              : "transform 150ms ease-out",
           }}
           onDoubleClick={() => {
             const nextScale = scale > 1 ? 1 : 2;

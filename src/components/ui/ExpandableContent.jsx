@@ -25,7 +25,8 @@ export default function ExpandableContent({
   const contentId = `expandable-${internalId}`;
   const contentRef = useRef(null);
 
-  const btnAlign = buttonPosition === "center" ? "justify-center" : "justify-end";
+  const btnAlign =
+    buttonPosition === "center" ? "justify-center" : "justify-end";
 
   useEffect(() => {
     const el = contentRef.current;

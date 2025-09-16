@@ -323,11 +323,14 @@ const DestinationsPage = () => {
         ]}
       />
       <PageTransition>
-  <div className="flex flex-col min-h-screen bg-gradient-to-b from-slate-50 to-white overflow-x-hidden">
+        <div className="flex flex-col min-h-screen bg-gradient-to-b from-slate-50 to-white overflow-x-hidden">
           {/* removido id=top */}
           <DestinationsHero />
           {/* Anchor para scroll desde el botón "Buscar paquetes" del hero */}
-          <div id="top-search" className="max-w-6xl mx-auto px-3 xs:px-4 sm:px-6 lg:px-8 -mt-4 sm:-mt-10 md:-mt-14 relative z-10 space-y-6 scroll-mt-28">
+          <div
+            id="top-search"
+            className="max-w-6xl mx-auto px-3 xs:px-4 sm:px-6 lg:px-8 -mt-4 sm:-mt-10 md:-mt-14 relative z-10 space-y-6 scroll-mt-28"
+          >
             <PackagesSearchBar
               value={search}
               onChange={setSearch}
@@ -428,8 +431,19 @@ const ScrollTopButton = () => {
       aria-label="Volver arriba"
       className={`fixed bottom-6 right-4 sm:right-6 z-[100000] inline-flex items-center gap-2 rounded-full px-4 py-2 shadow-lg border transition-all focus:outline-none focus:ring-2 focus:ring-blue-600 ${visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6 pointer-events-none"} bg-white/95 border-slate-200 text-slate-700 hover:bg-blue-600 hover:text-white`}
     >
-      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+      <svg
+        className="w-5 h-5"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+        aria-hidden="true"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={2}
+          d="M5 15l7-7 7 7"
+        />
       </svg>
       <span className="text-sm font-medium hidden sm:inline">Arriba</span>
     </button>

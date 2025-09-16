@@ -260,7 +260,8 @@ function PackageViewPage() {
   // Estados legacy eliminados en favor de ExpandableContent
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState(0);
-  const { openWhatsApp, getPhoneHref, onPhoneClick, ToastPortal, showToast } = useContactActions();
+  const { openWhatsApp, getPhoneHref, onPhoneClick, ToastPortal, showToast } =
+    useContactActions();
   const { contactInfo, loading: contactLoading } = useContactInfo();
 
   // Preparar config SEO SIEMPRE antes de returns condicionales
@@ -367,17 +368,18 @@ function PackageViewPage() {
       showToast(
         copied
           ? "Enlace copiado al portapapeles"
-          : "No se pudo copiar el enlace. Intenta manualmente."
+          : "No se pudo copiar el enlace. Intenta manualmente.",
       );
     }
   };
 
-  if (loading) return (
-    <>
-      <ToastPortal />
-      <PackageSkeleton />
-    </>
-  );
+  if (loading)
+    return (
+      <>
+        <ToastPortal />
+        <PackageSkeleton />
+      </>
+    );
   if (error)
     return (
       <ErrorMessage message={error} onRetry={() => window.location.reload()} />
@@ -421,8 +423,14 @@ function PackageViewPage() {
                 if (hasHistory) {
                   const prev = document.referrer;
                   // Si venimos de la misma página (sin navegación real), hacer fallback a home
-                  const sameOrigin = prev && new URL(prev, window.location.origin).origin === window.location.origin;
-                  const samePath = sameOrigin && new URL(prev, window.location.origin).pathname === window.location.pathname;
+                  const sameOrigin =
+                    prev &&
+                    new URL(prev, window.location.origin).origin ===
+                      window.location.origin;
+                  const samePath =
+                    sameOrigin &&
+                    new URL(prev, window.location.origin).pathname ===
+                      window.location.pathname;
                   if (!prev || samePath) {
                     window.location.assign("/");
                   } else {
@@ -462,7 +470,8 @@ function PackageViewPage() {
                 <span className="truncate max-w-[10rem] sm:max-w-[16rem]">
                   {paquete.destinos && paquete.destinos.length > 0
                     ? paquete.destinos.length === 1
-                      ? paquete.destinos[0].ciudad || paquete.destinos[0].destino
+                      ? paquete.destinos[0].ciudad ||
+                        paquete.destinos[0].destino
                       : `${paquete.destinos.length} destinos`
                     : "Destino"}
                 </span>
@@ -516,7 +525,11 @@ function PackageViewPage() {
       <main className="relative">
         <div
           className="relative min-h-[70svh] sm:min-h-[80svh] md:min-h-[100svh] h-[100dvh] flex items-center justify-center overflow-hidden"
-          style={!isSmallScreen ? { transform: `translateY(${scrollY * 0.2}px)` } : undefined}
+          style={
+            !isSmallScreen
+              ? { transform: `translateY(${scrollY * 0.2}px)` }
+              : undefined
+          }
         >
           <div className="absolute inset-0">
             <ImageCarousel
@@ -535,11 +548,9 @@ function PackageViewPage() {
             <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
             <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/40"></div>
           </div>
-          
 
           <div className="relative z-10 text-center text-white px-4 max-w-4xl mx-auto">
             <div className="space-y-5 sm:space-y-6">
-
               <h1 className="font-volkhov text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold leading-tight">
                 <span className="bg-gradient-to-r from-white via-blue-100 to-purple-100 bg-clip-text text-transparent">
                   {paquete.titulo}
@@ -578,7 +589,7 @@ function PackageViewPage() {
 
           <div
             className="absolute left-1/2 transform -translate-x-1/2 text-white block pointer-events-none"
-            style={{ bottom: 'max(1rem, env(safe-area-inset-bottom))' }}
+            style={{ bottom: "max(1rem, env(safe-area-inset-bottom))" }}
           >
             {/* Desktop: mantiene el bounce */}
             <div className="hidden sm:flex flex-col items-center gap-2 animate-bounce">
@@ -606,9 +617,12 @@ function PackageViewPage() {
               ? img.contenido
               : img?.url?.startsWith("http") || img?.url?.startsWith("data:")
                 ? img.url
-                : img?.contenido?.startsWith("http") || img?.contenido?.includes("://")
+                : img?.contenido?.startsWith("http") ||
+                    img?.contenido?.includes("://")
                   ? img.contenido
-                  : img?.contenido && !img?.contenido?.includes("://") && !img?.contenido?.startsWith("http")
+                  : img?.contenido &&
+                      !img?.contenido?.includes("://") &&
+                      !img?.contenido?.startsWith("http")
                     ? `data:image/jpeg;base64,${img.contenido}`
                     : img?.ruta
                       ? `${import.meta.env.VITE_API_BASE_URL}${img.ruta}`
@@ -638,7 +652,9 @@ function PackageViewPage() {
                       <h2 className="font-volkhov text-2xl sm:text-3xl font-bold text-gray-900 leading-tight">
                         Información del Paquete
                       </h2>
-                      <p className="text-gray-600 text-sm sm:text-base">Todo lo que necesitas saber sobre tu aventura</p>
+                      <p className="text-gray-600 text-sm sm:text-base">
+                        Todo lo que necesitas saber sobre tu aventura
+                      </p>
                     </div>
                   </div>
                   <PackageInfo paquete={paquete} />
@@ -660,7 +676,9 @@ function PackageViewPage() {
                             Pronóstico del Clima
                           </h2>
                           <p className="text-gray-600 text-sm sm:text-base">
-                            El tiempo en {paquete.destinos[0].ciudad || paquete.destinos[0].destino}
+                            El tiempo en{" "}
+                            {paquete.destinos[0].ciudad ||
+                              paquete.destinos[0].destino}
                           </p>
                         </div>
                       </div>
@@ -668,7 +686,10 @@ function PackageViewPage() {
                       <WeatherForecast
                         lat={paquete.destinos[0].destino_lat}
                         lon={paquete.destinos[0].destino_lng}
-                        cityName={paquete.destinos[0].ciudad || paquete.destinos[0].destino}
+                        cityName={
+                          paquete.destinos[0].ciudad ||
+                          paquete.destinos[0].destino
+                        }
                       />
                     </section>
                   </AnimatedSection>
@@ -684,11 +705,16 @@ function PackageViewPage() {
                       <h2 className="font-volkhov text-2xl sm:text-3xl font-bold text-gray-900 leading-tight">
                         Ruta del Viaje
                       </h2>
-                      <p className="text-gray-600 text-sm sm:text-base">Explora todos los destinos de tu aventura</p>
+                      <p className="text-gray-600 text-sm sm:text-base">
+                        Explora todos los destinos de tu aventura
+                      </p>
                       {paquete?.destinos && paquete.destinos.length > 1 && (
                         <div className="mt-3 px-3 py-2 rounded-lg border border-purple-100 bg-purple-50/70">
                           <span className="text-sm font-medium text-purple-700">
-                            Ruta: {paquete.destinos.map((d) => d.ciudad || d.destino).join(" → ")}
+                            Ruta:{" "}
+                            {paquete.destinos
+                              .map((d) => d.ciudad || d.destino)
+                              .join(" → ")}
                           </span>
                         </div>
                       )}
@@ -750,103 +776,118 @@ function PackageViewPage() {
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 {paquete.notas && (
                   <AnimatedSection animation="fadeInUp" delay={100}>
-                  <section className="group bg-white/80 backdrop-blur-xl rounded-3xl shadow-xl p-6 border border-white/20 hover:shadow-2xl transition-all duration-500 h-full flex flex-col">
-                    <div className="flex items-center gap-4 mb-6">
-                      <div className="w-12 h-12 bg-gradient-to-br from-amber-400 to-orange-400 rounded-xl flex items-center justify-center shadow-lg md:group-hover:scale-110 transition-transform duration-300">
-                        <FiInfo className="w-6 h-6 text-white" />
+                    <section className="group bg-white/80 backdrop-blur-xl rounded-3xl shadow-xl p-6 border border-white/20 hover:shadow-2xl transition-all duration-500 h-full flex flex-col">
+                      <div className="flex items-center gap-4 mb-6">
+                        <div className="w-12 h-12 bg-gradient-to-br from-amber-400 to-orange-400 rounded-xl flex items-center justify-center shadow-lg md:group-hover:scale-110 transition-transform duration-300">
+                          <FiInfo className="w-6 h-6 text-white" />
+                        </div>
+                        <div>
+                          <h3 className="font-volkhov text-xl sm:text-2xl font-bold text-gray-900">
+                            Notas Importantes
+                          </h3>
+                          <p className="text-gray-600 text-sm">
+                            Información adicional
+                          </p>
+                        </div>
                       </div>
-                      <div>
-                        <h3 className="font-volkhov text-xl sm:text-2xl font-bold text-gray-900">
-                          Notas Importantes
-                        </h3>
-                        <p className="text-gray-600 text-sm">
-                          Información adicional
-                        </p>
-                      </div>
-                    </div>
 
-                    <div className="bg-gradient-to-br from-amber-50/50 to-orange-50/50 rounded-xl p-0 backdrop-blur-sm flex-1">
-                      <ExpandableContent collapsedHeight={192} className="p-4">
-                        <p className="text-gray-700 leading-relaxed text-sm whitespace-pre-line">
-                          {paquete.notas}
-                        </p>
-                      </ExpandableContent>
-                    </div>
-                  </section>
+                      <div className="bg-gradient-to-br from-amber-50/50 to-orange-50/50 rounded-xl p-0 backdrop-blur-sm flex-1">
+                        <ExpandableContent
+                          collapsedHeight={192}
+                          className="p-4"
+                        >
+                          <p className="text-gray-700 leading-relaxed text-sm whitespace-pre-line">
+                            {paquete.notas}
+                          </p>
+                        </ExpandableContent>
+                      </div>
+                    </section>
                   </AnimatedSection>
                 )}
 
                 {paquete.requisitos && (
                   <AnimatedSection animation="fadeInUp" delay={150}>
-                  <section className="group bg-white/80 backdrop-blur-xl rounded-3xl shadow-xl p-6 border border-white/20 hover:shadow-2xl transition-all duration-500 h-full flex flex-col">
-                    <div className="flex items-center gap-4 mb-6">
-                      <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-xl flex items-center justify-center shadow-lg md:group-hover:scale-110 transition-transform duration-300">
-                        <FiCheckSquare className="w-6 h-6 text-white" />
+                    <section className="group bg-white/80 backdrop-blur-xl rounded-3xl shadow-xl p-6 border border-white/20 hover:shadow-2xl transition-all duration-500 h-full flex flex-col">
+                      <div className="flex items-center gap-4 mb-6">
+                        <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-xl flex items-center justify-center shadow-lg md:group-hover:scale-110 transition-transform duration-300">
+                          <FiCheckSquare className="w-6 h-6 text-white" />
+                        </div>
+                        <div>
+                          <h3 className="font-volkhov text-xl sm:text-2xl font-bold text-gray-900">
+                            Requisitos
+                          </h3>
+                          <p className="text-gray-600 text-sm">
+                            Lo que necesitas
+                          </p>
+                        </div>
                       </div>
-                      <div>
-                        <h3 className="font-volkhov text-xl sm:text-2xl font-bold text-gray-900">
-                          Requisitos
-                        </h3>
-                        <p className="text-gray-600 text-sm">
-                          Lo que necesitas
-                        </p>
-                      </div>
-                    </div>
 
-                    <div className="bg-gradient-to-br from-blue-50/50 to-indigo-50/50 rounded-xl p-4 backdrop-blur-sm">
-                      <Requirements requisitos={paquete.requisitos} />
-                    </div>
-                  </section>
+                      <div className="bg-gradient-to-br from-blue-50/50 to-indigo-50/50 rounded-xl p-4 backdrop-blur-sm">
+                        <Requirements requisitos={paquete.requisitos} />
+                      </div>
+                    </section>
                   </AnimatedSection>
                 )}
 
                 {paquete.incluye && (
                   <AnimatedSection animation="fadeInUp" delay={200}>
-                  <section className="group bg-white/80 backdrop-blur-xl rounded-3xl shadow-xl p-6 border border-white/20 hover:shadow-2xl transition-all duration-500">
-                    <div className="flex items-center gap-4 mb-6">
-                      <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-green-500 rounded-xl flex items-center justify-center shadow-lg md:group-hover:scale-110 transition-transform duration-300">
-                        <FiCheck className="w-6 h-6 text-white" />
+                    <section className="group bg-white/80 backdrop-blur-xl rounded-3xl shadow-xl p-6 border border-white/20 hover:shadow-2xl transition-all duration-500">
+                      <div className="flex items-center gap-4 mb-6">
+                        <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-green-500 rounded-xl flex items-center justify-center shadow-lg md:group-hover:scale-110 transition-transform duration-300">
+                          <FiCheck className="w-6 h-6 text-white" />
+                        </div>
+                        <div>
+                          <h3 className="font-volkhov text-xl sm:text-2xl font-bold text-gray-900">
+                            ¿Qué Incluye?
+                          </h3>
+                          <p className="text-gray-600 text-sm">
+                            Servicios contemplados
+                          </p>
+                        </div>
                       </div>
-                      <div>
-                        <h3 className="font-volkhov text-xl sm:text-2xl font-bold text-gray-900">
-                          ¿Qué Incluye?
-                        </h3>
-                        <p className="text-gray-600 text-sm">Servicios contemplados</p>
-                      </div>
-                    </div>
 
-                    <div className="bg-gradient-to-br from-emerald-50/50 to-green-50/50 rounded-xl p-0 backdrop-blur-sm flex-1">
-                      <ExpandableContent collapsedHeight={192} className="p-4">
-                        <p className="text-gray-700 leading-relaxed text-sm whitespace-pre-line">{incluyeText}</p>
-                      </ExpandableContent>
-                    </div>
-                  </section>
+                      <div className="bg-gradient-to-br from-emerald-50/50 to-green-50/50 rounded-xl p-0 backdrop-blur-sm flex-1">
+                        <ExpandableContent
+                          collapsedHeight={192}
+                          className="p-4"
+                        >
+                          <p className="text-gray-700 leading-relaxed text-sm whitespace-pre-line">
+                            {incluyeText}
+                          </p>
+                        </ExpandableContent>
+                      </div>
+                    </section>
                   </AnimatedSection>
                 )}
 
                 {paquete.no_incluye && (
                   <AnimatedSection animation="fadeInUp" delay={250}>
-                  <section className="group bg-white/80 backdrop-blur-xl rounded-3xl shadow-xl p-6 border border-white/20 hover:shadow-2xl transition-all duration-500 h-full flex flex-col">
-                    <div className="flex items-center gap-4 mb-6">
-                      <div className="w-12 h-12 bg-gradient-to-br from-gray-500 to-slate-500 rounded-xl flex items-center justify-center shadow-lg md:group-hover:scale-110 transition-transform duration-300">
-                        <FiX className="w-6 h-6 text-white" />
+                    <section className="group bg-white/80 backdrop-blur-xl rounded-3xl shadow-xl p-6 border border-white/20 hover:shadow-2xl transition-all duration-500 h-full flex flex-col">
+                      <div className="flex items-center gap-4 mb-6">
+                        <div className="w-12 h-12 bg-gradient-to-br from-gray-500 to-slate-500 rounded-xl flex items-center justify-center shadow-lg md:group-hover:scale-110 transition-transform duration-300">
+                          <FiX className="w-6 h-6 text-white" />
+                        </div>
+                        <div>
+                          <h3 className="font-volkhov text-xl sm:text-2xl font-bold text-gray-900">
+                            No Incluye
+                          </h3>
+                          <p className="text-gray-600 text-sm">
+                            Gastos adicionales
+                          </p>
+                        </div>
                       </div>
-                      <div>
-                        <h3 className="font-volkhov text-xl sm:text-2xl font-bold text-gray-900">
-                          No Incluye
-                        </h3>
-                        <p className="text-gray-600 text-sm">
-                          Gastos adicionales
-                        </p>
-                      </div>
-                    </div>
 
-                    <div className="bg-gradient-to-br from-gray-50/50 to-slate-50/50 rounded-xl p-0 backdrop-blur-sm flex-1">
-                      <ExpandableContent collapsedHeight={192} className="p-4">
-                        <p className="text-gray-700 leading-relaxed text-sm whitespace-pre-line">{noIncluyeText}</p>
-                      </ExpandableContent>
-                    </div>
-                  </section>
+                      <div className="bg-gradient-to-br from-gray-50/50 to-slate-50/50 rounded-xl p-0 backdrop-blur-sm flex-1">
+                        <ExpandableContent
+                          collapsedHeight={192}
+                          className="p-4"
+                        >
+                          <p className="text-gray-700 leading-relaxed text-sm whitespace-pre-line">
+                            {noIncluyeText}
+                          </p>
+                        </ExpandableContent>
+                      </div>
+                    </section>
                   </AnimatedSection>
                 )}
               </div>
@@ -857,14 +898,17 @@ function PackageViewPage() {
                 <AnimatedSection animation="fadeInUp" delay={150}>
                   <div className="bg-white/95 backdrop-blur rounded-2xl shadow-xl p-5 lg:p-6 xl:p-7 border border-gray-100">
                     <div className="text-center space-y-3 mb-5 max-w-full overflow-x-hidden">
-                      {paquete.descuento && parseFloat(paquete.descuento) > 0 ? (
+                      {paquete.descuento &&
+                      parseFloat(paquete.descuento) > 0 ? (
                         <>
                           <div className="inline-flex flex-wrap items-baseline justify-center gap-x-2 max-w-full">
                             <span className="text-base sm:text-lg font-semibold text-gray-400 line-through leading-snug">
                               {precioOriginalFormatted}
                             </span>
                             {precioOriginalFormatted && (
-                              <span className="text-[11px] sm:text-xs text-gray-500 font-medium">({moneda})</span>
+                              <span className="text-[11px] sm:text-xs text-gray-500 font-medium">
+                                ({moneda})
+                              </span>
                             )}
                           </div>
 
@@ -873,10 +917,14 @@ function PackageViewPage() {
                               {precioTotalFormatted}
                             </span>
                             {precioTotalFormatted && (
-                              <span className="text-sm text-emerald-700 font-semibold">{moneda}</span>
+                              <span className="text-sm text-emerald-700 font-semibold">
+                                {moneda}
+                              </span>
                             )}
                           </div>
-                          <span className="block text-gray-500 text-sm">por persona</span>
+                          <span className="block text-gray-500 text-sm">
+                            por persona
+                          </span>
                           <div className="inline-flex items-center px-3 py-1.5 bg-gradient-to-r from-red-500 to-pink-500 text-white rounded-full text-xs font-bold shadow">
                             <FiAward className="w-4 h-4 mr-1.5" />
                             Ahorras {formatPrecio(paquete.descuento, moneda)}
@@ -890,13 +938,19 @@ function PackageViewPage() {
                               {precioTotalFormatted}
                             </span>
                             {precioTotalFormatted && (
-                              <span className="text-sm text-blue-700 font-semibold">{moneda}</span>
+                              <span className="text-sm text-blue-700 font-semibold">
+                                {moneda}
+                              </span>
                             )}
                           </div>
-                          <span className="block text-gray-500 text-sm">por persona</span>
+                          <span className="block text-gray-500 text-sm">
+                            por persona
+                          </span>
                         </>
                       )}
-                      <p className="text-gray-600 text-xs font-medium mx-auto max-w-[22rem] px-2">Los precios pueden variar según disponibilidad</p>
+                      <p className="text-gray-600 text-xs font-medium mx-auto max-w-[22rem] px-2">
+                        Los precios pueden variar según disponibilidad
+                      </p>
                     </div>
 
                     {paquete.anticipo && parseFloat(paquete.anticipo) > 0 && (
@@ -906,13 +960,19 @@ function PackageViewPage() {
                         </div>
                         <div className="flex-1">
                           <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
-                            <h3 className="font-bold text-blue-900 text-sm">Anticipo requerido</h3>
+                            <h3 className="font-bold text-blue-900 text-sm">
+                              Anticipo requerido
+                            </h3>
                             <span className="text-sm font-bold text-blue-700">
                               {formatPrecio(paquete.anticipo, moneda)}
                             </span>
-                            <span className="text-[11px] text-blue-700 font-semibold">{moneda}</span>
+                            <span className="text-[11px] text-blue-700 font-semibold">
+                              {moneda}
+                            </span>
                           </div>
-                          <p className="text-blue-600 text-xs">Para asegurar tu reservación</p>
+                          <p className="text-blue-600 text-xs">
+                            Para asegurar tu reservación
+                          </p>
                         </div>
                       </div>
                     )}
@@ -944,7 +1004,11 @@ function PackageViewPage() {
                         <span className="font-medium text-sm">Llamar</span>
                       </a>
                       <a
-                        href={contactInfo?.email ? `mailto:${contactInfo.email}` : undefined}
+                        href={
+                          contactInfo?.email
+                            ? `mailto:${contactInfo.email}`
+                            : undefined
+                        }
                         className="flex items-center justify-center gap-2 h-11 min-h-[44px] bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-lg border border-blue-200 transition-all duration-200"
                         aria-label="Enviar email para consultas"
                       >
@@ -969,7 +1033,7 @@ function PackageViewPage() {
       <div className="h-20 sm:hidden" />
 
       {/* Más paquetes recomendados */}
-  <RecommendedPackages currentCodigoUrl={url} currentId={paquete?.id} />
+      <RecommendedPackages currentCodigoUrl={url} currentId={paquete?.id} />
 
       {/* Trust bar (confianza) */}
       <TrustBar />

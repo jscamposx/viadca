@@ -1,5 +1,8 @@
 import React, { useMemo } from "react";
-import { AnimatedSection, useSectionReveal } from "../../../hooks/scrollAnimations";
+import {
+  AnimatedSection,
+  useSectionReveal,
+} from "../../../hooks/scrollAnimations";
 import FaqSchema from "../components/FaqSchema";
 import { useSEO } from "../../../hooks/useSEO";
 import Footer from "../../home/components/Footer";
@@ -267,7 +270,11 @@ export default function FaqPage() {
             </div>
 
             {faqCategories.map((cat) => (
-              <FaqCategorySection key={cat.id} cat={cat} onFaqClick={handleFaqClick} />
+              <FaqCategorySection
+                key={cat.id}
+                cat={cat}
+                onFaqClick={handleFaqClick}
+              />
             ))}
           </div>
         </div>
@@ -362,7 +369,10 @@ export default function FaqPage() {
 
 // Subcomponente para manejar la animación por sección y escalonado de preguntas
 function FaqCategorySection({ cat, onFaqClick }) {
-  const [sectionRef, visible] = useSectionReveal({ threshold: 0.05, rootMargin: "0px 0px -10% 0px" });
+  const [sectionRef, visible] = useSectionReveal({
+    threshold: 0.05,
+    rootMargin: "0px 0px -10% 0px",
+  });
   return (
     <section
       ref={sectionRef}
@@ -370,7 +380,11 @@ function FaqCategorySection({ cat, onFaqClick }) {
       aria-labelledby={`${cat.id}-heading`}
       className="space-y-8 scroll-mt-24 sm:scroll-mt-28"
     >
-      <AnimatedSection animation="fadeInUp" className="space-y-3" forceVisible={visible}>
+      <AnimatedSection
+        animation="fadeInUp"
+        className="space-y-3"
+        forceVisible={visible}
+      >
         <h2
           id={`${cat.id}-heading`}
           className="text-2xl sm:text-3xl font-bold text-slate-800"
@@ -393,10 +407,23 @@ function FaqCategorySection({ cat, onFaqClick }) {
               onToggle={(e) => e.target.open && onFaqClick(f.q)}
             >
               <summary className="list-none px-5 py-4 sm:px-6 cursor-pointer flex items-center justify-between gap-4 select-none focus-visible:outline-none">
-                <h3 className="font-semibold text-slate-800 text-base sm:text-lg">{f.q}</h3>
+                <h3 className="font-semibold text-slate-800 text-base sm:text-lg">
+                  {f.q}
+                </h3>
                 <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-slate-50 text-slate-500 ring-1 ring-slate-200 group-open:rotate-180 transition">
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  <svg
+                    className="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    aria-hidden="true"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M19 9l-7 7-7-7"
+                    />
                   </svg>
                 </span>
               </summary>

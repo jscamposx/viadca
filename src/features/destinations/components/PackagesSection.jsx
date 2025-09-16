@@ -70,7 +70,7 @@ const PackagesSection = ({
 
         {!showCarousel && (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 sm:gap-6 lg:gap-7">
-            {(progressive ? childArray.slice(0, visibleCount) : childArray)}
+            {progressive ? childArray.slice(0, visibleCount) : childArray}
           </div>
         )}
 
@@ -114,8 +114,13 @@ const PackagesSection = ({
           <div ref={sentinelRef} className="mt-6">
             {visibleCount < childArray.length && (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 lg:gap-7">
-                {Array.from({ length: Math.min(step, childArray.length - visibleCount) }).map((_, i) => (
-                  <div key={i} className="h-72 bg-slate-100 rounded-xl animate-pulse border border-slate-200" />
+                {Array.from({
+                  length: Math.min(step, childArray.length - visibleCount),
+                }).map((_, i) => (
+                  <div
+                    key={i}
+                    className="h-72 bg-slate-100 rounded-xl animate-pulse border border-slate-200"
+                  />
                 ))}
               </div>
             )}

@@ -92,7 +92,8 @@ class CloudinaryService {
 
     // Evitar usar c_fill sin altura: cambiar a c_scale si no hay height
     const effectiveCrop =
-      (height === undefined || height === null || height === "auto") && crop === "fill"
+      (height === undefined || height === null || height === "auto") &&
+      crop === "fill"
         ? "scale"
         : crop;
     if (effectiveCrop) transformations.push(`c_${effectiveCrop}`);

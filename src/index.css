@@ -402,7 +402,8 @@
 
 /* Indicador de deslizamiento horizontal (mobile) */
 @keyframes swipe-x {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateX(0);
     opacity: 0.7;
   }
@@ -418,7 +419,8 @@
 
 /* Bounce vertical más suave para indicadores compactos */
 @keyframes bounce-y-soft {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0);
   }
   50% {
@@ -432,7 +434,8 @@
 
 /* Animación para indicar deslizamiento hacia abajo */
 @keyframes swipe-down {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0);
     opacity: 0.85;
   }

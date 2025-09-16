@@ -144,8 +144,12 @@ const RouteMap = ({ paquete }) => {
       <div className="h-full flex items-center justify-center">
         <div className="text-center p-6">
           <FiMapPin className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-          <h4 className="text-lg font-medium text-gray-700 mb-2">Mapa no disponible</h4>
-          <p className="text-gray-500">Este paquete aún no tiene coordenadas geográficas configuradas.</p>
+          <h4 className="text-lg font-medium text-gray-700 mb-2">
+            Mapa no disponible
+          </h4>
+          <p className="text-gray-500">
+            Este paquete aún no tiene coordenadas geográficas configuradas.
+          </p>
         </div>
       </div>
     );
@@ -217,7 +221,11 @@ const RouteMap = ({ paquete }) => {
         className="z-10"
         scrollWheelZoom={true}
       >
-        <TileLayer attribution={tileAttribution} url={tileUrl} maxZoom={tileMaxZoom} />
+        <TileLayer
+          attribution={tileAttribution}
+          url={tileUrl}
+          maxZoom={tileMaxZoom}
+        />
 
         {destinosConCoordenadas.map((dest, index) => {
           const lat = parseFloat(dest.destino_lat);
