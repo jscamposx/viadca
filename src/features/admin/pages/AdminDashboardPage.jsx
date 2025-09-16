@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { useAllPackages } from "../../package/hooks/useAllPackages";
 import { useMayoristas } from "../hooks/useMayoristas";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import api from "../../../api";
 import {
   FiRefreshCw,
@@ -52,10 +52,12 @@ const AdminDashboard = () => {
 
   const [pkgStats, setPkgStats] = useState({ total: 0, paquetes: 0, activos: 0, inactivos: 0 });
   const [mayStats, setMayStats] = useState({ total: 0, mayoristas: 0, activos: 0, inactivos: 0 });
+  const [statsLoading, setStatsLoading] = useState(true);
 
   useEffect(() => {
     let mounted = true;
     const loadStats = async () => {
+      setStatsLoading(true);
       try {
         const [pResp, mResp] = await Promise.allSettled([
           api.packages?.getPaquetesStatsOverview?.(),
@@ -98,11 +100,34 @@ const AdminDashboard = () => {
         }
       } catch (e) {
         if (mounted && import.meta.env.DEV) console.warn('Error cargando stats dashboard', e);
+      } finally {
+        if (mounted) setStatsLoading(false);
       }
     };
     loadStats();
     return () => { mounted = false; };
   }, [paquetes, mayoristas]);
+
+  // Skeleton component inline
+  const SkeletonCard = () => (
+    <div className="bg-white rounded-xl border border-gray-200 p-4 flex items-center gap-4 shadow-sm animate-pulse">
+      <div className="w-10 h-10 rounded-lg bg-gray-200" />
+      <div className="flex-1 space-y-2">
+        <div className="h-2 w-20 bg-gray-200 rounded" />
+        <div className="h-4 w-12 bg-gray-300 rounded" />
+      </div>
+    </div>
+  );
+
+  const cotizacionesSesion = useMemo(() => {
+    if (typeof window === 'undefined') return 0;
+    try {
+      const raw = window.localStorage.getItem('cotizador_paquetes');
+      if (!raw) return 0;
+      const arr = JSON.parse(raw);
+      return Array.isArray(arr) ? arr.length : 0;
+    } catch { return 0; }
+  }, []);
 
   return (
     <div className="min-h-screen bg-gray-50 p-3 sm:p-4 lg:p-6">
@@ -143,11 +168,23 @@ const AdminDashboard = () => {
 
         {/* Stat cards */}
         <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-          <StatCard icon={FiPackage} label="Paquetes" value={pkgStats.paquetes} />
-          <StatCard icon={FiDownload} label="Activos" value={pkgStats.activos} accent="bg-emerald-50 text-emerald-600" />
-          <StatCard icon={FiClipboard} label="Inactivos" value={pkgStats.inactivos} accent="bg-rose-50 text-rose-600" />
-          <StatCard icon={FiUsers} label="Mayoristas" value={mayStats.mayoristas} accent="bg-indigo-50 text-indigo-600" />
-          <StatCard icon={FiLayers} label="Cotizaciones" value={typeof window !== 'undefined' && window.localStorage.getItem('cotizador_paquetes') ? JSON.parse(window.localStorage.getItem('cotizador_paquetes')).length : 0} accent="bg-amber-50 text-amber-600" />
+          {statsLoading ? (
+            <>
+              <SkeletonCard />
+              <SkeletonCard />
+              <SkeletonCard />
+              <SkeletonCard />
+              <SkeletonCard />
+            </>
+          ) : (
+            <>
+              <StatCard icon={FiPackage} label="Paquetes" value={pkgStats.paquetes} />
+              <StatCard icon={FiDownload} label="Activos" value={pkgStats.activos} accent="bg-emerald-50 text-emerald-600" />
+              <StatCard icon={FiClipboard} label="Inactivos" value={pkgStats.inactivos} accent="bg-rose-50 text-rose-600" />
+              <StatCard icon={FiUsers} label="Mayoristas" value={mayStats.mayoristas} accent="bg-indigo-50 text-indigo-600" />
+              <StatCard icon={FiLayers} label="Cotizaciones" value={cotizacionesSesion} accent="bg-amber-50 text-amber-600" />
+            </>
+          )}
         </div>
 
         <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 items-start">
