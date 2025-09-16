@@ -52,7 +52,21 @@ const QuickLink = ({ to, icon: Icon, title, desc, color }) => (
 const AdminDashboard = () => {
   const { paquetes, loading: paquetesLoading } = useAllPackages();
   const { mayoristas, loading: mayoristasLoading } = useMayoristas();
-  const loading = paquetesLoading || mayoristasLoading;
+  // Loading base de los hooks
+  const baseLoading = paquetesLoading || mayoristasLoading;
+  // Timeout para cortar animación si la carga se prolonga (evita spinner infinito)
+  const [loadingTimedOut, setLoadingTimedOut] = useState(false);
+  useEffect(() => {
+    if (baseLoading) {
+      setLoadingTimedOut(false);
+      const t = setTimeout(() => setLoadingTimedOut(true), 5000);
+      return () => clearTimeout(t);
+    } else {
+      setLoadingTimedOut(false);
+    }
+  }, [baseLoading]);
+  // Spinner solo mientras: está cargando, no timeout, y aún no hay datos
+  const effectiveLoading = baseLoading && !loadingTimedOut && (paquetes.length === 0 && mayoristas.length === 0);
 
   const [pkgStats, setPkgStats] = useState({ total: 0, paquetes: 0, activos: 0, inactivos: 0 });
   const [mayStats, setMayStats] = useState({ total: 0, mayoristas: 0, activos: 0, inactivos: 0 });
@@ -60,64 +74,98 @@ const AdminDashboard = () => {
   const [refreshingVisual, setRefreshingVisual] = useState(false);
   const refreshTimeoutRef = useRef(null);
 
+  // Caché simple en módulo (sobrevive montajes mientras se mantenga la sesión SPA)
+  const statsCacheRef = useRef({ paquetes: null, mayoristas: null, ts: 0 });
+  const fetchedOnceRef = useRef(false); // evita doble invocación StrictMode
+  const lastLengthsRef = useRef({ paquetes: 0, mayoristas: 0 });
+
   useEffect(() => {
-    let mounted = true;
-    const loadStats = async (visual=false) => {
+    let aborted = false;
+    const loadStats = async (visual = false) => {
+      const cache = statsCacheRef.current;
+      const sameLengths =
+        (paquetes?.length || 0) === lastLengthsRef.current.paquetes &&
+        (mayoristas?.length || 0) === lastLengthsRef.current.mayoristas;
+      const fresh = Date.now() - cache.ts < 30000; // 30s
+      if (cache.paquetes && cache.mayoristas && fresh && sameLengths) {
+        setPkgStats(cache.paquetes);
+        setMayStats(cache.mayoristas);
+        setStatsLoading(false);
+        return;
+      }
+
       setStatsLoading(true);
       if (visual) {
         setRefreshingVisual(true);
         if (refreshTimeoutRef.current) clearTimeout(refreshTimeoutRef.current);
-        refreshTimeoutRef.current = setTimeout(()=> setRefreshingVisual(false), 1800);
+        refreshTimeoutRef.current = setTimeout(() => setRefreshingVisual(false), 1800);
       }
+
       try {
         const [pResp, mResp] = await Promise.allSettled([
           api.packages?.getPaquetesStatsOverview?.(),
           api.mayoristas?.getMayoristasStatsOverview?.(),
         ]);
-        if (mounted) {
-          if (pResp.status === 'fulfilled') {
-            const d = pResp.value?.data ?? pResp.value;
-            setPkgStats({
-              total: d?.total ?? d?.paquetes ?? 0,
-              paquetes: d?.paquetes ?? d?.total ?? 0,
-              activos: d?.activos ?? 0,
-              inactivos: d?.inactivos ?? 0,
-            });
-          } else {
-            // fallback
-            setPkgStats({
-              total: paquetes?.length || 0,
-              paquetes: paquetes?.length || 0,
-              activos: Array.isArray(paquetes) ? paquetes.filter(p=>p.activo).length : 0,
-              inactivos: 0,
-            });
-          }
-          if (mResp.status === 'fulfilled') {
-            const d = mResp.value?.data ?? mResp.value;
-            setMayStats({
-              total: d?.total ?? d?.mayoristas ?? 0,
-              mayoristas: d?.mayoristas ?? d?.total ?? 0,
-              activos: d?.activos ?? 0,
-              inactivos: d?.inactivos ?? 0,
-            });
-          } else {
-            setMayStats({
-              total: mayoristas?.length || 0,
-              mayoristas: mayoristas?.length || 0,
-              activos: 0,
-              inactivos: 0,
-            });
-          }
+
+        if (!aborted) {
+          let pkg, may;
+            if (pResp.status === 'fulfilled') {
+              const d = pResp.value?.data ?? pResp.value;
+              pkg = {
+                total: d?.total ?? d?.paquetes ?? 0,
+                paquetes: d?.paquetes ?? d?.total ?? 0,
+                activos: d?.activos ?? 0,
+                inactivos: d?.inactivos ?? 0,
+              };
+            } else {
+              pkg = {
+                total: paquetes?.length || 0,
+                paquetes: paquetes?.length || 0,
+                activos: Array.isArray(paquetes) ? paquetes.filter(p => p.activo).length : 0,
+                inactivos: 0,
+              };
+            }
+            if (mResp.status === 'fulfilled') {
+              const d = mResp.value?.data ?? mResp.value;
+              may = {
+                total: d?.total ?? d?.mayoristas ?? 0,
+                mayoristas: d?.mayoristas ?? d?.total ?? 0,
+                activos: d?.activos ?? 0,
+                inactivos: d?.inactivos ?? 0,
+              };
+            } else {
+              may = {
+                total: mayoristas?.length || 0,
+                mayoristas: mayoristas?.length || 0,
+                activos: 0,
+                inactivos: 0,
+              };
+            }
+          setPkgStats(pkg);
+          setMayStats(may);
+          statsCacheRef.current = { paquetes: pkg, mayoristas: may, ts: Date.now() };
+          lastLengthsRef.current = { paquetes: paquetes.length || 0, mayoristas: mayoristas.length || 0 };
         }
       } catch (e) {
-        if (mounted && import.meta.env.DEV) console.warn('Error cargando stats dashboard', e);
+        if (import.meta.env.DEV) console.warn('Error cargando stats dashboard', e);
       } finally {
-        if (mounted) setStatsLoading(false);
+        // Siempre liberamos loading aunque se haya abortado la primera ejecución (caso StrictMode)
+        setStatsLoading(false);
       }
     };
-    loadStats();
-    return () => { mounted = false; };
-  }, [paquetes, mayoristas]);
+
+    const needFirstFetch = !fetchedOnceRef.current;
+    const cacheEmpty = !statsCacheRef.current.paquetes || !statsCacheRef.current.mayoristas;
+    const lengthChanged =
+      (paquetes?.length || 0) !== lastLengthsRef.current.paquetes ||
+      (mayoristas?.length || 0) !== lastLengthsRef.current.mayoristas;
+
+    if (needFirstFetch || cacheEmpty || lengthChanged) {
+      fetchedOnceRef.current = true;
+      loadStats();
+    }
+    return () => { aborted = true; };
+  }, [paquetes?.length, mayoristas?.length]);
 
   const manualRefresh = () => {
     // fuerza recarga de la página (como antes) pero disparando animación local
@@ -150,7 +198,7 @@ const AdminDashboard = () => {
     <div className="min-h-screen bg-white p-3 sm:p-4 lg:p-6 relative">
       <div className="max-w-7xl mx-auto space-y-6 relative">
         {/* Header */}
-        <div className="glass-panel glass-border-gradient rounded-2xl shadow-lg p-4 sm:p-6 fade-slide-up">
+  <div className="glass-panel glass-border-gradient rounded-2xl shadow-lg p-4 sm:p-6">
           <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center gap-6">
             <div className="flex-1 min-w-0 space-y-2">
               <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-indigo-700 tracking-tight leading-tight">
@@ -164,12 +212,12 @@ const AdminDashboard = () => {
               <button
                 type="button"
                 onClick={manualRefresh}
-                disabled={loading}
+                disabled={effectiveLoading}
                 aria-label="Actualizar"
                 title="Actualizar"
                 className="group relative flex items-center justify-center gap-2 font-semibold py-3 px-5 rounded-xl transition-all text-sm sm:text-base whitespace-nowrap bg-white/70 hover:bg-white/90 text-gray-700 border border-white/60 shadow-sm hover:shadow focus-ring-custom disabled:opacity-50"
               >
-                <FiRefreshCw className={`w-5 h-5 ${loading ? 'animate-spin' : 'group-hover:rotate-180 transition-transform duration-700'}`} />
+                <FiRefreshCw className={`w-5 h-5 ${effectiveLoading ? 'animate-spin' : 'group-hover:rotate-180 transition-transform duration-700'}`} />
                 <span>Actualizar</span>
                 <span className="absolute inset-0 rounded-xl pointer-events-none opacity-0 group-hover:opacity-100 bg-gradient-to-r from-transparent via-white/40 to-transparent transition-opacity duration-500" />
               </button>

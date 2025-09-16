@@ -207,7 +207,7 @@ export default function PackageLookupPanel() {
 
   return (
     <div className="relative p-5 lg:p-7">
-      <div className="absolute inset-0 opacity-60 pointer-events-none bg-gradient-to-br from-white/40 via-white/20 to-white/10" />
+      {/* Eliminado overlay decorativo para carga inicial */}
       <div className="relative mb-6 space-y-1">
   <h2 className="text-lg sm:text-xl font-extrabold tracking-tight text-indigo-700 flex items-center gap-2">
           <span className="p-2 rounded-lg bg-blue-50 text-blue-600 shadow-sm">
@@ -279,7 +279,24 @@ export default function PackageLookupPanel() {
                   <tr key={item.id} className="border-b last:border-b-0 border-white/50 hover:bg-white/70 transition-colors">
                     <td className="px-4 py-2">
                       {showCodigo ? (
-                        <button onClick={() => handleCopyField(showCodigo)} title="Copiar código" className="text-blue-600 font-medium hover:underline focus-ring-custom rounded">{showCodigo}</button>
+                        <div className="flex items-center gap-2">
+                          <a
+                            href={`/paquetes/${showCodigo}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-blue-600 font-medium hover:underline focus-ring-custom rounded"
+                            title="Abrir paquete en nueva pestaña"
+                          >
+                            {showCodigo}
+                          </a>
+                          <button
+                            onClick={() => handleCopyField(showCodigo)}
+                            title="Copiar código"
+                            className="p-1.5 rounded-md bg-blue-600/10 hover:bg-blue-600/20 text-blue-600 focus-ring-custom border border-blue-600/20"
+                          >
+                            <FiLink className="w-4 h-4" />
+                          </button>
+                        </div>
                       ) : (
                         <span className="text-red-500" title="Código no disponible">(sin código)</span>
                       )}
