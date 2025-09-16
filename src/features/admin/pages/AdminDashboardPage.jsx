@@ -71,6 +71,7 @@ const AdminDashboard = () => {
   const [pkgStats, setPkgStats] = useState({ total: 0, paquetes: 0, activos: 0, inactivos: 0 });
   const [mayStats, setMayStats] = useState({ total: 0, mayoristas: 0, activos: 0, inactivos: 0 });
   const [statsLoading, setStatsLoading] = useState(true);
+  const [hasFetched, setHasFetched] = useState(false); // evita mostrar ceros antes del primer fetch real
   const [refreshingVisual, setRefreshingVisual] = useState(false);
   const refreshTimeoutRef = useRef(null);
 
@@ -91,6 +92,7 @@ const AdminDashboard = () => {
         setPkgStats(cache.paquetes);
         setMayStats(cache.mayoristas);
         setStatsLoading(false);
+        setHasFetched(true);
         return;
       }
 
@@ -145,6 +147,7 @@ const AdminDashboard = () => {
           setMayStats(may);
           statsCacheRef.current = { paquetes: pkg, mayoristas: may, ts: Date.now() };
           lastLengthsRef.current = { paquetes: paquetes.length || 0, mayoristas: mayoristas.length || 0 };
+          setHasFetched(true);
         }
       } catch (e) {
         if (import.meta.env.DEV) console.warn('Error cargando stats dashboard', e);
@@ -235,7 +238,7 @@ const AdminDashboard = () => {
 
         {/* Stat cards */}
         <div className={`grid grid-cols-2 md:grid-cols-5 gap-4 ${refreshingVisual ? 'stat-refreshing' : ''}`}>
-          {statsLoading ? (
+          {(!hasFetched && statsLoading) ? (
             <>
               <SkeletonCard />
               <SkeletonCard />
