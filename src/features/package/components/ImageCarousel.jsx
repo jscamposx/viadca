@@ -92,6 +92,7 @@ const ImageCarousel = ({
   onRequestFullscreen, // (urls: string[], startIndex: number)
   onSlideChange, // (index: number)
   disableMobileSwipe = false, // si true, en mobile se desactiva swipe horizontal y flechas
+  showLoadingOverlay = true, // permite ocultar overlay de carga cuando el contenedor ya usa skeleton
 }) => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
@@ -192,7 +193,7 @@ const ImageCarousel = ({
 
   return (
     <div className={`w-full h-full relative group ${snapWrapper}`}>
-      {isLoading && (
+      {showLoadingOverlay && isLoading && (
         <div className="absolute inset-0 z-30 bg-slate-200 flex items-center justify-center">
           <div className="flex flex-col sm:flex-row items-center space-y-2 sm:space-y-0 sm:space-x-3 px-4">
             <div className="w-6 h-6 sm:w-8 sm:h-8 border-2 sm:border-3 border-blue-500 border-t-transparent rounded-full animate-spin"></div>

@@ -54,40 +54,7 @@ import {
   generateOGExtras,
 } from "../../../utils/seoUtils";
 
-function LoadingSpinner() {
-  return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 px-4 relative overflow-hidden">
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-blue-400/20 to-purple-400/20 rounded-full blur-3xl"></div>
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-br from-indigo-400/20 to-pink-400/20 rounded-full blur-3xl"></div>
-      </div>
-
-      <div role="status" className="text-center space-y-8 relative z-10">
-        <div className="relative mx-auto w-24 h-24">
-          <div className="absolute inset-0 border-4 border-slate-200/30 rounded-full"></div>
-          <div className="absolute inset-0 border-4 border-transparent border-t-blue-500 border-r-blue-500 rounded-full animate-spin"></div>
-          <div className="absolute inset-2 border-4 border-transparent border-b-purple-500 border-l-purple-500 rounded-full animate-spin animate-reverse"></div>
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div className="w-4 h-4 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full animate-pulse"></div>
-          </div>
-        </div>
-
-        <div className="space-y-4 max-w-md mx-auto">
-          <h2 className="text-2xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent">
-            Preparando tu experiencia
-          </h2>
-          <p className="text-gray-600 text-base">
-            Cargando los mejores momentos de tu próxima aventura...
-          </p>
-
-          <div className="w-full bg-gray-200/50 rounded-full h-2 overflow-hidden backdrop-blur-sm">
-            <div className="h-full bg-gradient-to-r from-blue-500 to-purple-500 rounded-full animate-pulse w-2/3 transition-all duration-1000"></div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
+// LoadingSpinner removido: el skeleton es el \"único\" loading visual
 
 function ErrorMessage({ message, onRetry }) {
   return (
@@ -538,6 +505,7 @@ function PackageViewPage() {
               emptyStateDescription="Las imágenes de este paquete turístico se cargarán próximamente"
               enableSnap={true}
               disableMobileSwipe={true}
+              showLoadingOverlay={false}
               onRequestFullscreen={(urls, index) => {
                 setLightboxIndex(index);
                 setLightboxOpen(true);
