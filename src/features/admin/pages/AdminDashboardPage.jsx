@@ -56,30 +56,36 @@ const AdminDashboard = () => {
   return (
     <div className="min-h-screen bg-gray-50 p-3 sm:p-4 lg:p-6">
       <div className="max-w-7xl mx-auto space-y-6">
-        {/* Header */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 sm:p-5">
-          <div className="flex flex-col md:flex-row md:items-center gap-4">
-            <div className="flex-1 min-w-0">
-              <h1 className="text-2xl font-bold text-gray-900 tracking-tight">Panel Administrativo</h1>
-              <p className="text-sm text-gray-600 mt-1 line-clamp-2">
-                Resumen rápido del sistema y herramientas directas de cotización.
+        {/* Header remodelado estilo páginas internas */}
+        <div className="bg-white rounded-xl sm:rounded-2xl shadow-md border border-gray-100 p-3 sm:p-4 lg:p-6 mb-2 sm:mb-4">
+          <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center gap-4">
+            <div className="text-center sm:text-left lg:text-left flex-1 min-w-0">
+              <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent tracking-tight">
+                Panel Administrativo
+              </h1>
+              <p className="text-gray-600 mt-1 sm:mt-2 text-sm sm:text-base line-clamp-2">
+                Gestión central: paquetes ({totalPaquetes}), activos ({activos}), mayoristas ({totalMayoristas}).
               </p>
             </div>
-            <div className="flex gap-3">
-              <Link
-                to="/admin/paquetes/nuevo"
-                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium shadow-sm"
-              >
-                <FiPlus className="w-4 h-4" /> Nuevo Paquete
-              </Link>
+            <div className="w-full sm:w-auto lg:w-auto flex items-center justify-center lg:justify-end gap-2">
               <button
+                type="button"
                 onClick={() => window.location.reload()}
                 disabled={loading}
-                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 text-sm font-medium shadow-sm disabled:opacity-50"
+                aria-label="Actualizar"
+                title="Actualizar"
+                className="flex items-center justify-center gap-2 border font-semibold py-3 px-4 rounded-xl shadow-sm transition-all duration-300 text-sm sm:text-base whitespace-nowrap bg-white hover:bg-gray-50 text-gray-700 border-gray-200 disabled:opacity-50"
               >
-                <FiRefreshCw className={`w-4 h-4 ${loading ? "animate-spin" : ""}`} />
-                Actualizar
+                <FiRefreshCw className={`w-4 h-4 sm:w-5 sm:h-5 ${loading ? 'animate-spin' : ''}`} />
+                <span>Actualizar</span>
               </button>
+              <Link
+                to="/admin/paquetes/nuevo"
+                className="w-full sm:w-auto lg:w-auto flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-purple-700 hover:from-blue-700 hover:to-purple-800 text-white font-semibold py-3 px-5 rounded-xl shadow-lg transition-all duration-300 ease-in-out transform hover:-translate-y-0.5 hover:shadow-xl text-sm sm:text-base whitespace-nowrap"
+              >
+                <FiPlus className="w-4 h-4 sm:w-5 sm:h-5" />
+                <span>Nuevo Paquete</span>
+              </Link>
             </div>
           </div>
         </div>
