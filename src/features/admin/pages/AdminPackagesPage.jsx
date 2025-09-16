@@ -651,7 +651,7 @@ const AdminPaquetes = () => {
                   )}
                 </div>
 
-                <div className="flex gap-3">
+                <div className="hidden md:flex gap-3">
                   <div className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white py-2.5 px-4 rounded-xl font-medium text-sm flex items-center gap-2 shadow-md">
                     <div className="w-2 h-2 bg-white rounded-full"></div>
                     {isStatsOrListLoading ? (

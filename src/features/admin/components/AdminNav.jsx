@@ -171,12 +171,12 @@ const AdminNav = ({ isOpen, setIsOpen }) => {
       <header className="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-700 text-white fixed top-0 w-full z-50 shadow-2xl border-b border-white/10">
         <div className="flex justify-between items-center p-4 h-16">
           <div className="flex items-center">
-            <div className="bg-white/10 backdrop-blur-sm p-2 rounded-xl shadow-lg border border-white/20">
-              <img
-                src="/logo-short-sinbg.svg"
-                alt="VIADCA Logo"
-                className="w-6 h-6 filter brightness-0 invert"
-              />
+            <div
+              className="bg-white/10 backdrop-blur-sm p-2 rounded-xl shadow-lg border border-white/20 flex items-center justify-center"
+              role="img"
+              aria-label="VIADCA Panel"
+            >
+              <FiCompass className="w-6 h-6 text-white drop-shadow-md" />
             </div>
             <h1 className="font-bold text-lg ml-3">
               <span className="font-extrabold">VIADCA</span> Admin

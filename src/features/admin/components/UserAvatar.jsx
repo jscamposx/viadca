@@ -12,9 +12,27 @@ const UserAvatar = ({
   const { user } = useAuth();
 
   // Usar datos del usuario autenticado si no se pasan props específicos
-  const displayName = name || user?.nombre || user?.usuario || "Usuario";
-  const displayEmail =
-    email || user?.correo || user?.email || "No especificado";
+  const rawName = name || user?.nombre || user?.usuario || "Usuario";
+  const rawEmail = email || user?.correo || user?.email || "No especificado";
+
+  // Normalizar espacios y recortar extremos
+  const normalize = (str) => (str || "").toString().trim().replace(/\s+/g, " ");
+  const normalizedName = normalize(rawName);
+  const normalizedEmail = normalize(rawEmail);
+
+  // Estrategia de truncado manual (además del CSS) para nombres *muy* largos sin espacios
+  const smartTruncate = (str, max = 38) => {
+    if (!str) return "";
+    if (str.length <= max) return str;
+    // Si no hay espacios (token único), cortar más agresivamente
+    if (!/\s/.test(str)) {
+      return str.slice(0, max - 3) + "...";
+    }
+    return str.slice(0, max - 1).trimEnd() + "…";
+  };
+
+  const displayName = smartTruncate(normalizedName, 38);
+  const displayEmail = smartTruncate(normalizedEmail, 48);
 
   const sizeClasses = {
     sm: "w-8 h-8 text-sm",
@@ -65,9 +83,19 @@ const UserAvatar = ({
       </div>
 
       {showInfo && (
-        <div className="min-w-0 flex-1">
-          <p className="font-semibold text-gray-800 truncate">{displayName}</p>
-          <p className="text-xs text-gray-500 truncate">{displayEmail}</p>
+        <div className="min-w-0 flex-1 max-w-[10.5rem] sm:max-w-[12rem] md:max-w-[13rem] xl:max-w-[14rem]">
+          <p
+            className="font-semibold text-gray-800 truncate leading-snug"
+            title={normalizedName}
+          >
+            {displayName}
+          </p>
+            <p
+              className="text-xs text-gray-500 truncate leading-tight"
+              title={normalizedEmail}
+            >
+              {displayEmail}
+            </p>
         </div>
       )}
     </div>
