@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { FiSearch, FiTrash2, FiDownload, FiHash, FiLink } from "react-icons/fi";
+import { FiSearch, FiTrash2, FiDownload, FiFileText, FiLink } from "react-icons/fi";
 import { useNotifications } from "../../admin/hooks/useNotifications";
 import { exportToExcel, getPaqueteByUrl } from "../../../api/packagesService";
 import apiClient from "../../../api/axiosConfig";
@@ -206,15 +206,19 @@ export default function PackageLookupPanel() {
   // Se eliminaron: exportación masiva y generación de CSV para versión simplificada
 
   return (
-    <div className="bg-white rounded-2xl shadow-md border border-gray-200 p-5 lg:p-6">
-      <div className="mb-6">
-        <h2 className="text-lg sm:text-xl font-bold text-gray-900 flex items-center gap-2">
-          <FiHash className="w-5 h-5 text-blue-600" /> Cotizador de Paquetes
+    <div className="relative p-5 lg:p-7">
+      <div className="absolute inset-0 opacity-60 pointer-events-none bg-gradient-to-br from-white/40 via-white/20 to-white/10" />
+      <div className="relative mb-6 space-y-1">
+  <h2 className="text-lg sm:text-xl font-extrabold tracking-tight text-gray-900 flex items-center gap-2">
+          <span className="p-2 rounded-lg bg-blue-50 text-blue-600 shadow-sm">
+            <FiFileText className="w-5 h-5" />
+          </span>
+          Cotizador de Paquetes
         </h2>
-        <p className="text-sm text-gray-600 mt-1">
-          Escribe el código URL del paquete. También puedes pegar la URL completa y lo detectamos.
+        <p className="text-sm text-gray-600/90">
+          Escribe el código URL del paquete o pega la URL completa y lo detectamos.
         </p>
-  <p className="text-xs text-gray-400 mt-1">Ejemplo: si la URL es https://www.viadca.app/paquetes/WMYv0 el código es WMYv0</p>
+        <p className="text-xs text-gray-400">Ejemplo: https://www.viadca.app/paquetes/WMYv0 → código: WMYv0</p>
       </div>
       <form onSubmit={handleAdd} className="flex flex-col sm:flex-row gap-3 mb-6">
         <div className="relative flex-1">
@@ -224,22 +228,23 @@ export default function PackageLookupPanel() {
             value={codigo}
             onChange={(e) => setCodigo(e.target.value)}
             placeholder="ej: WMYv0 o aventura-en-costa-rica"
-            className="w-full pl-9 pr-3 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+            className="w-full pl-9 pr-3 py-3 rounded-xl border border-white/60 bg-white/70 backdrop-blur-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm placeholder:text-gray-400"
           />
         </div>
         <button
           type="submit"
           disabled={isFetching || !codigo.trim()}
-          className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm disabled:opacity-50"
+          className="relative inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 hover:from-blue-600 hover:via-indigo-500 hover:to-purple-600 text-white font-semibold text-sm disabled:opacity-50 transition-all focus-ring-custom shadow-lg hover:-translate-y-0.5 hover:shadow-xl"
         >
           <FiSearch className={`w-4 h-4 ${isFetching ? "animate-spin" : ""}`} />
           Añadir
+          <span className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity" />
         </button>
         {items.length > 0 && (
           <button
             type="button"
             onClick={handleClearAll}
-            className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium text-sm"
+            className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-gray-200/60 hover:bg-gray-300/70 text-gray-800 font-medium text-sm backdrop-blur-md border border-white/50 shadow-sm hover:shadow focus-ring-custom transition"
           >
             Limpiar
           </button>
@@ -252,10 +257,10 @@ export default function PackageLookupPanel() {
         <div className="text-sm text-gray-500 italic">No hay paquetes listados todavía.</div>
       )}
       {items.length > 0 && (
-        <div className="overflow-x-auto -mx-4 sm:mx-0">
+        <div className="overflow-x-auto -mx-4 sm:mx-0 rounded-xl border border-white/50 bg-white/60 backdrop-blur-md shadow-inner">
           <table className="min-w-full text-sm">
-            <thead>
-              <tr className="bg-gray-100 text-gray-700 border-y">
+            <thead className="text-gray-700">
+              <tr className="bg-gradient-to-r from-white/80 to-white/50 border-b border-white/60">
                 <th className="text-left font-semibold px-4 py-2">Código URL</th>
                 <th className="text-left font-semibold px-4 py-2">Título</th>
                 <th className="text-left font-semibold px-4 py-2 whitespace-nowrap">Precio</th>
@@ -271,10 +276,10 @@ export default function PackageLookupPanel() {
                 const showId = p.id || p._id || p.paquete_id || p.paqueteId || null;
                 const showCodigo = p.codigo_url || p.codigoUrl || p.codigo || null;
                 return (
-                  <tr key={item.id} className="border-b last:border-b-0 hover:bg-gray-50">
+                  <tr key={item.id} className="border-b last:border-b-0 border-white/50 hover:bg-white/70 transition-colors">
                     <td className="px-4 py-2">
                       {showCodigo ? (
-                        <button onClick={() => handleCopyField(showCodigo)} title="Copiar código" className="text-blue-600 hover:underline">{showCodigo}</button>
+                        <button onClick={() => handleCopyField(showCodigo)} title="Copiar código" className="text-blue-600 font-medium hover:underline focus-ring-custom rounded">{showCodigo}</button>
                       ) : (
                         <span className="text-red-500" title="Código no disponible">(sin código)</span>
                       )}
@@ -295,7 +300,7 @@ export default function PackageLookupPanel() {
                         )}
                         <button
                           onClick={() => handleCopyField(p.titulo)}
-                          className="text-left hover:underline line-clamp-2"
+                          className="text-left hover:underline line-clamp-2 focus-ring-custom rounded"
                           title="Copiar título"
                         >
                           {p.titulo}
@@ -306,12 +311,12 @@ export default function PackageLookupPanel() {
                       {formatPrecio(p.precio_total, sanitizeMoneda(p.moneda))}
                     </td>
                     <td className="px-4 py-2">
-                      <span className={`text-xs font-medium px-2 py-1 rounded-full border ${p.activo ? "bg-green-50 text-green-700 border-green-200" : "bg-gray-100 text-gray-600 border-gray-200"}`}>
+                      <span className={`text-xs font-medium px-2 py-1 rounded-full border backdrop-blur-sm ${p.activo ? "bg-green-50/80 text-green-700 border-green-200" : "bg-gray-100/70 text-gray-600 border-gray-200"}`}>
                         {p.activo ? "Activo" : "Inactivo"}
                       </span>
                     </td>
                     <td className="px-4 py-2 text-center">
-                      <span className={`inline-block w-2.5 h-2.5 rounded-full ${p.favorito ? "bg-yellow-400" : "bg-gray-300"}`} title={p.favorito ? "Favorito" : "Normal"}></span>
+                      <span className={`inline-block w-2.5 h-2.5 rounded-full ring-2 ring-white/40 ${p.favorito ? "bg-yellow-400" : "bg-gray-300"}`} title={p.favorito ? "Favorito" : "Normal"}></span>
                     </td>
                     <td className="px-4 py-2 text-xs text-gray-600">
                       {p.duracion_dias ? `${p.duracion_dias}d` : "-"}
@@ -320,7 +325,7 @@ export default function PackageLookupPanel() {
                       <div className="flex items-center gap-2">
                         <button
                           onClick={() => handleExportSingle(showId, showCodigo, item.id)}
-                          className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-600 transition text-xs font-medium"
+                          className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-blue-600/10 hover:bg-blue-600/20 text-blue-700 transition text-xs font-medium border border-blue-600/20 shadow-sm backdrop-blur-sm focus-ring-custom"
                           title="Cotizar (Excel)"
                         >
                           <FiDownload className="w-4 h-4" />
@@ -328,7 +333,7 @@ export default function PackageLookupPanel() {
                         </button>
                         <button
                           onClick={() => handleRemove(item.id)}
-                          className="p-2 rounded-lg bg-red-50 hover:bg-red-100 text-red-600 transition"
+                          className="p-2 rounded-lg bg-red-600/10 hover:bg-red-600/20 text-red-600 transition border border-red-600/20 backdrop-blur-sm focus-ring-custom"
                           title="Quitar"
                         >
                           <FiTrash2 className="w-4 h-4" />

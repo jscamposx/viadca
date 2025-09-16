@@ -27,6 +27,7 @@ import {
   FiStar, // añadido
   FiHeart,
 } from "react-icons/fi";
+import AdminHeaderCard from "../components/AdminHeaderCard";
 import api from "../../../api";
 // import { useNotification } from "./AdminLayout";
 import { useNotifications } from "../hooks/useNotifications";
@@ -517,52 +518,38 @@ const AdminPaquetes = () => {
   return (
     <div className="min-h-screen bg-gray-50 p-2 sm:p-4 lg:p-6">
       <div className="max-w-7xl mx-auto">
-        <div className="bg-white rounded-xl sm:rounded-2xl shadow-md border border-gray-100 p-3 sm:p-4 lg:p-6 mb-4 sm:mb-6">
-          <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center gap-4">
-            <div className="text-center sm:text-left lg:text-left">
-              <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                Gestión de Paquetes
-              </h1>
-              {isStatsOrListLoading ? (
-                <div className="mt-2 h-4 sm:h-5 w-52 sm:w-72 bg-gray-200 rounded animate-pulse mx-auto sm:mx-0" />
-              ) : (
-                <p className="text-gray-600 mt-1 sm:mt-2 text-sm sm:text-base">
-                  Administra todos tus paquetes turísticos en un solo lugar (
-                  {(stats?.total ?? stats?.paquetes ?? totalItems) || 0} total)
-                </p>
-              )}
-            </div>
-
-            {/* Acciones: Actualizar + Nuevo Paquete */}
-            <div className="w-full sm:w-auto lg:w-auto flex items-center justify-center lg:justify-end gap-2">
+        <AdminHeaderCard
+          title="Gestión de Paquetes"
+          loading={isStatsOrListLoading}
+          description={!isStatsOrListLoading && 'Administra todos tus paquetes turísticos en un solo lugar'}
+          persistentGlass
+          actions={(
+            <>
               <button
                 type="button"
                 onClick={handleRefresh}
                 disabled={isRefreshing || isLoading}
-                className={`flex items-center justify-center gap-2 border font-semibold py-3 px-4 rounded-xl shadow-sm transition-all duration-300 text-sm sm:text-base whitespace-nowrap ${
+                className={`group relative flex items-center justify-center gap-2 font-semibold py-3 px-4 rounded-xl transition-all text-sm sm:text-base whitespace-nowrap ${
                   isRefreshing || isLoading
-                    ? "bg-gray-100 text-gray-400 border-gray-200"
-                    : "bg-white hover:bg-gray-50 text-gray-700 border-gray-200"
+                    ? 'bg-gray-100 text-gray-400 border border-gray-200'
+                    : 'bg-white/70 hover:bg-white/90 text-gray-700 border border-white/60 shadow-sm hover:shadow'
                 }`}
                 aria-label="Actualizar lista de paquetes"
                 title="Actualizar"
               >
-                <FiRefreshCw
-                  className={`w-4 h-4 sm:w-5 sm:h-5 ${isRefreshing ? "animate-spin" : ""}`}
-                />
+                <FiRefreshCw className={`w-4 h-4 sm:w-5 sm:h-5 ${isRefreshing ? 'animate-spin' : 'group-hover:rotate-180 transition-transform duration-700'}`} />
                 <span>Actualizar</span>
               </button>
-
               <Link
                 to="/admin/paquetes/nuevo"
-                className="w-full sm:w-auto lg:w-auto flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-purple-700 hover:from-blue-700 hover:to-purple-800 text-white font-semibold py-3 px-5 rounded-xl shadow-lg transition-all duración-300 ease-in-out transform hover:-translate-y-0.5 hover:shadow-xl text-sm sm:text-base whitespace-nowrap"
+                className="group relative flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-700 hover:from-blue-600 hover:via-indigo-500 hover:to-purple-600 text-white font-semibold py-3 px-5 rounded-xl shadow-lg transition-all duration-400 ease-out transform hover:-translate-y-0.5 hover:shadow-xl text-sm sm:text-base whitespace-nowrap"
               >
                 <FiPlus className="w-4 h-4 sm:w-5 sm:h-5" />
                 <span>Nuevo Paquete</span>
               </Link>
-            </div>
-          </div>
-        </div>
+            </>
+          )}
+        />
 
         <div className="bg-gradient-to-br from-white/95 via-purple-50/30 to-blue-50/30 backdrop-blur-sm border border-white/40 rounded-xl sm:rounded-2xl shadow-lg p-3 sm:p-4 lg:p-6 mb-4 sm:mb-6">
           <div className="space-y-3 sm:space-y-4">
@@ -1316,7 +1303,7 @@ const AdminPaquetes = () => {
                       title={`Moneda: ${sanitizeMoneda(paquete?.moneda)}`}
                     >
                       <div className="bg-white/90 backdrop-blur-md border border-gray-200/70 shadow-lg rounded-xl px-2.5 sm:px-4 py-1.5 sm:py-2 flex items-center gap-1.5 sm:gap-2">
-                        <span className="text-[11px] sm:text-sm font-bold bg-gradient-to-r from-blue-600 to-indigo-700 bg-clip-text text-transparent tracking-tight">
+                        <span className="text-[11px] sm:text-sm font-bold text-blue-700 tracking-tight">
                           {formatPrecio(
                             paquete?.precio_total,
                             sanitizeMoneda(paquete?.moneda),
@@ -1576,7 +1563,7 @@ const AdminPaquetes = () => {
                 <div className="absolute inset-0 rounded-full bg-gradient-to-br from-blue-500/20 to-indigo-500/20 animate-ping"></div>
               </div>
 
-              <h3 className="text-xl sm:text-2xl lg:text-3xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent mb-3 sm:mb-4">
+              <h3 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-800 mb-3 sm:mb-4">
                 No se encontraron paquetes
               </h3>
 

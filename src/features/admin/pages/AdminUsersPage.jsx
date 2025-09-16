@@ -33,7 +33,9 @@ import {
   FiX,
   FiArrowUp,
   FiArrowDown,
+  FiPlus,
 } from "react-icons/fi";
+import AdminHeaderCard from "../components/AdminHeaderCard";
 
 const AdminUsersPage = () => {
   const { user: currentUser } = useAuth();
@@ -298,50 +300,16 @@ const AdminUsersPage = () => {
         user,
         newRole,
       });
-    } else {
-      // Para otros roles, hacer el cambio directamente usando los parámetros
-      notify
-        .operation(() => updateUserRole(user.id, newRole), {
-          loadingMessage: `Actualizando rol de "${user.usuario}" a ${newRole}...`,
-          successMessage: `Rol de "${user.usuario}" actualizado a ${newRole}`,
-          errorMessage: "Error al cambiar el rol del usuario",
-          loadingTitle: "Actualizando usuario",
-          successTitle: "Usuario actualizado",
-          errorTitle: "Error al actualizar",
-        })
-        .then(() => {
-          setShowActionMenu(null);
-          fetchStats();
-        })
-        .catch((error) => {
-          console.error("Error al cambiar el rol del usuario:", error);
-          // El error ya se maneja en notify.operation
-        });
+      return; // esperar confirmación antes de continuar
     }
-  };
 
-  const handleDeleteUser = async (userId) => {
-    try {
-      const userToDelete = users.find((u) => u.id === userId);
-      const userName = userToDelete?.usuario || "usuario";
-
-      await notify.operation(() => deleteUser(userId), {
-        loadingMessage: `Moviendo "${userName}" a la papelera...`,
-        successMessage: `"${userName}" movido a la papelera`,
-        errorMessage: "Error al eliminar usuario",
-        loadingTitle: "Eliminando usuario",
-        successTitle: "Usuario eliminado",
-        errorTitle: "Error al eliminar",
-      });
-
-      setConfirmDialog({ isOpen: false, type: "", user: null, newRole: null });
-      setShowActionMenu(null);
-      // Actualizar estadísticas después de la eliminación
-      fetchStats();
-    } catch (error) {
-      console.error("Error al eliminar usuario:", error);
-      // El error ya se maneja en notify.operation
-    }
+    // Confirmación directa para otros roles sin diálogo especial
+    setConfirmDialog({
+      isOpen: true,
+      type: 'role-change',
+      user,
+      newRole,
+    });
   };
 
   const getRoleColor = (role) => {
@@ -376,38 +344,28 @@ const AdminUsersPage = () => {
   return (
     <div className="min-h-screen bg-gray-50 p-2 sm:p-4 md:p-5 lg:p-6 xl:p-8">
       <div className="max-w-7xl mx-auto">
-        {/* Header */}
-        <div className="bg-white rounded-xl sm:rounded-2xl shadow-md border border-gray-100 p-3 sm:p-4 lg:p-6 mb-4 sm:mb-6">
-          <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center gap-4">
-            <div className="text-center sm:text-left lg:text-left">
-              <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                Gestión de Usuarios
-              </h1>
-              {/* Texto de soporte con skeleton para carga inicial */}
-              {isInitialLoading ? (
-                <div className="mt-2 h-4 sm:h-5 w-48 sm:w-64 bg-gray-200 rounded animate-pulse mx-auto sm:mx-0" />
-              ) : (
-                <p className="text-gray-600 mt-1 sm:mt-2 text-sm sm:text-base">
-                  Administra todos los usuarios del sistema (
-                  {effectiveStats?.total || 0} total)
-                </p>
-              )}
-            </div>
-
+        <AdminHeaderCard
+          title="Gestión de Usuarios"
+          loading={isInitialLoading}
+          description={!isInitialLoading && 'Administra todos los usuarios del sistema'}
+          persistentGlass
+          actions={(
             <button
               onClick={() => {
-                refresh(); // Forzar actualización unificada (sin notificaciones)
+                refresh();
               }}
-              className="w-full sm:w-auto lg:w-auto flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-purple-700 hover:from-blue-700 hover:to-purple-800 text-white font-semibold py-3 px-5 rounded-xl shadow-lg transition-all duration-300 ease-in-out transform hover:-translate-y-0.5 hover:shadow-xl text-sm sm:text-base whitespace-nowrap"
+              className={`group relative flex items-center justify-center gap-2 font-semibold py-3 px-4 rounded-xl transition-all text-sm sm:text-base whitespace-nowrap ${
+                loading
+                  ? 'bg-gray-100 text-gray-400 border border-gray-200'
+                  : 'bg-white/70 hover:bg-white/90 text-gray-700 border border-white/60 shadow-sm hover:shadow'
+              }`}
               disabled={loading}
             >
-              <FiRefreshCw
-                className={`${loading ? "animate-spin" : ""} w-4 h-4 sm:w-5 sm:h-5`}
-              />
+              <FiRefreshCw className={`w-4 h-4 sm:w-5 sm:h-5 ${loading ? 'animate-spin' : 'group-hover:rotate-180 transition-transform duration-700'}`} />
               <span>Actualizar</span>
             </button>
-          </div>
-        </div>
+          )}
+        />
 
         {/* Contenedor principal unificado */}
         <div className="bg-gradient-to-br from-white/95 via-purple-50/30 to-blue-50/30 backdrop-blur-sm border border-white/40 rounded-xl sm:rounded-2xl shadow-lg p-3 sm:p-4 lg:p-6 mb-4 sm:mb-6">
@@ -1013,7 +971,7 @@ const AdminUsersPage = () => {
                   <div className="absolute inset-0 rounded-full bg-gradient-to-br from-blue-500/20 to-indigo-500/20 animate-ping"></div>
                 </div>
 
-                <h3 className="text-xl sm:text-2xl lg:text-3xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent mb-3 sm:mb-4">
+                <h3 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-800 mb-3 sm:mb-4">
                   No se encontraron usuarios
                 </h3>
 

@@ -21,6 +21,7 @@ import {
   FiTag,
   FiRefreshCw,
 } from "react-icons/fi";
+import AdminHeaderCard from "../components/AdminHeaderCard";
 // import ConfirmDialog from "../components/ConfirmDialog";
 const ConfirmDialog = lazy(() => import("../components/ConfirmDialog"));
 const MayoristaCard = lazy(() => import("../components/MayoristaCard"));
@@ -32,6 +33,7 @@ import { getOperation, clearOperation } from "../utils/operationBus";
 const AdminMayoristasPage = () => {
   const location = useLocation();
   const processedLocationKey = useRef(null);
+  const { notify } = useNotifications();
   const {
     mayoristas,
     /* setMayoristas, */ loading,
@@ -51,57 +53,27 @@ const AdminMayoristasPage = () => {
   } = useMayoristas();
   const [searchTerm, setSearchTerm] = useState("");
   const deferredSearchTerm = useDeferredValue(searchTerm);
-  // const [filteredMayoristas, setFilteredMayoristas] = useState([]);
   const [sortConfig, setSortConfig] = useState({
     key: "nombre",
     direction: "asc",
   });
-  const [tipoFilter, setTipoFilter] = useState("");
-  const [isFiltersOpen, setIsFiltersOpen] = useState(false);
+  // Estados añadidos tras refactor de header que se habían perdido
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const [isSortMenuOpen, setIsSortMenuOpen] = useState(false);
   const [confirmDialog, setConfirmDialog] = useState({
     isOpen: false,
     mayoristaId: null,
     mayoristaName: "",
   });
-  const { notify } = useNotifications();
-  const [isRefreshing, setIsRefreshing] = useState(false);
-
-  // Stats overview para chips y totales
+  // Stats (placeholder). Si existe endpoint futuro se puede poblar aquí.
   const [stats, setStats] = useState(null);
-  const [statsLoading, setStatsLoading] = useState(true);
+  const [statsLoading, setStatsLoading] = useState(false);
 
-  // Indica si es la primera carga (para no bloquear el layout y mejorar LCP)
-  const isInitialLoading =
-    loading && (!Array.isArray(mayoristas) || mayoristas.length === 0);
-
-  // Cargar stats
-  useEffect(() => {
-    let mounted = true;
-    const loadStats = async () => {
-      try {
-        const resp = await api.mayoristas.getMayoristasStatsOverview();
-        const data = resp?.data ?? resp;
-        if (mounted) setStats(data);
-      } catch (e) {
-        if (import.meta.env.DEV)
-          console.error("Error cargando stats mayoristas:", e);
-      } finally {
-        if (mounted) setStatsLoading(false);
-      }
-    };
-    loadStats();
-    return () => {
-      mounted = false;
-    };
-  }, []);
-
-  // Sincronizar búsqueda con backend (consulta global/paginada)
-  useEffect(() => {
-    setSearch(deferredSearchTerm || "");
-  }, [deferredSearchTerm, setSearch]);
-
-  // Manejar operaciones pendientes de creación/edición iniciadas en NewMayoristaPage
+  // Carga inicial: mientras el hook indica loading y aún no hay datos cargados
+  const isInitialLoading = loading && (!Array.isArray(mayoristas) || mayoristas.length === 0);
+  const [tipoFilter, setTipoFilter] = useState("");
+  const [isFiltersOpen, setIsFiltersOpen] = useState(false);
+  // Gestionar operación pendiente (bloque restaurado dentro de useEffect)
   useEffect(() => {
     if (
       location.state?.pendingOperation &&
@@ -185,13 +157,12 @@ const AdminMayoristasPage = () => {
         };
         poll();
       }
-
       // Limpiar el state de la navegación para evitar reprocesos
       setTimeout(() => {
         window.history.replaceState({}, document.title);
       }, 100);
     }
-  }, [location.state?.pendingOperation, location.key, notify, refetch]);
+  }, [location.state?.pendingOperation, location.key, refetch, notify]);
 
   const handleDelete = useCallback((mayoristaId, mayoristaName) => {
     setConfirmDialog({
@@ -352,53 +323,38 @@ const AdminMayoristasPage = () => {
   return (
     <div className="min-h-screen bg-gray-50 p-2 sm:p-4 lg:p-6">
       <div className="max-w-7xl mx-auto">
-        <div className="bg-white rounded-xl sm:rounded-2xl shadow-md border border-gray-100 p-3 sm:p-4 lg:p-6 mb-4 sm:mb-6">
-          <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center gap-4">
-            <div className="text-center sm:text-left lg:text-left">
-              <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                Gestión de Mayoristas
-              </h1>
-              {isInitialLoading ? (
-                <div className="mt-2 h-4 sm:h-5 w-48 sm:w-64 bg-gray-200 rounded animate-pulse mx-auto sm:mx-0" />
-              ) : (
-                <p className="text-gray-600 mt-1 sm:mt-2 text-sm sm:text-base">
-                  Administra todos tus mayoristas en un solo lugar (
-                  {(stats?.total ?? stats?.mayoristas ?? totalItems) || 0}{" "}
-                  total)
-                </p>
-              )}
-            </div>
-
-            {/* Acciones: Actualizar + Nuevo Mayorista */}
-            <div className="w-full sm:w-auto lg:w-auto flex items-center justify-center lg:justify-end gap-2">
+        <AdminHeaderCard
+          title="Gestión de Mayoristas"
+          loading={isInitialLoading}
+          description={!isInitialLoading && 'Administra todos tus mayoristas en un solo lugar'}
+          persistentGlass
+          actions={(
+            <>
               <button
                 type="button"
                 onClick={handleRefresh}
                 disabled={isRefreshing || loading}
-                className={`flex items-center justify-center gap-2 border font-semibold py-3 px-4 rounded-xl shadow-sm transition-all duration-300 text-sm sm:text-base whitespace-nowrap ${
+                className={`group relative flex items-center justify-center gap-2 font-semibold py-3 px-4 rounded-xl transition-all text-sm sm:text-base whitespace-nowrap ${
                   isRefreshing || loading
-                    ? "bg-gray-100 text-gray-400 border-gray-200"
-                    : "bg-white hover:bg-gray-50 text-gray-700 border-gray-200"
+                    ? 'bg-gray-100 text-gray-400 border border-gray-200'
+                    : 'bg-white/70 hover:bg-white/90 text-gray-700 border border-white/60 shadow-sm hover:shadow'
                 }`}
                 aria-label="Actualizar lista de mayoristas"
                 title="Actualizar"
               >
-                <FiRefreshCw
-                  className={`w-4 h-4 sm:w-5 sm:h-5 ${isRefreshing ? "animate-spin" : ""}`}
-                />
+                <FiRefreshCw className={`w-4 h-4 sm:w-5 sm:h-5 ${isRefreshing ? 'animate-spin' : 'group-hover:rotate-180 transition-transform duration-700'}`} />
                 <span>Actualizar</span>
               </button>
-
               <Link
                 to="/admin/mayoristas/nuevo"
-                className="w-full sm:w-auto lg:w-auto flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-purple-700 hover:from-blue-700 hover:to-purple-800 text-white font-semibold py-3 px-5 rounded-xl shadow-lg transition-all duration-300 ease-in-out transform hover:-translate-y-0.5 hover:shadow-xl text-sm sm:text-base whitespace-nowrap"
+                className="group relative flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-700 hover:from-blue-600 hover:via-indigo-500 hover:to-purple-600 text-white font-semibold py-3 px-5 rounded-xl shadow-lg transition-all duration-400 ease-out transform hover:-translate-y-0.5 hover:shadow-xl text-sm sm:text-base whitespace-nowrap"
               >
                 <FiPlus className="w-4 h-4 sm:w-5 sm:h-5" />
                 <span>Nuevo Mayorista</span>
               </Link>
-            </div>
-          </div>
-        </div>
+            </>
+          )}
+        />
 
         <div className="bg-gradient-to-br from-white/95 via-purple-50/30 to-blue-50/30 backdrop-blur-sm border border-white/40 rounded-xl sm:rounded-2xl shadow-lg p-3 sm:p-4 lg:p-6 mb-4 sm:mb-6">
           <div className="space-y-3 sm:space-y-4">
@@ -463,7 +419,7 @@ const AdminMayoristasPage = () => {
                     {statsLoading ? (
                       <div className="h-7 w-8 bg-white/30 rounded animate-pulse" />
                     ) : (
-                      (stats?.total ?? stats?.mayoristas ?? 0)
+                      (stats?.total ?? stats?.mayoristas ?? totalItems ?? mayoristas?.length ?? 0)
                     )}
                   </div>
                 </div>
@@ -527,7 +483,7 @@ const AdminMayoristasPage = () => {
                       {statsLoading ? (
                         <span className="inline-block h-4 w-6 bg-white/40 rounded animate-pulse" />
                       ) : (
-                        (stats?.total ?? stats?.mayoristas ?? 0)
+                        (stats?.total ?? stats?.mayoristas ?? totalItems ?? mayoristas?.length ?? 0)
                       )}
                     </span>
                     <span>mayoristas</span>
@@ -780,7 +736,7 @@ const AdminMayoristasPage = () => {
                 <div className="absolute inset-0 rounded-full bg-gradient-to-br from-purple-500/20 to-indigo-500/20 animate-ping"></div>
               </div>
 
-              <h3 className="text-xl sm:text-2xl lg:text-3xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent mb-3 sm:mb-4">
+              <h3 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-800 mb-3 sm:mb-4">
                 No se encontraron mayoristas
               </h3>
 
