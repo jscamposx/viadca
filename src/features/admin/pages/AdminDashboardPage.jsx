@@ -17,16 +17,43 @@ import {
 } from "react-icons/fi";
 import PackageLookupPanel from "../components/PackageLookupPanel";
 
-const StatCard = ({ icon: Icon, label, value, accent, refreshing }) => (
-  <div
-    className={`relative group rounded-xl border p-4 flex items-center gap-4 shadow-sm transition-all duration-500 bg-white/70 backdrop-blur-md border-white/60 hover:shadow-lg hover:-translate-y-0.5 inner-glow stat-refresh-shimmer ${refreshing ? 'stat-refreshing' : ''}`}
-  >
+const AnimatedNumber = ({ value, duration = 600 }) => {
+  const [display, setDisplay] = useState(value);
+  const startRef = useRef(null);
+  const fromRef = useRef(value);
+  const valueRef = useRef(value);
+  useEffect(() => {
+    if (valueRef.current === value) return; // no cambio
+    const from = display;
+    const to = value;
+    fromRef.current = from;
+    valueRef.current = to;
+    startRef.current = null;
+    let frame;
+    const step = (ts) => {
+      if (!startRef.current) startRef.current = ts;
+      const progress = Math.min(1, (ts - startRef.current) / duration);
+      const eased = 1 - Math.pow(1 - progress, 3); // easeOutCubic
+      const current = Math.round(from + (to - from) * eased);
+      setDisplay(current);
+      if (progress < 1) frame = requestAnimationFrame(step);
+    };
+    frame = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(frame);
+  }, [value]);
+  return <>{display}</>;
+};
+
+const StatCard = ({ icon: Icon, label, value, accent, refreshing, animate = true }) => (
+  <div className={`relative group rounded-xl border p-4 flex items-center gap-4 shadow-sm transition-all duration-500 bg-white/70 backdrop-blur-md border-white/60 hover:shadow-lg hover:-translate-y-0.5 inner-glow stat-refresh-shimmer ${refreshing ? 'stat-refreshing' : ''}`}>
     <div className={`p-2.5 rounded-lg shadow-sm ${accent || 'bg-blue-50 text-blue-600'} group-hover:scale-110 transition-transform duration-300`}>
       <Icon className="w-5 h-5" />
     </div>
     <div className="flex-1 min-w-0">
       <p className="text-[10px] tracking-[0.15em] font-semibold uppercase text-gray-500/80 line-clamp-1">{label}</p>
-      <p className="text-xl font-bold text-gray-900/90 mt-0.5 tabular-nums">{value}</p>
+      <p className="text-xl font-bold text-gray-900/90 mt-0.5 tabular-nums">
+        {animate ? <AnimatedNumber value={value} /> : value}
+      </p>
     </div>
     <div className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none mix-blend-overlay bg-gradient-to-r from-transparent via-white/25 to-transparent" />
   </div>
@@ -68,8 +95,8 @@ const AdminDashboard = () => {
   // Spinner solo mientras: está cargando, no timeout, y aún no hay datos
   const effectiveLoading = baseLoading && !loadingTimedOut && (paquetes.length === 0 && mayoristas.length === 0);
 
-  const [pkgStats, setPkgStats] = useState({ total: 0, paquetes: 0, activos: 0, inactivos: 0 });
-  const [mayStats, setMayStats] = useState({ total: 0, mayoristas: 0, activos: 0, inactivos: 0 });
+  const [pkgStats, setPkgStats] = useState({ total: null, paquetes: null, activos: null, inactivos: null });
+  const [mayStats, setMayStats] = useState({ total: null, mayoristas: null, activos: null, inactivos: null });
   const [statsLoading, setStatsLoading] = useState(true);
   const [hasFetched, setHasFetched] = useState(false); // evita mostrar ceros antes del primer fetch real
   const [refreshingVisual, setRefreshingVisual] = useState(false);
@@ -238,7 +265,7 @@ const AdminDashboard = () => {
 
         {/* Stat cards */}
         <div className={`grid grid-cols-2 md:grid-cols-5 gap-4 ${refreshingVisual ? 'stat-refreshing' : ''}`}>
-          {(!hasFetched && statsLoading) ? (
+          {(!hasFetched) ? (
             <>
               <SkeletonCard />
               <SkeletonCard />
@@ -248,11 +275,11 @@ const AdminDashboard = () => {
             </>
           ) : (
             <>
-              <StatCard icon={FiPackage} label="Paquetes" value={pkgStats.paquetes} refreshing={refreshingVisual} />
-              <StatCard icon={FiDownload} label="Activos" value={pkgStats.activos} accent="bg-emerald-50 text-emerald-600" refreshing={refreshingVisual} />
-              <StatCard icon={FiClipboard} label="Inactivos" value={pkgStats.inactivos} accent="bg-rose-50 text-rose-600" refreshing={refreshingVisual} />
-              <StatCard icon={FiUsers} label="Mayoristas" value={mayStats.mayoristas} accent="bg-indigo-50 text-indigo-600" refreshing={refreshingVisual} />
-              <StatCard icon={FiLayers} label="Cotizaciones" value={cotizacionesSesion} accent="bg-amber-50 text-amber-600" refreshing={refreshingVisual} />
+              <StatCard icon={FiPackage} label="Paquetes" value={pkgStats.paquetes ?? 0} refreshing={refreshingVisual} />
+              <StatCard icon={FiDownload} label="Activos" value={pkgStats.activos ?? 0} accent="bg-emerald-50 text-emerald-600" refreshing={refreshingVisual} />
+              <StatCard icon={FiClipboard} label="Inactivos" value={pkgStats.inactivos ?? 0} accent="bg-rose-50 text-rose-600" refreshing={refreshingVisual} />
+              <StatCard icon={FiUsers} label="Mayoristas" value={mayStats.mayoristas ?? 0} accent="bg-indigo-50 text-indigo-600" refreshing={refreshingVisual} />
+              <StatCard icon={FiLayers} label="Cotizaciones" value={cotizacionesSesion ?? 0} accent="bg-amber-50 text-amber-600" refreshing={refreshingVisual} />
             </>
           )}
         </div>
