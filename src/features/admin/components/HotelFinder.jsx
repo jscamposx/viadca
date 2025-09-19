@@ -238,10 +238,12 @@ const HotelFinder = ({ destination, onHotelSelect, selectedHotel }) => {
     setLoadingCustom(true);
     try {
       const { data } = await api.packages.getCustomHotelsFull();
-      // Normalizar a la forma que usa el componente
-      const normalized = (data || []).map((item, idx) => {
+      // Normalizar y agrupar por hotel (dedupe). Mantener lista de paquetes asociados
+      const groups = new Map();
+      (data || []).forEach((item, idx) => {
         const h = item.hotel || item;
-        return {
+        const key = h.id || h.placeId || h.place_id || `custom-${idx}`;
+        const normalizedHotel = {
           id: h.id || `custom-${idx}`,
           place_id: h.placeId || h.place_id || null,
           nombre: h.nombre,
@@ -257,10 +259,19 @@ const HotelFinder = ({ destination, onHotelSelect, selectedHotel }) => {
             nombre: img.nombre || `hotel-${i + 1}.jpg`,
           })),
           isCustom: true,
-          paquete: item.paquete || null,
+          paquetes: [],
         };
+
+        const pkg = item.paquete || null;
+        if (!groups.has(key)) {
+          normalizedHotel.paquetes = pkg ? [pkg] : [];
+          groups.set(key, normalizedHotel);
+        } else {
+          const existing = groups.get(key);
+          if (pkg) existing.paquetes.push(pkg);
+        }
       });
-      setCustomHotels(normalized);
+      setCustomHotels(Array.from(groups.values()));
     } catch (e) {
       console.error("Error cargando hoteles custom:", e);
     } finally {
@@ -520,12 +531,26 @@ const HotelFinder = ({ destination, onHotelSelect, selectedHotel }) => {
     );
   };
 
-  const sourceHotels =
-    sourceTab === "google"
-      ? allHotels
-      : sourceTab === "custom"
-        ? customHotels
-        : [...customHotels, ...allHotels];
+  let sourceHotels = [];
+  if (sourceTab === "google") {
+    sourceHotels = allHotels;
+  } else if (sourceTab === "custom") {
+    sourceHotels = customHotels;
+  } else {
+    // Combinar sin duplicados, priorizando custom sobre google/manual
+    const map = new Map();
+    // Primero custom
+    for (const h of customHotels) {
+      const key = h.place_id || h.id;
+      map.set(key, h);
+    }
+    // Luego Google/otros si no existen
+    for (const h of allHotels) {
+      const key = h.place_id || h.id;
+      if (!map.has(key)) map.set(key, h);
+    }
+    sourceHotels = Array.from(map.values());
+  }
   const filteredHotels = filterHotelsByName(sourceHotels, searchTerm);
   const totalPages = Math.ceil(filteredHotels.length / itemsPerPage);
   const getCurrentHotels = () => {
@@ -749,16 +774,15 @@ const HotelFinder = ({ destination, onHotelSelect, selectedHotel }) => {
                       // Obtener la URL de la imagen usando las utilidades
                       let imageUrl = null;
                       if (hotel.isCustom) {
-                        // Para hoteles personalizados, usar la primera imagen disponible
-                        const firstImage =
-                          hotel.imagenes?.[0] || hotel.images?.[0];
+                        // Para hoteles personalizados, usar la primera imagen (preferir cloudinary/url
+                        const firstImage = hotel.imagenes?.[0] || hotel.images?.[0];
                         if (firstImage) {
                           if (firstImage.file) {
                             imageUrl = URL.createObjectURL(firstImage.file);
+                          } else if (firstImage.cloudinary_url || firstImage.cloudinary_public_id) {
+                            imageUrl = getImageUrl(firstImage.cloudinary_url || firstImage);
                           } else {
-                            imageUrl = getImageUrl(
-                              firstImage.contenido || firstImage.url,
-                            );
+                            imageUrl = getImageUrl(firstImage.contenido || firstImage.url);
                           }
                         }
                       } else {
@@ -922,9 +946,13 @@ const HotelFinder = ({ destination, onHotelSelect, selectedHotel }) => {
                                   Hotel personalizado
                                 </p>
                               )}
-                              {hotel.paquete && (
+                              {Array.isArray(hotel.paquetes) && hotel.paquetes.length > 0 && (
                                 <p className="text-[11px] text-gray-500">
-                                  Paquete: {hotel.paquete.titulo} ({hotel.paquete.codigoUrl})
+                                  {hotel.paquetes.length === 1 ? (
+                                    <>Paquete: {hotel.paquetes[0].titulo} ({hotel.paquetes[0].codigoUrl})</>
+                                  ) : (
+                                    <>Usado en {hotel.paquetes.length} paquetes</>
+                                  )}
                                 </p>
                               )}
                             </div>
