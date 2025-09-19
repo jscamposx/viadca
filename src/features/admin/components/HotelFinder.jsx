@@ -26,6 +26,16 @@ const HotelFinder = ({ destination, onHotelSelect, selectedHotel }) => {
   // Ref para evitar condiciones de carrera
   const isAddingSelectedHotel = useRef(false);
 
+  // Utilidad local para normalizar nombres (dedupe por nombre cuando no hay placeId)
+  const slugifyName = (str) =>
+    (str || "")
+      .toString()
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "");
+
   useEffect(() => {
     if (!selectedHotel) {
       isAddingSelectedHotel.current = false;
@@ -242,7 +252,10 @@ const HotelFinder = ({ destination, onHotelSelect, selectedHotel }) => {
       const groups = new Map();
       (data || []).forEach((item, idx) => {
         const h = item.hotel || item;
-        const key = h.id || h.placeId || h.place_id || `custom-${idx}`;
+        const key =
+          h.placeId ||
+          h.place_id ||
+          (h.nombre ? `name:${slugifyName(h.nombre)}` : h.id || `custom-${idx}`);
         const normalizedHotel = {
           id: h.id || `custom-${idx}`,
           place_id: h.placeId || h.place_id || null,
@@ -541,12 +554,12 @@ const HotelFinder = ({ destination, onHotelSelect, selectedHotel }) => {
     const map = new Map();
     // Primero custom
     for (const h of customHotels) {
-      const key = h.place_id || h.id;
+      const key = h.place_id || `name:${slugifyName(h.nombre)}` || h.id;
       map.set(key, h);
     }
     // Luego Google/otros si no existen
     for (const h of allHotels) {
-      const key = h.place_id || h.id;
+      const key = h.place_id || `name:${slugifyName(h.nombre)}` || h.id;
       if (!map.has(key)) map.set(key, h);
     }
     sourceHotels = Array.from(map.values());
@@ -767,9 +780,18 @@ const HotelFinder = ({ destination, onHotelSelect, selectedHotel }) => {
                   <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
                     {getCurrentHotels().map((hotel) => {
                       // Determinar si el hotel está seleccionado usando la función utilitaria
-                      const isSelected =
-                        selectedHotel &&
-                        hotelExistsInList(hotel, [selectedHotel]);
+                      const isSelected = (() => {
+                        if (!selectedHotel) return false;
+                        const selKey =
+                          selectedHotel.place_id ||
+                          `name:${slugifyName(selectedHotel.nombre)}` ||
+                          selectedHotel.id;
+                        const cardKey =
+                          hotel.place_id ||
+                          `name:${slugifyName(hotel.nombre)}` ||
+                          hotel.id;
+                        return selKey === cardKey;
+                      })();
 
                       // Obtener la URL de la imagen usando las utilidades
                       let imageUrl = null;
