@@ -1,6 +1,13 @@
 import { cloudinaryService } from "../services/cloudinaryService.js";
 
-const API_URL = import.meta.env.VITE_API_BASE_URL;
+// Alinear base URL con axiosConfig: usar VITE_API_BASE_URL o fallbacks
+const resolveBaseURL = () => {
+  const envURL = import.meta.env.VITE_API_BASE_URL;
+  if (envURL) return envURL;
+  if (import.meta.env?.DEV) return "http://localhost:3000";
+  return "https://api.jscamposx.dev";
+};
+const API_URL = resolveBaseURL();
 
 export const getImageUrl = (urlOrImage, options = {}) => {
   const {
@@ -17,6 +24,11 @@ export const getImageUrl = (urlOrImage, options = {}) => {
   }
 
   const url = urlOrImage;
+
+  // Mantener esquemas especiales tal cual (blob:, data:)
+  if (typeof url === "string" && (url.startsWith("blob:") || url.startsWith("data:"))) {
+    return url;
+  }
 
   if (typeof url === "string" && url.includes("cloudinary.com")) {
     const publicId = cloudinaryService.extractPublicId(url);
