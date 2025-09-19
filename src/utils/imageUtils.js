@@ -41,9 +41,21 @@ export const getImageUrl = (urlOrImage, options = {}) => {
     return `${API_URL}/${url.replace(/^\/+/, "")}`;
   }
 
-  // NUEVO: devolver rutas absolutas del front (activos en /public) sin prefijo API
+  // Activos del front (ubicados en /public) — lista blanca de prefijos conocidos
   if (typeof url === "string" && url.startsWith("/")) {
-    return url; // sirve directamente desde /public
+    const publicPrefixes = [
+      "/HomePage/",
+      "/videos/",
+      "/favicon.svg",
+      "/robots.txt",
+      "/sitemap.xml",
+      "/viadca-icon.avif",
+      "/viadcalogo.avif",
+      "/assets/", // Vite assets
+    ];
+    const isPublicAsset = publicPrefixes.some((p) => url.startsWith(p));
+    // Si no es un asset público conocido, asumir que pertenece al backend
+    return isPublicAsset ? url : `${API_URL}/${url.replace(/^\/+/, "")}`;
   }
 
   if (typeof url === "string") {

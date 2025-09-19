@@ -3,14 +3,18 @@ import { useMapsLibrary } from "@vis.gl/react-google-maps";
 import StarRating from "./StarRating";
 import { getImageUrl } from "../../../utils/imageUtils";
 import OptimizedImage from "../../../components/ui/OptimizedImage";
+import api from "../../../api";
 
 const HotelFinder = ({ destination, onHotelSelect, selectedHotel }) => {
   const places = useMapsLibrary("places");
   const [allHotels, setAllHotels] = useState([]);
+  const [customHotels, setCustomHotels] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [loadingCustom, setLoadingCustom] = useState(false);
   const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(0);
   const [searchTerm, setSearchTerm] = useState("");
+  const [sourceTab, setSourceTab] = useState("google"); // 'google' | 'custom' | 'todos'
   const [isManualFormVisible, setIsManualFormVisible] = useState(false);
   const [isLoadingHotelImages, setIsLoadingHotelImages] = useState(false);
   const [customHotel, setCustomHotel] = useState({
@@ -229,6 +233,41 @@ const HotelFinder = ({ destination, onHotelSelect, selectedHotel }) => {
     [places],
   );
 
+  // Cargar hoteles custom desde backend (admin)
+  const fetchCustomHotels = useCallback(async () => {
+    setLoadingCustom(true);
+    try {
+      const { data } = await api.packages.getCustomHotelsFull();
+      // Normalizar a la forma que usa el componente
+      const normalized = (data || []).map((item, idx) => {
+        const h = item.hotel || item;
+        return {
+          id: h.id || `custom-${idx}`,
+          place_id: h.placeId || h.place_id || null,
+          nombre: h.nombre,
+          estrellas: h.estrellas || 0,
+          total_calificaciones: h.total_calificaciones || 0,
+          imagenes: (h.imagenes || []).map((img, i) => ({
+            orden: img.orden || i + 1,
+            tipo: img.tipo || (img.cloudinary_url ? "cloudinary" : "url"),
+            contenido: img.contenido || img.cloudinary_url || img.url,
+            cloudinary_public_id: img.cloudinary_public_id,
+            cloudinary_url: img.cloudinary_url,
+            mime_type: img.mime_type || "image/jpeg",
+            nombre: img.nombre || `hotel-${i + 1}.jpg`,
+          })),
+          isCustom: true,
+          paquete: item.paquete || null,
+        };
+      });
+      setCustomHotels(normalized);
+    } catch (e) {
+      console.error("Error cargando hoteles custom:", e);
+    } finally {
+      setLoadingCustom(false);
+    }
+  }, []);
+
   useEffect(() => {
     if (destination?.lat && destination?.lng) {
       fetchHotels(destination.lat, destination.lng);
@@ -236,6 +275,11 @@ const HotelFinder = ({ destination, onHotelSelect, selectedHotel }) => {
       setAllHotels([]);
     }
   }, [destination, fetchHotels]);
+
+  // Cargar custom al montar (solo una vez)
+  useEffect(() => {
+    fetchCustomHotels();
+  }, [fetchCustomHotels]);
 
   const handleSelectHotel = async (hotel) => {
     // Verificar si el hotel ya está seleccionado usando la función utilitaria
@@ -476,7 +520,13 @@ const HotelFinder = ({ destination, onHotelSelect, selectedHotel }) => {
     );
   };
 
-  const filteredHotels = filterHotelsByName(allHotels, searchTerm);
+  const sourceHotels =
+    sourceTab === "google"
+      ? allHotels
+      : sourceTab === "custom"
+        ? customHotels
+        : [...customHotels, ...allHotels];
+  const filteredHotels = filterHotelsByName(sourceHotels, searchTerm);
   const totalPages = Math.ceil(filteredHotels.length / itemsPerPage);
   const getCurrentHotels = () => {
     const startIndex = currentPage * itemsPerPage;
@@ -531,6 +581,36 @@ const HotelFinder = ({ destination, onHotelSelect, selectedHotel }) => {
           </div>
         ) : (
           <>
+            {/* Tabs de fuente */}
+            <div className="mb-4">
+              <div className="inline-flex rounded-lg border border-gray-200 bg-gray-50 p-1">
+                {[
+                  { key: "google", label: "Google" },
+                  { key: "custom", label: "Personalizados" },
+                  { key: "todos", label: "Todos" },
+                ].map((tab) => (
+                  <button
+                    key={tab.key}
+                    type="button"
+                    onClick={() => {
+                      setSourceTab(tab.key);
+                      setCurrentPage(0);
+                    }}
+                    className={`px-3 py-1.5 text-sm rounded-md transition-colors ${
+                      sourceTab === tab.key
+                        ? "bg-white text-blue-600 shadow-sm"
+                        : "text-gray-600 hover:text-gray-800"
+                    }`}
+                  >
+                    {tab.label}
+                  </button>
+                ))}
+              </div>
+              {sourceTab === "custom" && loadingCustom && (
+                <span className="ml-3 text-sm text-gray-500">Cargando...</span>
+              )}
+            </div>
+
             {/* Barra de búsqueda mejorada */}
             <div className="mb-6">
               <label
@@ -840,6 +920,11 @@ const HotelFinder = ({ destination, onHotelSelect, selectedHotel }) => {
                               {hotel.isCustom && (
                                 <p className="text-purple-600 text-xs">
                                   Hotel personalizado
+                                </p>
+                              )}
+                              {hotel.paquete && (
+                                <p className="text-[11px] text-gray-500">
+                                  Paquete: {hotel.paquete.titulo} ({hotel.paquete.codigoUrl})
                                 </p>
                               )}
                             </div>

@@ -35,6 +35,8 @@ const NuevoPaquete = () => {
   const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [activeSection, setActiveSection] = useState("basicos");
+  const [validationErrors, setValidationErrors] = useState([]);
+  const [validationMap, setValidationMap] = useState({});
 
   const { paquete, loading, error } = usePackage(id, true);
 
@@ -70,11 +72,13 @@ const NuevoPaquete = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
+  setValidationErrors([]);
+  setValidationMap({});
 
     try {
       const result = await formSubmitHandler(
         e,
-        () => {}, // sin notificaciones aquí
+        () => {}, // sin notificaciones aquí (mostramos nuestro banner)
         true, // backgroundMode = true
       );
 
@@ -99,7 +103,13 @@ const NuevoPaquete = () => {
       }
     } catch (err) {
       console.error("Error inesperado en el envío del paquete:", err);
-      // Notificaciones deshabilitadas en esta página
+      // Mostrar banner compacto de validación si aplica
+      if (err?.isValidationError && Array.isArray(err.validationErrors)) {
+        setActiveSection("basicos");
+        setValidationErrors(err.validationErrors);
+        setValidationMap(err.validationMap || {});
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -260,6 +270,34 @@ const NuevoPaquete = () => {
         </div>
 
         <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 xl:px-8 py-4 sm:py-6 lg:py-8">
+          {validationErrors.length > 0 && (
+            <div className="mb-4 sm:mb-6 rounded-xl border border-red-200 bg-red-50 p-4">
+              <div className="flex items-start gap-3">
+                <div className="flex-shrink-0 w-9 h-9 rounded-lg bg-red-100 flex items-center justify-center">
+                  <svg className="w-5 h-5 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01M4.93 4.93l14.14 14.14M12 2a10 10 0 100 20 10 10 0 000-20z" />
+                  </svg>
+                </div>
+                <div className="flex-1">
+                  <h4 className="text-sm sm:text-base font-semibold text-red-800">Por favor corrige los siguientes campos:</h4>
+                  <ul className="mt-2 list-disc pl-5 space-y-1 text-red-700 text-sm">
+                    {validationErrors.map((err, idx) => (
+                      <li key={idx}>{err}</li>
+                    ))}
+                  </ul>
+                </div>
+                <div className="hidden sm:block">
+                  <button
+                    type="button"
+                    onClick={() => setActiveSection("basicos")}
+                    className="px-3 py-1.5 rounded-md bg-white text-red-700 border border-red-200 hover:bg-red-100 text-sm"
+                  >
+                    Ir a Básicos
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
           <div className="grid grid-cols-1 xl:grid-cols-12 gap-4 sm:gap-6 lg:gap-8">
             {/* Sidebar para desktop */}
             <div className="hidden xl:block xl:col-span-3">
@@ -395,6 +433,7 @@ const NuevoPaquete = () => {
                       <BasicInfoForm
                         formData={formData}
                         onFormChange={handleFormChange}
+                        errors={validationMap}
                       />
                     )}
 
@@ -402,6 +441,7 @@ const NuevoPaquete = () => {
                       <PricingForm
                         formData={formData}
                         onFormChange={handleFormChange}
+                        errors={validationMap}
                       />
                     )}
 

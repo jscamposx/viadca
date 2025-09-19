@@ -1,6 +1,6 @@
 import React from "react";
 
-const BasicInfoForm = ({ formData, onFormChange }) => {
+const BasicInfoForm = ({ formData, onFormChange, errors = {} }) => {
   return (
     <div className="space-y-4 sm:space-y-6">
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
@@ -13,10 +13,17 @@ const BasicInfoForm = ({ formData, onFormChange }) => {
             name="titulo"
             value={formData.titulo || ""}
             onChange={onFormChange}
-            className="w-full p-2.5 sm:p-3 border border-gray-300 rounded-lg sm:rounded-md focus:ring-2 focus:ring-blue-500 text-sm sm:text-base"
+            className={`w-full p-2.5 sm:p-3 border rounded-lg sm:rounded-md focus:ring-2 text-sm sm:text-base ${
+              errors.titulo ? "border-red-400 focus:ring-red-500" : "border-gray-300 focus:ring-blue-500"
+            }`}
             placeholder="Ej. Maravillas de Kioto, Japón"
+            maxLength={200}
             required
           />
+          <p className="mt-1 text-xs text-gray-500">Máximo 200 caracteres</p>
+          {errors.titulo && (
+            <p className="mt-1 text-xs text-red-600">{errors.titulo}</p>
+          )}
         </div>
 
         <div>
@@ -28,9 +35,14 @@ const BasicInfoForm = ({ formData, onFormChange }) => {
             name="fecha_inicio"
             value={formData.fecha_inicio || ""}
             onChange={onFormChange}
-            className="w-full p-2.5 sm:p-3 border border-gray-300 rounded-lg sm:rounded-md focus:ring-2 focus:ring-blue-500 text-sm sm:text-base"
+            className={`w-full p-2.5 sm:p-3 border rounded-lg sm:rounded-md focus:ring-2 text-sm sm:text-base ${
+              errors.fecha_inicio ? "border-red-400 focus:ring-red-500" : "border-gray-300 focus:ring-blue-500"
+            }`}
             required
           />
+          {errors.fecha_inicio && (
+            <p className="mt-1 text-xs text-red-600">{errors.fecha_inicio}</p>
+          )}
         </div>
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1 sm:mb-2">
@@ -41,9 +53,14 @@ const BasicInfoForm = ({ formData, onFormChange }) => {
             name="fecha_fin"
             value={formData.fecha_fin || ""}
             onChange={onFormChange}
-            className="w-full p-2.5 sm:p-3 border border-gray-300 rounded-lg sm:rounded-md focus:ring-2 focus:ring-blue-500 text-sm sm:text-base"
+            className={`w-full p-2.5 sm:p-3 border rounded-lg sm:rounded-md focus:ring-2 text-sm sm:text-base ${
+              errors.fecha_fin ? "border-red-400 focus:ring-red-500" : "border-gray-300 focus:ring-blue-500"
+            }`}
             required
           />
+          {errors.fecha_fin && (
+            <p className="mt-1 text-xs text-red-600">{errors.fecha_fin}</p>
+          )}
         </div>
 
         <div className="sm:col-span-2">

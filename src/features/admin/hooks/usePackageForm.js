@@ -379,15 +379,118 @@ export const usePackageForm = (initialPackageData = null) => {
     backgroundMode = false,
   ) => {
     event.preventDefault();
+    // Validación de creación: campos obligatorios top-level
+    const validateISODate = (val) =>
+      typeof val === "string" &&
+      /^\d{4}-\d{2}-\d{2}$/.test(val) &&
+      !isNaN(new Date(val).getTime());
 
-    if (!formData.origen_lat || !formData.destino_lat) {
-      if (addNotification) {
-        addNotification(
-          "Por favor, selecciona tanto el origen como el destino en el mapa.",
-          "error",
-        );
+    const errors = [];
+    const errorMap = {};
+    if (!initialPackageData) {
+      // Solo validar exhaustivamente en creación (PATCH puede ser parcial)
+      if (!formData.titulo || !formData.titulo.trim()) {
+        const msg = "El título no puede estar vacío";
+        errors.push(msg);
+        errorMap.titulo = msg;
+      } else if (formData.titulo.trim().length > 200) {
+        const msg = "El título no debe exceder 200 caracteres";
+        errors.push(msg);
+        errorMap.titulo = msg;
       }
-      return;
+
+      if (!formData.origen || !formData.origen.trim()) {
+        const msg = "El origen no puede estar vacío";
+        errors.push(msg);
+        errorMap.origen = msg;
+      } else if (formData.origen.trim().length > 100) {
+        const msg = "El origen no debe exceder 100 caracteres";
+        errors.push(msg);
+        errorMap.origen = msg;
+      }
+
+      if (
+        formData.origen_lat === null ||
+        formData.origen_lat === undefined ||
+        isNaN(parseFloat(formData.origen_lat))
+      ) {
+        const msg = "Selecciona el origen en el mapa";
+        errors.push(msg);
+        errorMap.origen = msg;
+      }
+      if (
+        formData.origen_lng === null ||
+        formData.origen_lng === undefined ||
+        isNaN(parseFloat(formData.origen_lng))
+      ) {
+        const msg = "Selecciona el origen en el mapa";
+        if (!errorMap.origen) errors.push(msg);
+        errorMap.origen = errorMap.origen || msg;
+      }
+
+      if (!formData.fecha_inicio || !formData.fecha_inicio.trim()) {
+        const msg = "La fecha de inicio es obligatoria";
+        errors.push(msg);
+        errorMap.fecha_inicio = msg;
+      } else if (!validateISODate(formData.fecha_inicio)) {
+        const msg = "La fecha de inicio no tiene un formato válido (YYYY-MM-DD)";
+        errors.push(msg);
+        errorMap.fecha_inicio = msg;
+      }
+      if (!formData.fecha_fin || !formData.fecha_fin.trim()) {
+        const msg = "La fecha de fin es obligatoria";
+        errors.push(msg);
+        errorMap.fecha_fin = msg;
+      } else if (!validateISODate(formData.fecha_fin)) {
+        const msg = "La fecha de fin no tiene un formato válido (YYYY-MM-DD)";
+        errors.push(msg);
+        errorMap.fecha_fin = msg;
+      }
+
+      const precio = parseFloat(formData.precio_total);
+      if (formData.precio_total === null || formData.precio_total === undefined || formData.precio_total === "") {
+        const msg = "El precio total es obligatorio";
+        errors.push(msg);
+        errorMap.precio_total = msg;
+      } else if (isNaN(precio)) {
+        const msg = "El precio total debe ser un número";
+        errors.push(msg);
+        errorMap.precio_total = msg;
+      } else if (!(precio > 0)) {
+        const msg = "El precio total debe ser un número positivo";
+        errors.push(msg);
+        errorMap.precio_total = msg;
+      }
+
+      // Mantener requisito existente de seleccionar destino (UX previo)
+      if (!formData.destino_lat || !formData.destino_lng) {
+        const msg = "Selecciona el destino en el mapa";
+        errors.push(msg);
+        errorMap.destino = msg;
+      }
+    } else {
+      // Mantenemos una validación mínima en edición si falta el destino
+      if (!formData.origen_lat || !formData.destino_lat) {
+        if (addNotification) {
+          addNotification(
+            "Por favor, selecciona tanto el origen como el destino en el mapa.",
+            "error",
+          );
+        }
+        return;
+      }
+    }
+
+    if (errors.length > 0) {
+      const message = errors.join(", ");
+      if (addNotification) {
+        addNotification(message, "error");
+      }
+      const err = new Error(message);
+      err.validationErrors = errors;
+      err.isValidationError = true;
+      err.validationMap = errorMap;
+      throw err;
     }
 
     try {

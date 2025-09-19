@@ -53,3 +53,10 @@ export const getPaquetesStatsOverview = () => {
 export const toggleFavorito = (id, favorito) => {
   return apiClient.patch(`/admin/paquetes/${id}`, { favorito: !!favorito });
 };
+
+// Hoteles custom completos para administración
+// GET /admin/paquetes/custom/hoteles
+// Devuelve [{ hotel: {...}, paquete: { id, codigoUrl, titulo, activo } }]
+export const getCustomHotelsFull = () => {
+  return apiClient.get("/admin/paquetes/custom/hoteles");
+};

@@ -2,7 +2,7 @@ import React, { useState, useMemo, useEffect } from "react";
 import { FiDollarSign, FiTag, FiX, FiPercent } from "react-icons/fi";
 import { formatPrecio, sanitizeMoneda } from "../../../utils/priceUtils";
 
-const PricingForm = ({ formData, onFormChange }) => {
+const PricingForm = ({ formData, onFormChange, errors = {} }) => {
   const [showDiscount, setShowDiscount] = useState(!!formData.descuento);
   const [precioOriginal, setPrecioOriginal] = useState(
     formData.precio_original || "",
@@ -185,10 +185,15 @@ const PricingForm = ({ formData, onFormChange }) => {
               type="text"
               value={formatNumber(precioOriginal)}
               onChange={handlePrecioOriginalChange}
-              className="w-full p-2.5 sm:p-3 border border-gray-300 rounded-lg sm:rounded-md focus:ring-2 focus:ring-blue-500 text-sm sm:text-base"
+              className={`w-full p-2.5 sm:p-3 border rounded-lg sm:rounded-md focus:ring-2 text-sm sm:text-base ${
+                errors.precio_total ? "border-red-400 focus:ring-red-500" : "border-gray-300 focus:ring-blue-500"
+              }`}
               placeholder="Ej. 5,000"
               required
             />
+            {errors.precio_total && (
+              <p className="mt-1 text-xs text-red-600">{errors.precio_total}</p>
+            )}
           </div>
         </div>
 
@@ -244,10 +249,15 @@ const PricingForm = ({ formData, onFormChange }) => {
                   type="text"
                   value={formatNumber(precioConDescuento)}
                   onChange={handlePrecioConDescuentoChange}
-                  className="w-full pr-10 p-2.5 sm:p-3 border border-gray-300 rounded-lg sm:rounded-md focus:ring-2 focus:ring-green-500 text-sm sm:text-base"
+                  className={`w-full pr-10 p-2.5 sm:p-3 border rounded-lg sm:rounded-md focus:ring-2 text-sm sm:text-base ${
+                    errors.precio_total ? "border-red-400 focus:ring-red-500" : "border-gray-300 focus:ring-green-500"
+                  }`}
                   placeholder="4,500"
                   required
                 />
+                {errors.precio_total && (
+                  <p className="mt-1 text-xs text-red-600">{errors.precio_total}</p>
+                )}
                 <button
                   type="button"
                   onClick={handleToggleDiscount}
