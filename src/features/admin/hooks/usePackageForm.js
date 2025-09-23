@@ -785,6 +785,17 @@ export const usePackageForm = (initialPackageData = null) => {
   };
 
   const processImages = async (images) => {
+    const fileToDataUrl = (file) =>
+      new Promise((resolve, reject) => {
+        try {
+          const reader = new FileReader();
+          reader.onload = () => resolve(reader.result);
+          reader.onerror = reject;
+          reader.readAsDataURL(file);
+        } catch (e) {
+          reject(e);
+        }
+      });
     // Debug: mostrar información DETALLADA sobre los tipos de imágenes
     console.log("🔍 ANÁLISIS DETALLADO de imágenes a procesar:", {
       total: images.length,
@@ -858,10 +869,18 @@ export const usePackageForm = (initialPackageData = null) => {
         // PRIORIDAD 4: Imágenes subidas por el usuario - ENVIAR A CLOUDINARY
         if (img.file || img.isUploaded) {
           console.log(`☁️ ✅ IMAGEN DE USUARIO - Enviar a Cloudinary`);
+          let contenido = img.url;
+          if (img.file) {
+            try {
+              contenido = await fileToDataUrl(img.file);
+            } catch (e) {
+              console.warn("No se pudo convertir archivo a dataURL, usando url de fallback", e);
+            }
+          }
           return {
             orden: index + 1,
             tipo: "cloudinary",
-            contenido: img.url, // El backend se encarga de subirla a Cloudinary
+            contenido, // Enviar data URL si es posible
             mime_type: img.file?.type || "image/jpeg",
             nombre: img.file?.name || `imagen-usuario-${index + 1}.jpg`,
           };
@@ -993,6 +1012,18 @@ export const usePackageForm = (initialPackageData = null) => {
     let hotelImages = [];
     const imageList = hotel.imagenes || hotel.images || [];
 
+    const fileToDataUrl = (file) =>
+      new Promise((resolve, reject) => {
+        try {
+          const reader = new FileReader();
+          reader.onload = () => resolve(reader.result);
+          reader.onerror = reject;
+          reader.readAsDataURL(file);
+        } catch (e) {
+          reject(e);
+        }
+      });
+
     hotelImages = await Promise.all(
       imageList.map(async (img, index) => {
         console.log(`🏨 Procesando imagen de hotel ${index + 1}:`, {
@@ -1017,10 +1048,16 @@ export const usePackageForm = (initialPackageData = null) => {
         // PRIORIDAD 2: Imágenes subidas por el usuario - VAN A CLOUDINARY
         if (img.file) {
           console.log(`☁️ Hotel imagen de usuario - A Cloudinary`);
+          let contenido = img.contenido || img.url;
+          try {
+            contenido = await fileToDataUrl(img.file);
+          } catch (e) {
+            console.warn("No se pudo convertir archivo de hotel a dataURL, usando url", e);
+          }
           return {
             orden: index + 1,
             tipo: "cloudinary",
-            contenido: img.contenido || img.url,
+            contenido,
             mime_type: img.file?.type || "image/jpeg",
             nombre: img.file?.name || `hotel-imagen-usuario-${index + 1}.jpg`,
           };
