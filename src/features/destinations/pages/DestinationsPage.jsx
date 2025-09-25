@@ -3,7 +3,7 @@ import { createPortal } from "react-dom";
 import DestinationsHero from "../components/DestinationsHero";
 import PackagesSearchBar from "../components/PackagesSearchBar";
 import PackagesSection from "../components/PackagesSection";
-// import { getPaquetesPublic } from '../../../api/packagesService';
+// import { getPaquetesPublic         <div className="flex flex-col min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50/30 overflow-x-hidden [contain:paint]"> from '../../../api/packagesService';
 import apiClient from "../../../api/axiosConfig";
 import OptimizedImage from "../../../components/ui/OptimizedImage";
 import { formatPrecio, sanitizeMoneda } from "../../../utils/priceUtils";
@@ -56,12 +56,12 @@ const PackageCard = ({ paquete }) => {
     paquete?.destinos_nombres ||
     "Destino";
   return (
-    <article className="bg-white rounded-xl shadow-lg hover:shadow-xl hover:shadow-blue-500/10 transition-all duration-500 hover:-translate-y-2 hover:scale-[1.02] overflow-hidden border border-slate-100 group h-full flex flex-col relative">
-      <div className="relative">
+    <article className="bg-white rounded-2xl shadow-lg hover:shadow-2xl hover:shadow-blue-500/15 transition-all duration-500 hover:-translate-y-3 hover:scale-[1.02] overflow-hidden border border-slate-100/70 group h-full flex flex-col relative backdrop-blur-sm">
+      <div className="relative overflow-hidden">
         <OptimizedImage
           src={img}
           alt={paquete?.titulo || destinoPrincipal || "Paquete"}
-          className="w-full aspect-[16/9] sm:aspect-[16/9] md:aspect-[16/9] object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
+          className="w-full aspect-[16/9] object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
           width={800}
           height={480}
           responsive
@@ -69,16 +69,18 @@ const PackageCard = ({ paquete }) => {
           lazy={true}
           placeholder={true}
         />
-        {/* Overlay mejorado */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/40 to-transparent opacity-60 group-hover:opacity-80 transition duration-500" />
-        {/* Destino siempre visible */}
-        <div className="absolute bottom-3 left-3 right-3 transition-all duration-500">
-          <span className="bg-white/90 backdrop-blur-sm text-slate-800 px-3 py-2 rounded-lg text-xs font-medium shadow-lg inline-flex items-center gap-2 border border-white/40 w-auto max-w-full">
+        {/* Overlay mejorado con gradiente más suave */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent opacity-60 group-hover:opacity-80 transition-all duration-500" />
+        {/* Shimmer effect sutil */}
+        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-in-out" />
+        {/* Destino badge mejorado */}
+        <div className="absolute bottom-4 left-4 right-4 transition-all duration-500">
+          <span className="bg-white/95 backdrop-blur-md text-slate-800 px-4 py-2.5 rounded-2xl text-xs font-semibold shadow-2xl inline-flex items-center gap-2.5 border border-white/50 w-auto max-w-full">
             <svg
-              className="w-3.5 h-3.5 text-blue-600"
+              className="w-4 h-4 text-blue-600"
               fill="none"
               stroke="currentColor"
-              strokeWidth="2"
+              strokeWidth="2.5"
               viewBox="0 0 24 24"
               aria-hidden="true"
             >
@@ -97,34 +99,37 @@ const PackageCard = ({ paquete }) => {
           </span>
         </div>
       </div>
-      <div className="p-4 lg:p-5 flex-1 flex flex-col">
-        <div className="flex justify-between items-start gap-3 mb-3">
-          <h3 className="font-bold text-base lg:text-lg text-slate-800 group-hover:text-blue-600 transition-colors leading-tight line-clamp-2 flex-1">
+      <div className="p-5 lg:p-6 flex-1 flex flex-col bg-gradient-to-b from-white to-slate-50/30">
+        <div className="flex justify-between items-start gap-4 mb-4">
+          <h3 className="font-bold text-[15px] sm:text-base lg:text-lg text-slate-800 group-hover:text-blue-600 transition-colors leading-tight line-clamp-2 flex-1">
             {paquete?.titulo || "Paquete"}
           </h3>
           <div className="text-right shrink-0">
-            <span className="text-xs text-slate-500 block">Desde</span>
+            <span className="text-xs text-slate-500 block mb-1 font-medium">Desde</span>
             <div className="flex items-baseline gap-1 justify-end">
-              <span className="uppercase text-xs font-semibold tracking-wide text-slate-500">
+              <span className="uppercase text-xs font-bold tracking-wider text-slate-600">
                 {moneda}
               </span>
-              <div className="font-bold text-lg text-blue-700 leading-tight">
+              <div className="font-bold text-base sm:text-lg text-blue-700 leading-tight">
                 {precio || "—"}
               </div>
             </div>
           </div>
         </div>
-        <div className="mt-auto flex items-center justify-between">
-          <div className="text-xs text-slate-500 flex items-center">
+        <div className="mt-auto flex items-center justify-between pt-3 border-t border-slate-100/60">
+          <div className="text-xs text-slate-500 flex items-center font-medium">
             <span className="truncate max-w-[120px]" title={destinoPrincipal}>
               {destinoPrincipal}
             </span>
           </div>
           <Link
             to={url}
-            className="text-blue-600 hover:text-blue-700 font-medium text-sm hover:underline flex items-center gap-1 transition-colors"
+            className="text-blue-600 hover:text-blue-700 font-semibold text-sm hover:underline flex items-center gap-1.5 transition-all duration-300 hover:gap-2"
           >
             Ver más
+            <svg className="w-4 h-4 transition-transform group-hover:translate-x-0.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7"/>
+            </svg>
           </Link>
         </div>
       </div>
@@ -323,13 +328,17 @@ const DestinationsPage = () => {
         ]}
       />
       <PageTransition>
-        <div className="flex flex-col min-h-screen bg-gradient-to-b from-slate-50 to-white overflow-x-hidden">
+  <div className="flex flex-col min-h-screen bg-gradient-to-b from-slate-50 to-white overflow-x-hidden [contain:paint]">
           {/* removido id=top */}
           <DestinationsHero />
           {/* Anchor para scroll desde el botón "Buscar paquetes" del hero */}
           <div
             id="top-search"
-            className="max-w-6xl mx-auto px-3 xs:px-4 sm:px-6 lg:px-8 -mt-4 sm:-mt-10 md:-mt-14 relative z-10 space-y-6 scroll-mt-28"
+            className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mt-3 sm:mt-4 md:-mt-6 lg:-mt-10 relative z-10 space-y-5 sm:space-y-6 scroll-mt-28 [overflow-anchor:none]"
+            style={{
+              paddingLeft: "max(1rem, env(safe-area-inset-left))",
+              paddingRight: "max(1rem, env(safe-area-inset-right))",
+            }}
           >
             <PackagesSearchBar
               value={search}

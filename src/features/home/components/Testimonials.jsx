@@ -6,7 +6,7 @@ import OptimizedImage, {
 
 const testimonialsData = [
   {
-    name: "Yadis González Mercado",
+    name: "González Mercado",
     location: "Hace 3 días",
     avatar: "/HomePage/testimonio-user1.avif",
     quote: "La asesoría y el trato es excelente!! Lo súper recomiendo",
@@ -14,7 +14,7 @@ const testimonialsData = [
     accentTo: "to-teal-500",
   },
   {
-    name: "Araceli Gurrola Lopez",
+    name: "Araceli Gurrola ",
     location: "Hace 1 semana",
     avatar: "/HomePage/testimonio-user2.avif",
     quote: "El servicio me parece excelente y profesional 👌",
@@ -22,7 +22,7 @@ const testimonialsData = [
     accentTo: "to-violet-500",
   },
   {
-    name: "Techy Ruiz Piña",
+    name: "Techy Ruiz ",
     location: "Hace 5 días",
     avatar: "/HomePage/testimonio-user3.avif",
     quote: "EXCELENTE SERVICIO MUY PROFESIONAL Y EFICIENTE. ",

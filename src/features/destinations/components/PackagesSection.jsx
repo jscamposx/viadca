@@ -75,15 +75,15 @@ const PackagesSection = ({
         )}
 
         {showCarousel && (
-          <div className="relative group">
+          <div className="relative group overflow-hidden">
             <div
               ref={scrollRef}
-              className="flex gap-4 sm:gap-6 lg:gap-7 overflow-x-auto snap-x snap-mandatory pb-4 scrollbar-thin scrollbar-thumb-slate-300 hover:scrollbar-thumb-slate-400 scrollbar-track-transparent"
+              className="flex gap-4 sm:gap-6 lg:gap-7 overflow-x-auto snap-x snap-mandatory pb-4 scrollbar-thin scrollbar-thumb-slate-300 hover:scrollbar-thumb-slate-400 scrollbar-track-transparent overscroll-x-contain"
             >
               {childArray.map((ch, i) => (
                 <div
                   key={i}
-                  className="snap-start shrink-0 w-[85%] sm:w-[300px] md:w-[320px] lg:w-[340px] first:ml-1 last:mr-1"
+                  className="snap-start shrink-0 w-[84%] max-[360px]:w-[82%] xs:w-[88%] sm:w-[300px] md:w-[320px] lg:w-[340px] first:ml-1 last:mr-1"
                 >
                   {ch}
                 </div>
