@@ -105,7 +105,7 @@ const DestinationsHero = () => {
               Todos los destinos
             </span>
             <span className="block bg-gradient-to-r from-blue-300 via-cyan-200 to-purple-300 bg-clip-text text-transparent animate-pulse" style={{ animationDuration: '4s' }}>
-              y paquetes exclusivos
+              y viajes exclusivos
             </span>
           </h1>
           <p className="text-base sm:text-lg lg:text-xl max-w-3xl mx-auto text-slate-100/90 leading-relaxed font-light">
