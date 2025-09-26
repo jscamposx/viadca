@@ -233,24 +233,35 @@ const NuevoPaquete = () => {
 
               {/* Sección central - Indicador de cambios pendientes */}
               <div className="flex justify-center">
-                {id &&
-                  paquete &&
-                  currentPatchPayload &&
-                  Object.keys(currentPatchPayload).length > 0 && (
+                {id && paquete && currentPatchPayload && (() => {
+                  // Replicar la lógica de PatchPreview: filtrar campos sin valor significativo
+                  const monedaTmp = currentPatchPayload?.moneda || currentPatchPayload?.currency || "MXN";
+                  const isMeaningfulPrice = (value) => {
+                    if (value === null || value === undefined || value === "") return false;
+                    if (typeof value === "number" && isNaN(value)) return false;
+                    return true;
+                  };
+                  const isSkippable = (field, value) => {
+                    // Campos de precio / monetarios vacíos
+                    if ((field.includes("precio") || ["anticipo", "descuento"].includes(field)) && !isMeaningfulPrice(value)) return true;
+                    // Null / undefined genéricos
+                    if (value === null || value === undefined) return true;
+                    // Strings vacíos o whitespace
+                    if (typeof value === "string" && value.trim() === "") return true;
+                    return false;
+                  };
+                  const meaningfulEntries = Object.entries(currentPatchPayload).filter(([field, value]) => !isSkippable(field, value));
+                  const meaningfulCount = meaningfulEntries.length;
+                  if (meaningfulCount === 0) return null;
+                  return (
                     <div className="hidden lg:flex items-center gap-2 px-3 py-2 bg-orange-50 border border-orange-200 rounded-lg">
-                      <div className="w-2 h-2 bg-orange-500 rounded-full animate-pulse"></div>
+                      <div className="w-2 h-2 bg-orange-500 rounded-full animate-pulse" />
                       <span className="text-sm font-medium text-orange-700 whitespace-nowrap">
-                        {Object.keys(currentPatchPayload).length} cambio
-                        {Object.keys(currentPatchPayload).length !== 1
-                          ? "s"
-                          : ""}{" "}
-                        pendiente
-                        {Object.keys(currentPatchPayload).length !== 1
-                          ? "s"
-                          : ""}
+                        {meaningfulCount} cambio{meaningfulCount !== 1 ? "s" : ""} pendiente{meaningfulCount !== 1 ? "s" : ""}
                       </span>
                     </div>
-                  )}
+                  );
+                })()}
               </div>
 
               {/* Sección derecha - Progreso y contador */}
