@@ -37,6 +37,9 @@ export const usePackageForm = (initialPackageData = null) => {
     descuento: "",
     anticipo: null,
     precio_total: "",
+    // Nuevos campos desglosados opcionales
+    precio_vuelo: "",
+    precio_hospedaje: "",
     precio_original: "",
     notas: null,
     itinerario_texto: "",
@@ -145,6 +148,15 @@ export const usePackageForm = (initialPackageData = null) => {
         descuento: initialPackageData.descuento || "",
         anticipo: initialPackageData.anticipo || "",
         precio_total: initialPackageData.precio_total || "",
+        // Mapear nuevos campos (pueden venir como string o número o null)
+        precio_vuelo:
+          initialPackageData.precio_vuelo === null || initialPackageData.precio_vuelo === undefined
+            ? ""
+            : String(initialPackageData.precio_vuelo),
+        precio_hospedaje:
+          initialPackageData.precio_hospedaje === null || initialPackageData.precio_hospedaje === undefined
+            ? ""
+            : String(initialPackageData.precio_hospedaje),
         precio_original:
           initialPackageData.descuento &&
           parseFloat(initialPackageData.descuento) > 0
@@ -751,6 +763,23 @@ export const usePackageForm = (initialPackageData = null) => {
           ? formData.requisitos
           : null,
       precio_total: parseFloat(formData.precio_total),
+      // Nuevos campos opcionales (enviar sólo si usuario los proporcionó; null si vacío explícito)
+      ...(formData.precio_vuelo !== undefined
+        ? {
+            precio_vuelo:
+              formData.precio_vuelo === "" || formData.precio_vuelo === null
+                ? null
+                : parseFloat(formData.precio_vuelo),
+          }
+        : {}),
+      ...(formData.precio_hospedaje !== undefined
+        ? {
+            precio_hospedaje:
+              formData.precio_hospedaje === "" || formData.precio_hospedaje === null
+                ? null
+                : parseFloat(formData.precio_hospedaje),
+          }
+        : {}),
       moneda: sanitizeMoneda(formData.moneda),
       descuento:
         formData.descuento && formData.descuento !== ""

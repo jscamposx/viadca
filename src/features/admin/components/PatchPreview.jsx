@@ -23,6 +23,8 @@ const PatchPreview = ({ patchPayload, onToggle }) => {
       fecha_fin: "Fecha de fin",
       precio_total: "Precio total",
       precio_original: "Precio original",
+  precio_vuelo: "Precio vuelo",
+  precio_hospedaje: "Precio hospedaje",
       descuento: "Descuento",
       anticipo: "Anticipo",
       incluye: "Incluye",

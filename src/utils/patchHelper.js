@@ -97,6 +97,28 @@ export const preparePatchPayload = (originalPackage, currentFormData) => {
     payload.hotel = "PROCESS_HOTEL";
   }
 
+    // Manejo explícito de limpieza de campos opcionales precio_vuelo / precio_hospedaje
+    // Si el original tenía valor y el formulario ahora trae cadena vacía -> enviar null
+    if (
+      originalPackage &&
+      Object.prototype.hasOwnProperty.call(originalPackage, "precio_vuelo") &&
+      originalPackage.precio_vuelo !== null &&
+      originalPackage.precio_vuelo !== undefined &&
+      currentFormData.precio_vuelo === ""
+    ) {
+      payload.precio_vuelo = null;
+    }
+    if (
+      originalPackage &&
+      Object.prototype.hasOwnProperty.call(originalPackage, "precio_hospedaje") &&
+      originalPackage.precio_hospedaje !== null &&
+      originalPackage.precio_hospedaje !== undefined &&
+      currentFormData.precio_hospedaje === ""
+    ) {
+      payload.precio_hospedaje = null;
+    }
+
+
   return payload;
 };
 
@@ -122,6 +144,15 @@ const normalizePackageData = (data) => {
     no_incluye: data.no_incluye || null,
     requisitos: data.requisitos || null,
     precio_total: parseFloat(data.precio_total) || 0,
+    // Nuevos campos opcionales desglosados (mantener null si no existen)
+    precio_vuelo:
+      data.precio_vuelo === null || data.precio_vuelo === undefined
+        ? null
+        : parseFloat(data.precio_vuelo),
+    precio_hospedaje:
+      data.precio_hospedaje === null || data.precio_hospedaje === undefined
+        ? null
+        : parseFloat(data.precio_hospedaje),
     descuento: data.descuento ? parseFloat(data.descuento) : null,
     anticipo: data.anticipo ? parseFloat(data.anticipo) : null,
     notas: data.notas || null,

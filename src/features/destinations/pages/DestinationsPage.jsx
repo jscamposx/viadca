@@ -16,6 +16,7 @@ import CategoryTabs from "../components/CategoryTabs";
 import UnifiedNav from "../../../components/layout/UnifiedNav";
 import Footer from "../../home/components/Footer";
 import { useContactInfo } from "../../../hooks/useContactInfo";
+import { FiArrowRight, FiClock, FiMapPin } from "react-icons/fi";
 
 const PackageCard = ({ paquete }) => {
   const img =
@@ -55,78 +56,95 @@ const PackageCard = ({ paquete }) => {
     paquete?.destino ||
     paquete?.destinos_nombres ||
     "Destino";
+  const duracion = paquete?.duracion_dias
+    ? `${paquete.duracion_dias} días`
+    : paquete?.duracion_noches
+      ? `${paquete.duracion_noches} noches`
+      : paquete?.duracion_texto || paquete?.duracion || "";
+  const isActivo = paquete?.activo !== false;
+  const statusLabel = isActivo ? "Activo" : "No disponible";
+  const statusClasses = isActivo
+    ? "bg-gradient-to-r from-green-500 to-emerald-600 text-white"
+    : "bg-gradient-to-r from-slate-500 to-gray-600 text-white";
+
   return (
-    <article className="bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 overflow-hidden border border-gray-100 group h-full flex flex-col">
+    <article className="bg-white rounded-xl shadow-md md:shadow-lg md:hover:shadow-xl md:hover:shadow-blue-500/10 transition-all duration-500 md:hover:-translate-y-2 md:hover:scale-[1.02] overflow-hidden border border-slate-100 group h-full flex flex-col transform-gpu">
       <div className="relative overflow-hidden">
         <OptimizedImage
           src={img}
           alt={paquete?.titulo || destinoPrincipal || "Paquete"}
-          className="w-full aspect-[16/9] object-cover group-hover:scale-105 transition-transform duration-300"
+          className="w-full h-48 sm:h-52 md:h-56 lg:h-60 object-cover md:group-hover:scale-110 transition-transform duration-700 ease-[cubic-bezier(0.25,0.46,0.45,0.94)]"
           width={800}
           height={480}
           responsive
-          sizes="(max-width:640px) 100vw, (max-width:1024px) 50vw, (max-width:1536px) 25vw, 320px"
+          sizes="(max-width:640px) 80vw, (max-width:1024px) 50vw, (max-width:1536px) 25vw, 320px"
           lazy={true}
           placeholder={true}
         />
-        {/* Overlay simplificado */}
-        <div className="absolute inset-0 bg-black/20" />
-        {/* Badge de destino simplificado */}
-        <div className="absolute bottom-3 left-3 right-3">
-          <span className="bg-white/90 backdrop-blur-sm text-gray-800 px-3 py-1.5 rounded-lg text-xs font-medium shadow-sm inline-flex items-center gap-2 border border-white/30 max-w-full">
+        <div
+          className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent opacity-0 md:group-hover:opacity-100 transition-all duration-500"
+          aria-hidden="true"
+        />
+        <div className="absolute top-3 right-3 flex flex-col items-end gap-2">
+          <span
+            className={`${statusClasses} px-2.5 py-1 rounded-full text-xs font-semibold flex items-center gap-1 shadow-lg backdrop-blur-sm border border-white/20`}
+          >
             <svg
-              className="w-3.5 h-3.5 text-blue-600 flex-shrink-0"
+              className="w-3 h-3"
               fill="none"
               stroke="currentColor"
               strokeWidth="2"
               viewBox="0 0 24 24"
+              aria-hidden="true"
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M12 21c-4.5-6-6-9-6-11a6 6 0 1112 0c0 2-1.5 5-6 11z"
-              />
+              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+              <polyline points="22 4 12 14.01 9 11.01" />
             </svg>
-            <span
-              className="truncate"
-              title={destinoPrincipal}
-            >
-              {destinoPrincipal}
-            </span>
+            {statusLabel}
+          </span>
+        </div>
+        <div className="absolute bottom-2 left-2 opacity-0 md:group-hover:opacity-100 transition-all duration-500 transform translate-y-2 md:group-hover:translate-y-0">
+          <span className="bg-white/90 backdrop-blur-sm text-slate-800 px-2 py-1 rounded-lg text-[11px] font-medium flex items-center gap-1.5 shadow border border-white/30">
+            <FiMapPin className="w-3.5 h-3.5 text-blue-600" aria-hidden="true" />
+            {destinoPrincipal}
           </span>
         </div>
       </div>
-      <div className="p-4 flex-1 flex flex-col bg-white">
-        <div className="flex justify-between items-start gap-3 mb-3">
-          <h3 className="font-semibold text-sm sm:text-base text-gray-800 group-hover:text-blue-600 transition-colors leading-snug line-clamp-2 flex-1">
+      <div className="p-4 lg:p-5 flex-1 flex flex-col">
+        <div className="flex justify-between items-start gap-3 mb-2">
+          <h3 className="font-bold text-sm sm:text-base lg:text-lg text-slate-800 group-hover:text-blue-600 transition-colors leading-snug line-clamp-2 flex-1 min-h-[2.2rem]">
             {paquete?.titulo || "Paquete"}
           </h3>
           <div className="text-right shrink-0">
-            <span className="text-xs text-gray-500 block mb-0.5 font-medium">Desde</span>
-            <div className="flex items-baseline gap-1 justify-end">
-              <span className="uppercase text-xs font-medium text-gray-600">
+            <span className="text-[10px] text-slate-500 block uppercase tracking-wide">Desde</span>
+            <div className="flex items-baseline gap-0.5 justify-end">
+              <span className="uppercase text-[10px] font-semibold tracking-wide text-slate-500">
                 {moneda}
               </span>
-              <div className="font-bold text-base text-blue-600 leading-tight">
+              <div className="font-bold text-base text-blue-700 leading-tight">
                 {precio || "—"}
               </div>
             </div>
           </div>
         </div>
-        <div className="mt-auto flex items-center justify-between pt-2 border-t border-gray-100">
-          <div className="text-xs text-gray-500 flex items-center font-medium">
-            <span className="truncate max-w-[120px]" title={destinoPrincipal}>
-              {destinoPrincipal}
-            </span>
+        {duracion && (
+          <div className="flex items-center text-slate-600 mb-3 text-xs sm:text-sm">
+            <FiClock className="w-4 h-4 mr-1.5 text-slate-400 shrink-0" aria-hidden="true" />
+            <span className="truncate">{duracion}</span>
+          </div>
+        )}
+        <div className="mt-auto flex items-center justify-between pt-1">
+          <div className="text-[11px] text-slate-500 flex items-center max-w-[140px]">
+            <FiMapPin className="w-3.5 h-3.5 mr-1 text-blue-500" aria-hidden="true" />
+            <span className="truncate">{destinoPrincipal}</span>
           </div>
           <Link
             to={url}
-            className="text-blue-600 hover:text-blue-700 font-medium text-sm hover:underline flex items-center gap-1 transition-colors"
+            className="text-blue-600 hover:text-blue-700 font-medium text-xs sm:text-sm hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2 rounded flex items-center gap-1 group-hover:gap-1.5 transition-all"
+            aria-label={`Ver detalles de ${paquete?.titulo || "paquete"}`}
           >
             Ver más
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7"/>
-            </svg>
+            <FiArrowRight className="w-3.5 h-3.5" aria-hidden="true" />
           </Link>
         </div>
       </div>

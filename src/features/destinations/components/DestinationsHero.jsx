@@ -97,18 +97,18 @@ const DestinationsHero = () => {
         <div
           className={`transition-all duration-1000 ease-out ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}
         >
-          <p className="uppercase tracking-[0.4em] text-xs sm:text-sm font-bold text-blue-200/95 mb-6 drop-shadow-lg animate-pulse" style={{ animationDuration: '3s' }}>
+          <p className="uppercase tracking-[0.4em] text-xs sm:text-sm font-bold text-blue-200/95 mb-5 sm:mb-6 drop-shadow-lg animate-pulse" style={{ animationDuration: '3s' }}>
             Explora el mundo
           </p>
-          <h1 className="font-volkhov text-4xl sm:text-5xl lg:text-[4rem] xl:text-[4.5rem] font-bold leading-[0.95] mb-8 drop-shadow-2xl">
+          <h1 className="font-volkhov text-4xl sm:text-5xl lg:text-[4rem] xl:text-[4.5rem] font-bold leading-[0.95] mb-6 sm:mb-8 drop-shadow-2xl">
             <span className="block mb-2 bg-gradient-to-r from-white via-blue-50 to-white bg-clip-text text-transparent">
               Todos los destinos
             </span>
-            <span className="block bg-gradient-to-r from-blue-300 via-cyan-200 to-purple-300 bg-clip-text text-transparent animate-pulse" style={{ animationDuration: '4s' }}>
+            <span className="block text-white drop-shadow-[0_8px_18px_rgba(59,130,246,0.45)]">
               y viajes exclusivos
             </span>
           </h1>
-          <p className="text-base sm:text-lg lg:text-xl max-w-3xl mx-auto text-slate-100/90 leading-relaxed font-light">
+          <p className="hidden sm:block text-base sm:text-lg lg:text-xl max-w-3xl mx-auto text-slate-100/90 leading-relaxed font-light">
             Inspírate con destinos únicos, filtra por tus intereses y encuentra experiencias 
             diseñadas especialmente para ti. Tu próxima aventura comienza aquí.
           </p>
