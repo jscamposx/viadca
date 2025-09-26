@@ -16,12 +16,14 @@ const PricingForm = ({ formData, onFormChange, errors = {} }) => {
   const [precioBase, setPrecioBase] = useState(initialBase); // Campo que edita el usuario
   const [descuento, setDescuento] = useState(formData?.descuento || "");
   // Toggles para desgloses opcionales
-  const [enableVuelo, setEnableVuelo] = useState(
-    formData.precio_vuelo !== undefined && formData.precio_vuelo !== null && formData.precio_vuelo !== ""
-  );
-  const [enableHospedaje, setEnableHospedaje] = useState(
-    formData.precio_hospedaje !== undefined && formData.precio_hospedaje !== null && formData.precio_hospedaje !== ""
-  );
+  const [enableVuelo, setEnableVuelo] = useState(() => {
+    const v = parseFloat(formData?.precio_vuelo);
+    return !isNaN(v) && v > 0;
+  });
+  const [enableHospedaje, setEnableHospedaje] = useState(() => {
+    const h = parseFloat(formData?.precio_hospedaje);
+    return !isNaN(h) && h > 0;
+  });
 
   // Moneda
   const MONEDAS = ["MXN", "USD"];
@@ -34,8 +36,19 @@ const PricingForm = ({ formData, onFormChange, errors = {} }) => {
     const nuevoBase = total || desc ? (total + desc).toString() : "";
     if (nuevoBase && nuevoBase !== precioBase) setPrecioBase(nuevoBase);
     if (formData?.descuento !== descuento) setDescuento(formData?.descuento || "");
+    // Sincronizar toggles de vuelo/hospedaje si llegan valores > 0 (edición de paquete)
+    const v = parseFloat(formData?.precio_vuelo);
+    if (!isNaN(v) && v > 0 && !enableVuelo) setEnableVuelo(true);
+    if ((isNaN(v) || v <= 0) && enableVuelo && (formData?.precio_vuelo === "" || formData?.precio_vuelo == null)) {
+      // Mantener habilitado si el usuario lo activó manualmente; no forzar false aquí para no perder intención
+    }
+    const h = parseFloat(formData?.precio_hospedaje);
+    if (!isNaN(h) && h > 0 && !enableHospedaje) setEnableHospedaje(true);
+    if ((isNaN(h) || h <= 0) && enableHospedaje && (formData?.precio_hospedaje === "" || formData?.precio_hospedaje == null)) {
+      // Igual que arriba: no desactivar automáticamente si el usuario lo encendió
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [formData.precio_total, formData.descuento]);
+  }, [formData.precio_total, formData.descuento, formData.precio_vuelo, formData.precio_hospedaje]);
 
   const formatNumber = (value) => {
     if (!value) return "";

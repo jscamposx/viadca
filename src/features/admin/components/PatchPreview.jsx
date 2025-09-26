@@ -1,20 +1,27 @@
-import React, { useState, useEffect } from "react";
-import { FiInfo, FiCheck, FiX, FiEye } from "react-icons/fi";
+import React, { useState } from "react";
+import { FiInfo, FiCheck, FiX, FiEye, FiDollarSign, FiImage, FiFileText, FiDatabase } from "react-icons/fi";
 import { formatPrecio, sanitizeMoneda } from "../../../utils/priceUtils";
 
 const PatchPreview = ({ patchPayload, onToggle }) => {
   const [isVisible, setIsVisible] = useState(false);
 
-  const changeCount = patchPayload ? Object.keys(patchPayload).length : 0;
+  // Pre-procesar entradas para filtrar campos sin valor significativo
+  const rawEntries = Object.entries(patchPayload || {});
 
-  if (changeCount === 0) {
-    return null;
-  }
-
-  // Determinar moneda a usar: si el patch incluye cambio de moneda, usarlo; si no, intentar mantener la actual
+  // Determinar moneda primero (antes de formatear precios) para consistencia
   const monedaPatch = sanitizeMoneda(
     patchPayload?.moneda || patchPayload?.currency || "MXN",
   );
+
+  const isMeaningfulPrice = (value) => {
+    if (value === null || value === undefined || value === "") return false;
+    // Permitir 0 explícito si el usuario lo incluyó (ej: descuento = 0 para limpiar)
+    if (typeof value === "number" && isNaN(value)) return false;
+    return true;
+  };
+
+  // Determinar moneda a usar: si el patch incluye cambio de moneda, usarlo; si no, intentar mantener la actual
+  // Reutilizamos monedaPatch declarado arriba
 
   const getFieldLabel = (fieldName) => {
     const labels = {
@@ -74,13 +81,8 @@ const PatchPreview = ({ patchPayload, onToggle }) => {
       return sanitizeMoneda(value);
     }
 
-    if (
-      fieldName.includes("precio") ||
-      fieldName === "anticipo" ||
-      fieldName === "descuento"
-    ) {
-      if (value === null || value === undefined || value === "")
-        return "Sin especificar";
+    if (fieldName.includes("precio") || fieldName === "anticipo" || fieldName === "descuento") {
+      if (!isMeaningfulPrice(value)) return "Sin especificar";
       const formatted = formatPrecio(value, monedaPatch);
       return formatted || "Sin especificar";
     }
@@ -89,11 +91,41 @@ const PatchPreview = ({ patchPayload, onToggle }) => {
       return value.substring(0, 50) + "...";
     }
 
-    if (value === null || value === undefined) {
-      return "Sin especificar";
-    }
+    if (value === null || value === undefined) return "Sin especificar";
 
     return String(value);
+  };
+
+  // Construir lista procesada con metadata
+  const processed = rawEntries
+    .map(([fieldName, value]) => {
+      const displayValue = getFieldValue(fieldName, value);
+      return { fieldName, value, displayValue };
+    })
+    // Filtrar valores cuyo display es 'Sin especificar' para no mostrar ruido
+    .filter((item) => item.displayValue !== "Sin especificar");
+
+  const changeCount = processed.length;
+
+  if (changeCount === 0) return null;
+
+  const categoryMeta = (fieldName) => {
+    if (fieldName.includes("precio") || ["anticipo", "descuento"].includes(fieldName)) {
+      return { label: "Precio", color: "bg-emerald-100 text-emerald-700 border-emerald-200", icon: FiDollarSign };
+    }
+    if (["imagenes", "hotel", "destinos", "mayoristasIds"].includes(fieldName)) {
+      return { label: "Contenido", color: "bg-indigo-100 text-indigo-700 border-indigo-200", icon: FiImage };
+    }
+    if (["incluye", "no_incluye", "requisitos", "notas", "itinerario_texto"].includes(fieldName)) {
+      return { label: "Texto", color: "bg-blue-100 text-blue-700 border-blue-200", icon: FiFileText };
+    }
+    if (fieldName === "activo") {
+      return { label: "Estado", color: "bg-amber-100 text-amber-700 border-amber-200", icon: FiInfo };
+    }
+    if (fieldName === "moneda") {
+      return { label: "Moneda", color: "bg-fuchsia-100 text-fuchsia-700 border-fuchsia-200", icon: FiDatabase };
+    }
+    return { label: "Cambio", color: "bg-gray-100 text-gray-700 border-gray-200", icon: FiInfo };
   };
 
   return (
@@ -137,35 +169,38 @@ const PatchPreview = ({ patchPayload, onToggle }) => {
             </div>
 
             <div className="p-3 sm:p-4 space-y-3">
-              {changeCount === 0 ? (
-                <div className="flex items-center gap-2 text-gray-500 text-sm">
-                  <FiCheck className="w-4 h-4" />
-                  <span>No hay campos para actualizar</span>
-                </div>
-              ) : (
-                Object.entries(patchPayload || {}).map(([fieldName, value]) => (
-                  <div key={fieldName} className="flex flex-col gap-1">
+              {processed.map(({ fieldName, displayValue }) => {
+                const meta = categoryMeta(fieldName);
+                return (
+                  <div
+                    key={fieldName}
+                    className="group flex flex-col gap-1 rounded-lg border border-gray-100 bg-gradient-to-br from-white via-gray-50 to-white hover:shadow-md transition-all duration-300 p-2"
+                  >
                     <div className="flex items-center justify-between">
-                      <span className="text-xs sm:text-sm font-medium text-gray-700">
+                      <span className="text-[11px] sm:text-xs font-semibold text-gray-700 tracking-wide flex items-center gap-1">
                         {getFieldLabel(fieldName)}
+                        <span
+                          className={`inline-flex items-center gap-1 px-2 py-[2px] rounded-full text-[10px] font-medium border ${meta.color}`}
+                        >
+                          <meta.icon className="w-3 h-3" />
+                          {meta.label}
+                        </span>
                       </span>
-                      <div className="w-2 h-2 bg-orange-400 rounded-full flex-shrink-0"></div>
+                      <span className="w-2 h-2 rounded-full bg-orange-400 group-hover:scale-125 transition-transform"></span>
                     </div>
-                    <div className="text-xs text-gray-500 bg-gray-50 rounded px-2 py-1 break-words">
-                      {getFieldValue(fieldName, value)}
+                    <div className="text-[11px] sm:text-xs text-gray-600 bg-gray-50/70 rounded-md px-2 py-1.5 break-words font-medium border border-gray-100 group-hover:border-orange-200/70 group-hover:bg-orange-50/60">
+                      {displayValue}
                     </div>
                   </div>
-                ))
-              )}
+                );
+              })}
             </div>
 
             {changeCount > 0 && (
-              <div className="p-3 sm:p-3 bg-orange-50 border-t border-orange-100">
-                <p className="text-xs text-orange-700">
-                  <FiInfo className="w-3 h-3 inline mr-1" />
-                  Se está actualizando {changeCount} campo
-                  {changeCount !== 1 ? "s" : ""} modificado
-                  {changeCount !== 1 ? "s" : ""}
+              <div className="p-3 sm:p-3 bg-gradient-to-r from-orange-50 via-amber-50 to-orange-50 border-t border-orange-100/80">
+                <p className="text-[11px] sm:text-xs text-orange-700 font-medium flex items-center gap-1">
+                  <FiInfo className="w-3 h-3" />
+                  {changeCount} campo{changeCount !== 1 ? "s" : ""} con cambios reales listo{changeCount !== 1 ? "s" : ""} para enviar
                 </p>
               </div>
             )}
