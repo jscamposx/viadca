@@ -61,6 +61,17 @@ const PackageInfo = ({ paquete }) => {
   };
 
   const precioTotalFormatted = formatPrecio(paquete?.precio_total, moneda);
+  const hasPrecioVuelo =
+    paquete?.precio_vuelo != null && parseFloat(paquete.precio_vuelo) > 0;
+  const hasPrecioHospedaje =
+    paquete?.precio_hospedaje != null &&
+    parseFloat(paquete.precio_hospedaje) > 0;
+  const precioVueloFormatted = hasPrecioVuelo
+    ? formatPrecio(paquete.precio_vuelo, moneda)
+    : null;
+  const precioHospedajeFormatted = hasPrecioHospedaje
+    ? formatPrecio(paquete.precio_hospedaje, moneda)
+    : null;
 
   return (
     <div className="space-y-8">
@@ -114,6 +125,48 @@ const PackageInfo = ({ paquete }) => {
           index={3}
         />
       </div>
+
+      {(hasPrecioVuelo || hasPrecioHospedaje) && (
+        <div className="rounded-2xl p-5 md:p-6 border border-slate-200/70 bg-white/70 backdrop-blur-sm shadow-inner">
+          <h4 className="text-sm font-semibold text-slate-700 mb-4 flex items-center gap-2">
+            <FiDollarSign className="w-4 h-4 text-slate-500" />
+            Desglose de precios
+          </h4>
+          <ul className="space-y-2 text-sm text-slate-600">
+            {hasPrecioVuelo && (
+              <li className="flex justify-between">
+                <span className="font-medium">Vuelo</span>
+                <span className="font-semibold text-slate-800">
+                  {precioVueloFormatted}
+                  <span className="ml-1 text-[11px] text-slate-500">
+                    {moneda}
+                  </span>
+                </span>
+              </li>
+            )}
+            {hasPrecioHospedaje && (
+              <li className="flex justify-between">
+                <span className="font-medium">Hospedaje</span>
+                <span className="font-semibold text-slate-800">
+                  {precioHospedajeFormatted}
+                  <span className="ml-1 text-[11px] text-slate-500">
+                    {moneda}
+                  </span>
+                </span>
+              </li>
+            )}
+            <li className="flex justify-between border-t border-slate-200 pt-3 mt-1">
+              <span className="font-semibold text-slate-700">Total</span>
+              <span className="font-bold bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">
+                {precioTotalFormatted}
+                <span className="ml-1 text-[11px] text-blue-600">
+                  {moneda}
+                </span>
+              </span>
+            </li>
+          </ul>
+        </div>
+      )}
 
       <div className="rounded-2xl p-6 border border-amber-200 bg-amber-50/70">
         <div className="flex items-start gap-3">

@@ -303,7 +303,7 @@ function PackageViewPage() {
         await navigator.share(shareData);
       } catch (err) {
         if (err.name !== "AbortError") {
-          console.error("Error al compartir:", err);
+          // Silenciado: error al usar la API de compartir
         }
       }
     } else {
@@ -328,7 +328,7 @@ function PackageViewPage() {
           document.body.removeChild(tmp);
           copied = true;
         } catch (e) {
-          console.error("No se pudo copiar el enlace:", err, e);
+          // Silenciado: error al copiar enlace en fallback
         }
       }
 
@@ -362,6 +362,19 @@ function PackageViewPage() {
       (parseFloat(paquete?.descuento) || 0),
     moneda,
   );
+
+  // Desglose opcional: vuelo / hospedaje (nuevos campos del backend)
+  const hasPrecioVuelo =
+    paquete?.precio_vuelo != null && parseFloat(paquete.precio_vuelo) > 0;
+  const hasPrecioHospedaje =
+    paquete?.precio_hospedaje != null &&
+    parseFloat(paquete.precio_hospedaje) > 0;
+  const precioVueloFormatted = hasPrecioVuelo
+    ? formatPrecio(paquete.precio_vuelo, moneda)
+    : null;
+  const precioHospedajeFormatted = hasPrecioHospedaje
+    ? formatPrecio(paquete.precio_hospedaje, moneda)
+    : null;
 
   // Preparar textos y detección de “contenido largo” para acordeones en móvil
   const incluyeText = (paquete?.incluye || "").toString().trim();
@@ -517,24 +530,21 @@ function PackageViewPage() {
             <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/40"></div>
           </div>
 
-          <div className="relative z-10 text-center text-white px-4 max-w-4xl mx-auto">
-            <div className="space-y-5 sm:space-y-6">
-              <h1 className="font-volkhov text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold leading-tight">
-                <span className="bg-gradient-to-r from-white via-blue-100 to-purple-100 bg-clip-text text-transparent">
+          <div className="relative z-10 text-center text-white px-4 max-w-5xl mx-auto">
+            <div className="space-y-6 sm:space-y-7">
+              <h1 className="font-volkhov tracking-tight text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold leading-[1.1] drop-shadow-[0_4px_12px_rgba(0,0,0,0.35)]">
+                <span className="bg-gradient-to-r from-white via-blue-50 via-40% to-cyan-100/90 dark:from-white dark:via-blue-100 dark:to-fuchsia-100 bg-clip-text text-transparent animate-[pulse_9s_ease-in-out_infinite] [text-wrap:balance]">
                   {paquete.titulo}
                 </span>
               </h1>
 
-              {/* Info compacta removida a solicitud */}
-
-              <p className="text-lg sm:text-2xl text-blue-100 max-w-2xl mx-auto leading-relaxed">
-                Descubre una experiencia única que combina aventura, cultura y
-                momentos inolvidables
+              <p className="text-base sm:text-xl md:text-2xl text-blue-50/90 max-w-3xl mx-auto leading-relaxed font-medium backdrop-blur-sm/30">
+                Descubre una experiencia única que combina aventura, cultura y momentos inolvidables
               </p>
 
-              <div className="pt-6 md:pt-8">
+              <div className="pt-4 md:pt-6 flex justify-center">
                 <button
-                  className="group bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold py-4 px-8 rounded-2xl shadow-2xl hover:shadow-3xl hover:scale-105 transition-all duration-300 text-lg hover:from-blue-700 hover:to-indigo-700"
+                  className="group relative overflow-hidden bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-600 focus:outline-none focus-visible:ring-4 focus-visible:ring-blue-300/60 text-white font-semibold py-4 px-9 rounded-2xl shadow-[0_8px_30px_-6px_rgba(37,99,235,0.55)] hover:shadow-[0_10px_38px_-4px_rgba(99,102,241,0.65)] transition-all duration-300 text-lg tracking-wide active:scale-[0.97]"
                   aria-label="Reservar aventura para este paquete turístico"
                   onClick={() => {
                     const codigo = paquete.codigo || url;
@@ -543,12 +553,13 @@ function PackageViewPage() {
                     openWhatsApp(msg);
                   }}
                 >
-                  <span className="flex items-center gap-3">
-                    Reservar Aventura
-                    <FiCalendar
-                      className="w-5 h-5 md:group-hover:scale-110 transition-transform duration-300"
-                      aria-hidden="true"
-                    />
+                  <span className="absolute inset-0 bg-gradient-to-r from-white/20 via-transparent to-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                  <span className="flex items-center gap-3 relative z-10">
+                    <span className="inline-flex items-center gap-2">
+                      <FiCalendar className="w-5 h-5 md:group-hover:scale-110 transition-transform duration-300" aria-hidden="true" />
+                      Reservar Aventura
+                    </span>
+                    <span className="h-2 w-2 rounded-full bg-emerald-300 animate-pulse shadow-[0_0_0_3px_rgba(16,185,129,0.35)]" />
                   </span>
                 </button>
               </div>
@@ -611,7 +622,7 @@ function PackageViewPage() {
           <div className="grid grid-cols-1 xl:grid-cols-4 gap-8">
             <div className="xl:col-span-3 space-y-8">
               <AnimatedSection animation="fadeInUp" stagger={100}>
-                <section className="bg-white/90 backdrop-blur rounded-2xl shadow-xl p-6 md:p-7 border border-gray-100/70">
+                <section className="bg-white/90 backdrop-blur rounded-2xl shadow-xl p-6 md:p-7 border border-gray-100/70 transition-all duration-300 focus-within:shadow-2xl hover:shadow-2xl hover:border-gray-200/80">
                   <div className="flex items-start gap-5 mb-4">
                     <div className="w-14 h-14 bg-gradient-to-br from-blue-500 to-purple-500 rounded-xl flex items-center justify-center shadow-md">
                       <FiInfo className="w-7 h-7 text-white" />
@@ -634,7 +645,7 @@ function PackageViewPage() {
                 paquete.destinos[0]?.destino_lat &&
                 paquete.destinos[0]?.destino_lng && (
                   <AnimatedSection animation="fadeInUp" delay={150}>
-                    <section className="bg-white/90 backdrop-blur rounded-2xl shadow-xl p-6 md:p-7 border border-gray-100/70">
+                    <section className="bg-white/90 backdrop-blur rounded-2xl shadow-xl p-6 md:p-7 border border-gray-100/70 transition-all duration-300 hover:shadow-2xl hover:border-gray-200/80">
                       <div className="flex items-start gap-5 mb-4">
                         <div className="w-14 h-14 bg-gradient-to-br from-orange-400 to-yellow-500 rounded-xl flex items-center justify-center shadow-md">
                           <FiSun className="w-7 h-7 text-white" />
@@ -664,7 +675,7 @@ function PackageViewPage() {
                 )}
 
               <AnimatedSection animation="fadeInUp" delay={200}>
-                <section className="bg-white/90 backdrop-blur rounded-2xl shadow-xl p-6 md:p-7 border border-gray-100/70">
+                <section className="bg-white/90 backdrop-blur rounded-2xl shadow-xl p-6 md:p-7 border border-gray-100/70 transition-all duration-300 hover:shadow-2xl hover:border-gray-200/80">
                   <div className="flex items-start gap-5 mb-5">
                     <div className="w-14 h-14 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl flex items-center justify-center shadow-md">
                       <FiMapPin className="w-7 h-7 text-white" />
@@ -697,7 +708,7 @@ function PackageViewPage() {
 
               {paquete.itinerarios && paquete.itinerarios.length > 0 && (
                 <AnimatedSection animation="fadeInUp" delay={250}>
-                  <section className="bg-white/90 backdrop-blur rounded-2xl shadow-xl p-6 md:p-7 border border-gray-100/70">
+                  <section className="bg-white/90 backdrop-blur rounded-2xl shadow-xl p-6 md:p-7 border border-gray-100/70 transition-all duration-300 hover:shadow-2xl hover:border-gray-200/80">
                     <div className="flex items-start gap-5 mb-4">
                       <div className="w-14 h-14 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-xl flex items-center justify-center shadow-md">
                         <FiCalendar className="w-7 h-7 text-white" />
@@ -719,7 +730,7 @@ function PackageViewPage() {
 
               {paquete.hotel && (
                 <AnimatedSection animation="fadeInUp" delay={300}>
-                  <section className="bg-white/90 backdrop-blur rounded-2xl shadow-xl p-6 md:p-7 border border-gray-100/70">
+                  <section className="bg-white/90 backdrop-blur rounded-2xl shadow-xl p-6 md:p-7 border border-gray-100/70 transition-all duration-300 hover:shadow-2xl hover:border-gray-200/80">
                     <div className="flex items-start gap-5 mb-4">
                       <div className="w-14 h-14 bg-gradient-to-br from-amber-500 to-orange-500 rounded-xl flex items-center justify-center shadow-md">
                         <FiHome className="w-7 h-7 text-white" />
@@ -865,28 +876,29 @@ function PackageViewPage() {
             <aside className="xl:col-span-1">
               <div className="sticky top-24 space-y-6 lg:space-y-7">
                 <AnimatedSection animation="fadeInUp" delay={150}>
-                  <div className="bg-white/95 backdrop-blur rounded-2xl shadow-xl p-5 lg:p-6 xl:p-7 border border-gray-100">
-                    <div className="text-center space-y-3 mb-5 max-w-full overflow-x-hidden">
+                  <div className="relative group rounded-2xl p-[2px] bg-gradient-to-br from-blue-200 via-purple-200 to-emerald-200 shadow-[0_8px_28px_-6px_rgba(59,130,246,0.25)] hover:shadow-[0_10px_36px_-4px_rgba(99,102,241,0.32)] transition-all duration-500">
+                    <div className="bg-white/95 backdrop-blur rounded-2xl h-full w-full p-5 lg:p-6 xl:p-7 border border-white/40">
+                      <div className="text-center space-y-4 mb-6 max-w-full overflow-x-hidden">
                       {paquete.descuento &&
                       parseFloat(paquete.descuento) > 0 ? (
                         <>
-                          <div className="inline-flex flex-wrap items-baseline justify-center gap-x-2 max-w-full">
-                            <span className="text-base sm:text-lg font-semibold text-gray-400 line-through leading-snug">
+                          <div className="inline-flex flex-wrap items-baseline justify-center gap-x-2 max-w-full animate-[fadeIn_0.6s_ease]">
+                            <span className="text-base sm:text-lg font-medium text-gray-400/80 line-through leading-snug tracking-wide">
                               {precioOriginalFormatted}
                             </span>
                             {precioOriginalFormatted && (
-                              <span className="text-[11px] sm:text-xs text-gray-500 font-medium">
+                              <span className="text-[11px] sm:text-xs text-gray-500 font-medium uppercase tracking-wider">
                                 ({moneda})
                               </span>
                             )}
                           </div>
 
                           <div className="inline-flex flex-wrap items-baseline justify-center gap-x-2 max-w-full">
-                            <span className="text-2xl sm:text-3xl lg:text-4xl font-extrabold bg-gradient-to-r from-emerald-600 to-green-600 bg-clip-text text-transparent leading-snug break-words">
+                            <span className="text-3xl sm:text-4xl lg:text-5xl font-extrabold bg-gradient-to-r from-emerald-600 via-green-500 to-teal-500 bg-clip-text text-transparent leading-tight break-words drop-shadow-[0_3px_8px_rgba(16,185,129,0.35)]">
                               {precioTotalFormatted}
                             </span>
                             {precioTotalFormatted && (
-                              <span className="text-sm text-emerald-700 font-semibold">
+                              <span className="text-sm text-emerald-700 font-semibold tracking-wide">
                                 {moneda}
                               </span>
                             )}
@@ -894,20 +906,19 @@ function PackageViewPage() {
                           <span className="block text-gray-500 text-sm">
                             por persona
                           </span>
-                          <div className="inline-flex items-center px-3 py-1.5 bg-gradient-to-r from-red-500 to-pink-500 text-white rounded-full text-xs font-bold shadow">
-                            <FiAward className="w-4 h-4 mr-1.5" />
-                            Ahorras {formatPrecio(paquete.descuento, moneda)}
-                            <span className="ml-1">({moneda})</span>
+                          <div className="inline-flex items-center px-3 py-1.5 bg-gradient-to-r from-rose-500 via-red-500 to-pink-500 text-white rounded-full text-[11px] font-semibold shadow-md tracking-wide">
+                            <FiAward className="w-4 h-4 mr-1.5 animate-pulse" />
+                            Ahorras {formatPrecio(paquete.descuento, moneda)} <span className="ml-1">({moneda})</span>
                           </div>
                         </>
                       ) : (
                         <>
                           <div className="inline-flex flex-wrap items-baseline justify-center gap-x-2 max-w-full">
-                            <span className="text-2xl sm:text-3xl lg:text-4xl font-extrabold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent leading-snug break-words">
+                            <span className="text-3xl sm:text-4xl lg:text-5xl font-extrabold bg-gradient-to-r from-blue-600 via-indigo-600 to-fuchsia-600 bg-clip-text text-transparent leading-tight break-words drop-shadow-[0_3px_8px_rgba(79,70,229,0.35)]">
                               {precioTotalFormatted}
                             </span>
                             {precioTotalFormatted && (
-                              <span className="text-sm text-blue-700 font-semibold">
+                              <span className="text-sm text-blue-700 font-semibold tracking-wide">
                                 {moneda}
                               </span>
                             )}
@@ -917,37 +928,85 @@ function PackageViewPage() {
                           </span>
                         </>
                       )}
-                      <p className="text-gray-600 text-xs font-medium mx-auto max-w-[22rem] px-2">
-                        Los precios pueden variar según disponibilidad
+                      <p className="text-gray-500/90 text-[11px] font-medium mx-auto max-w-[22rem] px-3 leading-relaxed">
+                        Tarifas sujetas a cambios por disponibilidad y temporada
                       </p>
                     </div>
 
                     {paquete.anticipo && parseFloat(paquete.anticipo) > 0 && (
-                      <div className="mb-5 flex items-center gap-4 rounded-xl border border-blue-100/80 bg-blue-50/70 p-3 flex-wrap">
-                        <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-lg flex items-center justify-center text-white shadow-md shrink-0">
-                          <FiDollarSign className="w-7 h-7" />
+                      <div className="mb-6 flex items-center gap-4 rounded-xl border border-blue-100/80 bg-gradient-to-r from-blue-50/90 via-indigo-50/80 to-sky-50/90 p-3.5 flex-wrap shadow-inner">
+                        <div className="w-12 h-12 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-lg flex items-center justify-center text-white shadow-md shrink-0 ring-4 ring-white/40">
+                          <FiDollarSign className="w-7 h-7 drop-shadow" />
                         </div>
                         <div className="flex-1">
-                          <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
-                            <h3 className="font-bold text-blue-900 text-sm">
+                          <div className="flex flex-wrap items-center gap-x-2 gap-y-1 leading-tight">
+                            <h3 className="font-bold text-blue-900 text-[13px] tracking-wide">
                               Anticipo requerido
                             </h3>
-                            <span className="text-sm font-bold text-blue-700">
+                            <span className="text-sm font-semibold text-blue-700">
                               {formatPrecio(paquete.anticipo, moneda)}
                             </span>
                             <span className="text-[11px] text-blue-700 font-semibold">
                               {moneda}
                             </span>
                           </div>
-                          <p className="text-blue-600 text-xs">
-                            Para asegurar tu reservación
+                          <p className="text-blue-600 text-[11px] font-medium mt-0.5">
+                            Asegura tu lugar hoy
                           </p>
                         </div>
                       </div>
                     )}
 
+                    {(hasPrecioVuelo || hasPrecioHospedaje) && (
+                      <div className="mb-6 rounded-xl border border-gray-100 bg-gradient-to-br from-gray-50/70 via-white/40 to-gray-100/60 p-4 shadow-inner">
+                        <h4 className="text-xs font-semibold text-gray-700 mb-3 flex items-center gap-2 uppercase tracking-wide">
+                          <FiDollarSign className="w-4 h-4 text-gray-500" />
+                          Desglose de precios
+                        </h4>
+                        <ul className="space-y-1.5 text-[13px] text-gray-600">
+                          {hasPrecioVuelo && (
+                            <li className="flex justify-between items-center group/item">
+                              <span className="flex items-center gap-1">
+                                <span className="w-1.5 h-1.5 rounded-full bg-blue-500/80 group-hover/item:scale-110 transition-transform" />
+                                Vuelo
+                              </span>
+                              <span className="font-medium text-gray-900 flex items-baseline gap-1">
+                                {precioVueloFormatted}
+                                <span className="text-[10px] text-gray-500 font-semibold">
+                                  {moneda}
+                                </span>
+                              </span>
+                            </li>
+                          )}
+                          {hasPrecioHospedaje && (
+                            <li className="flex justify-between items-center group/item">
+                              <span className="flex items-center gap-1">
+                                <span className="w-1.5 h-1.5 rounded-full bg-purple-500/80 group-hover/item:scale-110 transition-transform" />
+                                Hospedaje
+                              </span>
+                              <span className="font-medium text-gray-900 flex items-baseline gap-1">
+                                {precioHospedajeFormatted}
+                                <span className="text-[10px] text-gray-500 font-semibold">
+                                  {moneda}
+                                </span>
+                              </span>
+                            </li>
+                          )}
+                          <li className="flex justify-between items-center border-t border-gray-200 pt-2 mt-1">
+                            <span className="font-semibold text-gray-800 tracking-wide">Total</span>
+                            <span className="font-bold text-blue-600 flex items-baseline gap-1">
+                              {precioTotalFormatted}
+                              <span className="text-[10px] text-blue-600 font-bold">
+                                {moneda}
+                              </span>
+                            </span>
+                          </li>
+                        </ul>
+                      </div>
+                    )}
+
                     <button
-                      className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold py-3 px-5 rounded-xl shadow-xl hover:shadow-2xl hover:scale-[1.01] transition-all duration-300 mb-4 hover:from-blue-700 hover:to-indigo-700"
+                      className="w-full relative overflow-hidden bg-gradient-to-r from-blue-600 via-indigo-600 to-violet-600 text-white font-semibold py-3.5 px-5 rounded-xl shadow-[0_6px_20px_-4px_rgba(79,70,229,0.55)] hover:shadow-[0_10px_28px_-4px_rgba(99,102,241,0.55)] hover:scale-[1.015] transition-all duration-300 mb-5 hover:from-blue-700 hover:via-indigo-700 hover:to-violet-700 focus:outline-none focus-visible:ring-4 focus-visible:ring-indigo-300/50 active:scale-[0.98]"
                       aria-label="Reservar aventura para este paquete turístico"
                       onClick={() => {
                         const codigo = paquete.codigo || url;
@@ -956,13 +1015,14 @@ function PackageViewPage() {
                         openWhatsApp(msg);
                       }}
                     >
-                      <span className="flex items-center justify-center gap-2 text-base">
+                      <span className="absolute inset-0 bg-gradient-to-r from-white/20 via-transparent to-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                      <span className="flex items-center justify-center gap-2 text-base relative z-10">
                         <FiCalendar className="w-5 h-5" aria-hidden="true" />
                         Reservar Aventura
                       </span>
                     </button>
 
-                    <div className="grid grid-cols-2 gap-2">
+                      <div className="grid grid-cols-2 gap-2">
                       <a
                         href={getPhoneHref()}
                         onClick={onPhoneClick}
@@ -984,8 +1044,9 @@ function PackageViewPage() {
                         <FiMail className="w-5 h-5" aria-hidden="true" />
                         <span className="font-medium text-sm">Email</span>
                       </a>
-                    </div>
-                  </div>
+                      </div>
+                    </div>{/* inner white card */}
+                  </div>{/* gradient border wrapper */}
                 </AnimatedSection>
               </div>
             </aside>
