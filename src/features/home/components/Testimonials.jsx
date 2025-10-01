@@ -79,9 +79,26 @@ const SlideCard = ({ t, state }) => {
             </p>
           </div>
         </div>
-        <p className="text-slate-700 leading-relaxed text-[15px] sm:text-base">
-          “{t.quote}”
-        </p>
+        {/^★+$/.test(t.quote.trim()) ? (
+          <div className="flex items-center gap-1" aria-label={`Valoración de ${t.quote.length} estrellas`}>
+            <span className="inline-flex">
+              {Array.from({ length: t.quote.length }).map((_, i) => (
+                <span
+                  key={i}
+                  className="text-[20px] sm:text-[22px] leading-none bg-clip-text text-transparent bg-gradient-to-r from-amber-400 via-yellow-300 to-amber-500 drop-shadow-[0_0_2px_rgba(0,0,0,0.15)]"
+                  aria-hidden="true"
+                >
+                  ★
+                </span>
+              ))}
+            </span>
+            <span className="sr-only">{t.quote.length} estrellas</span>
+          </div>
+        ) : (
+          <p className="text-slate-700 leading-relaxed text-[15px] sm:text-base">
+            “{t.quote}”
+          </p>
+        )}
       </div>
       <div
         className={`pointer-events-none absolute -inset-6 -z-10 rounded-[28px] bg-gradient-to-br ${t.accentFrom} ${t.accentTo} opacity-20 blur-2xl`}

@@ -3,120 +3,184 @@
     "name": "Jess",
     "location": "Hace 1 día",
     "avatar": "/HomePage/testimonio-user2.avif",
-    "quote": "El mejor de los servicios. Muy buen acomodo de los viajes, hoteles y atención al cliente excelentes. No hubo contratiempos y todas nuestras dudas fueron resueltas de la manera más amable. Muy recomendable! Muchas gracias!",
+    "quote": "El mejor de los servicios. Muy buen acomodo de los viajes, hoteles y atención al cliente excelentes. No hubo contratiempos y todas nuestras dudas fueron resueltas de la manera más amable. Muy recomendable! Muchas gracias! 🙏",
     "accentFrom": "from-blue-600",
     "accentTo": "to-indigo-600"
   },
   {
-    "name": "González Mercado",
-    "location": "Hace 3 días",
+    "name": "Eliezer Ortiz M",
+    "location": "Hace 5 meses",
     "avatar": "/HomePage/testimonio-user1.avif",
-    "quote": "La asesoría y el trato es excelente!! Lo súper recomiendo",
+    "quote": "Excelente atención y servicio. Me ayudaron a planear mi viaje a España, sin preocupación alguna. Felicidades. Mi siguiente viaje con Viadca.",
     "accentFrom": "from-emerald-500",
     "accentTo": "to-teal-500"
   },
   {
-    "name": "Techy Ruiz",
-    "location": "Hace 5 días",
+    "name": "Angelica Lucia De la Peña Encina",
+    "location": "Hace 5 meses",
     "avatar": "/HomePage/testimonio-user3.avif",
-    "quote": "EXCELENTE SERVICIO MUY PROFESIONAL Y EFICIENTE.",
-    "accentFrom": "from-orange-500",
-    "accentTo": "to-amber-500"
-  },
-  {
-    "name": "Araceli Gurrola",
-    "location": "Hace 1 semana",
-    "avatar": "/HomePage/testimonio-user4.avif",
-    "quote": "El servicio me parece excelente y profesional 👌",
-    "accentFrom": "from-indigo-500",
-    "accentTo": "to-violet-500"
-  },
-  {
-    "name": "Nat Ruiz",
-    "location": "Hace 2 semanas",
-    "avatar": "/HomePage/testimonio-user3.avif",
-    "quote": "Excelente organización, destinos increíbles! 100% recomendado",
+    "quote": "Excelente servicio y promociones, definitivamente viajaré nuevamente con ustedes.",
     "accentFrom": "from-pink-500",
     "accentTo": "to-rose-500"
   },
   {
-    "name": "Carlos Mendoza",
-    "location": "Hace 3 semanas",
-    "avatar": "/HomePage/testimonio-user1.avif",
-    "quote": "Muy atentos en todo momento, la experiencia fue increíble.",
-    "accentFrom": "from-sky-500",
-    "accentTo": "to-cyan-500"
-  },
-  {
-    "name": "Lucía Fernández",
-    "location": "Hace 1 mes",
-    "avatar": "/HomePage/testimonio-user4.avif",
-    "quote": "Me encantó la atención personalizada y los detalles.",
-    "accentFrom": "from-purple-500",
-    "accentTo": "to-fuchsia-500"
-  },
-  {
-    "name": "Andrés López",
-    "location": "Hace 1 mes",
-    "avatar": "/HomePage/testimonio-user1.avif",
-    "quote": "Todo muy organizado, sin duda volveré a contratar.",
-    "accentFrom": "from-lime-500",
-    "accentTo": "to-green-500"
-  },
-  {
-    "name": "Mariana Torres",
-    "location": "Hace 2 meses",
+    "name": "Karla Gabriela Olivas Herrera",
+    "location": "Hace 6 meses",
     "avatar": "/HomePage/testimonio-user3.avif",
-    "quote": "Una experiencia maravillosa, superó mis expectativas.",
-    "accentFrom": "from-amber-600",
-    "accentTo": "to-yellow-500"
-  },
-  {
-    "name": "Pedro Hernández",
-    "location": "Hace 2 meses",
-    "avatar": "/HomePage/testimonio-user1.avif",
-    "quote": "Servicio rápido y confiable, todo salió perfecto.",
-    "accentFrom": "from-rose-500",
-    "accentTo": "to-pink-500"
-  },
-  {
-    "name": "Alejandra Soto",
-    "location": "Hace 3 meses",
-    "avatar": "/HomePage/testimonio-user4.avif",
-    "quote": "Muy profesionales, recomiendo ampliamente.",
-    "accentFrom": "from-cyan-500",
-    "accentTo": "to-teal-500"
-  },
-  {
-    "name": "Roberto Ramírez",
-    "location": "Hace 3 meses",
-    "avatar": "/HomePage/testimonio-user1.avif",
-    "quote": "Excelente comunicación y resultados de calidad.",
-    "accentFrom": "from-indigo-500",
-    "accentTo": "to-blue-500"
-  },
-  {
-    "name": "Sofía Jiménez",
-    "location": "Hace 4 meses",
-    "avatar": "/HomePage/testimonio-user3.avif",
-    "quote": "El viaje fue perfecto, atención en cada detalle.",
+    "quote": "Excelente servicio!! Los recomiendo mucho!!!",
     "accentFrom": "from-fuchsia-500",
     "accentTo": "to-purple-500"
   },
   {
-    "name": "Fernando Castro",
-    "location": "Hace 4 meses",
-    "avatar": "/HomePage/testimonio-user1.avif",
-    "quote": "Gran servicio, lo recomiendo a familiares y amigos.",
-    "accentFrom": "from-emerald-500",
-    "accentTo": "to-green-600"
+    "name": "Camila Hernández",
+    "location": "Hace 7 meses",
+    "avatar": "/HomePage/testimonio-user3.avif",
+    "quote": "La atención y cuidado hacia sus clientes vale la pena! La mejor agencia de viajes de Dgo.",
+    "accentFrom": "from-orange-500",
+    "accentTo": "to-amber-500"
   },
   {
-    "name": "Daniela Vargas",
-    "location": "Hace 5 meses",
-    "avatar": "/HomePage/testimonio-user4.avif",
-    "quote": "El mejor servicio que he probado, ¡muy confiables!",
-    "accentFrom": "from-yellow-500",
-    "accentTo": "to-orange-500"
+    "name": "Claudia Araceli Castro Borrego",
+    "location": "Hace 7 meses",
+    "avatar": "/HomePage/testimonio-user3.avif",
+    "quote": "Muy interesante la experiencia... las sugerencias y darnos detalles nos permitió disfrutar aún más del viaje. Muy recomendable ✨️✨️✨️ 👌",
+    "accentFrom": "from-indigo-500",
+    "accentTo": "to-violet-500"
+  },
+  {
+    "name": "Brenda Lizeth Soto Galindo",
+    "location": "Hace 7 meses",
+    "avatar": "/HomePage/testimonio-user3.avif",
+    "quote": "★★★★★",
+    "accentFrom": "from-lime-500",
+    "accentTo": "to-green-500"
+  },
+  {
+    "name": "C.P. Guillermo Nuñez",
+    "location": "Hace 7 meses",
+    "avatar": "/HomePage/testimonio-user1.avif",
+    "quote": "★★★★★",
+    "accentFrom": "from-amber-600",
+    "accentTo": "to-yellow-500"
+  },
+  {
+    "name": "Alicia Luna",
+    "location": "Hace 7 meses",
+    "avatar": "/HomePage/testimonio-user3.avif",
+    "quote": "Excelente servicio e información!! ✈️🛳️🏝️",
+    "accentFrom": "from-cyan-500",
+    "accentTo": "to-teal-500"
+  },
+  {
+    "name": "Angy",
+    "location": "Hace 7 meses",
+    "avatar": "/HomePage/testimonio-user2.avif",
+    "quote": "Excelente !!!",
+    "accentFrom": "from-rose-500",
+    "accentTo": "to-pink-500"
+  },
+  {
+    "name": "Sadrac A.",
+    "location": "Hace 7 meses",
+    "avatar": "/HomePage/testimonio-user1.avif",
+    "quote": "Excelente opción para planear y contratar tus viajes. La atención es personalizada y siempre están al tanto de que todo en el viaje salga perfecto. 100% recomendable.",
+    "accentFrom": "from-blue-500",
+    "accentTo": "to-cyan-500"
+  },
+  {
+    "name": "María Guadalupe Vázquez García",
+    "location": "Hace 7 meses",
+    "avatar": "/HomePage/testimonio-user3.avif",
+    "quote": "Fue una experiencia maravillosa, todo estuvo genial: el hospedaje, los lugares que visitamos y en general todo excelente. Muchas gracias Viadca by Zafiro Tours.",
+    "accentFrom": "from-emerald-500",
+    "accentTo": "to-teal-500"
+  },
+  {
+    "name": "Araceli Gurrola",
+    "location": "Hace 7 meses",
+    "avatar": "/HomePage/testimonio-user3.avif",
+    "quote": "Excelente servicio!!!",
+    "accentFrom": "from-fuchsia-500",
+    "accentTo": "to-pink-500"
+  },
+  {
+    "name": "desenterrando historia",
+    "location": "Hace 7 meses",
+    "avatar": "/HomePage/testimonio-user2.avif",
+    "quote": "★★★★★",
+    "accentFrom": "from-indigo-500",
+    "accentTo": "to-blue-500"
+  },
+  {
+    "name": "Velia Galvan garcia",
+    "location": "Hace 7 meses",
+    "avatar": "/HomePage/testimonio-user3.avif",
+    "quote": "★★★★★",
+    "accentFrom": "from-purple-500",
+    "accentTo": "to-fuchsia-500"
+  },
+  {
+    "name": "J. Abraham Hernández",
+    "location": "Hace 7 meses",
+    "avatar": "/HomePage/testimonio-user1.avif",
+    "quote": "★★★★★",
+    "accentFrom": "from-orange-500",
+    "accentTo": "to-amber-500"
+  },
+  {
+    "name": "Aida Rios",
+    "location": "Hace 7 meses",
+    "avatar": "/HomePage/testimonio-user3.avif",
+    "quote": "Excelente atención y calidad.",
+    "accentFrom": "from-pink-500",
+    "accentTo": "to-rose-500"
+  },
+  {
+    "name": "buli fa Nava",
+    "location": "Hace 7 meses",
+    "avatar": "/HomePage/testimonio-user2.avif",
+    "quote": "La mejor agencia. Súper confiable.",
+    "accentFrom": "from-lime-500",
+    "accentTo": "to-green-500"
+  },
+  {
+    "name": "Diego H",
+    "location": "Hace 7 meses",
+    "avatar": "/HomePage/testimonio-user1.avif",
+    "quote": "Viajé a Puerto Vallarta con mi novia con esta agencia y tuve una excelente atención y servicio.",
+    "accentFrom": "from-amber-600",
+    "accentTo": "to-yellow-500"
+  },
+  {
+    "name": "Natalia Ruiz Vázquez",
+    "location": "Hace 7 meses",
+    "avatar": "/HomePage/testimonio-user3.avif",
+    "quote": "Excelente servicio! Muy profesional y te deja las mejores experiencias en destinos muy atractivos.",
+    "accentFrom": "from-cyan-500",
+    "accentTo": "to-teal-500"
+  },
+  {
+    "name": "Hector Raul Retana Rodriguez",
+    "location": "Hace 7 meses",
+    "avatar": "/HomePage/testimonio-user1.avif",
+    "quote": "¡Excelente servicio!",
+    "accentFrom": "from-rose-500",
+    "accentTo": "to-pink-500"
+  },
+  {
+    "name": "Erik Sanchez",
+    "location": "Hace 7 meses",
+    "avatar": "/HomePage/testimonio-user1.avif",
+    "quote": "Trato ameno y cordial, y sobre todo dan el servicio que uno anda buscando.",
+    "accentFrom": "from-fuchsia-500",
+    "accentTo": "to-purple-500"
+  },
+  {
+    "name": "Betzabé Villa",
+    "location": "Hace 7 meses",
+    "avatar": "/HomePage/testimonio-user3.avif",
+    "quote": "Muy amables, contestan rapidísimo y excelente servicio y muy buenos precios, súper recomendados!! 👌🏼",
+    "accentFrom": "from-emerald-500",
+    "accentTo": "to-teal-500"
   }
 ]
