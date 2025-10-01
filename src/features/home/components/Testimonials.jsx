@@ -278,16 +278,21 @@ const Testimonials = () => {
               </button>
 
               {compact ? (
-                <div className="flex items-center gap-3 min-w-[140px] px-1" aria-label="Estado del carrusel" role="group">
+                <div className="flex items-center gap-3 min-w-[160px] px-1" aria-label="Estado del carrusel" role="group">
                   <div className="text-[12px] font-medium tabular-nums text-slate-600 select-none">
                     {String(index + 1).padStart(2, "0")}
                     <span className="text-slate-400"> / {String(len).padStart(2, "0")}</span>
                   </div>
-                  <div className="relative h-1.5 w-24 rounded-full bg-slate-200 overflow-hidden" aria-hidden="true">
-                    <div
-                      className="absolute inset-y-0 left-0 bg-gradient-to-r from-indigo-500 to-violet-500 transition-[width] duration-500 ease-out"
-                      style={{ width: len ? `${((index + 1) / len) * 100}%` : "0%" }}
-                    />
+                  <div className="relative h-1.5 w-28 rounded-full bg-slate-200/70 dark:bg-slate-700/40 overflow-hidden ring-1 ring-slate-900/5">
+                    {/* Track sutil animado para darle vida */}
+                    <div className="absolute inset-0 bg-gradient-to-r from-slate-200/60 via-slate-300/60 to-slate-200/60 animate-pulse [animation-duration:3s]" aria-hidden="true" />
+                    {len > 0 && data[index] && (
+                      <div
+                        className={`relative h-full bg-gradient-to-r ${data[index].accentFrom} ${data[index].accentTo} transition-[width] duration-500 ease-out shadow-[0_0_0_1px_rgba(255,255,255,0.4)_inset]`}
+                        style={{ width: `${((index + 1) / len) * 100}%` }}
+                        aria-hidden="true"
+                      />
+                    )}
                   </div>
                 </div>
               ) : (
