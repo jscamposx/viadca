@@ -4,40 +4,35 @@ import OptimizedImage, {
   AvatarImage,
 } from "../../../components/ui/OptimizedImage.jsx";
 
-const testimonialsData = [
-  {
-    name: "González Mercado",
-    location: "Hace 3 días",
-    avatar: "/HomePage/testimonio-user1.avif",
-    quote: "La asesoría y el trato es excelente!! Lo súper recomiendo",
-    accentFrom: "from-emerald-500",
-    accentTo: "to-teal-500",
-  },
-  {
-    name: "Araceli Gurrola ",
-    location: "Hace 1 semana",
-    avatar: "/HomePage/testimonio-user2.avif",
-    quote: "El servicio me parece excelente y profesional 👌",
-    accentFrom: "from-indigo-500",
-    accentTo: "to-violet-500",
-  },
-  {
-    name: "Techy Ruiz ",
-    location: "Hace 5 días",
-    avatar: "/HomePage/testimonio-user3.avif",
-    quote: "EXCELENTE SERVICIO MUY PROFESIONAL Y EFICIENTE. ",
-    accentFrom: "from-orange-500",
-    accentTo: "to-amber-500",
-  },
-  {
-    name: "Nat Ruiz",
-    location: "Hace 2 semanas",
-    avatar: "/HomePage/testimonio-user4.avif",
-    quote: "Excelente organización, destinos increíbles! 100% recomendado",
-    accentFrom: "from-pink-500",
-    accentTo: "to-rose-500",
-  },
+// Datos ahora cargados dinámicamente desde /data/testimonials.json
+// Formato esperado de cada item:
+// {
+//   "name": "Nombre Cliente",
+//   "location": "Hace X días" (o ciudad),
+//   "avatar": "/HomePage/testimonio-user1.avif",
+//   "quote": "Texto del testimonio",
+//   "accentFrom": "from-indigo-500" (opcional),
+//   "accentTo": "to-violet-500" (opcional)
+// }
+
+// Paletas fallback determinísticas (cíclicas) si no vienen acentos definidos
+const COLOR_PAIRS = [
+  ["from-indigo-500", "to-violet-500"],
+  ["from-emerald-500", "to-teal-500"],
+  ["from-orange-500", "to-amber-500"],
+  ["from-pink-500", "to-rose-500"],
+  ["from-blue-500", "to-cyan-500"],
+  ["from-fuchsia-500", "to-purple-500"],
 ];
+
+const enrichTestimonial = (t, index) => {
+  const pair = COLOR_PAIRS[index % COLOR_PAIRS.length];
+  return {
+    ...t,
+    accentFrom: t.accentFrom || pair[0],
+    accentTo: t.accentTo || pair[1],
+  };
+};
 
 const mod = (n, m) => ((n % m) + m) % m;
 
@@ -99,21 +94,55 @@ const SlideCard = ({ t, state }) => {
 const Testimonials = () => {
   const [index, setIndex] = React.useState(0);
   const [paused, setPaused] = React.useState(false);
-  const len = testimonialsData.length;
+  const [data, setData] = React.useState([]);
+  const [loading, setLoading] = React.useState(true);
+  const [error, setError] = React.useState(null);
 
-  const next = React.useCallback(() => setIndex((i) => mod(i + 1, len)), [len]);
-  const prev = React.useCallback(() => setIndex((i) => mod(i - 1, len)), [len]);
-  const goTo = React.useCallback((i) => setIndex(mod(i, len)), [len]);
+  // Fetch JSON una sola vez
+  React.useEffect(() => {
+    let active = true;
+    (async () => {
+      try {
+        setLoading(true);
+        const res = await fetch(`/data/testimonials.json?_=${Date.now()}`);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const json = await res.json();
+        if (Array.isArray(json) && active) {
+          setData(json.map(enrichTestimonial));
+        } else if (active) {
+          throw new Error("Formato inválido: se esperaba un array");
+        }
+      } catch (e) {
+        if (active) setError(e.message || "Error cargando testimonios");
+      } finally {
+        if (active) setLoading(false);
+      }
+    })();
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  const len = data.length;
+
+  // Umbral para pasar a modo navegación compacta
+  const MAX_DOTS = 8;
+  const compact = len > MAX_DOTS;
+
+  const next = React.useCallback(() => len && setIndex((i) => mod(i + 1, len)), [len]);
+  const prev = React.useCallback(() => len && setIndex((i) => mod(i - 1, len)), [len]);
+  const goTo = React.useCallback((i) => len && setIndex(mod(i, len)), [len]);
 
   // autoplay robusto a 5s con pausa en hover y cuando la pestaña no está visible
   const intervalRef = React.useRef(null);
 
   const start = React.useCallback(() => {
+    if (!len) return;
     if (intervalRef.current) return;
     intervalRef.current = setInterval(() => {
       if (!document.hidden) next();
     }, 5500);
-  }, [next]);
+  }, [next, len]);
 
   const stop = React.useCallback(() => {
     if (intervalRef.current) {
@@ -139,6 +168,7 @@ const Testimonials = () => {
   // teclado (izquierda/derecha)
   React.useEffect(() => {
     const onKey = (e) => {
+      if (!len) return;
       if (e.key === "ArrowRight") next();
       else if (e.key === "ArrowLeft") prev();
     };
@@ -194,7 +224,7 @@ const Testimonials = () => {
               className="relative h-full w-full"
               style={{ perspective: 1200 }}
             >
-              {testimonialsData.map((t, i) => {
+              {data.map((t, i) => {
                 const rel =
                   i === index
                     ? 0
@@ -205,10 +235,25 @@ const Testimonials = () => {
                         : 2;
                 return <SlideCard key={i} t={t} state={rel} />;
               })}
+              {loading && (
+                <div className="absolute inset-0 flex items-center justify-center text-slate-500 text-sm">
+                  Cargando testimonios...
+                </div>
+              )}
+              {!loading && !error && !len && (
+                <div className="absolute inset-0 flex items-center justify-center text-slate-400 text-sm">
+                  No hay testimonios disponibles.
+                </div>
+              )}
+              {error && (
+                <div className="absolute inset-0 flex flex-col items-center justify-center text-red-600 text-sm px-4 text-center">
+                  Error: {error}
+                </div>
+              )}
             </div>
           </div>
 
-          {/* Controles mejorados (pill centrado) */}
+          {/* Controles navegación */}
           <div className="relative flex justify-center mt-6 mx-auto w-full max-w-[360px] lg:absolute lg:left-1/2 lg:-translate-x-1/2 lg:bottom-4">
             <div className="inline-flex items-center gap-1.5 sm:gap-3 rounded-full bg-white/80 backdrop-blur-md ring-1 ring-slate-900/10 shadow-lg px-2 py-1 sm:px-3 sm:py-1.5">
               <button
@@ -232,31 +277,50 @@ const Testimonials = () => {
                 </svg>
               </button>
 
-              <div className="flex items-center gap-2 sm:gap-3">
-                {testimonialsData.map((t, i) => (
-                  <button
-                    key={i}
-                    onClick={() => goTo(i)}
-                    className="relative grid place-items-center w-8 h-8 sm:w-10 sm:h-10 rounded-full transition-all duration-300 ease-out bg-transparent hover:bg-white/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-1 focus-visible:ring-secondary/70"
-                    aria-label={`Ir al testimonio ${i + 1}`}
-                    aria-current={i === index ? "true" : undefined}
-                  >
-                    <span
-                      className={`block rounded-full ${
-                        i === index
-                          ? `h-2.5 w-2.5 bg-gradient-to-r ${t.accentFrom} ${t.accentTo} border-2 border-white`
-                          : "h-2 w-2 bg-slate-400/80"
-                      }`}
-                      aria-hidden="true"
+              {compact ? (
+                <div className="flex items-center gap-3 min-w-[140px] px-1" aria-label="Estado del carrusel" role="group">
+                  <div className="text-[12px] font-medium tabular-nums text-slate-600 select-none">
+                    {String(index + 1).padStart(2, "0")}
+                    <span className="text-slate-400"> / {String(len).padStart(2, "0")}</span>
+                  </div>
+                  <div className="relative h-1.5 w-24 rounded-full bg-slate-200 overflow-hidden" aria-hidden="true">
+                    <div
+                      className="absolute inset-y-0 left-0 bg-gradient-to-r from-indigo-500 to-violet-500 transition-[width] duration-500 ease-out"
+                      style={{ width: len ? `${((index + 1) / len) * 100}%` : "0%" }}
                     />
-                  </button>
-                ))}
-              </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="flex items-center gap-2 sm:gap-3">
+                  {data.map((t, i) => (
+                    <button
+                      key={i}
+                      onClick={() => goTo(i)}
+                      className="relative grid place-items-center w-8 h-8 sm:w-10 sm:h-10 rounded-full transition-all duration-300 ease-out bg-transparent hover:bg-white/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-1 focus-visible:ring-secondary/70"
+                      aria-label={`Ir al testimonio ${i + 1}`}
+                      aria-current={i === index ? "true" : undefined}
+                    >
+                      <span
+                        className={`block rounded-full ${
+                          i === index
+                            ? `h-2.5 w-2.5 bg-gradient-to-r ${t.accentFrom} ${t.accentTo} border-2 border-white`
+                            : "h-2 w-2 bg-slate-400/80"
+                        }`}
+                        aria-hidden="true"
+                      />
+                    </button>
+                  ))}
+                  {loading && (
+                    <span className="text-[11px] text-slate-500 px-2">...</span>
+                  )}
+                </div>
+              )}
 
               <button
                 type="button"
                 onClick={next}
-                className="group inline-flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-transparent ring-1 ring-transparent hover:bg-white/90 hover:ring-slate-900/10 text-slate-700 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-secondary"
+                disabled={!len}
+                className="group inline-flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-transparent ring-1 ring-transparent hover:bg-white/90 hover:ring-slate-900/10 text-slate-700 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-secondary disabled:opacity-40 disabled:cursor-not-allowed"
                 aria-label="Siguiente testimonio"
               >
                 <svg

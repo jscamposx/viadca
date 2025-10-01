@@ -258,6 +258,33 @@ El front asume un backend disponible en `VITE_API_BASE_URL` (o `http://localhost
   - Cookies con `SameSite=None; Secure` si es cross-site sobre HTTPS
   - En iOS/Safari, el cliente puede usar `Authorization: Bearer` como fallback
 
+## Testimonios (Home) – Gestión vía JSON
+
+Los testimonios mostrados en el carrusel de la Home ahora se cargan dinámicamente desde `public/data/testimonials.json` (fetch en cliente). Puedes actualizar o añadir nuevos testimonios sin tocar el código React.
+
+Formato de cada objeto en el array:
+
+```jsonc
+[
+  {
+    "name": "Nombre del Cliente",
+    "location": "Hace 3 días" // o ciudad/fecha relativa
+    "avatar": "/HomePage/testimonio-user1.avif", // ruta pública (puede ser externa absoluta)
+    "quote": "Texto del testimonio",
+    "accentFrom": "from-indigo-500", // opcional Tailwind gradient start
+    "accentTo": "to-violet-500"      // opcional Tailwind gradient end
+  }
+]
+```
+
+Notas:
+- `accentFrom` y `accentTo` son opcionales; si faltan, el componente asigna un par de colores cíclico.
+- Para forzar recarga en producción (cache de CDN) puedes cambiar el nombre del archivo o un query param manual (`/data/testimonials.json?refresh=123`). El componente ya añade un timestamp `_` para evitar cache demasiado agresivo en navegadores.
+- Procura mantener el array relativamente corto (≤ 20) para no aumentar el tiempo de carga inicial. Si necesitas muchos, considera paginar o cargar bajo demanda.
+- Imágenes: ideal servirlas como `.avif` o `.webp` optimizadas y cuadradas (min 128x128) para mayor nitidez.
+
+Si eliminas todos los testimonios, el carrusel mostrará un mensaje: "No hay testimonios disponibles".
+
 - Mapas sin tiles o en inglés:
   - Define `VITE_ES_TILE_URL` o `VITE_MAPTILER_KEY`
 

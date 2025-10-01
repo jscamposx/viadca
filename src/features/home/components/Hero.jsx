@@ -148,46 +148,20 @@ const Hero = () => {
                       type="button"
                       onClick={openWhatsApp}
                       aria-label="Planifica tu viaje por WhatsApp"
-                      className="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-7 py-3.5 sm:px-8 sm:py-4 rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all duration-300 font-semibold hover:shadow-lg sm:hover:shadow-xl hover:scale-[1.02] sm:hover:scale-105 transform flex items-center justify-center gap-2 sm:gap-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-600 disabled:opacity-60 disabled:cursor-not-allowed"
+                      className="w-full sm:w-auto bg-[#25D366] hover:bg-[#1ebe5d] text-white px-7 py-3.5 sm:px-8 sm:py-4 rounded-xl transition-all duration-300 font-semibold hover:shadow-lg sm:hover:shadow-xl hover:scale-[1.02] sm:hover:scale-105 transform flex items-center justify-center gap-2 sm:gap-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#25D366] disabled:opacity-60 disabled:cursor-not-allowed"
                     >
+                      {/* Icono oficial estilo WhatsApp (SVG) */}
                       <svg
                         className="w-5 h-5"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
+                        viewBox="0 0 32 32"
                         aria-hidden="true"
+                        fill="currentColor"
+                        focusable="false"
                       >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"
-                        />
+                        <path d="M16.04 3C9.4 3 4 8.4 4 15.05c0 2.65.87 5.11 2.35 7.1L4 29l7.07-2.32a12.97 12.97 0 0 0 4.97 1c6.63 0 12.03-5.4 12.03-12.05C28.07 8.4 22.67 3 16.04 3Zm7.1 17.18c-.3.84-1.73 1.6-2.4 1.7-.62.1-1.4.14-2.26-.14-.52-.17-1.18-.38-2.04-.74-3.6-1.56-5.94-5.2-6.12-5.44-.18-.24-1.46-1.94-1.46-3.7 0-1.76.92-2.63 1.25-2.99.33-.36.72-.45.96-.45.24 0 .48 0 .69.01.22.01.52-.08.82.63.3.7 1.04 2.42 1.13 2.6.09.18.15.4.03.64-.12.24-.18.39-.36.6-.18.21-.38.47-.54.63-.18.18-.36.37-.16.73.21.36.93 1.53 2 2.48 1.37 1.22 2.48 1.6 2.84 1.78.36.18.57.15.78-.09.21-.24.9-1.05 1.14-1.41.24-.36.48-.3.81-.18.33.12 2.14 1.01 2.5 1.2.36.18.6.27.69.42.09.15.09.87-.21 1.71Z" />
                       </svg>
-                      <span>Planifica tu viaje</span>
+                      <span className="whitespace-nowrap">Planifica tu viaje</span>
                     </button>
-                    <a
-                      href={getPhoneHref()}
-                      onClick={onPhoneClick}
-                      aria-label="Contáctanos por teléfono"
-                      className="w-full sm:w-auto border-2 border-slate-300 text-slate-800 px-7 py-3.5 sm:px-8 sm:py-4 rounded-xl hover:border-blue-600 hover:text-blue-700 hover:bg-blue-50 transition-all duration-300 font-semibold hover:shadow-md sm:hover:shadow-lg hover:scale-[1.02] sm:hover:scale-105 transform flex items-center justify-center gap-2 sm:gap-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-600 disabled:opacity-60 disabled:cursor-not-allowed"
-                    >
-                      <svg
-                        className="w-5 h-5"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                        aria-hidden="true"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
-                        />
-                      </svg>
-                      <span>Contáctanos</span>
-                    </a>
                   </div>
                 </AnimatedSection>
 
