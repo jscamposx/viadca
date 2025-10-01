@@ -26,7 +26,7 @@
   {
     "name": "Araceli Gurrola",
     "location": "Hace 1 semana",
-    "avatar": "/HomePage/testimonio-user2.avif",
+    "avatar": "/HomePage/testimonio-user4.avif",
     "quote": "El servicio me parece excelente y profesional 👌",
     "accentFrom": "from-indigo-500",
     "accentTo": "to-violet-500"
@@ -34,7 +34,7 @@
   {
     "name": "Nat Ruiz",
     "location": "Hace 2 semanas",
-    "avatar": "/HomePage/testimonio-user4.avif",
+    "avatar": "/HomePage/testimonio-user3.avif",
     "quote": "Excelente organización, destinos increíbles! 100% recomendado",
     "accentFrom": "from-pink-500",
     "accentTo": "to-rose-500"
@@ -50,7 +50,7 @@
   {
     "name": "Lucía Fernández",
     "location": "Hace 1 mes",
-    "avatar": "/HomePage/testimonio-user2.avif",
+    "avatar": "/HomePage/testimonio-user4.avif",
     "quote": "Me encantó la atención personalizada y los detalles.",
     "accentFrom": "from-purple-500",
     "accentTo": "to-fuchsia-500"
@@ -58,7 +58,7 @@
   {
     "name": "Andrés López",
     "location": "Hace 1 mes",
-    "avatar": "/HomePage/testimonio-user3.avif",
+    "avatar": "/HomePage/testimonio-user1.avif",
     "quote": "Todo muy organizado, sin duda volveré a contratar.",
     "accentFrom": "from-lime-500",
     "accentTo": "to-green-500"
@@ -66,7 +66,7 @@
   {
     "name": "Mariana Torres",
     "location": "Hace 2 meses",
-    "avatar": "/HomePage/testimonio-user4.avif",
+    "avatar": "/HomePage/testimonio-user3.avif",
     "quote": "Una experiencia maravillosa, superó mis expectativas.",
     "accentFrom": "from-amber-600",
     "accentTo": "to-yellow-500"
@@ -82,7 +82,7 @@
   {
     "name": "Alejandra Soto",
     "location": "Hace 3 meses",
-    "avatar": "/HomePage/testimonio-user2.avif",
+    "avatar": "/HomePage/testimonio-user4.avif",
     "quote": "Muy profesionales, recomiendo ampliamente.",
     "accentFrom": "from-cyan-500",
     "accentTo": "to-teal-500"
@@ -90,7 +90,7 @@
   {
     "name": "Roberto Ramírez",
     "location": "Hace 3 meses",
-    "avatar": "/HomePage/testimonio-user3.avif",
+    "avatar": "/HomePage/testimonio-user1.avif",
     "quote": "Excelente comunicación y resultados de calidad.",
     "accentFrom": "from-indigo-500",
     "accentTo": "to-blue-500"
@@ -98,7 +98,7 @@
   {
     "name": "Sofía Jiménez",
     "location": "Hace 4 meses",
-    "avatar": "/HomePage/testimonio-user4.avif",
+    "avatar": "/HomePage/testimonio-user3.avif",
     "quote": "El viaje fue perfecto, atención en cada detalle.",
     "accentFrom": "from-fuchsia-500",
     "accentTo": "to-purple-500"
@@ -114,7 +114,7 @@
   {
     "name": "Daniela Vargas",
     "location": "Hace 5 meses",
-    "avatar": "/HomePage/testimonio-user2.avif",
+    "avatar": "/HomePage/testimonio-user4.avif",
     "quote": "El mejor servicio que he probado, ¡muy confiables!",
     "accentFrom": "from-yellow-500",
     "accentTo": "to-orange-500"
