@@ -1,5 +1,6 @@
 import React from "react";
 import { AnimatedSection } from "../../../hooks/scrollAnimations";
+import { Link } from "react-router-dom";
 import { getPaquetesPublic } from "../../../api/packagesService";
 import OptimizedImage from "../../../components/ui/OptimizedImage.jsx";
 import { getImageUrl } from "../../../utils/imageUtils.js";
@@ -103,8 +104,25 @@ const Steps = () => {
 
   // Estado paquete destacado
   const [featured, setFeatured] = React.useState(null);
+  const [secondFeatured, setSecondFeatured] = React.useState(null);
   const [loadingPkg, setLoadingPkg] = React.useState(true);
   const [errorPkg, setErrorPkg] = React.useState(null);
+  const [restoredFromSession, setRestoredFromSession] = React.useState(false);
+
+  // Restaurar de sessionStorage si existe
+  React.useEffect(() => {
+    try {
+      const cached = sessionStorage.getItem("stepsFeaturedPackages");
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        if (parsed?.featured) setFeatured(parsed.featured);
+        if (parsed?.secondFeatured) setSecondFeatured(parsed.secondFeatured);
+        setRestoredFromSession(true);
+      }
+    } catch {
+      /* ignore */
+    }
+  }, []);
 
   React.useEffect(() => {
     let active = true;
@@ -127,8 +145,27 @@ const Steps = () => {
         }
         const activos = items.filter((p) => p.activo !== false);
         const pool = activos.length ? activos : items;
-        const chosen = pool[Math.floor(Math.random() * pool.length)];
-  if (active && chosen) {
+        if (!pool.length) {
+          if (active) setErrorPkg("Sin paquetes disponibles");
+          return;
+        }
+        const idx1 = Math.floor(Math.random() * pool.length);
+        const chosen = pool[idx1];
+        let chosen2 = null;
+        if (pool.length > 1) {
+          // intentar seleccionar diferente
+            for (let i = 0; i < 4; i++) {
+              const tentative = pool[Math.floor(Math.random() * pool.length)];
+              if (tentative !== chosen) {
+                chosen2 = tentative; break;
+              }
+            }
+          if (!chosen2) {
+            // fallback: siguiente índice circular
+            chosen2 = pool[(idx1 + 1) % pool.length];
+          }
+        }
+        if (active && chosen) {
           // Normalización de imagen: replicar prioridad usada en otras vistas (primera_imagen > imagen_principal > imagenDestacada > portada/cover > primera de arreglo imagenes)
           const rawImage =
             chosen.primera_imagen ||
@@ -144,7 +181,7 @@ const Steps = () => {
 
           const resolvedImage = rawImage ? getImageUrl(rawImage) : "/HomePage/como-reservar-card1.avif";
 
-          setFeatured({
+          const newFeatured = {
             id: chosen.id,
             titulo: chosen.titulo || chosen.title || "Paquete destacado",
             salida: chosen.salida || chosen.fechaInicio || null,
@@ -152,7 +189,45 @@ const Steps = () => {
             precio: chosen.precioDesde || chosen.precio || chosen.price || null,
             imagen: resolvedImage,
             url: chosen.codigoUrl || chosen.slug || null,
-          });
+          };
+          setFeatured(newFeatured);
+          if (chosen2) {
+            const rawImage2 =
+              chosen2.primera_imagen ||
+              chosen2.imagen_principal ||
+              chosen2.imagenDestacada ||
+              chosen2.portada ||
+              chosen2.cover ||
+              chosen2.image ||
+              (Array.isArray(chosen2.imagenes) && chosen2.imagenes[0]?.url) ||
+              (Array.isArray(chosen2.imagenes) && chosen2.imagenes[0]?.contenido) ||
+              (Array.isArray(chosen2.imagenes) && chosen2.imagenes[0]) ||
+              null;
+            const resolvedImage2 = rawImage2 ? getImageUrl(rawImage2) : "/HomePage/como-reservar-card1.avif";
+            const newSecond = {
+              id: chosen2.id,
+              titulo: chosen2.titulo || chosen2.title || "Próximo viaje",
+              salida: chosen2.salida || chosen2.fechaInicio || null,
+              proveedor: chosen2.operador || chosen2.proveedor || "VIADCA Tours",
+              precio: chosen2.precioDesde || chosen2.precio || chosen2.price || null,
+              imagen: resolvedImage2,
+              url: chosen2.codigoUrl || chosen2.slug || null,
+            };
+            setSecondFeatured(newSecond);
+            try {
+              sessionStorage.setItem(
+                "stepsFeaturedPackages",
+                JSON.stringify({ featured: newFeatured, secondFeatured: newSecond })
+              );
+            } catch {}
+          } else {
+            try {
+              sessionStorage.setItem(
+                "stepsFeaturedPackages",
+                JSON.stringify({ featured: newFeatured })
+              );
+            } catch {}
+          }
         } else if (active && !chosen) {
           setErrorPkg("No se pudo seleccionar paquete");
         }
@@ -198,6 +273,7 @@ const Steps = () => {
       className="py-10 sm:py-14 lg:py-18 px-4 sm:px-6 lg:px-8 scroll-mt-32 bg-gradient-to-b from-white to-blue-50"
       aria-labelledby="pasos-heading"
     >
+        <style>{`@keyframes fadeInSecond{0%{opacity:0;transform:translateY(12px) scale(.96)}60%{opacity:1;transform:translateY(0) scale(1.01)}100%{opacity:1;transform:translateY(0) scale(1)}}`}</style>
       <div className="max-w-7xl mx-auto">
         <div className="grid lg:grid-cols-2 gap-10 sm:gap-12 lg:gap-16 items-start">
           {/* Left */}
@@ -278,8 +354,17 @@ const Steps = () => {
             delay={400}
             className="relative order-2"
           >
-            <div className="relative bg-white rounded-3xl p-4 sm:p-6 shadow-xl border border-blue-100 w-full sm:max-w-lg lg:max-w-md mx-auto hover:shadow-2xl transition-shadow duration-300">
+            <div className={`relative bg-white rounded-3xl p-4 sm:p-6 shadow-xl border border-blue-100 w-full sm:max-w-lg lg:max-w-md mx-auto hover:shadow-2xl transition-shadow duration-300 group ${card.url ? 'cursor-pointer' : 'cursor-default'}`}>
               <div className="relative overflow-hidden rounded-2xl mb-4 sm:mb-6">
+                {card.url && (
+                  <Link
+                    to={`/paquetes/${card.url}`}
+                    aria-label={`Ver detalle del paquete ${card.titulo}`}
+                    className="absolute inset-0 z-10 focus:outline-none focus:ring-2 focus:ring-blue-500/60 group"
+                    tabIndex={0}
+                    title="Ver detalles"
+                  />
+                )}
                 {card.imagen ? (
                   <OptimizedImage
                     src={card.imagen}
@@ -293,6 +378,11 @@ const Steps = () => {
                   />
                 ) : (
                   <div className="w-full h-48 sm:h-64 bg-slate-100 animate-pulse" />
+                )}
+                {restoredFromSession && loadingPkg && !errorPkg && (
+                  <div className="absolute inset-0 bg-white/60 backdrop-blur-[2px] flex items-center justify-center">
+                    <div className="w-10 h-10 rounded-full border-2 border-blue-500/20 border-t-blue-500 animate-spin" aria-label="Actualizando paquete" />
+                  </div>
                 )}
                 <div className="absolute top-3 right-3">
                   <span className="bg-green-700 text-white px-2 py-1 rounded-full text-[10px] sm:text-xs font-bold flex items-center gap-1">
@@ -408,48 +498,79 @@ const Steps = () => {
                 </div>
               </div>
             </div>
-            <div className="hidden lg:block absolute -bottom-8 -right-8 bg-white rounded-3xl p-6 shadow-xl border border-blue-100 w-80">
-              <div className="flex items-center space-x-4 mb-4">
-                {card.imagen ? (
-                  <img
-                    src={card.imagen}
-                    alt={card.titulo}
-                    className="w-12 h-12 rounded-full object-cover"
-                    loading="lazy"
-                    decoding="async"
-                  />
-                ) : (
-                  <div className="w-12 h-12 rounded-full bg-slate-200 animate-pulse" />
-                )}
-                <div>
-                  <p className="text-slate-600 text-sm">Próximo viaje</p>
-                  <h4 className="font-semibold text-slate-800">
-                    {card.titulo.length > 40
-                      ? card.titulo.slice(0, 37) + "..."
-                      : card.titulo}
-                  </h4>
-                  <p className="text-slate-600 text-sm">
-                    {loadingPkg
-                      ? "Cargando..."
-                      : errorPkg
-                        ? "Ejemplo genérico"
-                        : card.salida || "Fechas variables"}
-                  </p>
-                </div>
-              </div>
-              <div
-                className="w-full bg-gray-200 rounded-full h-2"
-                aria-hidden="true"
-              >
-                <div
-                  className="bg-blue-600 h-2 rounded-full transition-all duration-700"
-                  style={{ width: featured ? "80%" : "50%" }}
-                ></div>
-              </div>
+            <div className={`hidden lg:block absolute -bottom-8 -right-8 bg-white rounded-3xl p-6 shadow-xl border border-blue-100 w-80 transition-opacity duration-700 ${secondFeatured ? 'opacity-0 animate-[fadeInSecond_0.9s_ease_forwards_0.15s]' : 'opacity-100'} ${secondFeatured?.url ? 'cursor-pointer' : ''}`}
+              style={{ viewTransitionName: secondFeatured ? 'second-package' : undefined }}
+            >
+              {(() => {
+                const small = secondFeatured || featured || fallbackCard;
+                const loadingSecond = loadingPkg && !secondFeatured && !featured;
+                return (
+                  <>
+                    {small.url && (
+                      <Link
+                        to={`/paquetes/${small.url}`}
+                        aria-label={`Ir al paquete ${small.titulo}`}
+                        className="absolute inset-0 z-10 rounded-3xl focus:outline-none focus:ring-2 focus:ring-blue-500/60"
+                        tabIndex={0}
+                        title="Ver detalles"
+                      />
+                    )}
+                    <div className="flex items-center space-x-4 mb-4">
+                      {small.imagen ? (
+                        <img
+                          src={small.imagen}
+                          alt={small.titulo}
+                          className="w-12 h-12 rounded-full object-cover"
+                          loading="lazy"
+                          decoding="async"
+                        />
+                      ) : (
+                        <div className="w-12 h-12 rounded-full bg-slate-200 animate-pulse" />
+                      )}
+                      <div>
+                        <p className="text-slate-600 text-sm">Próximo viaje</p>
+                        <h4 className="font-semibold text-slate-800">
+                          {small.titulo.length > 40
+                            ? small.titulo.slice(0, 37) + "..."
+                            : small.titulo}
+                        </h4>
+                        <p className="text-slate-600 text-sm">
+                          {loadingSecond
+                            ? "Cargando..."
+                            : errorPkg && !featured && !secondFeatured
+                              ? "Ejemplo genérico"
+                              : small.salida || "Fechas variables"}
+                        </p>
+                      </div>
+                    </div>
+                    <div
+                      className="w-full bg-gray-200 rounded-full h-2"
+                      aria-hidden="true"
+                    >
+                      <div
+                        className="bg-blue-600 h-2 rounded-full transition-all duration-700"
+                        style={{ width: secondFeatured ? "70%" : featured ? "80%" : "50%" }}
+                      ></div>
+                      {restoredFromSession && loadingPkg && !secondFeatured && (
+                        <div className="absolute -top-6 right-0 text-[10px] text-blue-600 font-medium">Actualizando…</div>
+                      )}
+                    </div>
+                  </>
+                );
+              })()}
             </div>
             {/* Bloque miniatura + precio para mobile */}
             {(card.imagen || precioFmt) && (
-              <div className="lg:hidden mt-5 flex items-center gap-4 bg-white rounded-2xl p-3 shadow-sm border border-blue-100">
+              <div className={`lg:hidden mt-5 flex items-center gap-4 bg-white rounded-2xl p-3 shadow-sm border border-blue-100 relative ${card.url ? 'cursor-pointer' : ''}`}>
+                {card.url && (
+                  <Link
+                    to={`/paquetes/${card.url}`}
+                    aria-label={`Ver paquete ${card.titulo}`}
+                    className="absolute inset-0 z-10 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500/60"
+                    tabIndex={0}
+                    title="Ver detalles"
+                  />
+                )}
                 <div className="w-16 h-16 rounded-xl overflow-hidden bg-slate-100 flex-shrink-0">
                   {card.imagen ? (
                     <img
