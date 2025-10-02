@@ -108,6 +108,7 @@ const Steps = () => {
   const [loadingPkg, setLoadingPkg] = React.useState(true);
   const [errorPkg, setErrorPkg] = React.useState(null);
   const [restoredFromSession, setRestoredFromSession] = React.useState(false);
+  const DEFAULT_CURRENCY = "MXN";
 
   // Restaurar de sessionStorage si existe
   React.useEffect(() => {
@@ -149,6 +150,15 @@ const Steps = () => {
           if (active) setErrorPkg("Sin paquetes disponibles");
           return;
         }
+        // Guardar pool serializado simple (solo campos mínimos) para fallback posterior
+        try {
+          sessionStorage.setItem(
+            "stepsFeaturedPackagesFullPool",
+            JSON.stringify(
+              pool.map(p => ({ id: p.id, titulo: p.titulo || p.title || "Paquete", precio: p.precioDesde || p.precio_total || p.precio || p.price || null, moneda: p.moneda || p.currency || null }))
+            )
+          );
+        } catch {}
         const idx1 = Math.floor(Math.random() * pool.length);
         const chosen = pool[idx1];
         let chosen2 = null;
@@ -181,12 +191,24 @@ const Steps = () => {
 
           const resolvedImage = rawImage ? getImageUrl(rawImage) : "/HomePage/como-reservar-card1.avif";
 
+          const resolvedMoneda =
+            chosen.moneda || chosen.currency || chosen.moneda_base || DEFAULT_CURRENCY;
+          const resolvedPrecio =
+            chosen.precioDesde ||
+            chosen.precio_total ||
+            chosen.precioTotal ||
+            chosen.precio_final ||
+            chosen.precio ||
+            chosen.price ||
+            chosen.priceFrom ||
+            null;
           const newFeatured = {
             id: chosen.id,
             titulo: chosen.titulo || chosen.title || "Paquete destacado",
             salida: chosen.salida || chosen.fechaInicio || null,
             proveedor: chosen.operador || chosen.proveedor || "VIADCA Tours",
-            precio: chosen.precioDesde || chosen.precio || chosen.price || null,
+            precio: resolvedPrecio,
+            moneda: resolvedMoneda,
             imagen: resolvedImage,
             url: chosen.codigoUrl || chosen.slug || null,
           };
@@ -204,12 +226,24 @@ const Steps = () => {
               (Array.isArray(chosen2.imagenes) && chosen2.imagenes[0]) ||
               null;
             const resolvedImage2 = rawImage2 ? getImageUrl(rawImage2) : "/HomePage/como-reservar-card1.avif";
+            const resolvedMoneda2 =
+              chosen2.moneda || chosen2.currency || chosen2.moneda_base || resolvedMoneda || DEFAULT_CURRENCY;
+            const resolvedPrecio2 =
+              chosen2.precioDesde ||
+              chosen2.precio_total ||
+              chosen2.precioTotal ||
+              chosen2.precio_final ||
+              chosen2.precio ||
+              chosen2.price ||
+              chosen2.priceFrom ||
+              null;
             const newSecond = {
               id: chosen2.id,
               titulo: chosen2.titulo || chosen2.title || "Próximo viaje",
               salida: chosen2.salida || chosen2.fechaInicio || null,
               proveedor: chosen2.operador || chosen2.proveedor || "VIADCA Tours",
-              precio: chosen2.precioDesde || chosen2.precio || chosen2.price || null,
+              precio: resolvedPrecio2,
+              moneda: resolvedMoneda2,
               imagen: resolvedImage2,
               url: chosen2.codigoUrl || chosen2.slug || null,
             };
@@ -242,16 +276,18 @@ const Steps = () => {
     };
   }, []);
 
-  const formatPrice = (v) => {
-    if (v == null) return null;
+  const formatPrice = (v, currency = DEFAULT_CURRENCY) => {
+    if (v == null || v === "") return null;
+    const num = Number(v);
+    if (Number.isNaN(num)) return v; // ya formateado quizás
     try {
       return new Intl.NumberFormat("es-MX", {
         style: "currency",
-        currency: "MXN",
+        currency: currency || DEFAULT_CURRENCY,
         maximumFractionDigits: 0,
-      }).format(Number(v));
+      }).format(num);
     } catch {
-      return `$${v} MXN`;
+      return `${currency || DEFAULT_CURRENCY} ${num}`;
     }
   };
 
@@ -265,7 +301,7 @@ const Steps = () => {
   };
 
   const card = featured || fallbackCard;
-  const precioFmt = formatPrice(card.precio);
+  const precioFmt = formatPrice(card.precio, card.moneda || DEFAULT_CURRENCY);
 
   return (
     <section
@@ -488,12 +524,12 @@ const Steps = () => {
                   </svg>
                   <span className="text-slate-600">Cupo disponible</span>
                 </div>
-                <div className="text-left sm:text-right">
+                <div className="text-left sm:text-right lg:hidden">
                   <div className="text-[11px] sm:text-xs text-slate-500">
                     Desde
                   </div>
                   <div className="text-lg sm:text-2xl font-bold text-green-600">
-                    {precioFmt || (loadingPkg ? "..." : "Cotiza")}
+                    {precioFmt || (loadingPkg ? "..." : errorPkg ? "--" : "Cotiza")}
                   </div>
                 </div>
               </div>
@@ -502,8 +538,27 @@ const Steps = () => {
               style={{ viewTransitionName: secondFeatured ? 'second-package' : undefined }}
             >
               {(() => {
-                const small = secondFeatured || featured || fallbackCard;
+                let baseMainId = featured?.id || fallbackCard.id;
+                let small = secondFeatured || null;
+                // Si no hay secondFeatured o coincide con principal, intentar derivar alternativa
+                if (!small || small.id === baseMainId) {
+                  // construir lista reducida basada en cache de sessionStorage si existe
+                  try {
+                    const raw = sessionStorage.getItem("stepsFeaturedPackagesFullPool");
+                    if (raw) {
+                      const pool = JSON.parse(raw);
+                      if (Array.isArray(pool) && pool.length > 0) {
+                        const alt = pool.find(p => p.id !== baseMainId);
+                        if (alt) small = alt;
+                      }
+                    }
+                  } catch {}
+                }
+                if (!small) {
+                  small = featured && featured.id !== fallbackCard.id ? featured : fallbackCard;
+                }
                 const loadingSecond = loadingPkg && !secondFeatured && !featured;
+                const smallPrice = small && small.precio != null ? formatPrice(small.precio, small.moneda || DEFAULT_CURRENCY) : null;
                 return (
                   <>
                     {small.url && (
@@ -528,7 +583,7 @@ const Steps = () => {
                         <div className="w-12 h-12 rounded-full bg-slate-200 animate-pulse" />
                       )}
                       <div>
-                        <p className="text-slate-600 text-sm">Próximo viaje</p>
+                        <p className="text-slate-600 text-sm">Otro viaje</p>
                         <h4 className="font-semibold text-slate-800">
                           {small.titulo.length > 40
                             ? small.titulo.slice(0, 37) + "..."
@@ -541,6 +596,7 @@ const Steps = () => {
                               ? "Ejemplo genérico"
                               : small.salida || "Fechas variables"}
                         </p>
+                        {/* Precio oculto en desktop intencionalmente */}
                       </div>
                     </div>
                     <div
@@ -589,7 +645,7 @@ const Steps = () => {
                     Desde
                   </p>
                   <p className="text-xl font-bold text-green-600 leading-none">
-                    {precioFmt || (loadingPkg ? "..." : "Cotiza")}
+                    {precioFmt || (loadingPkg ? "..." : errorPkg ? "--" : "Cotiza")}
                   </p>
                   {card.salida && (
                     <p className="text-[11px] text-slate-500 mt-1 line-clamp-1">
