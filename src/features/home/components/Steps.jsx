@@ -589,13 +589,7 @@ const Steps = () => {
                             ? small.titulo.slice(0, 37) + "..."
                             : small.titulo}
                         </h4>
-                        <p className="text-slate-600 text-sm">
-                          {loadingSecond
-                            ? "Cargando..."
-                            : errorPkg && !featured && !secondFeatured
-                              ? "Ejemplo genérico"
-                              : small.salida || "Fechas variables"}
-                        </p>
+                        {/* Fecha removida en mini card por solicitud (antes mostraba salida / fechas variables) */}
                         {/* Precio oculto en desktop intencionalmente */}
                       </div>
                     </div>
