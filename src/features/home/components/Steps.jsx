@@ -609,46 +609,47 @@ const Steps = () => {
                 );
               })()}
             </div>
-            {/* Bloque miniatura + precio para mobile */}
-            {(card.imagen || precioFmt) && (
-              <div className={`lg:hidden mt-5 flex items-center gap-4 bg-white rounded-2xl p-3 shadow-sm border border-blue-100 relative ${card.url ? 'cursor-pointer' : ''}`}>
-                {card.url && (
-                  <Link
-                    to={`/paquetes/${card.url}`}
-                    aria-label={`Ver paquete ${card.titulo}`}
-                    className="absolute inset-0 z-10 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500/60"
-                    tabIndex={0}
-                    title="Ver detalles"
-                  />
-                )}
-                <div className="w-16 h-16 rounded-xl overflow-hidden bg-slate-100 flex-shrink-0">
-                  {card.imagen ? (
-                    <img
-                      src={card.imagen}
-                      alt={`Miniatura paquete: ${card.titulo}`}
-                      className="w-full h-full object-cover"
-                      loading="lazy"
-                      decoding="async"
+            {/* Mini card mobile usando segundo paquete si distinto */}
+            {(() => {
+              const mainId = featured?.id || fallbackCard.id;
+              const mobileSecond = secondFeatured && secondFeatured.id !== mainId ? secondFeatured : null;
+              if (!mobileSecond) return null;
+              const mobilePrice = mobileSecond.precio != null ? formatPrice(mobileSecond.precio, mobileSecond.moneda || DEFAULT_CURRENCY) : null;
+              return (
+                <div className={`lg:hidden mt-5 flex items-center gap-4 bg-white rounded-2xl p-3 shadow-sm border border-blue-100 relative ${mobileSecond.url ? 'cursor-pointer' : ''}`}>
+                  {mobileSecond.url && (
+                    <Link
+                      to={`/paquetes/${mobileSecond.url}`}
+                      aria-label={`Ver paquete ${mobileSecond.titulo}`}
+                      className="absolute inset-0 z-10 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500/60"
+                      tabIndex={0}
+                      title="Ver detalles"
                     />
-                  ) : (
-                    <div className="w-full h-full bg-slate-200 animate-pulse" />
                   )}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-[11px] uppercase tracking-wide text-slate-500 font-medium mb-1">
-                    Desde
-                  </p>
-                  <p className="text-xl font-bold text-green-600 leading-none">
-                    {precioFmt || (loadingPkg ? "..." : errorPkg ? "--" : "Cotiza")}
-                  </p>
-                  {card.salida && (
-                    <p className="text-[11px] text-slate-500 mt-1 line-clamp-1">
-                      {card.salida}
+                  <div className="w-16 h-16 rounded-xl overflow-hidden bg-slate-100 flex-shrink-0">
+                    {mobileSecond.imagen ? (
+                      <img
+                        src={mobileSecond.imagen}
+                        alt={`Miniatura paquete: ${mobileSecond.titulo}`}
+                        className="w-full h-full object-cover"
+                        loading="lazy"
+                        decoding="async"
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-slate-200 animate-pulse" />
+                    )}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-[11px] uppercase tracking-wide text-slate-500 font-medium mb-1">
+                      Desde
                     </p>
-                  )}
+                    <p className="text-xl font-bold text-green-600 leading-none">
+                      {mobilePrice || (loadingPkg ? "..." : errorPkg ? "--" : "Cotiza")}
+                    </p>
+                  </div>
                 </div>
-              </div>
-            )}
+              );
+            })()}
             <div className="lg:hidden mt-5 grid grid-cols-3 gap-3">
               {[
                 ["24/7", "Soporte", "blue"],
