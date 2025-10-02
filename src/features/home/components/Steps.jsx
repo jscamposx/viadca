@@ -1,5 +1,8 @@
 import React from "react";
 import { AnimatedSection } from "../../../hooks/scrollAnimations";
+import { getPaquetesPublic } from "../../../api/packagesService";
+import OptimizedImage from "../../../components/ui/OptimizedImage.jsx";
+import { getImageUrl } from "../../../utils/imageUtils.js";
 
 const Steps = () => {
   // Eliminado useStaggeredAnimation: usaremos AnimatedSection para cada step
@@ -98,6 +101,97 @@ const Steps = () => {
     },
   ];
 
+  // Estado paquete destacado
+  const [featured, setFeatured] = React.useState(null);
+  const [loadingPkg, setLoadingPkg] = React.useState(true);
+  const [errorPkg, setErrorPkg] = React.useState(null);
+
+  React.useEffect(() => {
+    let active = true;
+    (async () => {
+      try {
+        setLoadingPkg(true);
+        const { data } = await getPaquetesPublic(1, 12);
+        const items = Array.isArray(data?.data)
+          ? data.data
+          : Array.isArray(data?.items)
+            ? data.items
+            : Array.isArray(data)
+              ? data
+              : [];
+        if (!items.length) {
+          if (active) {
+            setErrorPkg("Sin paquetes disponibles");
+          }
+          return; // Usará fallbackCard
+        }
+        const activos = items.filter((p) => p.activo !== false);
+        const pool = activos.length ? activos : items;
+        const chosen = pool[Math.floor(Math.random() * pool.length)];
+  if (active && chosen) {
+          // Normalización de imagen: replicar prioridad usada en otras vistas (primera_imagen > imagen_principal > imagenDestacada > portada/cover > primera de arreglo imagenes)
+          const rawImage =
+            chosen.primera_imagen ||
+            chosen.imagen_principal ||
+            chosen.imagenDestacada ||
+            chosen.portada ||
+            chosen.cover ||
+            chosen.image ||
+            (Array.isArray(chosen.imagenes) && chosen.imagenes[0]?.url) ||
+            (Array.isArray(chosen.imagenes) && chosen.imagenes[0]?.contenido) ||
+            (Array.isArray(chosen.imagenes) && chosen.imagenes[0]) ||
+            null;
+
+          const resolvedImage = rawImage ? getImageUrl(rawImage) : "/HomePage/como-reservar-card1.avif";
+
+          setFeatured({
+            id: chosen.id,
+            titulo: chosen.titulo || chosen.title || "Paquete destacado",
+            salida: chosen.salida || chosen.fechaInicio || null,
+            proveedor: chosen.operador || chosen.proveedor || "VIADCA Tours",
+            precio: chosen.precioDesde || chosen.precio || chosen.price || null,
+            imagen: resolvedImage,
+            url: chosen.codigoUrl || chosen.slug || null,
+          });
+        } else if (active && !chosen) {
+          setErrorPkg("No se pudo seleccionar paquete");
+        }
+      } catch (e) {
+        if (active) setErrorPkg(e.message || "Error cargando paquete");
+      } finally {
+        if (active) setLoadingPkg(false);
+      }
+    })();
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  const formatPrice = (v) => {
+    if (v == null) return null;
+    try {
+      return new Intl.NumberFormat("es-MX", {
+        style: "currency",
+        currency: "MXN",
+        maximumFractionDigits: 0,
+      }).format(Number(v));
+    } catch {
+      return `$${v} MXN`;
+    }
+  };
+
+  const fallbackCard = {
+    titulo: "Tour Pirámides de Teotihuacán",
+    salida: "Sábados",
+    proveedor: "VIADCA Tours",
+    precio: 92500,
+    imagen: "/HomePage/como-reservar-card1.avif",
+    url: null,
+  };
+
+  const card = featured || fallbackCard;
+  const precioFmt = formatPrice(card.precio);
+
   return (
     <section
       id="pasos"
@@ -186,13 +280,20 @@ const Steps = () => {
           >
             <div className="relative bg-white rounded-3xl p-4 sm:p-6 shadow-xl border border-blue-100 w-full sm:max-w-lg lg:max-w-md mx-auto hover:shadow-2xl transition-shadow duration-300">
               <div className="relative overflow-hidden rounded-2xl mb-4 sm:mb-6">
-                <img
-                  src="/HomePage/como-reservar-card1.avif"
-                  alt="Tour a las Pirámides"
-                  className="w-full h-48 sm:h-64 object-cover"
-                  loading="lazy"
-                  decoding="async"
-                />
+                {card.imagen ? (
+                  <OptimizedImage
+                    src={card.imagen}
+                    alt={`Imagen paquete destacado: ${card.titulo}`}
+                    width={800}
+                    height={600}
+                    responsive
+                    sizes="(max-width:640px) 100vw, 400px"
+                    className="w-full h-48 sm:h-64 object-cover"
+                    lazy={!featured}
+                  />
+                ) : (
+                  <div className="w-full h-48 sm:h-64 bg-slate-100 animate-pulse" />
+                )}
                 <div className="absolute top-3 right-3">
                   <span className="bg-green-700 text-white px-2 py-1 rounded-full text-[10px] sm:text-xs font-bold flex items-center gap-1">
                     <svg
@@ -203,12 +304,12 @@ const Steps = () => {
                     >
                       <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                     </svg>
-                    Destacado
+                    {featured ? "Destacado" : errorPkg ? "Fallback" : "Ejemplo"}
                   </span>
                 </div>
               </div>
-              <h3 className="font-semibold text-lg sm:text-xl text-slate-800 mb-2 sm:mb-4">
-                Tour Pirámides de Teotihuacán
+              <h3 className="font-semibold text-lg sm:text-xl text-slate-800 mb-2 sm:mb-4 line-clamp-2">
+                {card.titulo}
               </h3>
               <div className="flex flex-col sm:flex-row sm:items-center gap-2 text-slate-600 text-xs sm:text-sm mb-3 sm:mb-4">
                 <span className="flex items-center gap-1">
@@ -226,7 +327,7 @@ const Steps = () => {
                       d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
                     />
                   </svg>
-                  Salidas: Sábados
+                  {card.salida ? `Salidas: ${card.salida}` : "Salidas flexibles"}
                 </span>
                 <span className="hidden sm:block" aria-hidden="true">
                   |
@@ -246,7 +347,7 @@ const Steps = () => {
                       d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
                     />
                   </svg>
-                  por VIADCA Tours
+                  por {card.proveedor}
                 </span>
               </div>
 
@@ -302,27 +403,37 @@ const Steps = () => {
                     Desde
                   </div>
                   <div className="text-lg sm:text-2xl font-bold text-green-600">
-                    $92,500 MXN
+                    {precioFmt || (loadingPkg ? "..." : "Cotiza")}
                   </div>
                 </div>
               </div>
             </div>
             <div className="hidden lg:block absolute -bottom-8 -right-8 bg-white rounded-3xl p-6 shadow-xl border border-blue-100 w-80">
               <div className="flex items-center space-x-4 mb-4">
-                <img
-                  src="/HomePage/como-reservar-card2.avif"
-                  alt="Cancún"
-                  className="w-12 h-12 rounded-full object-cover"
-                  loading="lazy"
-                  decoding="async"
-                />
+                {card.imagen ? (
+                  <img
+                    src={card.imagen}
+                    alt={card.titulo}
+                    className="w-12 h-12 rounded-full object-cover"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                ) : (
+                  <div className="w-12 h-12 rounded-full bg-slate-200 animate-pulse" />
+                )}
                 <div>
                   <p className="text-slate-600 text-sm">Próximo viaje</p>
                   <h4 className="font-semibold text-slate-800">
-                    Cancún & Riviera Maya
+                    {card.titulo.length > 40
+                      ? card.titulo.slice(0, 37) + "..."
+                      : card.titulo}
                   </h4>
                   <p className="text-slate-600 text-sm">
-                    Disponible todo el año
+                    {loadingPkg
+                      ? "Cargando..."
+                      : errorPkg
+                        ? "Ejemplo genérico"
+                        : card.salida || "Fechas variables"}
                   </p>
                 </div>
               </div>
@@ -330,9 +441,43 @@ const Steps = () => {
                 className="w-full bg-gray-200 rounded-full h-2"
                 aria-hidden="true"
               >
-                <div className="bg-blue-600 h-2 rounded-full w-4/5"></div>
+                <div
+                  className="bg-blue-600 h-2 rounded-full transition-all duration-700"
+                  style={{ width: featured ? "80%" : "50%" }}
+                ></div>
               </div>
             </div>
+            {/* Bloque miniatura + precio para mobile */}
+            {(card.imagen || precioFmt) && (
+              <div className="lg:hidden mt-5 flex items-center gap-4 bg-white rounded-2xl p-3 shadow-sm border border-blue-100">
+                <div className="w-16 h-16 rounded-xl overflow-hidden bg-slate-100 flex-shrink-0">
+                  {card.imagen ? (
+                    <img
+                      src={card.imagen}
+                      alt={`Miniatura paquete: ${card.titulo}`}
+                      className="w-full h-full object-cover"
+                      loading="lazy"
+                      decoding="async"
+                    />
+                  ) : (
+                    <div className="w-full h-full bg-slate-200 animate-pulse" />
+                  )}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-[11px] uppercase tracking-wide text-slate-500 font-medium mb-1">
+                    Desde
+                  </p>
+                  <p className="text-xl font-bold text-green-600 leading-none">
+                    {precioFmt || (loadingPkg ? "..." : "Cotiza")}
+                  </p>
+                  {card.salida && (
+                    <p className="text-[11px] text-slate-500 mt-1 line-clamp-1">
+                      {card.salida}
+                    </p>
+                  )}
+                </div>
+              </div>
+            )}
             <div className="lg:hidden mt-5 grid grid-cols-3 gap-3">
               {[
                 ["24/7", "Soporte", "blue"],
