@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useMemo } from "react";
+import React, { useState, useCallback, useMemo, useRef } from "react";
 import { getImageUrl, getResponsiveImageUrls } from "../../utils/imageUtils.js";
 import { cloudinaryService } from "../../services/cloudinaryService.js";
 
@@ -29,7 +29,9 @@ const OptimizedImage = ({
 }) => {
   const [isLoaded, setIsLoaded] = useState(false);
   const [hasError, setHasError] = useState(false);
+  const [triedOriginal, setTriedOriginal] = useState(false);
   const [isInView, setIsInView] = useState(!lazy);
+  const originalSrcRef = useRef(src);
 
   // Opciones de optimización
   const optimizationOptions = useMemo(
@@ -46,19 +48,36 @@ const OptimizedImage = ({
 
   // URL procesada
   const processedUrl = useMemo(() => {
-    if (!src || hasError) return null;
+    if (!src) return null;
+    if (hasError && triedOriginal) return null; // ya falló original también
     try {
-      // Permitir pasar directamente un public_id simple (sin dominio) detectando ausencia de esquema y sin espacios
-      if (typeof src === "string" && !src.includes("http") && !src.includes("cloudinary.com") && !src.startsWith("/")) {
-        // Construimos una URL Cloudinary optimizada usando service directamente
-        return cloudinaryService.getOptimizedImageUrl(src, optimizationOptions);
+      // Si ya hubo error con versión optimizada, intentar usar src original literal (sin transformaciones)
+      if (hasError && !triedOriginal && originalSrcRef.current) {
+        return typeof originalSrcRef.current === "string"
+          ? originalSrcRef.current
+          : originalSrcRef.current.cloudinary_url || null;
+      }
+
+      if (
+        typeof src === "string" &&
+        !src.includes("http") &&
+        !src.includes("cloudinary.com") &&
+        !src.startsWith("/")
+      ) {
+        return cloudinaryService.getOptimizedImageUrl(
+          src,
+          optimizationOptions,
+        );
       }
       return getImageUrl(src, optimizationOptions);
     } catch (err) {
-      console.error("Error generando processedUrl para OptimizedImage:", { src, err });
+      console.error("Error generando processedUrl para OptimizedImage:", {
+        src,
+        err,
+      });
       return null;
     }
-  }, [src, optimizationOptions, hasError]);
+  }, [src, optimizationOptions, hasError, triedOriginal]);
 
   // URLs responsivas si se solicitan
   const responsiveUrls = useMemo(() => {
@@ -137,11 +156,17 @@ const OptimizedImage = ({
 
   const handleError = useCallback(
     (e) => {
-      setHasError(true);
-      setIsLoaded(false);
+      if (!hasError) {
+        // Primer fallo: marcar error y forzar re-render para usar original
+        setHasError(true);
+        setIsLoaded(false);
+      } else if (hasError && !triedOriginal) {
+        // Marcar que ya intentamos original
+        setTriedOriginal(true);
+      }
       onError?.(e);
     },
-    [onError],
+    [onError, hasError, triedOriginal],
   );
 
   // Intersection Observer para lazy loading
@@ -216,7 +241,7 @@ const OptimizedImage = ({
   }
 
   // Mostrar imagen de error
-  if (hasError) {
+  if (hasError && triedOriginal) {
     return (
       <div
         className={`bg-gray-100 border-2 border-dashed border-gray-300 flex items-center justify-center ${className}`}
