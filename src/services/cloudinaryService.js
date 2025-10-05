@@ -82,20 +82,16 @@ class CloudinaryService {
 
     let transformations = [];
 
-    // Manejo individual de width/height para evitar h_auto inválido
-    if (width !== undefined && width !== null && width !== "auto") {
-      transformations.push(`w_${width}`);
-    }
-    if (height !== undefined && height !== null && height !== "auto") {
-      transformations.push(`h_${height}`);
-    }
+    // Manejo individual de width/height para evitar transformaciones inválidas
+    const hasWidth = width !== undefined && width !== null && width !== "auto";
+    const hasHeight = height !== undefined && height !== null && height !== "auto";
 
-    // Evitar usar c_fill sin altura: cambiar a c_scale si no hay height
+    if (hasWidth) transformations.push(`w_${width}`);
+    if (hasHeight) transformations.push(`h_${height}`);
+
+    // Evitar usar c_fill cuando falta alguna dimensión (Cloudinary requiere ambas para un recorte determinístico)
     const effectiveCrop =
-      (height === undefined || height === null || height === "auto") &&
-      crop === "fill"
-        ? "scale"
-        : crop;
+      crop === "fill" && (!hasWidth || !hasHeight) ? "scale" : crop;
     if (effectiveCrop) transformations.push(`c_${effectiveCrop}`);
     if (gravity && gravity !== "auto") transformations.push(`g_${gravity}`);
 
@@ -242,8 +238,31 @@ class CloudinaryService {
     if (!url || !url.includes("cloudinary.com")) return null;
 
     try {
-      const match = url.match(/\/image\/upload\/(?:v\d+\/)?(.+?)(?:\.[^.]+)?$/);
-      return match ? match[1] : null;
+      // Ejemplos válidos:
+      // https://res.cloudinary.com/<cloud>/image/upload/v1699999999/folder/asset_name.jpg
+      // https://res.cloudinary.com/<cloud>/image/upload/w_400,h_300,c_fill,q_auto/folder/asset_name.jpg
+      // 1) Tomar la parte después de /image/upload/
+      const [, afterUpload] = url.split(/\/image\/upload\//);
+      if (!afterUpload) return null;
+
+      // 2) Quitar versión v1234567890/ si existe
+      const afterVersion = afterUpload.replace(/^v\d+\//, "");
+
+      // 3) El primer segmento antes del primer '/' puede ser transformaciones si contiene 'w_' 'h_' 'c_' etc.
+      const segments = afterVersion.split("/");
+      if (segments.length === 0) return null;
+
+      const transformationIndicators = ["w_", "h_", "c_", "q_", "g_", "f_", "e_", "r_", "dpr_"]; // comunes
+      const first = segments[0];
+      const looksLikeTransformation = transformationIndicators.some((t) => first.includes(t) || first.startsWith(t));
+      if (looksLikeTransformation) {
+        segments.shift(); // quitar bloque de transformaciones
+      }
+
+      // 4) Reconstruir public_id (puede incluir subcarpetas) y remover extensión final
+      const publicIdWithExt = segments.join("/");
+      const publicId = publicIdWithExt.replace(/\.[^.]+$/, "");
+      return publicId || null;
     } catch (error) {
       console.error("Error extrayendo public_id:", error);
       return null;

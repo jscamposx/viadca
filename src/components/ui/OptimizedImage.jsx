@@ -47,7 +47,17 @@ const OptimizedImage = ({
   // URL procesada
   const processedUrl = useMemo(() => {
     if (!src || hasError) return null;
-    return getImageUrl(src, optimizationOptions);
+    try {
+      // Permitir pasar directamente un public_id simple (sin dominio) detectando ausencia de esquema y sin espacios
+      if (typeof src === "string" && !src.includes("http") && !src.includes("cloudinary.com") && !src.startsWith("/")) {
+        // Construimos una URL Cloudinary optimizada usando service directamente
+        return cloudinaryService.getOptimizedImageUrl(src, optimizationOptions);
+      }
+      return getImageUrl(src, optimizationOptions);
+    } catch (err) {
+      console.error("Error generando processedUrl para OptimizedImage:", { src, err });
+      return null;
+    }
   }, [src, optimizationOptions, hasError]);
 
   // URLs responsivas si se solicitan
@@ -230,6 +240,9 @@ const OptimizedImage = ({
             />
           </svg>
           <span className="text-sm">Error al cargar imagen</span>
+          {process.env.NODE_ENV === "development" && (
+            <span className="block mt-1 text-[10px] text-gray-400 break-all max-w-[180px]">{typeof src === "string" ? src : JSON.stringify(src)}</span>
+          )}
         </div>
       </div>
     );
