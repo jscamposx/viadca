@@ -5,7 +5,7 @@ const resolveBaseURL = () => {
   const envURL = import.meta.env.VITE_API_BASE_URL;
   if (envURL) return envURL;
   if (import.meta.env?.DEV) return "http://localhost:3000";
-  return "https://api.jscamposx.dev";
+  return "https://api.viadca.app"; // nuevo dominio fallback prod
 };
 const API_URL = resolveBaseURL();
 

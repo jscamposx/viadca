@@ -37,7 +37,7 @@ Este script ejecuta `scripts/generateSitemap.js` ANTES del build. El script del 
 PowerShell (Windows):
 
 ```powershell
-$env:VITE_API_URL = "https://api.jscamposx.dev"; pnpm run build:seo
+$env:VITE_API_URL = "https://api.viadca.app"; pnpm run build:seo
 ```
 
 - Vista previa del build localmente:
@@ -74,7 +74,7 @@ Notas:
 Coloca un archivo `.env` en la raíz (para Vite deben empezar con `VITE_`). Ejemplos:
 
 ```ini
-VITE_API_BASE_URL=https://api.jscamposx.dev
+VITE_API_BASE_URL=https://api.viadca.app
 VITE_CLOUDINARY_CLOUD_NAME=dsh8njsiu
 # Opcional: tiles en español (si no usas MAPTILER)
 VITE_ES_TILE_URL=
@@ -83,12 +83,12 @@ VITE_MAPTILER_KEY=
 
 # Solo para el script Node del sitemap (build time)
 # Si no lo defines, usa http://localhost:3000
-VITE_API_URL=https://api.jscamposx.dev
+VITE_API_URL=https://api.viadca.app
 ```
 
 Detalles importantes:
 
-- API Base URL: si `VITE_API_BASE_URL` no está definido, en desarrollo se usa `http://localhost:3000` y en producción `https://api.jscamposx.dev` (ver `src/api/axiosConfig.js`).
+- API Base URL: si `VITE_API_BASE_URL` no está definido, en desarrollo se usa `http://localhost:3000` y en producción `https://api.viadca.app` (ver `src/api/axiosConfig.js`).
 - Cookies y CORS: Axios está configurado con `withCredentials: true`. Asegúrate de que tu backend permita cookies cross-site (CORS correcto, SameSite/secure y origen).
 - Cloudinary: la subida de imágenes NO va directo a Cloudinary desde el cliente; se hace vía endpoints del backend (`/admin/upload/*`). `VITE_CLOUDINARY_CLOUD_NAME` se usa para construir URLs optimizadas al mostrar imágenes.
 - Mapas: si defines `VITE_ES_TILE_URL`, se usa esa fuente. Si no, y defines `VITE_MAPTILER_KEY`, se usan tiles de MapTiler en español. En su defecto, se usan tiles públicos de OpenStreetMap.
@@ -218,7 +218,7 @@ El front asume un backend disponible en `VITE_API_BASE_URL` (o `http://localhost
 - Build recomendado con sitemap:
 
   ```powershell
-  $env:VITE_API_URL = "https://api.jscamposx.dev"; pnpm run build:seo
+  $env:VITE_API_URL = "https://api.viadca.app"; pnpm run build:seo
   ```
 
 1. Servir carpeta `dist/` con tu servidor preferido (Nginx, CDN, Render, etc.)

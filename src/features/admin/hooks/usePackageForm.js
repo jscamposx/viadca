@@ -122,6 +122,9 @@ export const usePackageForm = (initialPackageData = null) => {
             tipo: img.tipo || (img.cloudinary_url ? "cloudinary" : "url"),
             isUploaded: img.tipo === "cloudinary",
             file: null,
+            // Añadir metadatos Cloudinary para que el flujo reconozca imágenes existentes correctamente
+            cloudinary_public_id: img.cloudinary_public_id || null,
+            cloudinary_url: img.cloudinary_url || (img.tipo === "cloudinary" ? imageUrl : null),
             // Preservar el contenido original para comparaciones
             originalContent: img.contenido,
           };
@@ -600,14 +603,21 @@ export const usePackageForm = (initialPackageData = null) => {
       logPatchOperation("processing", processingFlags);
     }
 
+    // Normalizar orden ANTES de cualquier procesamiento para asegurar consistencia
+    const normalizedImages = (formData.imagenes || []).map((img, idx) => ({
+      ...img,
+      orden: idx + 1,
+    }));
+    if (normalizedImages.length) {
+      console.log("🔢 Orden normalizado previo a envío:", normalizedImages.map(i => ({ id: i.id, orden: i.orden, tipo: i.tipo, cloudinary_public_id: i.cloudinary_public_id })));
+    }
+
     if (processingFlags.images) {
       console.log("🖼️ Modo: Procesamiento completo de imágenes");
-      finalPayload.imagenes = await processImages(formData.imagenes || []);
+      finalPayload.imagenes = await processImages(normalizedImages);
     } else if (processingFlags.imagesOrderOnly) {
       console.log("⚡ Modo: Solo actualización de orden (optimizado)");
-      finalPayload.imagenes = await processImagesOrderOnly(
-        formData.imagenes || [],
-      );
+      finalPayload.imagenes = await processImagesOrderOnly(normalizedImages);
     }
 
     if (processingFlags.hotel) {
@@ -681,7 +691,14 @@ export const usePackageForm = (initialPackageData = null) => {
 
   const handleFullCreate = async (addNotification) => {
     logPatchOperation("create-mode");
-    const packageImages = await processImages(formData.imagenes || []);
+    const normalizedImages = (formData.imagenes || []).map((img, idx) => ({
+      ...img,
+      orden: idx + 1,
+    }));
+    if (normalizedImages.length) {
+      console.log("🔢 Orden normalizado (CREACIÓN):", normalizedImages.map(i => ({ id: i.id, orden: i.orden, tipo: i.tipo, cloudinary_public_id: i.cloudinary_public_id })));
+    }
+    const packageImages = await processImages(normalizedImages);
     const hotelPayload = await processHotel(formData.hotel);
     console.log("🆕 Creando paquete - Mayoristas:", {
       mayoristasIds: formData.mayoristasIds,

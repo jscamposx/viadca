@@ -1,34 +1,36 @@
 import axios from "axios";
 import { getAccessToken } from "./tokenManager";
 
+// Resolver unificado de baseURL (IMPORTANTE: usar SIEMPRE variables de entorno primero)
 const getBaseURL = () => {
-  const envURL = import.meta.env.VITE_API_BASE_URL;
+  const primary = import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_API_URL;
+  const legacy = import.meta.env.VITE_BACKEND_URL; // por si existía antes
 
   if (import.meta.env.DEV) {
-    console.log("🔧 Variables de entorno:", {
-      VITE_API_BASE_URL: envURL,
+    console.log("🔧 Variables de entorno API detectadas:", {
+      VITE_API_BASE_URL: import.meta.env.VITE_API_BASE_URL,
+      VITE_API_URL: import.meta.env.VITE_API_URL,
+      VITE_BACKEND_URL: import.meta.env.VITE_BACKEND_URL,
       MODE: import.meta.env.MODE,
-      DEV: import.meta.env.DEV,
-      PROD: import.meta.env.PROD,
     });
   }
 
-  if (envURL) {
-    return envURL;
-  }
+  // 1. Variables explícitas
+  if (primary) return sanitizeBase(primary);
+  if (legacy) return sanitizeBase(legacy);
 
-  if (import.meta.env.DEV) {
-    return "http://localhost:3000";
-  } else {
-    return "https://api.jscamposx.dev";
-  }
+  // 2. Fallback local dev
+  if (import.meta.env.DEV) return "http://localhost:3000";
+
+  // 3. Nuevo dominio oficial
+  return "https://api.viadca.app"; // fallback producción
 };
+
+const sanitizeBase = (url) => url?.replace(/\/$/, "");
 
 const baseURL = getBaseURL();
 
-if (import.meta.env.DEV) {
-  console.log("🌐 URL base de API configurada:", baseURL);
-}
+if (import.meta.env.DEV) console.log("🌐 URL base de API configurada:", baseURL);
 
 const apiClient = axios.create({
   baseURL: baseURL,
