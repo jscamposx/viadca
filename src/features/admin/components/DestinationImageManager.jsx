@@ -174,11 +174,31 @@ const ImageTile = ({
       </div>
     )}
 
-    <div className="h-full w-full overflow-hidden">
+    <div className="h-full w-full overflow-hidden relative">
+      {image.status === "uploading" && (
+        <div className="absolute inset-0 animate-pulse bg-gradient-to-br from-slate-200 via-slate-100 to-slate-200 flex items-center justify-center z-10">
+          <div className="flex flex-col items-center gap-2 text-slate-500 text-[11px] font-medium">
+            <div className="w-8 h-8 border-4 border-slate-300 border-t-blue-500 rounded-full animate-spin"></div>
+            <span>Subiendo...</span>
+            {image.uploadProgress != null && (
+              <span className="text-[10px] text-slate-400">{Math.round(image.uploadProgress)}%</span>
+            )}
+          </div>
+        </div>
+      )}
+      {image.status === "error" && (
+        <div className="absolute inset-0 bg-red-50 flex flex-col items-center justify-center gap-2 text-red-600 z-10 px-2 text-center">
+          <FiInfo className="w-6 h-6" />
+          <span className="text-[11px] font-semibold">Fallo</span>
+          <span className="text-[10px] line-clamp-2">
+            {image.errorReason || "Error"}
+          </span>
+        </div>
+      )}
       <OptimizedImage
         src={image.url || image}
         alt={`Imagen del destino - Posición ${index + 1}`}
-        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+        className={`w-full h-full object-cover transition-transform duration-500 group-hover:scale-110 ${image.status === "uploading" ? "opacity-0" : "opacity-100"}`}
         width={400}
         height={400}
         quality="auto"
@@ -209,14 +229,19 @@ const ImageTile = ({
           <FiMove className="w-3 h-3" />
           Arrastra para reordenar
         </div>
-        <div
-          className={`px-2 py-0.5 rounded-full text-xs font-bold ${
-            image.isUploaded
-              ? "bg-green-100 text-green-700"
-              : "bg-blue-100 text-blue-700"
-          }`}
-        >
-          {image.isUploaded ? "Subida" : "URL"}
+        <div className="flex items-center gap-1">
+          {image.status === "uploading" && (
+            <span className="px-2 py-0.5 rounded-full text-xs font-bold bg-blue-100 text-blue-700 animate-pulse">Cargando</span>
+          )}
+          {image.status === "success" && (
+            <span className="px-2 py-0.5 rounded-full text-xs font-bold bg-green-100 text-green-700">Subida</span>
+          )}
+          {image.status === "error" && (
+            <span className="px-2 py-0.5 rounded-full text-xs font-bold bg-red-100 text-red-700">Error</span>
+          )}
+          {!image.status && (
+            <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${image.isUploaded ? "bg-green-100 text-green-700" : "bg-blue-100 text-blue-700"}`}>{image.isUploaded ? "Subida" : "URL"}</span>
+          )}
         </div>
       </div>
     </div>
@@ -227,11 +252,12 @@ const ImageTile = ({
           image.isUploaded ? "bg-green-600/80" : "bg-blue-600/80"
         }`}
       >
-        {image.isUploaded ? (
-          <FiUpload className="w-3 h-3" />
-        ) : (
-          <FiSearch className="w-3 h-3" />
+        {image.status === "uploading" && (
+          <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin" />
         )}
+        {image.status === "success" && <FiUpload className="w-3 h-3" />}
+        {image.status === "error" && <FiInfo className="w-3 h-3" />}
+        {!image.status && (image.isUploaded ? <FiUpload className="w-3 h-3" /> : <FiSearch className="w-3 h-3" />)}
       </div>
     </div>
   </div>
@@ -443,8 +469,23 @@ const DestinationImageManager = ({
     const fileArray = Array.from(files);
     setStatus("loading");
 
-  const successes = [];
-  const failures = [];
+    const successes = [];
+    const failures = [];
+
+    // Crear placeholders inmediatos para UX responsiva
+    const placeholderEntries = fileArray.map((file, i) => ({
+      id: `temp-${Date.now()}-${i}`,
+      url: "", // aún no tenemos URL
+      file,
+      tipo: "cloudinary",
+      source: "user_upload",
+      isUploaded: false,
+      status: "uploading",
+      uploadProgress: 0,
+      nombre: file.name,
+    }));
+    setImages((prev) => [...prev, ...placeholderEntries]);
+    setAllAvailableImages((prev) => [...prev, ...placeholderEntries]);
 
     for (let i = 0; i < fileArray.length; i++) {
       const file = fileArray[i];
@@ -484,27 +525,40 @@ const DestinationImageManager = ({
         console.log(
           `�📤 (${index + 1}/${fileArray.length}) Subiendo a Cloudinary directo: ${workingFile.name}`,
         );
-        const cloudinaryResult = await cloudinaryService.uploadImage(
-          workingFile,
-          "paquetes",
-        );
+        const cloudinaryResult = await cloudinaryService.uploadImage(workingFile, "paquetes");
         // El servicio retorna response.data directamente => usar propiedades raíz
         const { url, secure_url, public_id } = cloudinaryResult || {};
         if (!url && !secure_url) {
           throw new Error("Respuesta de Cloudinary sin URL");
         }
-
-        const imageEntry = {
+        const finalEntry = {
           id: `cloudinary-${Date.now()}-${index}`,
           url: url || secure_url,
           cloudinary_public_id: public_id,
-          cloudinary_url: url || secure_url,
+            cloudinary_url: url || secure_url,
           isUploaded: true,
           file: file,
           tipo: "cloudinary",
           source: "user_upload",
+          status: "success",
+          uploadProgress: 100,
         };
-        successes.push(imageEntry);
+        successes.push(finalEntry);
+        // Reemplazar placeholder correspondiente
+        setImages((prev) =>
+          prev.map((img) =>
+            img.file === file && img.status === "uploading"
+              ? finalEntry
+              : img,
+          ),
+        );
+        setAllAvailableImages((prev) =>
+          prev.map((img) =>
+            img.file === file && img.status === "uploading"
+              ? finalEntry
+              : img,
+          ),
+        );
       } catch (err) {
         console.error("❌ Falla subida individual:", {
           name: file.name,
@@ -518,13 +572,24 @@ const DestinationImageManager = ({
         if (status === 415) reason = "Tipo de archivo no soportado";
         if (status === 500) reason = "Error interno backend al subir";
         failures.push({ file, reason, status, retriable: status !== 413 });
+        setImages((prev) =>
+          prev.map((img) =>
+            img.file === file && img.status === "uploading"
+              ? { ...img, status: "error", errorReason: reason }
+              : img,
+          ),
+        );
+        setAllAvailableImages((prev) =>
+          prev.map((img) =>
+            img.file === file && img.status === "uploading"
+              ? { ...img, status: "error", errorReason: reason }
+              : img,
+          ),
+        );
       }
     }
 
-    if (successes.length) {
-      setImages((prev) => [...prev, ...successes]);
-      setAllAvailableImages((prev) => [...prev, ...successes]);
-    }
+    // (Los placeholders ya fueron reemplazados inline)
 
     if (failures.length && successes.length === 0) {
       setStatus("error");
@@ -566,6 +631,14 @@ const DestinationImageManager = ({
     const newSuccesses = [];
     for (let i = 0; i < retriable.length; i++) {
       const { file } = retriable[i];
+      // Marcar en UI como re-subiendo
+      setImages((prev) =>
+        prev.map((img) =>
+          img.file === file
+            ? { ...img, status: "uploading", errorReason: undefined }
+            : img,
+        ),
+      );
       try {
         let workingFile = file;
         if (file.size > 4 * 1024 * 1024) {
@@ -591,21 +664,32 @@ const DestinationImageManager = ({
         );
         const { url, secure_url, public_id } = cloudinaryResult || {};
         if (!url && !secure_url) throw new Error("Respuesta sin URL en retry");
-        newSuccesses.push({
+        const entry = {
           id: `cloudinary-${Date.now()}-retry-${i}`,
           url: url || secure_url,
           cloudinary_public_id: public_id,
-            cloudinary_url: url || secure_url,
+          cloudinary_url: url || secure_url,
           isUploaded: true,
           file,
           tipo: "cloudinary",
           source: "user_upload",
-        });
+          status: "success",
+          uploadProgress: 100,
+        };
+        newSuccesses.push(entry);
+        setImages((prev) =>
+          prev.map((img) => (img.file === file ? entry : img)),
+        );
       } catch (err) {
         const status = err?.response?.status;
         let reason = err?.message || "Error desconocido";
         if (status === 413) reason = "Archivo demasiado grande (413)";
         newFailures.push({ file, reason, status, retriable: status !== 413 });
+        setImages((prev) =>
+          prev.map((img) =>
+            img.file === file ? { ...img, status: "error", errorReason: reason } : img,
+          ),
+        );
       }
     }
     if (newSuccesses.length) {

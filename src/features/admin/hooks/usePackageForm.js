@@ -394,6 +394,24 @@ export const usePackageForm = (initialPackageData = null) => {
     backgroundMode = false,
   ) => {
     event.preventDefault();
+    // Bloqueo: no permitir submit mientras haya imágenes subiendo
+    const uploadingImages = (formData.imagenes || []).filter(
+      (img) => img.status === "uploading",
+    );
+    if (uploadingImages.length > 0) {
+      const msg = `Espera a que terminen de subir ${uploadingImages.length} imagen(es).`;
+      if (addNotification) addNotification(msg, "warning");
+      throw new Error(msg);
+    }
+    // Bloqueo opcional: si hay errores, sugerir reintento o eliminación
+    const erroredImages = (formData.imagenes || []).filter(
+      (img) => img.status === "error",
+    );
+    if (erroredImages.length > 0) {
+      const msg = `Hay ${erroredImages.length} imagen(es) con error. Elimínalas o reintenta antes de continuar.`;
+      if (addNotification) addNotification(msg, "error");
+      throw new Error(msg);
+    }
     // Validación de creación: campos obligatorios top-level
     const validateISODate = (val) =>
       typeof val === "string" &&
