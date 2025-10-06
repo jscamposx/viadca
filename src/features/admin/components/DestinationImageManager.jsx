@@ -463,11 +463,29 @@ const DestinationImageManager = ({
       }
 
       try {
+        let workingFile = file;
+        if (file.size > 4 * 1024 * 1024) {
+          console.log(
+            `�️ Redimensionando (>${(4).toFixed(1)}MB) ${file.name} tamaño ${(file.size / 1024 / 1024).toFixed(2)}MB`,
+          );
+          try {
+            workingFile = await cloudinaryService.resizeImage(file, {
+              maxWidth: 1920,
+              maxHeight: 1080,
+              quality: 0.82,
+            });
+            console.log(
+              `✅ Redimensionado a ${(workingFile.size / 1024 / 1024).toFixed(2)}MB`,
+            );
+          } catch (re) {
+            console.warn("⚠️ Falló resize, uso original", re);
+          }
+        }
         console.log(
-          `📤 (${index + 1}/${fileArray.length}) Subiendo a Cloudinary: ${file.name}`,
+          `�📤 (${index + 1}/${fileArray.length}) Subiendo a Cloudinary directo: ${workingFile.name}`,
         );
         const cloudinaryResult = await cloudinaryService.uploadImage(
-          file,
+          workingFile,
           "paquetes",
         );
         // El servicio retorna response.data directamente => usar propiedades raíz
@@ -549,11 +567,26 @@ const DestinationImageManager = ({
     for (let i = 0; i < retriable.length; i++) {
       const { file } = retriable[i];
       try {
+        let workingFile = file;
+        if (file.size > 4 * 1024 * 1024) {
+          console.log(
+            `�️(retry) Redimensionando ${file.name} ${(file.size / 1024 / 1024).toFixed(2)}MB`,
+          );
+          try {
+            workingFile = await cloudinaryService.resizeImage(file, {
+              maxWidth: 1920,
+              maxHeight: 1080,
+              quality: 0.8,
+            });
+          } catch (re) {
+            console.warn("⚠️ Retry resize falló", re);
+          }
+        }
         console.log(
-          `🔁 Reintentando (${i + 1}/${retriable.length}) ${file.name}`,
+          `�🔁 Reintentando (${i + 1}/${retriable.length}) ${workingFile.name}`,
         );
         const cloudinaryResult = await cloudinaryService.uploadImage(
-          file,
+          workingFile,
           "paquetes",
         );
         const { url, secure_url, public_id } = cloudinaryResult || {};

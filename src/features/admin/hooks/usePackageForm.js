@@ -831,17 +831,7 @@ export const usePackageForm = (initialPackageData = null) => {
   };
 
   const processImages = async (images) => {
-    const fileToDataUrl = (file) =>
-      new Promise((resolve, reject) => {
-        try {
-          const reader = new FileReader();
-          reader.onload = () => resolve(reader.result);
-          reader.onerror = reject;
-          reader.readAsDataURL(file);
-        } catch (e) {
-          reject(e);
-        }
-      });
+    // Ya NO convertimos a dataURL (subida directa a Cloudinary ocurre antes)
     // Debug: mostrar información DETALLADA sobre los tipos de imágenes
     console.log("🔍 ANÁLISIS DETALLADO de imágenes a procesar:", {
       total: images.length,
@@ -914,21 +904,29 @@ export const usePackageForm = (initialPackageData = null) => {
 
         // PRIORIDAD 4: Imágenes subidas por el usuario - ENVIAR A CLOUDINARY
         if (img.file || img.isUploaded) {
-          console.log(`☁️ ✅ IMAGEN DE USUARIO - Enviar a Cloudinary`);
-          let contenido = img.url;
-          if (img.file) {
+          // En este punto la imagen debió subir ya (DestinationImageManager) y tener url/public_id
+          console.log(`☁️ ✅ IMAGEN DE USUARIO (ya subida) - Usar metadata Cloudinary`);
+          const secureUrl = img.cloudinary_url || img.url;
+          const publicId = img.cloudinary_public_id || (() => {
+            // Intento de extracción simple si faltó public_id
             try {
-              contenido = await fileToDataUrl(img.file);
-            } catch (e) {
-              console.warn("No se pudo convertir archivo a dataURL, usando url de fallback", e);
-            }
-          }
+              const parts = (secureUrl || "").split("/upload/")[1];
+              if (parts) {
+                const afterVersion = parts.replace(/^v\d+\//, "");
+                return afterVersion.split(".").slice(0, -1).join(".");
+              }
+            } catch (_) {}
+            return null;
+          })();
+
           return {
             orden: index + 1,
             tipo: "cloudinary",
-            contenido, // Enviar data URL si es posible
+            contenido: secureUrl, // Siempre URL final, no dataURL
             mime_type: img.file?.type || "image/jpeg",
-            nombre: img.file?.name || `imagen-usuario-${index + 1}.jpg`,
+            nombre: img.file?.name || img.nombre || `imagen-usuario-${index + 1}.jpg`,
+            ...(publicId ? { cloudinary_public_id: publicId } : {}),
+            ...(secureUrl ? { cloudinary_url: secureUrl } : {}),
           };
         }
 

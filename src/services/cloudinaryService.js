@@ -1,5 +1,7 @@
 import apiClient from "../api/axiosConfig";
 
+// Nota: No exponer API_SECRET en frontend. Usamos unsigned preset.
+
 class CloudinaryService {
   constructor() {
     this.cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME || "dsh8njsiu"; // Usar variable de entorno
@@ -12,42 +14,80 @@ class CloudinaryService {
   }
 
   async uploadImage(file, folder = "viajes_app") {
+    const preset = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET;
+    if (preset) {
+      try {
+        const formData = new FormData();
+        formData.append("file", file);
+        formData.append("upload_preset", preset);
+        formData.append("folder", folder);
+
+        const cloudUrl = `https://api.cloudinary.com/v1_1/${this.cloudName}/upload`;
+        const res = await fetch(cloudUrl, { method: "POST", body: formData });
+        if (!res.ok) {
+          const text = await res.text();
+            console.warn("⚠️ Falla upload directo Cloudinary, fallback backend", {
+            status: res.status,
+            body: text?.slice(0, 300),
+          });
+          throw new Error(`Cloudinary direct upload failed ${res.status}`);
+        }
+        const data = await res.json();
+        return {
+          url: data.secure_url || data.url,
+          secure_url: data.secure_url || data.url,
+          public_id: data.public_id,
+          format: data.format,
+          bytes: data.bytes,
+          width: data.width,
+          height: data.height,
+          direct: true,
+        };
+      } catch (e) {
+        // fallback al backend si existe endpoint (retrocompatibilidad)
+        console.log("↩️ Fallback a endpoint backend /admin/upload/image");
+      }
+    }
+    // Fallback legacy (requiere que backend suba a Cloudinary)
     try {
       const formData = new FormData();
       formData.append("file", file);
       formData.append("folder", folder);
-
       const response = await apiClient.post("/admin/upload/image", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
+        headers: { "Content-Type": "multipart/form-data" },
       });
-
       return response.data;
     } catch (error) {
-      console.error("Error subiendo imagen a Cloudinary:", error);
+      console.error("Error subiendo imagen (fallback backend):", error);
       throw error;
     }
   }
 
   async uploadMultipleImages(files, folder = "viajes_app") {
+    const preset = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET;
+    if (preset) {
+      const results = [];
+      for (let i = 0; i < files.length; i++) {
+        try {
+          const r = await this.uploadImage(files[i], folder);
+          results.push({ status: "fulfilled", value: r });
+        } catch (e) {
+          results.push({ status: "rejected", reason: e });
+        }
+      }
+      return results;
+    }
+    // Fallback endpoint backend multi
     try {
       const formData = new FormData();
-
-      Array.from(files).forEach((file) => {
-        formData.append("files", file);
-      });
+      Array.from(files).forEach((file) => formData.append("files", file));
       formData.append("folder", folder);
-
       const response = await apiClient.post("/admin/upload/images", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
+        headers: { "Content-Type": "multipart/form-data" },
       });
-
       return response.data;
     } catch (error) {
-      console.error("Error subiendo múltiples imágenes:", error);
+      console.error("Error subiendo múltiples imágenes (fallback):", error);
       throw error;
     }
   }
