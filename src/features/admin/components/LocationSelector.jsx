@@ -118,8 +118,9 @@ const LocationSelector = ({
       const latLng = event.detail.latLng;
       if (!latLng) return;
 
-      const geocoder = new window.google.maps.Geocoder();
-      geocoder.geocode(
+    const geocoder = safeCreateGeocoder();
+    if (!geocoder) return;
+    geocoder.geocode(
         {
           location: latLng,
           language: "es",

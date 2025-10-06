@@ -12,6 +12,7 @@ import {
 } from "react-icons/fi";
 import axios from "axios";
 import { cloudinaryService } from "../../../services/cloudinaryService";
+import { safeCreateGeocoder } from "../../../utils/mapsUtils";
 import CloudinaryImageUploader from "../../../components/ui/CloudinaryImageUploader";
 import OptimizedImage from "../../../components/ui/OptimizedImage";
 
@@ -94,9 +95,8 @@ const geocodeLatLngToComponents = async (lat, lng) => {
   const key = `${lat},${lng}`;
   if (geocodeCache.has(key)) return geocodeCache.get(key);
 
-  if (!window.google?.maps?.Geocoder) return null;
-
-  const geocoder = new window.google.maps.Geocoder();
+  const geocoder = safeCreateGeocoder();
+  if (!geocoder) return null;
   const result = await new Promise((resolve) => {
     geocoder.geocode(
       { location: { lat: Number(lat), lng: Number(lng) }, language: "es" },

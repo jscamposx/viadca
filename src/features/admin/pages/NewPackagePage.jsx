@@ -1,4 +1,5 @@
 import { APIProvider } from "@vis.gl/react-google-maps";
+import { getGoogleMapsApiKey } from "../../../utils/mapsUtils";
 import { useParams, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import {
@@ -200,9 +201,11 @@ const NuevoPaquete = () => {
   const currentSection = sections.find((s) => s.id === activeSection);
   const progress = ((getCurrentSectionIndex() + 1) / sections.length) * 100;
 
+  const mapsApiKey = getGoogleMapsApiKey();
+
   return (
     <APIProvider
-      apiKey={import.meta.env.VITE_Maps_API_KEY}
+      apiKey={mapsApiKey || ""}
       libraries={["places", "geocoding", "marker"]}
       language="es"
       region="MX"
