@@ -1,13 +1,8 @@
 import { cloudinaryService } from "../services/cloudinaryService.js";
+import { resolveApiBase } from "../api/baseUrl.js";
 
-// Alinear base URL con axiosConfig: usar VITE_API_BASE_URL o fallbacks
-const resolveBaseURL = () => {
-  const envURL = import.meta.env.VITE_API_BASE_URL;
-  if (envURL) return envURL;
-  if (import.meta.env?.DEV) return "http://localhost:3000";
-  return "https://api.viadca.app"; // nuevo dominio fallback prod
-};
-const API_URL = resolveBaseURL();
+// Usar el mismo resolver central que axiosConfig para evitar divergencias
+const API_URL = resolveApiBase();
 
 export const getImageUrl = (urlOrImage, options = {}) => {
   const {
