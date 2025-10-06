@@ -22,15 +22,31 @@ class CloudinaryService {
         formData.append("upload_preset", preset);
         formData.append("folder", folder);
 
-        const cloudUrl = `https://api.cloudinary.com/v1_1/${this.cloudName}/upload`;
+        // Endpoint correcto: /image/upload
+        const cloudUrl = `https://api.cloudinary.com/v1_1/${this.cloudName}/image/upload`;
         const res = await fetch(cloudUrl, { method: "POST", body: formData });
         if (!res.ok) {
-          const text = await res.text();
-            console.warn("⚠️ Falla upload directo Cloudinary, fallback backend", {
+          let bodySnippet = "";
+          try {
+            const clone = res.clone();
+            const json = await clone.json();
+            bodySnippet = JSON.stringify(json).slice(0, 400);
+          } catch (_) {
+            const text = await res.text();
+            bodySnippet = text.slice(0, 400);
+          }
+          const errMsg = `Cloudinary direct upload failed ${res.status}`;
+          console.warn("⚠️ Falla upload directo Cloudinary", {
             status: res.status,
-            body: text?.slice(0, 300),
+            body: bodySnippet,
+            preset,
+            endpoint: cloudUrl,
           });
-          throw new Error(`Cloudinary direct upload failed ${res.status}`);
+          // Si es error de cliente (400/401/403) no intentar fallback para no spamear backend
+          if ([400, 401, 403].includes(res.status)) {
+            throw new Error(errMsg + " (verifica upload_preset y configuración)");
+          }
+          throw new Error(errMsg);
         }
         const data = await res.json();
         return {
@@ -44,8 +60,12 @@ class CloudinaryService {
           direct: true,
         };
       } catch (e) {
-        // fallback al backend si existe endpoint (retrocompatibilidad)
-        console.log("↩️ Fallback a endpoint backend /admin/upload/image");
+        if (e.message?.includes("(verifica upload_preset")) {
+          // Error de configuración: no tiene sentido fallback
+          console.error("❌ Upload directo falló por configuración:", e.message);
+          throw e;
+        }
+        console.log("↩️ Fallback a endpoint backend /admin/upload/image (error no configurativo)");
       }
     }
     // Fallback legacy (requiere que backend suba a Cloudinary)
