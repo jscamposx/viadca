@@ -27,21 +27,66 @@ class CloudinaryService {
         const res = await fetch(cloudUrl, { method: "POST", body: formData });
         if (!res.ok) {
           let bodySnippet = "";
+          let errorJson = null;
           try {
             const clone = res.clone();
-            const json = await clone.json();
-            bodySnippet = JSON.stringify(json).slice(0, 400);
+            errorJson = await clone.json();
+            bodySnippet = JSON.stringify(errorJson).slice(0, 400);
           } catch (_) {
-            const text = await res.text();
-            bodySnippet = text.slice(0, 400);
+            try {
+              const text = await res.text();
+              bodySnippet = text.slice(0, 400);
+            } catch (__) {}
           }
-          const errMsg = `Cloudinary direct upload failed ${res.status}`;
+          const cloudinaryMsg = errorJson?.error?.message || errorJson?.message || bodySnippet;
+          const errMsg = `Cloudinary direct upload failed ${res.status}${cloudinaryMsg ? `: ${cloudinaryMsg}` : ""}`;
+
+          const guidance = [];
+          if (res.status === 400) {
+            // Heurísticas comunes de fallo 400
+            if (/upload preset/i.test(cloudinaryMsg || "")) {
+              guidance.push(
+                "1) Verifica que el preset existe EXACTAMENTE con ese nombre (Settings > Upload > Upload presets).",
+              );
+              guidance.push(
+                "2) El preset debe ser UNSIGNED (Unsigned uploading habilitado).",
+              );
+              guidance.push(
+                "3) Si restringiste 'Allowed formats' asegúrate que el archivo coincide (jpg/png/webp...).",
+              );
+              guidance.push(
+                "4) Reinicia el servidor de Vite si recién añadiste la variable .env (import.meta.env se cachea al build).",
+              );
+              guidance.push(
+                "5) Asegura que la carpeta 'paquetes' está permitida (si restringes 'Folder').",
+              );
+              guidance.push(
+                `6) .env VITE_CLOUDINARY_CLOUD_NAME='${this.cloudName}' VITE_CLOUDINARY_UPLOAD_PRESET='${preset}'`,
+              );
+            } else if (/invalid signature|api_key/i.test(cloudinaryMsg || "")) {
+              guidance.push(
+                "El preset podría NO ser unsigned: cambia a uno unsigned o crea uno nuevo sin firmar.",
+              );
+            } else if (/file invalid|Unsupported/i.test(cloudinaryMsg || "")) {
+              guidance.push(
+                "Formato de archivo no aceptado por el preset (añade el formato en 'Allowed formats' o desactiva la restricción).",
+              );
+            }
+          }
+
           console.warn("⚠️ Falla upload directo Cloudinary", {
             status: res.status,
             body: bodySnippet,
             preset,
             endpoint: cloudUrl,
+            cloudinaryMsg,
+            guidance,
           });
+          if (guidance.length) {
+            console.groupCollapsed("🛠️ Sugerencias para resolver 400 Cloudinary");
+            guidance.forEach((g) => console.log(g));
+            console.groupEnd();
+          }
           // Si es error de cliente (400/401/403) no intentar fallback para no spamear backend
           if ([400, 401, 403].includes(res.status)) {
             throw new Error(errMsg + " (verifica upload_preset y configuración)");
@@ -49,6 +94,17 @@ class CloudinaryService {
           throw new Error(errMsg);
         }
         const data = await res.json();
+        console.log("☁️ Cloudinary UPLOAD OK", {
+          originalName: file?.name,
+          sizeKB: file ? (file.size / 1024).toFixed(1) : null,
+          secure_url: data.secure_url,
+          public_id: data.public_id,
+          bytes: data.bytes,
+          width: data.width,
+          height: data.height,
+          folder,
+          preset,
+        });
         return {
           url: data.secure_url || data.url,
           secure_url: data.secure_url || data.url,

@@ -195,16 +195,22 @@ const ImageTile = ({
           </span>
         </div>
       )}
-      <OptimizedImage
-        src={image.url || image}
-        alt={`Imagen del destino - Posición ${index + 1}`}
-        className={`w-full h-full object-cover transition-transform duration-500 group-hover:scale-110 ${image.status === "uploading" ? "opacity-0" : "opacity-100"}`}
-        width={400}
-        height={400}
-        quality="auto"
-        crop="fill"
-        lazy={false}
-      />
+      {(image.status === "success" ||
+        (image.tipo === "url" && image.url) ||
+        (!image.status && image.isUploaded && image.url) ||
+        (image.status === "uploading" && image.url && image.url.startsWith("blob:"))
+        ) && (
+        <OptimizedImage
+          src={image.url || image}
+          alt={`Imagen del destino - Posición ${index + 1}`}
+          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+          width={400}
+          height={400}
+          quality="auto"
+          crop="fill"
+          lazy={false}
+        />
+      )}
     </div>
 
     <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300" />
@@ -272,11 +278,18 @@ const DestinationImageManager = ({
   const [images, setImages] = useState([]);
   const [status, setStatus] = useState("idle");
   const [error, setError] = useState(null);
+  const [globalUploading, setGlobalUploading] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const [draggedIndex, setDraggedIndex] = useState(null);
   const [dragOverIndex, setDragOverIndex] = useState(null);
   const [allAvailableImages, setAllAvailableImages] = useState([]);
   const [isInitialized, setIsInitialized] = useState(false);
+
+  // Recalcular bandera global de subida cuando cambia la lista
+  useEffect(() => {
+    const anyUploading = images.some(img => img.status === 'uploading');
+    setGlobalUploading(anyUploading);
+  }, [images]);
 
   useEffect(() => {
     if (initialImages && initialImages.length > 0 && !isInitialized) {
@@ -475,7 +488,7 @@ const DestinationImageManager = ({
     // Crear placeholders inmediatos para UX responsiva
     const placeholderEntries = fileArray.map((file, i) => ({
       id: `temp-${Date.now()}-${i}`,
-      url: "", // aún no tenemos URL
+      url: URL.createObjectURL(file), // previsualización inmediata
       file,
       tipo: "cloudinary",
       source: "user_upload",
@@ -484,6 +497,7 @@ const DestinationImageManager = ({
       uploadProgress: 0,
       nombre: file.name,
     }));
+    setGlobalUploading(true);
     setImages((prev) => [...prev, ...placeholderEntries]);
     setAllAvailableImages((prev) => [...prev, ...placeholderEntries]);
 
@@ -543,7 +557,18 @@ const DestinationImageManager = ({
           status: "success",
           uploadProgress: 100,
         };
+        // Liberar objectURL temporal
+        try {
+          const ph = placeholderEntries[index];
+          if (ph?.url?.startsWith('blob:')) URL.revokeObjectURL(ph.url);
+        } catch(_) {}
         successes.push(finalEntry);
+        console.log("🧩 Reemplazando placeholder por imagen final", {
+          tempId: placeholderEntries[index]?.id,
+          finalId: finalEntry.id,
+          public_id,
+          secure_url: finalEntry.cloudinary_url,
+        });
         // Reemplazar placeholder correspondiente
         setImages((prev) =>
           prev.map((img) =>
@@ -589,13 +614,22 @@ const DestinationImageManager = ({
       }
     }
 
+    console.log("🖼️ Estado imágenes tras loop subida:", {
+      total: images.length,
+      uploading: images.filter(i => i.status === 'uploading').length,
+      success: images.filter(i => i.status === 'success').length,
+      error: images.filter(i => i.status === 'error').length,
+    });
     // (Los placeholders ya fueron reemplazados inline)
 
     if (failures.length && successes.length === 0) {
       setStatus("error");
-      setError(
-        `Error al procesar las imágenes (0 subidas, ${failures.length} fallidas)`,
-      );
+      const hasConfig = failures.some(f => /upload direct.*400|Invalid extension/i.test(f.reason));
+      if (hasConfig) {
+        setError("Configuración Cloudinary inválida (preset). Revisa consola para pasos de corrección.");
+      } else {
+        setError(`Error al procesar las imágenes (0 subidas, ${failures.length} fallidas)`);
+      }
     } else if (failures.length && successes.length > 0) {
       setStatus("partial");
       setError(
@@ -616,6 +650,7 @@ const DestinationImageManager = ({
     } else {
       setFailedUploads([]);
     }
+    // Flag global se recalcula automáticamente en useEffect(images)
   };
 
   // Estado para fallos reintentar
@@ -727,6 +762,16 @@ const DestinationImageManager = ({
     const newAll = allAvailableImages.filter((img) => img.id !== id);
     setImages(newImages);
     setAllAvailableImages(newAll);
+
+    if (newImages.length === 0) {
+      console.log('🧹 Galería vacía tras eliminar última imagen.');
+      if (destination?.name) {
+        // Regenerar imágenes de Pexels para no dejar el área vacía
+        fetchImagesFromPexels(destination);
+      } else {
+        setStatus('idle');
+      }
+    }
   };
 
   const handleDragStart = (e, index) => {
@@ -838,6 +883,12 @@ const DestinationImageManager = ({
       onDragOver={handleContainerDragOver}
       onDrop={handleContainerDrop}
     >
+      {globalUploading && (
+        <div className="mb-4 flex items-center gap-3 text-sm text-slate-600 bg-slate-50 border border-slate-200 px-4 py-2 rounded-lg">
+          <div className="w-4 h-4 border-2 border-slate-300 border-t-blue-600 rounded-full animate-spin" />
+          <span>Subiendo imágenes a Cloudinary…</span>
+        </div>
+      )}
       {isDragging && (
         <div className="absolute inset-0 z-50 flex items-center justify-center bg-blue-50/80 backdrop-blur-sm rounded-xl">
           <div className="bg-blue-600 text-white px-6 py-4 rounded-xl shadow-xl flex items-center gap-3">
@@ -914,7 +965,7 @@ const DestinationImageManager = ({
         )}
       </div>
 
-      {status === "loading" && <Spinner />}
+  {status === "loading" && images.length === 0 && <Spinner />}
 
       {status === "error" && (
         <div className="bg-red-50 border border-red-200 rounded-xl p-6 text-center">

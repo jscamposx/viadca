@@ -57,6 +57,10 @@ const OptimizedImage = ({
           ? originalSrcRef.current
           : originalSrcRef.current.cloudinary_url || null;
       }
+      // Si es blob: o data: (previsualización local) devolver tal cual
+      if (typeof src === "string" && (src.startsWith("blob:") || src.startsWith("data:"))) {
+        return src; // no optimizar
+      }
 
       if (
         typeof src === "string" &&
@@ -213,14 +217,16 @@ const OptimizedImage = ({
     if (placeholderFallback) return placeholderFallback;
     const w = width || 600;
     const h = height || 400;
-    return `https://via.placeholder.com/${w}x${h}?text=Cargando...`;
+    const svg = `<svg xmlns='http://www.w3.org/2000/svg' width='${w}' height='${h}' viewBox='0 0 ${w} ${h}'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop stop-color='%23f1f5f9' offset='0%'/><stop stop-color='%23e2e8f0' offset='50%'/><stop stop-color='%23f1f5f9' offset='100%'/></linearGradient></defs><rect fill='url(%23g)' width='100%' height='100%'/><text x='50%' y='50%' dominant-baseline='middle' text-anchor='middle' font-family='Arial' font-size='14' fill='%2394a3b8'>Cargando…</text></svg>`;
+    return `data:image/svg+xml;base64,${btoa(unescape(encodeURIComponent(svg)))}`;
   }, [placeholder, placeholderFallback, width, height]);
 
   // URL de error
   const errorUrl = useMemo(() => {
     const w = width || 600;
     const h = height || 400;
-    return `https://via.placeholder.com/${w}x${h}?text=Error+al+cargar`;
+    const svg = `<svg xmlns='http://www.w3.org/2000/svg' width='${w}' height='${h}' viewBox='0 0 ${w} ${h}'><rect fill='%23fee2e2' width='100%' height='100%'/><text x='50%' y='50%' dominant-baseline='middle' text-anchor='middle' font-family='Arial' font-size='14' fill='%23b91c1c'>Error</text></svg>`;
+    return `data:image/svg+xml;base64,${btoa(unescape(encodeURIComponent(svg)))}`;
   }, [width, height]);
 
   // Helper para clases de fade únicamente cuando se desea

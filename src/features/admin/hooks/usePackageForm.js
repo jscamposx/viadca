@@ -838,6 +838,7 @@ export const usePackageForm = (initialPackageData = null) => {
       payload,
       mayoristasIncluded: "mayoristasIds" in payload,
       mayoristasCount: (payload.mayoristasIds || []).length,
+      imagenesResumen: payload.imagenes.map(i => ({ orden: i.orden, tipo: i.tipo, tienePublicId: !!i.cloudinary_public_id })),
     });
     const response = await api.packages.createPaquete(payload);
     logPatchOperation("create-success");
@@ -975,6 +976,7 @@ export const usePackageForm = (initialPackageData = null) => {
       "✅ RESUMEN FINAL - Usuario→Cloudinary, Pexels/Google→Backend directo:",
       resumen,
     );
+    console.log("🧾 IMÁGENES PROCESADAS DETALLE:", processedImages.map(p => ({ orden: p.orden, tipo: p.tipo, public_id: p.cloudinary_public_id, urlPreview: (p.contenido || p.cloudinary_url || "").substring(0,60)+"..." })));
 
     return processedImages;
   };
