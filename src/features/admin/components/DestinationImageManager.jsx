@@ -443,43 +443,158 @@ const DestinationImageManager = ({
     const fileArray = Array.from(files);
     setStatus("loading");
 
-    try {
-      // Subir archivos del usuario a Cloudinary
-      const uploadedImages = await Promise.all(
-        fileArray.map(async (file, index) => {
-          try {
-            console.log(
-              `📤 Subiendo archivo del usuario a Cloudinary: ${file.name}`,
-            );
-            const cloudinaryResult = await cloudinaryService.uploadImage(
-              file,
-              "paquetes",
-            );
+  const successes = [];
+  const failures = [];
 
-            return {
-              id: `cloudinary-${Date.now()}-${index}`,
-              url: cloudinaryResult.data.url,
-              cloudinary_public_id: cloudinaryResult.data.public_id,
-              cloudinary_url: cloudinaryResult.data.url,
-              isUploaded: true,
-              file: file,
-              tipo: "cloudinary",
-              source: "user_upload",
-            };
-          } catch (cloudinaryError) {
-            console.error("❌ Error subiendo a Cloudinary:", cloudinaryError);
-            throw cloudinaryError;
-          }
-        }),
-      );
+    for (let i = 0; i < fileArray.length; i++) {
+      const file = fileArray[i];
+      const index = i;
 
-      setImages((prevImages) => [...prevImages, ...uploadedImages]);
-      setAllAvailableImages((prevImages) => [...prevImages, ...uploadedImages]);
-      setStatus("success");
-    } catch (error) {
-      console.error("❌ Error procesando archivos del usuario:", error);
+      // Validar tipo y tamaño
+      const isValid = cloudinaryService.validateImageFile(file);
+      if (!isValid) {
+        console.warn("⚠️ Archivo inválido (tipo o tamaño)", {
+          name: file.name,
+          size: file.size,
+          type: file.type,
+        });
+        failures.push({ file, reason: "Archivo inválido (tipo/tamaño)", retriable: false });
+        continue;
+      }
+
+      try {
+        console.log(
+          `📤 (${index + 1}/${fileArray.length}) Subiendo a Cloudinary: ${file.name}`,
+        );
+        const cloudinaryResult = await cloudinaryService.uploadImage(
+          file,
+          "paquetes",
+        );
+        // El servicio retorna response.data directamente => usar propiedades raíz
+        const { url, secure_url, public_id } = cloudinaryResult || {};
+        if (!url && !secure_url) {
+          throw new Error("Respuesta de Cloudinary sin URL");
+        }
+
+        const imageEntry = {
+          id: `cloudinary-${Date.now()}-${index}`,
+          url: url || secure_url,
+          cloudinary_public_id: public_id,
+          cloudinary_url: url || secure_url,
+          isUploaded: true,
+          file: file,
+          tipo: "cloudinary",
+          source: "user_upload",
+        };
+        successes.push(imageEntry);
+      } catch (err) {
+        console.error("❌ Falla subida individual:", {
+          name: file.name,
+          error: err?.message,
+          response: err?.response?.data,
+          status: err?.response?.status,
+        });
+        const status = err?.response?.status;
+        let reason = err?.message || "Error desconocido";
+        if (status === 413) reason = "Archivo demasiado grande (413)";
+        if (status === 415) reason = "Tipo de archivo no soportado";
+        if (status === 500) reason = "Error interno backend al subir";
+        failures.push({ file, reason, status, retriable: status !== 413 });
+      }
+    }
+
+    if (successes.length) {
+      setImages((prev) => [...prev, ...successes]);
+      setAllAvailableImages((prev) => [...prev, ...successes]);
+    }
+
+    if (failures.length && successes.length === 0) {
       setStatus("error");
-      setError("Error al procesar las imágenes");
+      setError(
+        `Error al procesar las imágenes (0 subidas, ${failures.length} fallidas)`,
+      );
+    } else if (failures.length && successes.length > 0) {
+      setStatus("partial");
+      setError(
+        `Subida parcial: ${successes.length} OK / ${failures.length} fallidas`,
+      );
+    } else {
+      setStatus("success");
+      setError(null);
+    }
+
+    if (failures.length) {
+      console.groupCollapsed(
+        `📋 Resumen fallos subida (${failures.length}):`,
+      );
+      failures.forEach((f) => console.log(f.file.name, f.reason, f.status));
+      console.groupEnd();
+      setFailedUploads(failures);
+    } else {
+      setFailedUploads([]);
+    }
+  };
+
+  // Estado para fallos reintentar
+  const [failedUploads, setFailedUploads] = useState([]);
+
+  const retryFailedUploads = async () => {
+    if (!failedUploads.length) return;
+    const retriable = failedUploads.filter((f) => f.retriable !== false);
+    if (!retriable.length) return;
+    setStatus("loading");
+    setError(null);
+    const newFailures = [];
+    const newSuccesses = [];
+    for (let i = 0; i < retriable.length; i++) {
+      const { file } = retriable[i];
+      try {
+        console.log(
+          `🔁 Reintentando (${i + 1}/${retriable.length}) ${file.name}`,
+        );
+        const cloudinaryResult = await cloudinaryService.uploadImage(
+          file,
+          "paquetes",
+        );
+        const { url, secure_url, public_id } = cloudinaryResult || {};
+        if (!url && !secure_url) throw new Error("Respuesta sin URL en retry");
+        newSuccesses.push({
+          id: `cloudinary-${Date.now()}-retry-${i}`,
+          url: url || secure_url,
+          cloudinary_public_id: public_id,
+            cloudinary_url: url || secure_url,
+          isUploaded: true,
+          file,
+          tipo: "cloudinary",
+          source: "user_upload",
+        });
+      } catch (err) {
+        const status = err?.response?.status;
+        let reason = err?.message || "Error desconocido";
+        if (status === 413) reason = "Archivo demasiado grande (413)";
+        newFailures.push({ file, reason, status, retriable: status !== 413 });
+      }
+    }
+    if (newSuccesses.length) {
+      setImages((prev) => [...prev, ...newSuccesses]);
+      setAllAvailableImages((prev) => [...prev, ...newSuccesses]);
+    }
+    const mergedFailures = [
+      ...failedUploads.filter((f) => f.retriable === false),
+      ...newFailures,
+    ];
+    if (mergedFailures.length) {
+      setStatus(newSuccesses.length ? "partial" : "error");
+      setError(
+        newSuccesses.length
+          ? `Retry parcial: ${newSuccesses.length} OK / ${mergedFailures.length} siguen fallando`
+          : `Retry fallido: 0 OK / ${mergedFailures.length} fallos`,
+      );
+      setFailedUploads(mergedFailures);
+    } else {
+      setStatus("success");
+      setError(null);
+      setFailedUploads([]);
     }
   };
 
@@ -695,6 +810,43 @@ const DestinationImageManager = ({
             Error al cargar imágenes
           </h3>
           <p className="text-red-600 text-sm">{error}</p>
+          {failedUploads.length > 0 && (
+            <button
+              type="button"
+              onClick={retryFailedUploads}
+              className="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-red-600 hover:bg-red-700 text-white text-sm font-medium shadow focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-offset-1 transition"
+            >
+              Reintentar fallidas ({failedUploads.length})
+            </button>
+          )}
+        </div>
+      )}
+
+      {status === "partial" && (
+        <div className="bg-amber-50 border border-amber-200 rounded-xl p-6 text-center">
+          <div className="flex justify-center mb-3">
+            <div className="bg-amber-100 p-3 rounded-full">
+              <FiImage className="w-6 h-6 text-amber-600" />
+            </div>
+          </div>
+          <h3 className="text-amber-800 font-semibold mb-2">
+            Subida parcial de imágenes
+          </h3>
+          <p className="text-amber-700 text-sm">
+            {error || "Algunas imágenes no pudieron subirse"}
+          </p>
+          <p className="text-amber-600 text-xs mt-2">
+            Revisa la consola para detalles y vuelve a intentar las fallidas.
+          </p>
+          {failedUploads.length > 0 && (
+            <button
+              type="button"
+              onClick={retryFailedUploads}
+              className="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-amber-600 hover:bg-amber-700 text-white text-sm font-medium shadow focus:outline-none focus:ring-2 focus:ring-amber-400 focus:ring-offset-1 transition"
+            >
+              Reintentar fallidas ({failedUploads.length})
+            </button>
+          )}
         </div>
       )}
 
