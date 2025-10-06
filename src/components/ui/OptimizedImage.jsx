@@ -64,10 +64,12 @@ const OptimizedImage = ({
         !src.includes("cloudinary.com") &&
         !src.startsWith("/")
       ) {
-        return cloudinaryService.getOptimizedImageUrl(
+        // Interpretar como public_id de Cloudinary (puede incluir carpetas). No asumimos extensión.
+        const optimized = cloudinaryService.getOptimizedImageUrl(
           src,
           optimizationOptions,
         );
+        return optimized;
       }
       return getImageUrl(src, optimizationOptions);
     } catch (err) {
@@ -156,6 +158,15 @@ const OptimizedImage = ({
 
   const handleError = useCallback(
     (e) => {
+      // Detectar 404 en Cloudinary con patrón de fallback para prevenir loops silenciosos
+      if (e?.target?.src) {
+        const url = e.target.src;
+        if (url.includes("/image/upload") && !triedOriginal) {
+          console.warn("⚠️ Falla de carga Cloudinary (primera fase). Intentando original:", url);
+        } else if (url.includes("/image/upload") && triedOriginal) {
+          console.error("❌ Falla de carga Cloudinary incluso con original:", url);
+        }
+      }
       if (!hasError) {
         // Primer fallo: marcar error y forzar re-render para usar original
         setHasError(true);
