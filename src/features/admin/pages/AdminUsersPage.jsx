@@ -332,7 +332,7 @@ const AdminUsersPage = () => {
     // Confirmación directa para otros roles sin diálogo especial
     setConfirmDialog({
       isOpen: true,
-      type: 'role-change',
+      type: "role-change",
       user,
       newRole,
     });
@@ -1099,27 +1099,42 @@ const AdminUsersPage = () => {
             onConfirm={() => {
               if (confirmDialog.type === "delete") {
                 handleDeleteUser(confirmDialog.user.id);
-              } else if (confirmDialog.type === "role-admin") {
+              } else if (
+                confirmDialog.type === "role-admin" ||
+                confirmDialog.type === "role-change"
+              ) {
                 confirmRoleChange();
               }
             }}
             title={
               confirmDialog.type === "role-admin"
                 ? "Advertencia: Rol Administrador"
+                : confirmDialog.type === "role-change"
+                  ? "Confirmar cambio de rol"
                 : "Mover a papelera"
             }
             message={
               confirmDialog.type === "role-admin"
                 ? `⚠️ Estás a punto de otorgar permisos de ADMINISTRADOR a "${confirmDialog.user?.usuario}". Los administradores tienen acceso completo al sistema, incluyendo la gestión de otros usuarios, paquetes y configuraciones críticas. ¿Estás seguro de continuar?`
+                : confirmDialog.type === "role-change"
+                  ? `¿Seguro que quieres cambiar el rol de "${confirmDialog.user?.usuario}" a ${confirmDialog.newRole}? Se aplicarán los permisos correspondientes de inmediato.`
                 : `¿Estás seguro de que quieres mover al usuario "${confirmDialog.user?.usuario}" a la papelera? Podrás restaurarlo desde la sección de papelera.`
             }
             confirmText={
               confirmDialog.type === "role-admin"
                 ? "Sí, hacer administrador"
+                : confirmDialog.type === "role-change"
+                  ? "Sí, cambiar rol"
                 : "Mover a papelera"
             }
             cancelText="Cancelar"
-            type={confirmDialog.type === "role-admin" ? "warning" : "danger"}
+            type={
+              confirmDialog.type === "role-admin"
+                ? "warning"
+                : confirmDialog.type === "role-change"
+                  ? "info"
+                  : "danger"
+            }
             itemName={confirmDialog.user?.usuario}
           />
         </Suspense>
