@@ -279,6 +279,32 @@ const AdminUsersPage = () => {
     }
   };
 
+  // Eliminación (soft delete) de usuario con notificaciones unificadas
+  const handleDeleteUser = async (id) => {
+    if (!id) {
+      console.error("handleDeleteUser: id inválido", id);
+      notify.error("ID de usuario inválido", { title: "Error" });
+      return;
+    }
+    try {
+      await notify.operation(() => deleteUser(id), {
+        loadingMessage: "Moviendo usuario a la papelera...",
+        successMessage: "Usuario movido a la papelera",
+        errorMessage: "Error al eliminar el usuario",
+        loadingTitle: "Eliminando",
+        successTitle: "Eliminado",
+        errorTitle: "Error",
+      });
+      // Cerrar diálogo y limpiar selección
+      setConfirmDialog({ isOpen: false, type: "", user: null, newRole: null });
+      setShowActionMenu(null);
+      // Actualizar estadísticas porque cambia el total
+      fetchStats();
+    } catch (e) {
+      console.error("Error en handleDeleteUser:", e);
+    }
+  };
+
   const handleRoleChange = (user, newRole) => {
     // Validación de datos
     if (!user || !user.id) {
