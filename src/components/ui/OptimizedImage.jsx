@@ -116,7 +116,19 @@ const OptimizedImage = ({
     if (typeof src === "string" && src.includes("cloudinary.com")) {
       const publicId = cloudinaryService.extractPublicId(src);
       if (publicId) {
-        return cloudinaryService.generateSrcSet(publicId, baseOptions);
+        // Extraer versión y extensión para evitar 404 cuando el derivado necesita esos datos
+        let version = null;
+        let originalExtension = null;
+        try {
+          const versionMatch = src.match(/\/image\/upload\/[^]*?(v\d+)\//);
+            version = versionMatch ? versionMatch[1] : null;
+          const extMatch = src.match(/\.([a-zA-Z0-9]{3,4})(?:$|[?#])/);
+            originalExtension = extMatch ? `.${extMatch[1]}` : null;
+        } catch (e) {
+          // Silencioso; fallback sin versión
+        }
+        const enrichedBase = { ...baseOptions, version, originalExtension };
+        return cloudinaryService.generateSrcSet(publicId, enrichedBase);
       }
     }
 
@@ -176,8 +188,18 @@ const OptimizedImage = ({
         setHasError(true);
         setIsLoaded(false);
       } else if (hasError && !triedOriginal) {
-        // Marcar que ya intentamos original
+        // Segundo fallo: marcar que ya intentamos original
         setTriedOriginal(true);
+      } else if (hasError && triedOriginal) {
+        // Tercer intento: si la URL parece un publicId sin extensión y no contiene un punto final, probar con .jpg
+        if (typeof src === "string" && !src.includes(".") && !src.startsWith("http") && !src.startsWith("/")) {
+          const fallbackPublicId = `${src}.jpg`;
+          console.warn("🔁 Intentando fallback agregando extensión .jpg:", fallbackPublicId);
+          originalSrcRef.current = fallbackPublicId;
+          setHasError(false);
+          setTriedOriginal(false);
+          setIsLoaded(false);
+        }
       }
       onError?.(e);
     },
