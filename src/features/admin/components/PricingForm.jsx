@@ -34,8 +34,23 @@ const PricingForm = ({ formData, onFormChange, errors = {} }) => {
     const total = parseFloat(formData?.precio_total || 0);
     const desc = parseFloat(formData?.descuento || 0);
     const nuevoBase = total || desc ? (total + desc).toString() : "";
-    if (nuevoBase && nuevoBase !== precioBase) setPrecioBase(nuevoBase);
-    if (formData?.descuento !== descuento) setDescuento(formData?.descuento || "");
+    // Solo sincronizar si realmente cambió el valor numérico (para evitar loop)
+    const currentBaseNum = parseFloat(precioBase || 0);
+    const nuevoBaseNum = parseFloat(nuevoBase || 0);
+    if ((nuevoBase || precioBase) && nuevoBaseNum !== currentBaseNum) {
+      setPrecioBase(nuevoBase);
+    }
+    // Descuento: comparar numéricamente
+    const descuentoNum = parseFloat(descuento || 0);
+    if (desc !== descuentoNum) {
+      // desc ya es numérico parseado; si formData.descuento representa lo mismo no lo cambiamos
+      const formDescRaw = formData?.descuento || "";
+      if (formDescRaw === "") {
+        if (descuento !== "") setDescuento("");
+      } else if (!isNaN(parseFloat(formDescRaw)) && parseFloat(formDescRaw) !== descuentoNum) {
+        setDescuento(formData.descuento);
+      }
+    }
     // Sincronizar toggles de vuelo/hospedaje si llegan valores > 0 (edición de paquete)
     const v = parseFloat(formData?.precio_vuelo);
     if (!isNaN(v) && v > 0 && !enableVuelo) setEnableVuelo(true);
@@ -99,14 +114,25 @@ const PricingForm = ({ formData, onFormChange, errors = {} }) => {
     if (!isNaN(base)) {
       const validDesc = !isNaN(desc) ? Math.min(desc, base) : 0;
       const finalPrice = base - validDesc;
-      onFormChange({ target: { name: "precio_total", value: finalPrice ? finalPrice.toString() : "" } });
-      onFormChange({ target: { name: "descuento", value: validDesc ? validDesc.toString() : "" } });
+      const finalStr = finalPrice ? finalPrice.toString() : "";
+      const descStr = validDesc ? validDesc.toString() : "";
+      // Solo emitir cambios si difieren de formData (para prevenir renders en cadena)
+      if (formData.precio_total !== finalStr) {
+        onFormChange({ target: { name: "precio_total", value: finalStr } });
+      }
+      if (formData.descuento !== descStr) {
+        onFormChange({ target: { name: "descuento", value: descStr } });
+      }
     } else {
-      onFormChange({ target: { name: "precio_total", value: "" } });
-      onFormChange({ target: { name: "descuento", value: "" } });
+      if (formData.precio_total !== "") {
+        onFormChange({ target: { name: "precio_total", value: "" } });
+      }
+      if (formData.descuento !== "") {
+        onFormChange({ target: { name: "descuento", value: "" } });
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [precioBase, descuento]);
+  }, [precioBase, descuento, formData.precio_total, formData.descuento]);
 
   const handleNumericChange = (e) => {
     const { name, value } = e.target;

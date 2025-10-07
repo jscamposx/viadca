@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect, useMemo, useRef } from "react";
+import { useState, useEffect, useMemo, useRef, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../../../api";
 import {
@@ -16,6 +16,8 @@ import {
   createPatchSummary,
 } from "../../../utils/patchLogger";
 import { sanitizeMoneda } from "../../../utils/priceUtils";
+// Import Cloudinary (named + default fallback al final para robustez en dev hot reload)
+import cloudinaryDefault, { cloudinaryService as cloudinaryNamed } from "../../../services/cloudinaryService.js";
 
 const isUUID = (str) =>
   /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$/i.test(
@@ -24,6 +26,11 @@ const isUUID = (str) =>
 
 export const usePackageForm = (initialPackageData = null) => {
   const navigate = useNavigate();
+  const cloudinarySvc = cloudinaryNamed || cloudinaryDefault || null;
+  if (!cloudinarySvc) {
+    // eslint-disable-next-line no-console
+    console.error("[usePackageForm] cloudinarySvc inexistente: subida de imágenes de hotel fallará");
+  }
 
   const originalDataRef = useRef(null);
 
@@ -65,6 +72,13 @@ export const usePackageForm = (initialPackageData = null) => {
     moneda: "MXN",
     favorito: false,
   });
+  // Progreso imágenes hotel (A-D)
+  const [hotelImagesProgress, setHotelImagesProgress] = useState({ total: 0, processed: 0, dropped: 0, errors: 0, inProgress: false, lastMessage: null });
+  // Cache de resultados de subida/descarga para hoteles (evita repetir Cloudinary/descargas)
+  const hotelImageCacheRef = useRef({});
+  // Estructura: {
+  //   key: { tipo:'cloudinary'|'google_places_url', cloudinary_public_id, cloudinary_url, mime_type, nombre }
+  // }
 
   useEffect(() => {
     if (initialPackageData) {
@@ -1074,22 +1088,78 @@ export const usePackageForm = (initialPackageData = null) => {
     });
 
     let hotelImages = [];
-    const imageList = hotel.imagenes || hotel.images || [];
+    const isGoogleHotel = !hotel.isCustom && !!hotel.place_id;
+    const originalList = hotel.imagenes || hotel.images || [];
+    const imageList = originalList.slice(0, 10);
+    setHotelImagesProgress({ total: imageList.length, processed: 0, dropped: 0, errors: 0, inProgress: imageList.length > 0, lastMessage: 'Iniciando procesamiento hotel' });
 
-    const fileToDataUrl = (file) =>
-      new Promise((resolve, reject) => {
+    // Subir archivo de hotel a Cloudinary si no se ha subido aún.
+    const ensureHotelImageInCloudinary = async (img) => {
+      // Si ya viene con cloudinary_public_id o url segura, retornamos metadatos.
+      if (img.cloudinary_public_id && (img.cloudinary_url || img.contenido)) {
+        return {
+          cloudinary_public_id: img.cloudinary_public_id,
+          cloudinary_url: img.cloudinary_url || img.contenido,
+        };
+      }
+      // Convertir dataURL a File si llega así (caso manual que no generó file)
+      if (!img.file && img.contenido && typeof img.contenido === 'string' && img.contenido.startsWith('data:image')) {
         try {
-          const reader = new FileReader();
-          reader.onload = () => resolve(reader.result);
-          reader.onerror = reject;
-          reader.readAsDataURL(file);
-        } catch (e) {
-          reject(e);
+          const commaIdx = img.contenido.indexOf(',');
+          const meta = img.contenido.substring(0, commaIdx);
+            const mimeMatch = /data:(.*?);base64/.exec(meta);
+            const mime = mimeMatch ? mimeMatch[1] : 'image/jpeg';
+            const b64 = img.contenido.substring(commaIdx + 1);
+            const bin = atob(b64);
+            const len = bin.length;
+            const arr = new Uint8Array(len);
+            for (let i=0;i<len;i++) arr[i] = bin.charCodeAt(i);
+            const file = new File([arr], img.nombre || 'hotel-inline.jpg', { type: mime });
+            img.file = file; // mutación controlada para pipeline
+            console.log('🧪 Convertida dataURL->File para subida hotel');
+        } catch (convErr) {
+          console.warn('⚠️ Falló conversión dataURL->File, descartando imagen');
+          return null;
         }
-      });
+      }
+      if (!img.file) return null; // No hay archivo que subir después de intento de conversión
+      try {
+        if (!cloudinarySvc?.uploadImage) {
+          console.error('❌ cloudinaryService.uploadImage no disponible');
+          return null;
+        }
+        console.log('☁️ [ensureHotelImageInCloudinary] Subiendo a Cloudinary', img.file.name, img.file.size);
+        const result = await cloudinarySvc.uploadImage(img.file, 'hoteles');
+        return {
+          cloudinary_public_id: result.public_id,
+          cloudinary_url: result.secure_url || result.url,
+        };
+      } catch (e) {
+        console.error('❌ Falló subida Cloudinary imagen hotel:', e);
+        return null;
+      }
+    };
 
-    hotelImages = await Promise.all(
-      imageList.map(async (img, index) => {
+    const delay = (ms) => new Promise(r => setTimeout(r, ms));
+    const fetchAsBlob = async (url, attempt = 1) => {
+      try {
+        const res = await fetch(url, { mode: 'cors' });
+        if (!res.ok) throw new Error(`Status ${res.status}`);
+        return await res.blob();
+      } catch (e) {
+        if (attempt < 2) {
+          console.warn(`↩️ Retry descarga (${attempt}) URL hotel:`, url, e.message);
+          await delay(350);
+          return fetchAsBlob(url, attempt + 1);
+        }
+        console.warn('⚠️ No se pudo descargar URL para subir a Cloudinary:', url, e.message);
+        setHotelImagesProgress(prev => ({ ...prev, errors: prev.errors + 1, lastMessage: `Fallo descarga ${url.substring(0,40)}...` }));
+        return null;
+      }
+    };
+
+    for (let index = 0; index < imageList.length; index++) {
+      const img = imageList[index];
         console.log(`🏨 Procesando imagen de hotel ${index + 1}:`, {
           tipo: img.tipo,
           hasFile: !!img.file,
@@ -1097,48 +1167,124 @@ export const usePackageForm = (initialPackageData = null) => {
           isUserUpload: !!img.file,
         });
 
-        // PRIORIDAD 1: Imágenes de Google Places
-        if (img.tipo === "google_places_url" && img.contenido) {
-          console.log(`🗺️ Hotel imagen Google Places`);
-          return {
-            orden: index + 1,
-            tipo: "google_places_url",
-            contenido: img.contenido,
-            mime_type: img.mime_type || "image/jpeg",
-            nombre: img.nombre || `hotel-imagen-${index + 1}.jpg`,
-          };
-        }
-
-        // PRIORIDAD 2: Imágenes subidas por el usuario - VAN A CLOUDINARY
-        if (img.file) {
-          console.log(`☁️ Hotel imagen de usuario - A Cloudinary`);
-          let contenido = img.contenido || img.url;
-          try {
-            contenido = await fileToDataUrl(img.file);
-          } catch (e) {
-            console.warn("No se pudo convertir archivo de hotel a dataURL, usando url", e);
+        // Caso especial: si es hotel Google y la imagen es google_places_url, NO convertir, se envía tal cual
+        if (isGoogleHotel && img.tipo === 'google_places_url' && img.contenido) {
+          const cacheKey = `google:${img.contenido}`;
+          if (hotelImageCacheRef.current[cacheKey]) {
+            const cached = hotelImageCacheRef.current[cacheKey];
+            const entry = { orden: index + 1, ...cached };
+            hotelImages.push(entry);
+            setHotelImagesProgress(prev => ({ ...prev, processed: prev.processed + 1, lastMessage: `Reutilizada Google ${index+1}` }));
+            continue;
           }
-          return {
-            orden: index + 1,
-            tipo: "cloudinary",
-            contenido,
-            mime_type: img.file?.type || "image/jpeg",
-            nombre: img.file?.name || `hotel-imagen-usuario-${index + 1}.jpg`,
-          };
+          const entry = { orden: index + 1, tipo: 'google_places_url', contenido: img.contenido, mime_type: img.mime_type || 'image/jpeg', nombre: img.nombre || `hotel-google-${index + 1}.jpg` };
+          hotelImageCacheRef.current[cacheKey] = { ...entry };
+          hotelImages.push(entry);
+          setHotelImagesProgress(prev => ({ ...prev, processed: prev.processed + 1, lastMessage: `Imagen Google ${index+1}` }));
+          continue;
         }
 
-        // PRIORIDAD 3: URLs externas
-        const imageUrl = img.contenido || img.url;
-        console.log(`🔗 Hotel imagen URL externa`);
-        return {
-          orden: index + 1,
-          tipo: "url",
-          contenido: imageUrl,
-          mime_type: img.mime_type || "image/jpeg",
-          nombre: img.nombre || imageUrl.split("/").pop(),
-        };
-      }),
-    );
+        // Normalizar cualquier otra entrada (file o url) a Cloudinary
+        if (img.file) {
+          const fileKey = `file:${img.file.name}:${img.file.size}:${img.file.lastModified}`;
+          if (hotelImageCacheRef.current[fileKey]) {
+            const cached = hotelImageCacheRef.current[fileKey];
+            hotelImages.push({ orden: index + 1, ...cached });
+            setHotelImagesProgress(prev => ({ ...prev, processed: prev.processed + 1, lastMessage: `Reutilizada Cloudinary ${index+1}` }));
+            continue;
+          }
+          console.log('☁️ Subiendo archivo hotel a Cloudinary');
+          const uploaded = await ensureHotelImageInCloudinary(img);
+          if (!uploaded?.cloudinary_url) {
+            hotelImages.push({ drop: true });
+            setHotelImagesProgress(prev => ({ ...prev, processed: prev.processed + 1, dropped: prev.dropped + 1, lastMessage: `Descartada (fallo subida) ${index+1}` }));
+            continue;
+          }
+          const cloudEntry = {
+            orden: index + 1,
+            tipo: 'cloudinary',
+            contenido: uploaded.cloudinary_url,
+            cloudinary_public_id: uploaded.cloudinary_public_id,
+            cloudinary_url: uploaded.cloudinary_url,
+            mime_type: img.file?.type || 'image/jpeg',
+            nombre: img.file?.name || `hotel-imagen-${index + 1}.jpg`,
+          };
+          hotelImages.push(cloudEntry);
+          hotelImageCacheRef.current[fileKey] = { ...cloudEntry };
+          setHotelImagesProgress(prev => ({ ...prev, processed: prev.processed + 1, lastMessage: `Subida cloudinary ${index+1}` }));
+          continue;
+        }
+
+        const rawUrl = img.contenido || img.url;
+        if (!rawUrl) {
+          hotelImages.push({ drop: true });
+          setHotelImagesProgress(prev => ({ ...prev, processed: prev.processed + 1, dropped: prev.dropped + 1, lastMessage: `Sin URL ${index+1}` }));
+          continue;
+        }
+        const urlKey = `url:${rawUrl}`;
+        if (hotelImageCacheRef.current[urlKey]) {
+          const cached = hotelImageCacheRef.current[urlKey];
+          hotelImages.push({ orden: index + 1, ...cached });
+          setHotelImagesProgress(prev => ({ ...prev, processed: prev.processed + 1, lastMessage: `Reutilizada URL ${index+1}` }));
+          continue;
+        }
+
+        console.log('🌐 Descargando para subir a Cloudinary:', rawUrl.substring(0,80)+'...');
+        const blob = await fetchAsBlob(rawUrl);
+        if (!blob) {
+          hotelImages.push({ drop: true });
+          setHotelImagesProgress(prev => ({ ...prev, processed: prev.processed + 1, dropped: prev.dropped + 1 }));
+          continue;
+        }
+        const fileLike = new File([blob], img.nombre || `hotel-url-${index + 1}.jpg`, { type: blob.type || 'image/jpeg' });
+        try {
+          const uploaded = await cloudinarySvc.uploadImage(fileLike, 'hoteles');
+          const converted = {
+            orden: index + 1,
+            tipo: 'cloudinary',
+            contenido: uploaded.secure_url || uploaded.url,
+            cloudinary_public_id: uploaded.public_id,
+            cloudinary_url: uploaded.secure_url || uploaded.url,
+            mime_type: blob.type || 'image/jpeg',
+            nombre: fileLike.name,
+          };
+          hotelImages.push(converted);
+          hotelImageCacheRef.current[urlKey] = { ...converted };
+          setHotelImagesProgress(prev => ({ ...prev, processed: prev.processed + 1, lastMessage: `Convertida URL ${index+1}` }));
+          continue;
+        } catch (e) {
+          console.error('❌ Falló subida desde URL para hotel -> descartada', rawUrl, e.message);
+          hotelImages.push({ drop: true });
+          setHotelImagesProgress(prev => ({ ...prev, processed: prev.processed + 1, dropped: prev.dropped + 1, lastMessage: `Error URL ${index+1}` }));
+          continue;
+        }
+    }
+
+    // Validar longitud y caracteres de cada imagen (>=2000 indica probable dataURL base64 gigante)
+    const sanitizedHotelImages = hotelImages
+      .map(hImg => {
+        let img = { ...hImg };
+        if (img.drop) return img; // marcar para filtrar luego
+        if (typeof img.contenido === 'string') {
+          if (img.contenido.startsWith('data:image') && img.contenido.length > 2000) {
+            console.warn('⚠️ Eliminando dataURL grande de imagen hotel (subir a Cloudinary faltó). Longitud:', img.contenido.length);
+            return { ...img, drop: true };
+          }
+          if (img.contenido.length > 2000 && img.tipo !== 'cloudinary') {
+            console.warn('⚠️ Cadena >2000 (no cloudinary). Manteniendo pero revisar backend:', img.contenido.substring(0,60)+'...');
+          }
+        }
+        if (img.cloudinary_public_id && img.cloudinary_url) {
+          // Forzar uniformidad cloudinary
+            img = {
+            ...img,
+            tipo: 'cloudinary',
+            contenido: img.cloudinary_url,
+          };
+        }
+        return img;
+      })
+      .filter(img => !img.drop);
 
     const hotelPayload = {
       placeId: hotel.place_id || hotel.id,
@@ -1152,10 +1298,19 @@ export const usePackageForm = (initialPackageData = null) => {
         hotel.total_calificaciones && !isNaN(hotel.total_calificaciones)
           ? Number(hotel.total_calificaciones)
           : 0,
-      imagenes: hotelImages,
+      imagenes: sanitizedHotelImages.map((img, idx) => ({
+        orden: idx + 1,
+        tipo: img.tipo,
+        contenido: img.contenido,
+        mime_type: img.mime_type || 'image/jpeg',
+        nombre: img.nombre || `hotel-imagen-${idx + 1}.jpg`,
+        ...(img.cloudinary_public_id ? { cloudinary_public_id: img.cloudinary_public_id } : {}),
+        ...(img.cloudinary_url ? { cloudinary_url: img.cloudinary_url } : {}),
+      })),
     };
 
-    console.log("📋 Hotel payload final:", hotelPayload);
+  console.log("📋 Hotel payload final:", hotelPayload);
+  setHotelImagesProgress(prev => ({ ...prev, inProgress: false, lastMessage: `Finalizado: ${hotelPayload.imagenes.length} válidas / ${prev.dropped} descartadas` }));
 
     return hotelPayload;
   };
@@ -1207,5 +1362,6 @@ export const usePackageForm = (initialPackageData = null) => {
     handleRemoveDestination,
     handleSubmit,
     currentPatchPayload,
+    hotelImagesProgress,
   };
 };

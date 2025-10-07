@@ -478,22 +478,39 @@ const hasHotelChanges = (original, current) => {
   const currentHotel = current.hotel;
 
   if (!originalHotel && !currentHotel) return false;
+  // Uno existe y el otro no
+  if (!!originalHotel !== !!currentHotel) return true;
 
-  if (!originalHotel !== !currentHotel) return true;
-
+  // Comparación de campos básicos
   const originalBasic = {
     place_id: originalHotel?.place_id || originalHotel?.id,
     nombre: originalHotel?.nombre,
     estrellas: originalHotel?.estrellas,
   };
-
   const currentBasic = {
     place_id: currentHotel?.place_id || currentHotel?.id,
     nombre: currentHotel?.nombre,
     estrellas: currentHotel?.estrellas,
   };
+  if (!isEqual(originalBasic, currentBasic)) return true;
 
-  return !isEqual(originalBasic, currentBasic);
+  // Extender a imágenes: si difiere el conteo o hay nuevas sin cloudinary_public_id -> considerar cambio
+  const origImgs = originalHotel?.imagenes || [];
+  const currImgs = currentHotel?.imagenes || [];
+  if (origImgs.length !== currImgs.length) return true;
+  // Detectar cualquier imagen nueva que no existía antes (por contenido o por presence de file)
+  const originalKeys = new Set(
+    origImgs.map((img) =>
+      img.cloudinary_public_id || img.contenido || img.url || `idx-${img.orden}`,
+    ),
+  );
+  for (const img of currImgs) {
+    const key = img.cloudinary_public_id || img.contenido || img.url || `idx-${img.orden}`;
+    const hasFilePending = !!img.file && !img.cloudinary_public_id;
+    if (hasFilePending) return true; // archivo nuevo a subir
+    if (!originalKeys.has(key)) return true; // contenido distinto
+  }
+  return false; // No cambios relevantes
 };
 
 export const hasChanges = (payload) => {

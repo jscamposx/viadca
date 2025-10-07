@@ -9,6 +9,7 @@ import {
   FiEye,
   FiEyeOff,
   FiInfo,
+  FiPlus,
 } from "react-icons/fi";
 import axios from "axios";
 import { cloudinaryService } from "../../../services/cloudinaryService";
@@ -269,6 +270,59 @@ const ImageTile = ({
   </div>
 );
 
+// Tarjeta especial para agregar más imágenes (+10) con mismo estilo visual que ImageTile
+const AddMoreTile = ({ batchCount, remainingCount, onClick }) => {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-label={`Cargar ${batchCount} imágenes adicionales. ${remainingCount} restantes.`}
+      className="relative group bg-white rounded-xl overflow-hidden shadow-md transition-all duration-300 aspect-square border-2 border-gray-100 cursor-pointer hover:shadow-xl hover:border-gray-200 hover:scale-105 focus:outline-none focus-visible:ring-4 focus-visible:ring-blue-400/50"
+      style={{ transformStyle: 'preserve-3d' }}
+    >
+      {/* Badge superior izquierdo similar a numeración */}
+      <div className="absolute top-3 left-3 z-20 text-white text-xs font-bold px-2.5 py-1 rounded-full shadow-lg flex items-center gap-1 bg-blue-600 group-hover:bg-blue-700 transition-colors">
+        <FiPlus className="w-3 h-3" />
+        +{batchCount}
+      </div>
+      {/* Contenido central */}
+      <div className="h-full w-full flex flex-col items-center justify-center select-none">
+        <div className="relative flex items-center justify-center mb-1">
+          <div className="absolute inset-0 bg-blue-200 blur-xl opacity-40 group-hover:opacity-60 transition-opacity" />
+          <div className="text-6xl sm:text-7xl font-black text-slate-300 group-hover:text-slate-200 transition-colors tracking-tight">
+            +{batchCount}
+          </div>
+        </div>
+        <div className="text-[10px] sm:text-xs font-semibold text-slate-500 group-hover:text-slate-600 uppercase tracking-wide">
+          Agregar imágenes
+        </div>
+        {remainingCount > batchCount && (
+          <div className="mt-1 text-[10px] text-slate-400 group-hover:text-slate-500 font-medium">
+            {remainingCount - batchCount} más luego
+          </div>
+        )}
+      </div>
+      {/* Overlay mejorado: capas múltiples (gradientes, brillo, líneas y shimmer) */}
+      <div className="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+        {/* Capa base oscurecedora con gradiente sutil */}
+        <div className="absolute inset-0 bg-gradient-to-br from-slate-900/70 via-slate-800/30 to-transparent mix-blend-multiply" />
+        {/* Gradiente superior para profundidad */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+        {/* Brillo radial central suave */}
+  <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[160%] h-[160%] bg-[radial-gradient(circle_at_center,rgba(96,165,250,0.15),transparent_70%)] blur-2xl" />
+        {/* Líneas diagonales muy sutiles */}
+        <div className="absolute inset-0 opacity-[0.07] bg-[linear-gradient(115deg,rgba(255,255,255,0.15)_0%,rgba(255,255,255,0)_35%)]" />
+        {/* Shimmer animado */}
+        <div className="absolute inset-0 overflow-hidden rounded-xl">
+          <div className="absolute -inset-[40%] bg-[conic-gradient(from_90deg_at_50%_50%,transparent_0deg,rgba(255,255,255,0.18)_90deg,transparent_180deg)] animate-[spin_9s_linear_infinite]" />
+        </div>
+        {/* Borde glow al hacer hover */}
+        <div className="absolute inset-0 rounded-xl ring-1 ring-inset ring-white/10 group-hover:ring-white/25 shadow-[0_0_0_1px_rgba(255,255,255,0.06),0_4px_30px_-4px_rgba(0,0,0,0.6)]" />
+      </div>
+    </button>
+  );
+};
+
 const DestinationImageManager = ({
   destination,
   onImagesChange,
@@ -312,8 +366,22 @@ const DestinationImageManager = ({
     return url;
   };
 
+  const pexelsFetchInFlightRef = useRef(false);
+  const lastDestinationKeyRef = useRef(null);
+
   const fetchImagesFromPexels = useCallback(
     async (destinationInput) => {
+      if (pexelsFetchInFlightRef.current) {
+        console.log("⏳ Ignorando fetch Pexels duplicado (en progreso)");
+        return;
+      }
+      const destKey = destinationInput?.name || JSON.stringify({ lat: destinationInput?.lat, lng: destinationInput?.lng });
+      if (lastDestinationKeyRef.current && lastDestinationKeyRef.current === destKey && isInitialized) {
+        // Evitar regenerar para mismo destino ya inicializado
+        console.log("♻️ Evitando refetch Pexels mismo destino ya inicializado");
+        return;
+      }
+      pexelsFetchInFlightRef.current = true;
       const hasCoords =
         destinationInput && destinationInput.lat && destinationInput.lng;
       const destinationName =
@@ -364,30 +432,36 @@ const DestinationImageManager = ({
           components = { city, state, municipality: null, country: null };
         }
 
-        // 3) Construir queries precisas
-        const preciseQueries = buildPreciseQueries(components);
+        // 3) Construir solo 2 queries simples para obtener 10 imágenes totales
+        // SIMPLIFICADO: Solo hacer 2 requests en lugar de 50-70
+        const simpleQueries = [];
+        
+        if (destinationName) {
+          simpleQueries.push(`${destinationName} turismo`);
+          // Solo agregar segunda query si realmente necesitamos más variedad
+          if (components?.city && components?.state) {
+            simpleQueries.push(`${components.city} ${components.state} paisajes`);
+          }
+        }
 
-        // Agregar algunos refuerzos simples basados en destinationName
-        const reinforcement = destinationName
-          ? [`${destinationName} turismo`, `${destinationName} atracciones`]
-          : [];
+        const allQueries = simpleQueries.length > 0 
+          ? simpleQueries 
+          : [`${components?.city || destinationName} lugares turísticos`];
 
-        const allQueries = Array.from(
-          new Set([...preciseQueries, ...reinforcement]),
-        );
-
-        // 4) Ejecutar llamadas a Pexels con límite y orientación
+        // 4) Ejecutar solo 1-2 llamadas a Pexels con 15 imágenes por request
         const axiosCalls = allQueries.map((query) =>
           axios.get(`https://api.pexels.com/v1/search`, {
             headers: { Authorization: PEXELS_API_KEY },
             params: {
               query,
-              per_page: 6,
+              per_page: 15, // Aumentado de 6 a 15 para obtener suficientes imágenes en pocas requests
               orientation: "landscape",
               locale: "es-ES",
             },
           }),
         );
+
+        console.log(`🔍 Haciendo ${axiosCalls.length} request${axiosCalls.length !== 1 ? 's' : ''} a Pexels API:`, allQueries);
 
         const responses = await Promise.allSettled(axiosCalls);
 
@@ -418,11 +492,14 @@ const DestinationImageManager = ({
                 !images.some((existingImg) => existingImg.url === newPhoto.url),
             );
 
+            console.log(`📸 Agregando ${newUniquePhotos.length} imágenes de Pexels a galería existente`);
             setAllAvailableImages((prev) => [...prev, ...newUniquePhotos]);
             setImages((prev) => [...prev, ...newUniquePhotos.slice(0, 5)]);
           } else {
+            console.log(`📸 Generando ${photoData.length} imágenes de Pexels (${photoData.slice(0, 10).length} visibles inicialmente)`);
             setAllAvailableImages(photoData);
             setImages(photoData.slice(0, 10));
+            lastDestinationKeyRef.current = destKey;
           }
 
           setStatus("success");
@@ -437,11 +514,14 @@ const DestinationImageManager = ({
         console.error("Error al buscar imágenes:", error);
         setError("Error al buscar imágenes en Pexels.");
         setStatus("error");
+      } finally {
+        pexelsFetchInFlightRef.current = false;
       }
     },
     [images.length, isInitialized],
   );
 
+  // Solo inicializar una vez cuando cambia el destino, evitando requests múltiples
   useEffect(() => {
     if (
       destination?.name &&
@@ -462,8 +542,7 @@ const DestinationImageManager = ({
     initialImages?.length,
     isInitialized,
     fetchImagesFromPexels,
-    destination?.lat,
-    destination?.lng,
+    // Removido destination.lat y destination.lng para evitar requests múltiples
   ]);
 
   const prevImagesRef = useRef();
@@ -497,7 +576,7 @@ const DestinationImageManager = ({
       uploadProgress: 0,
       nombre: file.name,
     }));
-    setGlobalUploading(true);
+    // globalUploading se calcula automáticamente en useEffect
     setImages((prev) => [...prev, ...placeholderEntries]);
     setAllAvailableImages((prev) => [...prev, ...placeholderEntries]);
 
@@ -614,12 +693,19 @@ const DestinationImageManager = ({
       }
     }
 
-    console.log("🖼️ Estado imágenes tras loop subida:", {
-      total: images.length,
-      uploading: images.filter(i => i.status === 'uploading').length,
-      success: images.filter(i => i.status === 'success').length,
-      error: images.filter(i => i.status === 'error').length,
-    });
+    // Usar setTimeout 0 para asegurar que React haya aplicado los últimos setImages antes de loguear
+    setTimeout(() => {
+      setImages(prev => {
+        const logData = {
+          total: prev.length,
+          uploading: prev.filter(i => i.status === 'uploading').length,
+            success: prev.filter(i => i.status === 'success').length,
+          error: prev.filter(i => i.status === 'error').length,
+        };
+        console.log("🖼️ Estado imágenes tras loop subida:", logData);
+        return prev;
+      });
+    }, 0);
     // (Los placeholders ya fueron reemplazados inline)
 
     if (failures.length && successes.length === 0) {
@@ -765,12 +851,27 @@ const DestinationImageManager = ({
 
     if (newImages.length === 0) {
       console.log('🧹 Galería vacía tras eliminar última imagen.');
-      if (destination?.name) {
-        // Regenerar imágenes de Pexels para no dejar el área vacía
-        fetchImagesFromPexels(destination);
-      } else {
-        setStatus('idle');
-      }
+      // No regenerar automáticamente, dejar que el usuario decida
+      setStatus('idle');
+    }
+  };
+
+  // Función para vaciar todas las imágenes de Pexels
+  const handleClearPexelsImages = () => {
+    const pexelsCount = images.filter((img) => img.source === 'pexels' || (img.tipo === 'url' && !img.isUploaded)).length;
+    console.log(`🗑️ Vaciando ${pexelsCount} imágenes de Pexels...`);
+    
+    const userUploadedImages = images.filter((img) => img.source === 'user_upload' && img.isUploaded);
+    const userUploadedAll = allAvailableImages.filter((img) => img.source === 'user_upload' && img.isUploaded);
+    
+    setImages(userUploadedImages);
+    setAllAvailableImages(userUploadedAll);
+    
+    if (userUploadedImages.length === 0) {
+      setStatus('idle');
+      console.log('✅ Todas las imágenes eliminadas. Galería vacía.');
+    } else {
+      console.log(`✅ ${pexelsCount} imágenes de Pexels eliminadas. ${userUploadedImages.length} imágenes de usuario permanecen.`);
     }
   };
 
@@ -810,21 +911,18 @@ const DestinationImageManager = ({
 
       setImages(newImages);
 
-      if (showAllImages) {
-        setAllAvailableImages(newImages);
-      } else {
-        const newAllImages = [...allAvailableImages];
-        const draggedImageInAll = newAllImages.find(
+      // También actualizar en allAvailableImages si la imagen existe allí
+      const newAllImages = [...allAvailableImages];
+      const draggedImageInAll = newAllImages.find(
+        (img) => img.id === draggedImage.id,
+      );
+      if (draggedImageInAll) {
+        const oldIndexInAll = newAllImages.findIndex(
           (img) => img.id === draggedImage.id,
         );
-        if (draggedImageInAll) {
-          const oldIndexInAll = newAllImages.findIndex(
-            (img) => img.id === draggedImage.id,
-          );
-          newAllImages.splice(oldIndexInAll, 1);
-          newAllImages.splice(dropIndex, 0, draggedImageInAll);
-          setAllAvailableImages(newAllImages);
-        }
+        newAllImages.splice(oldIndexInAll, 1);
+        newAllImages.splice(dropIndex, 0, draggedImageInAll);
+        setAllAvailableImages(newAllImages);
       }
     }
 
@@ -916,18 +1014,38 @@ const DestinationImageManager = ({
             />
           </label>
 
-          {/* Botón para buscar imágenes de Pexels cuando hay imágenes iniciales */}
-          {isInitialized && destination?.name && (
-            <button
-              type="button" // Evita submit accidental
-              onClick={() => fetchImagesFromPexels(destination)}
-              className="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-3 px-6 rounded-xl shadow-lg transition-all duration-200 hover:shadow-xl hover:scale-105 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 w-full sm:w-auto"
-              disabled={status === "loading"}
-            >
-              <FiSearch className="w-4 h-4" />
-              {status === "loading" ? "Generando..." : "Generar imágenes"}
-            </button>
-          )}
+          {/* Botón que alterna entre Generar y Vaciar imágenes de Pexels */}
+          {destination?.name && (() => {
+            const hasPexelsImages = images.some(img => img.source === 'pexels' || (img.tipo === 'url' && !img.isUploaded));
+            
+            if (hasPexelsImages) {
+              // Mostrar botón "Vaciar imágenes" si hay imágenes de Pexels
+              return (
+                <button
+                  type="button"
+                  onClick={handleClearPexelsImages}
+                  className="bg-red-600 hover:bg-red-700 text-white font-semibold py-3 px-6 rounded-xl shadow-lg transition-all duration-200 hover:shadow-xl hover:scale-105 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 w-full sm:w-auto"
+                  disabled={status === "loading"}
+                >
+                  <FiTrash2 className="w-4 h-4" />
+                  Vaciar imágenes
+                </button>
+              );
+            } else {
+              // Mostrar botón "Generar imágenes" si no hay imágenes de Pexels
+              return (
+                <button
+                  type="button"
+                  onClick={() => fetchImagesFromPexels(destination)}
+                  className="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-3 px-6 rounded-xl shadow-lg transition-all duration-200 hover:shadow-xl hover:scale-105 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 w-full sm:w-auto"
+                  disabled={status === "loading"}
+                >
+                  <FiSearch className="w-4 h-4" />
+                  {status === "loading" ? "Generando..." : "Generar imágenes"}
+                </button>
+              );
+            }
+          })()}
         </div>
 
         {/* Estadísticas - Solo visible en desktop */}
@@ -1061,46 +1179,40 @@ const DestinationImageManager = ({
 
       {images.length > 0 && (
         <div className="space-y-4 sm:space-y-6">
-          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4 lg:gap-6">
-            {images.map((image, index) => (
-              <ImageTile
-                key={image.id}
-                image={image}
-                index={index}
-                onRemove={handleRemoveImage}
-                onDragStart={handleDragStart}
-                onDragEnd={handleDragEnd}
-                onDragOver={handleDragOver}
-                onDrop={handleDrop}
-                isDragging={draggedIndex !== null}
-                isDragOver={dragOverIndex === index}
-                draggedIndex={draggedIndex}
-              />
-            ))}
-          </div>
-
-          {/* Botón incremental */}
           {(() => {
             const remainingCount = allAvailableImages.filter(
               (candidate) => !images.some((shown) => shown.id === candidate.id),
             ).length;
-            if (remainingCount > 0) {
-              const nextBatch = remainingCount >= 10 ? 10 : remainingCount;
-              return (
-                <div className="flex justify-center">
-                  <button
-                    type="button" // Evita submit al agregar imágenes
+            const hasMore = remainingCount > 0;
+            const batchCount = remainingCount >= 10 ? 10 : remainingCount;
+            const hasVisiblePexels = images.some(img => img.source === 'pexels' || (img.tipo === 'url' && !img.isUploaded));
+            return (
+              <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4 lg:gap-6">
+                {images.map((image, index) => (
+                  <ImageTile
+                    key={image.id}
+                    image={image}
+                    index={index}
+                    onRemove={handleRemoveImage}
+                    onDragStart={handleDragStart}
+                    onDragEnd={handleDragEnd}
+                    onDragOver={handleDragOver}
+                    onDrop={handleDrop}
+                    isDragging={draggedIndex !== null}
+                    isDragOver={dragOverIndex === index}
+                    draggedIndex={draggedIndex}
+                  />
+                ))}
+                {hasMore && hasVisiblePexels && (
+                  <AddMoreTile
+                    key="add-more-tile"
+                    batchCount={batchCount}
+                    remainingCount={remainingCount}
                     onClick={handleAddMoreImages}
-                    className="px-6 py-3 bg-slate-600 hover:bg-slate-700 text-white rounded-xl shadow-lg font-medium transition-all duration-200 hover:shadow-xl hover:scale-105 flex items-center gap-2"
-                  >
-                    <FiEye className="w-4 h-4" />
-                    Agregar {nextBatch} imagen{nextBatch !== 1 ? "es" : ""} más
-                    ({remainingCount} restante{remainingCount !== 1 ? "s" : ""})
-                  </button>
-                </div>
-              );
-            }
-            return null;
+                  />
+                )}
+              </div>
+            );
           })()}
         </div>
       )}
