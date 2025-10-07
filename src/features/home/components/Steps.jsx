@@ -391,7 +391,7 @@ const Steps = () => {
             className="relative order-2"
           >
             <div className={`relative bg-white rounded-3xl p-4 sm:p-6 shadow-xl border border-blue-100 w-full sm:max-w-lg lg:max-w-md mx-auto hover:shadow-2xl transition-shadow duration-300 group ${card.url ? 'cursor-pointer' : 'cursor-default'}`}>
-              <div className="relative overflow-hidden rounded-2xl mb-4 sm:mb-6">
+              <div className="relative overflow-hidden rounded-2xl mb-4 sm:mb-6 group/image">
                 {card.url && (
                   <Link
                     to={`/paquetes/${card.url}`}
@@ -409,12 +409,17 @@ const Steps = () => {
                     height={600}
                     responsive
                     sizes="(max-width:640px) 100vw, 400px"
-                    className="w-full h-48 sm:h-64 object-cover"
+                    className="w-full h-48 sm:h-64 object-cover md:group-hover/image:scale-110 transition-transform duration-700 ease-[cubic-bezier(0.25,0.46,0.45,0.94)]"
                     lazy={!featured}
                   />
                 ) : (
                   <div className="w-full h-48 sm:h-64 bg-slate-100 animate-pulse" />
                 )}
+                {/* Overlay unificado */}
+                <div
+                  className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/60 via-black/25 to-transparent opacity-0 md:group-hover/image:opacity-100 transition-all duration-500"
+                  aria-hidden="true"
+                />
                 {restoredFromSession && loadingPkg && !errorPkg && (
                   <div className="absolute inset-0 bg-white/60 backdrop-blur-[2px] flex items-center justify-center">
                     <div className="w-10 h-10 rounded-full border-2 border-blue-500/20 border-t-blue-500 animate-spin" aria-label="Actualizando paquete" />
