@@ -189,23 +189,39 @@ const AdminPaquetes = () => {
   ]);
 
   const handleExport = async (paqueteId) => {
+    // Local slugify (igual enfoque que en PackageLookupPanel)
+    const slugify = (str = "") =>
+      String(str)
+        .normalize("NFD")
+        .replace(/\p{Diacritic}/gu, "")
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-+|-+$/g, "")
+        .substring(0, 80) || "paquete";
+
+    // Intentar obtener el título del paquete desde la lista actual
+    const found = paquetes?.find?.((p) => p.id === paqueteId);
+    const rawTitulo = found?.titulo || found?.title || `paquete-${paqueteId}`;
+    const fileSlug = slugify(rawTitulo);
+
     await notify.operation(
       async () => {
         const response = await api.packages.exportToExcel(paqueteId);
         const url = window.URL.createObjectURL(new Blob([response.data]));
         const link = document.createElement("a");
         link.href = url;
-        link.setAttribute("download", `paquete-${paqueteId}.xlsx`);
+        // Nombre alineado al cotizador: usar título slugificado
+        link.setAttribute("download", `${fileSlug}.xlsx`);
         document.body.appendChild(link);
         link.click();
-        link.parentNode.removeChild(link);
+        link.remove();
       },
       {
         loadingMessage: "Generando Excel...",
-        successMessage: "La exportación a Excel ha comenzado.",
+        successMessage: "Archivo Excel generado.",
         errorMessage: "No ha sido posible exportar el archivo.",
         loadingTitle: "Exportando",
-        successTitle: "Exportación iniciada",
+        successTitle: "Exportación lista",
         errorTitle: "Error al exportar",
       },
     );

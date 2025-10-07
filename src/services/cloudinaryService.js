@@ -194,6 +194,9 @@ class CloudinaryService {
       radius = null,
       effect = null,
       overlay = null,
+      // Nuevos: permitir preservar versión y extensión original si el origen era una URL completa
+      version = null, // e.g. v1759833582
+      originalExtension = null, // e.g. .jpg
     } = options;
 
     let transformations = [];
@@ -212,7 +215,12 @@ class CloudinaryService {
     if (gravity && gravity !== "auto") transformations.push(`g_${gravity}`);
 
     if (quality) transformations.push(`q_${quality}`);
-    if (format && format !== "auto") transformations.push(`f_${format}`);
+    if (format && format !== "auto") {
+      transformations.push(`f_${format}`);
+    } else if (format === "auto") {
+      // Asegurar que Cloudinary aplique negociación de formato aunque el usuario no pase f_auto explícito
+      transformations.push("f_auto");
+    }
 
     if (radius) transformations.push(`r_${radius}`);
     if (effect) transformations.push(`e_${effect}`);
@@ -221,7 +229,17 @@ class CloudinaryService {
     const transformationString =
       transformations.length > 0 ? `/${transformations.join(",")}` : "";
 
-    return `${this.baseUrl}/image/upload${transformationString}/${publicId}`;
+    const versionSegment = version ? `/${version}` : "";
+
+    // Si el publicId ya trae extensión incluida, no duplicar.
+    const hasExtInPublicId = /\.[a-zA-Z0-9]{3,4}$/.test(publicId);
+    let finalPublicId = publicId;
+    // Añadir extensión original solo si no se especificó un formato explícito distinto de 'auto'
+    if (!hasExtInPublicId && originalExtension && format === "auto") {
+      finalPublicId = `${publicId}${originalExtension}`;
+    }
+
+    return `${this.baseUrl}/image/upload${transformationString}${versionSegment}/${finalPublicId}`;
   }
 
   getResponsiveImageUrls(publicId) {

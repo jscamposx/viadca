@@ -26,11 +26,26 @@ export const getImageUrl = (urlOrImage, options = {}) => {
   }
 
   if (typeof url === "string" && url.includes("cloudinary.com")) {
-    const publicId = cloudinaryService.extractPublicId(url);
-    if (publicId) {
-      return cloudinaryService.getOptimizedImageUrl(publicId, options);
+    // Detectar versión v123... y extensión original para evitar 404 cuando el asset no es derivable sin versión
+    // Formato esperado: https://res.cloudinary.com/<cloud>/image/upload/(transformaciones?)/v<version>/<path>/<asset>.<ext>
+    try {
+      const versionMatch = url.match(/\/image\/upload\/[^]*?(v\d+)\//);
+      const version = versionMatch ? versionMatch[1] : null;
+      const extMatch = url.match(/\.([a-zA-Z0-9]{3,4})(?:$|[?#])/);
+      const originalExtension = extMatch ? `.${extMatch[1]}` : null;
+      const publicId = cloudinaryService.extractPublicId(url);
+      if (publicId) {
+        return cloudinaryService.getOptimizedImageUrl(publicId, {
+          ...options,
+          version,
+          originalExtension,
+        });
+      }
+      return url;
+    } catch (e) {
+      console.warn("Fallo al procesar URL Cloudinary, usando original:", e);
+      return url;
     }
-    return url;
   }
 
   if (typeof url === "string" && url.startsWith("http")) {
