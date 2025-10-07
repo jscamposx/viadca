@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useMemo, useRef } from "react";
+import React, { useState, useCallback, useMemo, useRef, useEffect } from "react";
 import { getImageUrl, getResponsiveImageUrls } from "../../utils/imageUtils.js";
 import { cloudinaryService } from "../../services/cloudinaryService.js";
 
@@ -30,8 +30,26 @@ const OptimizedImage = ({
   const [isLoaded, setIsLoaded] = useState(false);
   const [hasError, setHasError] = useState(false);
   const [triedOriginal, setTriedOriginal] = useState(false);
+  const [skipVersion, setSkipVersion] = useState(false);
   const [isInView, setIsInView] = useState(!lazy);
   const originalSrcRef = useRef(src);
+
+  useEffect(() => {
+    originalSrcRef.current = src;
+    setSkipVersion(false);
+    setHasError(false);
+    setTriedOriginal(false);
+    setIsLoaded(false);
+  }, [src]);
+
+  const effectiveSrc = useMemo(() => {
+    if (!skipVersion) return src;
+    if (typeof src === "string" && src.includes("cloudinary.com")) {
+      const versionless = src.replace(/\/v\d+\//, "/");
+      return versionless;
+    }
+    return src;
+  }, [src, skipVersion]);
 
   // Opciones de optimización
   const optimizationOptions = useMemo(
@@ -48,7 +66,7 @@ const OptimizedImage = ({
 
   // URL procesada
   const processedUrl = useMemo(() => {
-    if (!src) return null;
+    if (!effectiveSrc) return null;
     if (hasError && triedOriginal) return null; // ya falló original también
     try {
       // Si ya hubo error con versión optimizada, intentar usar src original literal (sin transformaciones)
@@ -58,42 +76,42 @@ const OptimizedImage = ({
           : originalSrcRef.current.cloudinary_url || null;
       }
       // Si es blob: o data: (previsualización local) devolver tal cual
-      if (typeof src === "string" && (src.startsWith("blob:") || src.startsWith("data:"))) {
-        return src; // no optimizar
+      if (typeof effectiveSrc === "string" && (effectiveSrc.startsWith("blob:") || effectiveSrc.startsWith("data:"))) {
+        return effectiveSrc; // no optimizar
       }
 
       if (
-        typeof src === "string" &&
-        !src.includes("http") &&
-        !src.includes("cloudinary.com") &&
-        !src.startsWith("/")
+        typeof effectiveSrc === "string" &&
+        !effectiveSrc.includes("http") &&
+        !effectiveSrc.includes("cloudinary.com") &&
+        !effectiveSrc.startsWith("/")
       ) {
         // Interpretar como public_id de Cloudinary (puede incluir carpetas). No asumimos extensión.
         const optimized = cloudinaryService.getOptimizedImageUrl(
-          src,
+          effectiveSrc,
           optimizationOptions,
         );
         return optimized;
       }
-      return getImageUrl(src, optimizationOptions);
+      return getImageUrl(effectiveSrc, optimizationOptions);
     } catch (err) {
       console.error("Error generando processedUrl para OptimizedImage:", {
-        src,
+        src: effectiveSrc,
         err,
       });
       return null;
     }
-  }, [src, optimizationOptions, hasError, triedOriginal]);
+  }, [effectiveSrc, optimizationOptions, hasError, triedOriginal]);
 
   // URLs responsivas si se solicitan
   const responsiveUrls = useMemo(() => {
-    if (!responsive || !src || hasError) return null;
-    return getResponsiveImageUrls(src);
-  }, [responsive, src, hasError]);
+    if (!responsive || !effectiveSrc || hasError) return null;
+    return getResponsiveImageUrls(effectiveSrc);
+  }, [responsive, effectiveSrc, hasError]);
 
   // SrcSet para imágenes responsivas
   const srcSet = useMemo(() => {
-    if (!responsive || !src || hasError) return undefined;
+    if (!responsive || !effectiveSrc || hasError) return undefined;
 
     const baseOptions = {
       width,
@@ -105,24 +123,24 @@ const OptimizedImage = ({
     };
 
     // Si es Cloudinary, generar srcSet optimizado
-    if (typeof src === "object" && src.cloudinary_public_id) {
+    if (typeof effectiveSrc === "object" && effectiveSrc.cloudinary_public_id) {
       return cloudinaryService.generateSrcSet(
-        src.cloudinary_public_id,
+        effectiveSrc.cloudinary_public_id,
         baseOptions,
       );
     }
 
     // Si es URL de Cloudinary, extraer public_id y generar srcSet
-    if (typeof src === "string" && src.includes("cloudinary.com")) {
-      const publicId = cloudinaryService.extractPublicId(src);
+    if (typeof effectiveSrc === "string" && effectiveSrc.includes("cloudinary.com")) {
+      const publicId = cloudinaryService.extractPublicId(effectiveSrc);
       if (publicId) {
         // Extraer versión y extensión para evitar 404 cuando el derivado necesita esos datos
         let version = null;
         let originalExtension = null;
         try {
-          const versionMatch = src.match(/\/image\/upload\/[^]*?(v\d+)\//);
+          const versionMatch = effectiveSrc.match(/\/image\/upload\/[^]*?(v\d+)\//);
             version = versionMatch ? versionMatch[1] : null;
-          const extMatch = src.match(/\.([a-zA-Z0-9]{3,4})(?:$|[?#])/);
+          const extMatch = effectiveSrc.match(/\.([a-zA-Z0-9]{3,4})(?:$|[?#])/);
             originalExtension = extMatch ? `.${extMatch[1]}` : null;
         } catch (e) {
           // Silencioso; fallback sin versión
@@ -151,7 +169,7 @@ const OptimizedImage = ({
     return undefined;
   }, [
     responsive,
-    src,
+    effectiveSrc,
     hasError,
     responsiveUrls,
     width,
@@ -183,6 +201,23 @@ const OptimizedImage = ({
           console.error("❌ Falla de carga Cloudinary incluso con original:", url);
         }
       }
+
+      // Primer intento: si la URL trae versión y todavía no la omitimos, reintentar sin v###
+      if (!skipVersion && typeof src === "string" && src.includes("cloudinary.com")) {
+        const versionRegex = /\/v\d+\//;
+        if (versionRegex.test(src)) {
+          const versionless = src.replace(versionRegex, "/");
+          console.warn("↩️ Reintentando imagen Cloudinary sin versión explícita:", {
+            original: src,
+            fallback: versionless,
+          });
+          originalSrcRef.current = versionless;
+          setSkipVersion(true);
+          setIsLoaded(false);
+          onError?.(e);
+          return;
+        }
+      }
       if (!hasError) {
         // Primer fallo: marcar error y forzar re-render para usar original
         setHasError(true);
@@ -203,7 +238,7 @@ const OptimizedImage = ({
       }
       onError?.(e);
     },
-    [onError, hasError, triedOriginal],
+    [onError, hasError, triedOriginal, skipVersion, src],
   );
 
   // Intersection Observer para lazy loading

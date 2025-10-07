@@ -393,8 +393,13 @@ class CloudinaryService {
         segments.shift(); // quitar bloque de transformaciones
       }
 
+      // Si el siguiente segmento es una versión (v1234567890), eliminarlo para obtener sólo el public_id real
+      if (segments.length > 0 && /^v\d+$/.test(segments[0])) {
+        segments.shift();
+      }
+
       // 4) Reconstruir public_id (puede incluir subcarpetas) y remover extensión final
-      const publicIdWithExt = segments.join("/");
+  const publicIdWithExt = segments.join("/");
       const publicId = publicIdWithExt.replace(/\.[^.]+$/, "");
       return publicId || null;
     } catch (error) {
