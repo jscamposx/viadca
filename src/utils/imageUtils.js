@@ -123,7 +123,23 @@ export const getResponsiveImageUrls = (urlOrImage) => {
   if (typeof urlOrImage === "string" && urlOrImage.includes("cloudinary.com")) {
     const publicId = cloudinaryService.extractPublicId(urlOrImage);
     if (publicId) {
-      return cloudinaryService.getResponsiveImageUrls(publicId);
+      // Extraer version y extensión para mantener consistencia con derivaciones
+      let version = null;
+      let originalExtension = null;
+      try {
+        const versionMatch = urlOrImage.match(/\/image\/upload\/[^]*?(v\d+)\//);
+        version = versionMatch ? versionMatch[1] : null;
+        const extMatch = urlOrImage.match(/\.([a-zA-Z0-9]{3,4})(?:$|[?#])/);
+        originalExtension = extMatch ? `.${extMatch[1]}` : null;
+      } catch (_) {}
+      // Generar variantes manualmente para pasar version/ext en cada getOptimizedImageUrl
+      return {
+        thumbnail: cloudinaryService.getOptimizedImageUrl(publicId, { width: 150, height: 150, crop: "thumb", quality: 80, version, originalExtension }),
+        small: cloudinaryService.getOptimizedImageUrl(publicId, { width: 400, height: 300, quality: 85, version, originalExtension }),
+        medium: cloudinaryService.getOptimizedImageUrl(publicId, { width: 800, height: 600, quality: 90, version, originalExtension }),
+        large: cloudinaryService.getOptimizedImageUrl(publicId, { width: 1200, height: 900, quality: 90, version, originalExtension }),
+        original: cloudinaryService.getOptimizedImageUrl(publicId, { quality: "auto", format: "auto", version, originalExtension }),
+      };
     }
   }
 
