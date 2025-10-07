@@ -194,9 +194,8 @@ class CloudinaryService {
       radius = null,
       effect = null,
       overlay = null,
-      // Nuevos: permitir preservar versión y extensión original si el origen era una URL completa
+      // Nuevos: permitir preservar versión original si el origen era una URL completa
       version = null, // e.g. v1759833582
-      originalExtension = null, // e.g. .jpg
     } = options;
 
     let transformations = [];
@@ -231,15 +230,7 @@ class CloudinaryService {
 
     const versionSegment = version ? `/${version}` : "";
 
-    // Si el publicId ya trae extensión incluida, no duplicar.
-    const hasExtInPublicId = /\.[a-zA-Z0-9]{3,4}$/.test(publicId);
-    let finalPublicId = publicId;
-    // Añadir extensión original solo si no se especificó un formato explícito distinto de 'auto'
-    if (!hasExtInPublicId && originalExtension && format === "auto") {
-      finalPublicId = `${publicId}${originalExtension}`;
-    }
-
-    return `${this.baseUrl}/image/upload${transformationString}${versionSegment}/${finalPublicId}`;
+    return `${this.baseUrl}/image/upload${transformationString}${versionSegment}/${publicId}`;
   }
 
   getResponsiveImageUrls(publicId) {
