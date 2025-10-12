@@ -59,26 +59,20 @@ const RouteMap = ({ paquete }) => {
 
   // Centro de México por defecto (Ciudad de México)
   const MEXICO_CENTER = [23.6345, -102.5528]; // Centro geográfico de México
-  const MEXICO_BOUNDS = {
-    north: 32.72, // Frontera norte
-    south: 14.53, // Frontera sur
-    east: -86.71, // Frontera este
-    west: -118.40 // Frontera oeste
-  };
 
-  // Función para validar si las coordenadas están en México o son válidas
-  const isValidMexicanCoordinate = (lat, lng) => {
+  // Función para validar si las coordenadas son válidas (cualquier ubicación mundial)
+  const isValidCoordinate = (lat, lng) => {
     const latitude = parseFloat(lat);
     const longitude = parseFloat(lng);
     
     if (isNaN(latitude) || isNaN(longitude)) return false;
     
-    // Verificar si está dentro de los límites de México (con margen)
+    // Verificar que estén dentro de los rangos válidos globales
     return (
-      latitude >= MEXICO_BOUNDS.south - 5 && 
-      latitude <= MEXICO_BOUNDS.north + 5 &&
-      longitude >= MEXICO_BOUNDS.west - 10 && 
-      longitude <= MEXICO_BOUNDS.east + 10
+      latitude >= -90 && 
+      latitude <= 90 &&
+      longitude >= -180 && 
+      longitude <= 180
     );
   };
 
@@ -161,8 +155,36 @@ const RouteMap = ({ paquete }) => {
     (dest) =>
       dest.destino_lat &&
       dest.destino_lng &&
-      isValidMexicanCoordinate(dest.destino_lat, dest.destino_lng)
+      isValidCoordinate(dest.destino_lat, dest.destino_lng)
   );
+
+  // Si no hay coordenadas válidas, intentar obtener del primer destino del paquete
+  if (destinosConCoordenadas.length === 0 && paquete?.destinos?.length > 0) {
+    const primerDestino = paquete.destinos[0];
+    
+    // Intentar diferentes campos de coordenadas
+    const lat = primerDestino.destino_lat || 
+                primerDestino.lat || 
+                primerDestino.latitude ||
+                paquete.destino_lat;
+    const lng = primerDestino.destino_lng || 
+                primerDestino.lng || 
+                primerDestino.longitude ||
+                paquete.destino_lng;
+    
+    if (lat && lng && isValidCoordinate(lat, lng)) {
+      const label = [primerDestino.ciudad, primerDestino.estado, primerDestino.pais]
+        .filter(Boolean)
+        .join(", ") || primerDestino.destino || "Destino principal";
+      
+      destinosConCoordenadas.push({
+        label,
+        destino_lat: lat,
+        destino_lng: lng,
+        descripcion: primerDestino.descripcion || "",
+      });
+    }
+  }
 
   if (destinosConCoordenadas.length === 0) {
     return (
