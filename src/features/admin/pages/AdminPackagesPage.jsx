@@ -1236,6 +1236,22 @@ const AdminPaquetes = () => {
         ) : filteredPaquetes.length > 0 ? (
           <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6 items-stretch [content-visibility:auto] [contain-intrinsic-size:600px_900px]">
             {filteredPaquetes.map((paquete) => {
+              const moneda = sanitizeMoneda(paquete?.moneda);
+              const personasValue = parseInt(paquete?.personas, 10);
+              const personasValidas = !isNaN(personasValue) && personasValue > 0;
+              const precioTotalFormatted = formatPrecio(
+                paquete?.precio_total,
+                moneda,
+              );
+              const precioPersonaFormatted =
+                personasValidas && paquete?.precio_total
+                  ? formatPrecio(
+                      (parseFloat(paquete?.precio_total) || 0) /
+                        personasValue,
+                      moneda,
+                    )
+                  : null;
+
               return (
                 <div
                   key={paquete.id}
@@ -1316,17 +1332,14 @@ const AdminPaquetes = () => {
                     {/* Badge de precio reposicionado (esquina inferior derecha) */}
                     <div
                       className="absolute bottom-2 sm:bottom-3 right-2 sm:right-3 z-20"
-                      title={`Moneda: ${sanitizeMoneda(paquete?.moneda)}`}
+                      title={`Moneda: ${moneda}`}
                     >
                       <div className="bg-white/90 backdrop-blur-md border border-gray-200/70 shadow-lg rounded-xl px-2.5 sm:px-4 py-1.5 sm:py-2 flex items-center gap-1.5 sm:gap-2">
                         <span className="text-[11px] sm:text-sm font-bold text-blue-700 tracking-tight">
-                          {formatPrecio(
-                            paquete?.precio_total,
-                            sanitizeMoneda(paquete?.moneda),
-                          )}
+                          {precioTotalFormatted}
                         </span>
                         <span className="text-[9px] sm:text-[10px] leading-none tracking-wide bg-blue-600/10 text-blue-700 px-1.5 py-0.5 rounded uppercase font-semibold">
-                          {sanitizeMoneda(paquete?.moneda)}
+                          {moneda}
                         </span>
                       </div>
                     </div>

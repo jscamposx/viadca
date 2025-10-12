@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect } from "react";
-import { FiDollarSign, FiPercent, FiAlertTriangle } from "react-icons/fi";
+import { FiDollarSign, FiPercent, FiAlertTriangle, FiUsers, FiTrendingDown, FiCreditCard, FiTag, FiPackage, FiMapPin } from "react-icons/fi";
 import { formatPrecio, sanitizeMoneda } from "../../../utils/priceUtils";
 
 const PricingForm = ({ formData, onFormChange, errors = {} }) => {
@@ -83,6 +83,8 @@ const PricingForm = ({ formData, onFormChange, errors = {} }) => {
     const anticipo = parseFloat(formData.anticipo || 0);
     const vuelo = enableVuelo ? parseFloat(formData.precio_vuelo || 0) : 0;
     const hospedaje = enableHospedaje ? parseFloat(formData.precio_hospedaje || 0) : 0;
+    const personasRaw = parseInt(formData.personas || 0, 10);
+    const personasValidas = !isNaN(personasRaw) && personasRaw > 0 ? personasRaw : null;
 
     const validDesc = desc > 0 && desc <= base ? desc : desc > base ? base : 0;
     const finalPrice = base - validDesc;
@@ -91,6 +93,8 @@ const PricingForm = ({ formData, onFormChange, errors = {} }) => {
     const porcentajeAnticipo = finalPrice > 0 && anticipo > 0 ? ((anticipo / finalPrice) * 100).toFixed(1) : 0;
     const saldoPendiente = finalPrice - anticipo;
     const sumaDesglose = vuelo + hospedaje;
+    const precioPorPersona = personasValidas && finalPrice > 0 ? finalPrice / personasValidas : null;
+    const precioBasePersona = personasValidas && base > 0 ? base / personasValidas : null;
 
     return {
       precioBase: base,
@@ -104,8 +108,11 @@ const PricingForm = ({ formData, onFormChange, errors = {} }) => {
       hospedaje,
       sumaDesglose,
       excedeBase: base > 0 && sumaDesglose > base,
+      personas: personasValidas,
+      precioPorPersona,
+      precioBasePersona,
     };
-  }, [precioBase, descuento, formData.anticipo, enableVuelo, enableHospedaje, formData.precio_vuelo, formData.precio_hospedaje]);
+  }, [precioBase, descuento, formData.anticipo, enableVuelo, enableHospedaje, formData.precio_vuelo, formData.precio_hospedaje, formData.personas]);
 
   // Cada vez que cambia base o descuento, actualizar precio_total final en formData
   useEffect(() => {
@@ -158,237 +165,449 @@ const PricingForm = ({ formData, onFormChange, errors = {} }) => {
   };
 
   return (
-    <div className="space-y-4 sm:space-y-6">
-      {/* Selector de moneda */}
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1 sm:mb-2">
-          Moneda
-        </label>
-        <select
-          name="moneda"
-          value={moneda}
-          onChange={handleMonedaChange}
-          className="w-full p-2.5 sm:p-3 border border-gray-300 rounded-lg sm:rounded-md focus:ring-2 focus:ring-blue-500 text-sm sm:text-base"
-        >
-          {MONEDAS.map((m) => (
-            <option key={m} value={m}>
-              {m}
-            </option>
-          ))}
-        </select>
+    <div className="space-y-6">
+      {/* Header con selector de moneda mejorado */}
+      <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-6 border border-blue-100">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="p-3 bg-blue-600 rounded-xl shadow-lg">
+            <FiDollarSign className="w-6 h-6 text-white" />
+          </div>
+          <div>
+            <h3 className="text-lg font-bold text-slate-900">Configuración de Precios</h3>
+            <p className="text-sm text-slate-600">Define el costo del paquete y opciones de pago</p>
+          </div>
+        </div>
+        
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label className="flex items-center gap-2 text-sm font-semibold text-slate-700 mb-2">
+              <FiTag className="w-4 h-4 text-blue-600" />
+              Moneda del paquete
+            </label>
+            <select
+              name="moneda"
+              value={moneda}
+              onChange={handleMonedaChange}
+              className="w-full p-3 border-2 border-blue-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-base font-medium bg-white shadow-sm hover:border-blue-300 transition-colors"
+            >
+              {MONEDAS.map((m) => (
+                <option key={m} value={m}>
+                  {m === "MXN" ? "🇲🇽 Peso Mexicano (MXN)" : "🇺🇸 Dólar Americano (USD)"}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-        {/* Columna principal: Total base, Descuento, Anticipo */}
-        <div className="space-y-6 xl:col-span-2">
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 items-start">
-            <div className="flex flex-col h-full">
-              <label className="flex flex-col text-sm font-medium text-gray-700 mb-1 sm:mb-2 min-h-[40px] sm:min-h-[44px] justify-start">
-                Total del Paquete *
-                <span className="text-xs text-gray-500 block">Precio base antes de descuento</span>
+      {/* Sección principal: Precios */}
+      <div className="bg-white rounded-2xl border-2 border-slate-200 overflow-hidden shadow-sm">
+        <div className="bg-gradient-to-r from-slate-50 to-slate-100 px-6 py-4 border-b border-slate-200">
+          <h4 className="font-bold text-slate-900 flex items-center gap-2">
+            <FiDollarSign className="w-5 h-5 text-blue-600" />
+            Precio Principal
+          </h4>
+          <p className="text-xs text-slate-600 mt-1">Configura el precio base y descuentos</p>
+        </div>
+        
+        <div className="p-6 space-y-6">
+          {/* Grid de inputs principales */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {/* Precio Base */}
+            <div className="group">
+              <label className="flex items-center gap-2 text-sm font-semibold text-slate-700 mb-2">
+                <div className="p-1.5 bg-blue-100 rounded-lg">
+                  <FiDollarSign className="w-4 h-4 text-blue-600" />
+                </div>
+                <div>
+                  <span className="block">Precio Total *</span>
+                  <span className="text-xs font-normal text-slate-500">Antes de descuento</span>
+                </div>
               </label>
-              <input
-                type="text"
-                value={formatNumber(precioBase)}
-                onChange={handlePrecioBaseChange}
-                className={`w-full p-2.5 sm:p-3 border rounded-lg sm:rounded-md focus:ring-2 text-sm sm:text-base ${errors.precio_total ? "border-red-400 focus:ring-red-500" : "border-gray-300 focus:ring-blue-500"}`}
-                placeholder="Ej. 20,000"
-                required
-              />
+              <div className="relative">
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 font-semibold text-lg">
+                  {moneda === "MXN" ? "$" : "$"}
+                </span>
+                <input
+                  type="text"
+                  value={formatNumber(precioBase)}
+                  onChange={handlePrecioBaseChange}
+                  className={`w-full pl-8 pr-3 py-3 border-2 rounded-xl focus:ring-2 text-base font-semibold transition-all ${
+                    errors.precio_total 
+                      ? "border-red-400 focus:ring-red-500 focus:border-red-500" 
+                      : "border-slate-300 focus:ring-blue-500 focus:border-blue-500 hover:border-slate-400"
+                  }`}
+                  placeholder="20,000"
+                  required
+                />
+              </div>
               {errors.precio_total && (
-                <p className="mt-1 text-xs text-red-600">{errors.precio_total}</p>
-              )}
-            </div>
-            <div className="flex flex-col h-full">
-              <label className="flex flex-col text-sm font-medium text-gray-700 mb-1 sm:mb-2 min-h-[40px] sm:min-h-[44px] justify-start">
-                Descuento
-                <span className="text-xs text-gray-500 block">Cantidad a restar</span>
-              </label>
-              <input
-                type="text"
-                value={formatNumber(descuento)}
-                onChange={handleDescuentoChange}
-                className={`w-full p-2.5 sm:p-3 border rounded-lg sm:rounded-md focus:ring-2 text-sm sm:text-base ${parseFloat(descuento||0) > parseFloat(precioBase||0) ? "border-red-400 focus:ring-red-500" : "border-gray-300 focus:ring-green-500"}`}
-                placeholder="Ej. 1,000"
-              />
-              {parseFloat(descuento || 0) > parseFloat(precioBase || 0) && (
-                <p className="mt-1 text-xs text-red-600">El descuento no puede exceder el total.</p>
-              )}
-              {calculations.montoDescuento > 0 && (
-                <p className="text-xs text-green-600 mt-1 flex items-center gap-1">
-                  <FiPercent className="w-3 h-3" /> {calculations.porcentajeDescuento}% de descuento
+                <p className="mt-2 text-xs text-red-600 flex items-center gap-1">
+                  <FiAlertTriangle className="w-3 h-3" />
+                  {errors.precio_total}
                 </p>
               )}
             </div>
-            <div className="flex flex-col h-full">
-              <label className="flex flex-col text-sm font-medium text-gray-700 mb-1 sm:mb-2 min-h-[40px] sm:min-h-[44px] justify-start">
-                Anticipo
-                <span className="text-xs text-gray-500 block">Para reservar</span>
+
+            {/* Descuento */}
+            <div className="group">
+              <label className="flex items-center gap-2 text-sm font-semibold text-slate-700 mb-2">
+                <div className="p-1.5 bg-green-100 rounded-lg">
+                  <FiTrendingDown className="w-4 h-4 text-green-600" />
+                </div>
+                <div>
+                  <span className="block">Descuento</span>
+                  <span className="text-xs font-normal text-slate-500">Opcional</span>
+                </div>
+              </label>
+              <div className="relative">
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 font-semibold text-lg">
+                  {moneda === "MXN" ? "$" : "$"}
+                </span>
+                <input
+                  type="text"
+                  value={formatNumber(descuento)}
+                  onChange={handleDescuentoChange}
+                  className={`w-full pl-8 pr-3 py-3 border-2 rounded-xl focus:ring-2 text-base font-semibold transition-all ${
+                    parseFloat(descuento||0) > parseFloat(precioBase||0) 
+                      ? "border-red-400 focus:ring-red-500 focus:border-red-500" 
+                      : "border-slate-300 focus:ring-green-500 focus:border-green-500 hover:border-slate-400"
+                  }`}
+                  placeholder="1,000"
+                />
+              </div>
+              {parseFloat(descuento || 0) > parseFloat(precioBase || 0) && (
+                <p className="mt-2 text-xs text-red-600 flex items-center gap-1">
+                  <FiAlertTriangle className="w-3 h-3" />
+                  No puede exceder el total
+                </p>
+              )}
+              {calculations.montoDescuento > 0 && (
+                <p className="mt-2 text-xs text-green-600 font-semibold flex items-center gap-1">
+                  <FiPercent className="w-3 h-3" /> 
+                  {calculations.porcentajeDescuento}% de ahorro
+                </p>
+              )}
+            </div>
+
+            {/* Anticipo */}
+            <div className="group">
+              <label className="flex items-center gap-2 text-sm font-semibold text-slate-700 mb-2">
+                <div className="p-1.5 bg-emerald-100 rounded-lg">
+                  <FiCreditCard className="w-4 h-4 text-emerald-600" />
+                </div>
+                <div>
+                  <span className="block">Anticipo</span>
+                  <span className="text-xs font-normal text-slate-500">Para reservar</span>
+                </div>
+              </label>
+              <div className="relative">
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 font-semibold text-lg">
+                  {moneda === "MXN" ? "$" : "$"}
+                </span>
+                <input
+                  type="text"
+                  name="anticipo"
+                  value={formatNumber(formData.anticipo)}
+                  onChange={handleNumericChange}
+                  className={`w-full pl-8 pr-3 py-3 border-2 rounded-xl focus:ring-2 text-base font-semibold transition-all ${
+                    formData.anticipo && parseFloat(formData.anticipo) > calculations.precioFinal 
+                      ? "border-red-400 focus:ring-red-500 focus:border-red-500" 
+                      : "border-slate-300 focus:ring-emerald-500 focus:border-emerald-500 hover:border-slate-400"
+                  }`}
+                  placeholder="5,000"
+                />
+              </div>
+              {formData.anticipo && parseFloat(formData.anticipo) > calculations.precioFinal && (
+                <p className="mt-2 text-xs text-red-600 flex items-center gap-1">
+                  <FiAlertTriangle className="w-3 h-3" />
+                  Supera el precio final
+                </p>
+              )}
+              {calculations.anticipo > 0 && calculations.precioFinal > 0 && parseFloat(formData.anticipo) <= calculations.precioFinal && (
+                <p className="mt-2 text-xs text-emerald-600 font-semibold">
+                  {calculations.porcentajeAnticipo}% del total
+                </p>
+              )}
+            </div>
+
+            {/* Personas */}
+            <div className="group">
+              <label className="flex items-center gap-2 text-sm font-semibold text-slate-700 mb-2">
+                <div className="p-1.5 bg-purple-100 rounded-lg">
+                  <FiUsers className="w-4 h-4 text-purple-600" />
+                </div>
+                <div>
+                  <span className="block">Personas</span>
+                  <span className="text-xs font-normal text-slate-500">Capacidad base</span>
+                </div>
               </label>
               <input
                 type="text"
-                name="anticipo"
-                value={formatNumber(formData.anticipo)}
-                onChange={handleNumericChange}
-                className={`w-full p-2.5 sm:p-3 border rounded-lg sm:rounded-md focus:ring-2 text-sm sm:text-base ${formData.anticipo && parseFloat(formData.anticipo) > calculations.precioFinal ? "border-red-400 focus:ring-red-500" : "border-gray-300 focus:ring-blue-500"}`}
-                placeholder="Ej. 5,000"
+                name="personas"
+                inputMode="numeric"
+                pattern="[0-9]*"
+                value={formData.personas || ""}
+                onChange={(e) =>
+                  onFormChange({ target: { name: "personas", value: e.target.value } })
+                }
+                className={`w-full px-3 py-3 border-2 rounded-xl focus:ring-2 text-base font-semibold transition-all text-center ${
+                  errors.personas 
+                    ? "border-red-400 focus:ring-red-500 focus:border-red-500" 
+                    : "border-slate-300 focus:ring-purple-500 focus:border-purple-500 hover:border-slate-400"
+                }`}
+                placeholder="2"
               />
-              {formData.anticipo && parseFloat(formData.anticipo) > calculations.precioFinal && (
-                <p className="mt-1 text-xs text-red-600">El anticipo supera el precio final.</p>
-              )}
-              {calculations.anticipo > 0 && calculations.precioFinal > 0 && parseFloat(formData.anticipo) <= calculations.precioFinal && (
-                <p className="text-xs text-blue-600 mt-1">{calculations.porcentajeAnticipo}% del precio final</p>
+              <p className="mt-2 text-xs text-slate-500">Vacío = precio total</p>
+              {errors.personas && (
+                <p className="mt-2 text-xs text-red-600 flex items-center gap-1">
+                  <FiAlertTriangle className="w-3 h-3" />
+                  {errors.personas}
+                </p>
               )}
             </div>
           </div>
-          {/* Resumen dinámico */}
+
+          {/* Tarjetas de resumen visual mejorado */}
           {calculations.precioBase > 0 && (
-            <div className="rounded-xl border border-slate-200 bg-slate-50/70 p-4 grid grid-cols-1 md:grid-cols-4 gap-4 text-sm">
-              <div>
-                <p className="text-slate-500 font-medium">Base</p>
-                <p className="font-semibold text-slate-800">{formatCurrency(calculations.precioBase)}</p>
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 pt-4">
+              <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-4 border-2 border-blue-200">
+                <p className="text-xs font-semibold text-blue-600 mb-1 uppercase tracking-wide">Precio Base</p>
+                <p className="text-2xl font-bold text-blue-900">{formatCurrency(calculations.precioBase)}</p>
               </div>
-              <div>
-                <p className="text-slate-500 font-medium">Descuento</p>
-                <p className={`font-semibold ${calculations.montoDescuento > 0 ? "text-green-600" : "text-slate-400"}`}>
+              
+              <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-xl p-4 border-2 border-green-200">
+                <p className="text-xs font-semibold text-green-600 mb-1 uppercase tracking-wide">Descuento</p>
+                <p className={`text-2xl font-bold ${calculations.montoDescuento > 0 ? "text-green-900" : "text-slate-400"}`}>
                   {calculations.montoDescuento > 0 ? `- ${formatCurrency(calculations.montoDescuento)}` : formatCurrency(0)}
                 </p>
               </div>
-              <div>
-                <p className="text-slate-500 font-medium">Final</p>
-                <p className="font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
-                  {formatCurrency(calculations.precioFinal)}
-                </p>
+              
+              <div className="bg-gradient-to-br from-indigo-50 to-indigo-100 rounded-xl p-4 border-2 border-indigo-200">
+                <p className="text-xs font-semibold text-indigo-600 mb-1 uppercase tracking-wide">Precio Final</p>
+                <p className="text-2xl font-bold text-indigo-900">{formatCurrency(calculations.precioFinal)}</p>
               </div>
-              <div>
-                <p className="text-slate-500 font-medium">Saldo</p>
-                <p className="font-semibold text-orange-600">
+              
+              <div className="bg-gradient-to-br from-orange-50 to-orange-100 rounded-xl p-4 border-2 border-orange-200">
+                <p className="text-xs font-semibold text-orange-600 mb-1 uppercase tracking-wide">Saldo</p>
+                <p className="text-2xl font-bold text-orange-900">
                   {formatCurrency(calculations.saldoPendiente > 0 ? calculations.saldoPendiente : 0)}
                 </p>
+              </div>
+              
+              {calculations.personas && (
+                <div className="bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl p-4 border-2 border-purple-200">
+                  <p className="text-xs font-semibold text-purple-600 mb-1 uppercase tracking-wide flex items-center gap-1">
+                    <FiUsers className="w-3 h-3" /> 
+                    Por Persona ({calculations.personas})
+                  </p>
+                  <p className="text-2xl font-bold text-purple-900">{formatCurrency(calculations.precioPorPersona)}</p>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Sección desglose: Vuelo y Hospedaje */}
+      <div className="bg-white rounded-2xl border-2 border-slate-200 overflow-hidden shadow-sm">
+        <div className="bg-gradient-to-r from-slate-50 to-slate-100 px-6 py-4 border-b border-slate-200">
+          <h4 className="font-bold text-slate-900 flex items-center gap-2">
+            <FiPackage className="w-5 h-5 text-blue-600" />
+            Desglose de Servicios
+          </h4>
+          <p className="text-xs text-slate-600 mt-1">Opcional. Muestra vuelo y/o hospedaje sin modificar el precio total</p>
+        </div>
+        
+        <div className="p-6 space-y-6">
+          {/* Vuelo */}
+          <div className="space-y-3">
+            <label className="flex items-center gap-3 cursor-pointer group">
+              <input
+                type="checkbox"
+                className="w-5 h-5 rounded-lg border-2 border-slate-300 text-blue-600 focus:ring-2 focus:ring-blue-500 transition-all"
+                checked={enableVuelo}
+                onChange={(e) => {
+                  setEnableVuelo(e.target.checked);
+                  if (!e.target.checked) {
+                    onFormChange({ target: { name: "precio_vuelo", value: "" } });
+                  }
+                }}
+              />
+              <div className="flex items-center gap-2 flex-1">
+                <div className="p-2 bg-blue-100 rounded-lg group-hover:bg-blue-200 transition-colors">
+                  <FiPackage className="w-4 h-4 text-blue-600" />
+                </div>
+                <div>
+                  <span className="font-semibold text-slate-800 block">Incluir costo de vuelo</span>
+                  <span className="text-xs text-slate-500">Referencial para viajeros</span>
+                </div>
+              </div>
+            </label>
+            {enableVuelo && (
+              <div className="ml-11 space-y-2">
+                <div className="relative">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 font-semibold text-lg">
+                    {moneda === "MXN" ? "$" : "$"}
+                  </span>
+                  <input
+                    type="text"
+                    name="precio_vuelo"
+                    value={formatNumber(formData.precio_vuelo)}
+                    onChange={(e) => {
+                      const raw = e.target.value.replace(/,/g, "");
+                      if (!isNaN(raw) || raw === "") {
+                        onFormChange({ target: { name: "precio_vuelo", value: raw } });
+                      }
+                    }}
+                    className="w-full pl-8 pr-3 py-3 border-2 border-blue-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-base font-semibold bg-white hover:border-blue-300 transition-colors"
+                    placeholder="2,500"
+                  />
+                </div>
+                <p className="text-xs text-slate-500">Ingresa solo números (Ej: 2500)</p>
+              </div>
+            )}
+          </div>
+
+          {/* Hospedaje */}
+          <div className="space-y-3">
+            <label className="flex items-center gap-3 cursor-pointer group">
+              <input
+                type="checkbox"
+                className="w-5 h-5 rounded-lg border-2 border-slate-300 text-emerald-600 focus:ring-2 focus:ring-emerald-500 transition-all"
+                checked={enableHospedaje}
+                onChange={(e) => {
+                  setEnableHospedaje(e.target.checked);
+                  if (!e.target.checked) {
+                    onFormChange({ target: { name: "precio_hospedaje", value: "" } });
+                  }
+                }}
+              />
+              <div className="flex items-center gap-2 flex-1">
+                <div className="p-2 bg-emerald-100 rounded-lg group-hover:bg-emerald-200 transition-colors">
+                  <FiMapPin className="w-4 h-4 text-emerald-600" />
+                </div>
+                <div>
+                  <span className="font-semibold text-slate-800 block">Incluir costo de hospedaje</span>
+                  <span className="text-xs text-slate-500">Referencial para viajeros</span>
+                </div>
+              </div>
+            </label>
+            {enableHospedaje && (
+              <div className="ml-11 space-y-2">
+                <div className="relative">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 font-semibold text-lg">
+                    {moneda === "MXN" ? "$" : "$"}
+                  </span>
+                  <input
+                    type="text"
+                    name="precio_hospedaje"
+                    value={formatNumber(formData.precio_hospedaje)}
+                    onChange={(e) => {
+                      const raw = e.target.value.replace(/,/g, "");
+                      if (!isNaN(raw) || raw === "") {
+                        onFormChange({ target: { name: "precio_hospedaje", value: raw } });
+                      }
+                    }}
+                    className="w-full pl-8 pr-3 py-3 border-2 border-emerald-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-base font-semibold bg-white hover:border-emerald-300 transition-colors"
+                    placeholder="3,800"
+                  />
+                </div>
+                <p className="text-xs text-slate-500">Ingresa solo números (Ej: 3800)</p>
+              </div>
+            )}
+          </div>
+
+          {/* Advertencia si excede */}
+          {(enableVuelo || enableHospedaje) && (
+            <div className="pt-4 border-t border-slate-200">
+              <div className="bg-amber-50 border border-amber-200 rounded-xl p-4">
+                <p className="text-xs text-slate-600 flex items-center gap-2">
+                  <FiAlertTriangle className="w-4 h-4 text-amber-600 flex-shrink-0" />
+                  <span>Este desglose es informativo. Puedes dejarlo vacío o desactivarlo en cualquier momento.</span>
+                </p>
+                {calculations.excedeBase && (
+                  <p className="text-xs text-red-600 font-semibold flex items-center gap-2 mt-2">
+                    <FiAlertTriangle className="w-4 h-4 flex-shrink-0" /> 
+                    El desglose supera el precio base del paquete.
+                  </p>
+                )}
               </div>
             </div>
           )}
         </div>
+      </div>
 
-        {/* Columna desglose (no altera total) */}
-        <div className="space-y-4">
-          <div className="border border-slate-200 rounded-xl p-4 bg-slate-50/60 backdrop-blur-sm">
-            <div className="mb-3">
-              <h4 className="text-sm font-semibold text-slate-800">Desglose (informativo)</h4>
-              <p className="text-xs text-slate-500 mt-0.5">No modifica el total. Útil para mostrar vuelo y/o hospedaje.</p>
-            </div>
-            <div className="space-y-6">
-              <div className="space-y-2">
-                <label className="flex items-center gap-2 cursor-pointer select-none text-sm font-medium text-slate-700">
-                  <input
-                    type="checkbox"
-                    className="rounded border-slate-300 focus:ring-blue-500"
-                    checked={enableVuelo}
-                    onChange={(e) => {
-                      setEnableVuelo(e.target.checked);
-                      if (!e.target.checked) {
-                        onFormChange({ target: { name: "precio_vuelo", value: "" } });
-                      }
-                    }}
-                  />
-                  Incluir vuelo
-                </label>
-                {enableVuelo && (
-                  <div>
-                    <input
-                      type="text"
-                      name="precio_vuelo"
-                      value={formatNumber(formData.precio_vuelo)}
-                      onChange={(e) => {
-                        const raw = e.target.value.replace(/,/g, "");
-                        if (!isNaN(raw) || raw === "") {
-                          onFormChange({ target: { name: "precio_vuelo", value: raw } });
-                        }
-                      }}
-                      className="w-full p-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm bg-white"
-                      placeholder="Ej. 2,500"
-                    />
-                    <p className="mt-1 text-[11px] text-slate-500">Ejemplo: 2500 (sin símbolo)</p>
-                  </div>
-                )}
+      {/* Banner inferior de resumen final */}
+      {calculations.precioFinal > 0 && (
+        <div className="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl border-2 border-blue-400 p-6 shadow-lg">
+          <div className="flex flex-col lg:flex-row gap-6 lg:items-start lg:justify-between">
+            {/* Sección de métricas */}
+            <div className="flex flex-wrap gap-6">
+              <div className="space-y-1">
+                <p className="text-blue-100 text-xs font-semibold uppercase tracking-wide flex items-center gap-1">
+                  <FiDollarSign className="w-3.5 h-3.5" />
+                  Precio Final
+                </p>
+                <p className="text-3xl font-bold text-white">{formatCurrency(calculations.precioFinal)}</p>
               </div>
-              <div className="space-y-2">
-                <label className="flex items-center gap-2 cursor-pointer select-none text-sm font-medium text-slate-700">
-                  <input
-                    type="checkbox"
-                    className="rounded border-slate-300 focus:ring-blue-500"
-                    checked={enableHospedaje}
-                    onChange={(e) => {
-                      setEnableHospedaje(e.target.checked);
-                      if (!e.target.checked) {
-                        onFormChange({ target: { name: "precio_hospedaje", value: "" } });
-                      }
-                    }}
-                  />
-                  Incluir hospedaje
-                </label>
-                {enableHospedaje && (
-                  <div>
-                    <input
-                      type="text"
-                      name="precio_hospedaje"
-                      value={formatNumber(formData.precio_hospedaje)}
-                      onChange={(e) => {
-                        const raw = e.target.value.replace(/,/g, "");
-                        if (!isNaN(raw) || raw === "") {
-                          onFormChange({ target: { name: "precio_hospedaje", value: raw } });
-                        }
-                      }}
-                      className="w-full p-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm bg-white"
-                      placeholder="Ej. 3,800"
-                    />
-                    <p className="mt-1 text-[11px] text-slate-500">Ejemplo: 3800</p>
-                  </div>
-                )}
-              </div>
-              {(enableVuelo || enableHospedaje) && (
-                <div className="pt-2 border-t border-slate-200 text-[11px] text-slate-400 flex flex-col gap-1">
-                  <span>Puedes dejar cualquiera vacío o quitarlo.</span>
-                  {calculations.excedeBase && (
-                    <span className="flex items-center gap-1 text-red-500 font-medium">
-                      <FiAlertTriangle className="w-3 h-3" /> El desglose supera el total base.
-                    </span>
-                  )}
+              
+              {calculations.montoDescuento > 0 && (
+                <div className="space-y-1">
+                  <p className="text-green-200 text-xs font-semibold uppercase tracking-wide flex items-center gap-1">
+                    <FiTrendingDown className="w-3.5 h-3.5" />
+                    Descuento
+                  </p>
+                  <p className="text-xl font-bold text-green-100">
+                    - {formatCurrency(calculations.montoDescuento)} 
+                    <span className="text-sm ml-2 text-green-200">({calculations.porcentajeDescuento}%)</span>
+                  </p>
+                </div>
+              )}
+              
+              {calculations.anticipo > 0 && (
+                <div className="space-y-1">
+                  <p className="text-emerald-200 text-xs font-semibold uppercase tracking-wide flex items-center gap-1">
+                    <FiCreditCard className="w-3.5 h-3.5" />
+                    Anticipo
+                  </p>
+                  <p className="text-xl font-bold text-emerald-100">
+                    {formatCurrency(calculations.anticipo)}
+                    <span className="text-sm ml-2 text-emerald-200">({calculations.porcentajeAnticipo}%)</span>
+                  </p>
+                </div>
+              )}
+              
+              {calculations.saldoPendiente > 0 && (
+                <div className="space-y-1">
+                  <p className="text-orange-200 text-xs font-semibold uppercase tracking-wide">Saldo Pendiente</p>
+                  <p className="text-xl font-bold text-orange-100">{formatCurrency(calculations.saldoPendiente)}</p>
                 </div>
               )}
             </div>
-          </div>
-        </div>
-      </div>
-      {/* Banner inferior de resumen final */}
-      {calculations.precioFinal > 0 && (
-        <div className="rounded-xl border border-blue-200 bg-blue-50/70 p-4 flex flex-col md:flex-row gap-4 md:items-center md:justify-between">
-          <div className="flex flex-wrap items-center gap-4 text-sm">
-            <div>
-              <p className="text-blue-600 font-semibold leading-tight">Precio Final</p>
-              <p className="text-xl font-bold text-blue-700">{formatCurrency(calculations.precioFinal)}</p>
+            
+            {/* Sección de notas */}
+            <div className="lg:max-w-md space-y-3">
+              <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20">
+                <p className="text-xs text-blue-50 leading-relaxed">
+                  <span className="font-semibold text-white">💡 Nota:</span> El "Precio Final" se enviará como 
+                  <span className="font-semibold text-white"> precio_total</span>. El precio original se mostrará 
+                  públicamente como Final + Descuento.
+                </p>
+              </div>
+              
+              {calculations.personas && calculations.precioPorPersona && (
+                <div className="bg-purple-500/20 backdrop-blur-sm rounded-xl p-4 border border-purple-300/30">
+                  <p className="text-xs text-purple-50 leading-relaxed flex items-start gap-2">
+                    <FiUsers className="w-4 h-4 flex-shrink-0 mt-0.5" />
+                    <span>
+                      Equivale a <span className="font-bold text-white">{formatCurrency(calculations.precioPorPersona)}</span> por 
+                      persona para <span className="font-bold text-white">{calculations.personas}</span> viajero{calculations.personas > 1 ? "s" : ""}.
+                    </span>
+                  </p>
+                </div>
+              )}
             </div>
-            {calculations.montoDescuento > 0 && (
-              <div>
-                <p className="text-green-600 font-semibold leading-tight">Descuento</p>
-                <p className="text-sm text-green-700 font-medium">- {formatCurrency(calculations.montoDescuento)} ({calculations.porcentajeDescuento}%)</p>
-              </div>
-            )}
-            {calculations.anticipo > 0 && (
-              <div>
-                <p className="text-emerald-600 font-semibold leading-tight">Anticipo</p>
-                <p className="text-sm text-emerald-700 font-medium">{formatCurrency(calculations.anticipo)} ({calculations.porcentajeAnticipo}%)</p>
-              </div>
-            )}
-            {calculations.saldoPendiente > 0 && (
-              <div>
-                <p className="text-orange-600 font-semibold leading-tight">Saldo</p>
-                <p className="text-sm text-orange-700 font-medium">{formatCurrency(calculations.saldoPendiente)}</p>
-              </div>
-            )}
-          </div>
-          <div className="text-[11px] text-blue-700 font-medium">
-            El "Precio Final" se enviará como precio_total. El precio original se mostrará públicamente como Final + Descuento.
           </div>
         </div>
       )}

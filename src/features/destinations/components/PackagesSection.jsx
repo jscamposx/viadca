@@ -1,6 +1,7 @@
 import React, { useRef, useCallback, useEffect, useState } from "react";
 import { AnimatedSection } from "../../../hooks/scrollAnimations";
 import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
+import "../styles/destinations.css";
 
 const PackagesSection = ({
   id,
@@ -13,12 +14,41 @@ const PackagesSection = ({
   step = 8,
 }) => {
   const scrollRef = useRef(null);
+  const [showLeftArrow, setShowLeftArrow] = useState(false);
+  const [showRightArrow, setShowRightArrow] = useState(false);
+
   const scrollBy = useCallback((dir) => {
     if (!scrollRef.current) return;
     const el = scrollRef.current;
     const amount = el.clientWidth * 0.85 * dir;
     el.scrollBy({ left: amount, behavior: "smooth" });
   }, []);
+
+  // Detectar posición de scroll para mostrar/ocultar flechas
+  const handleScroll = useCallback(() => {
+    if (!scrollRef.current) return;
+    const el = scrollRef.current;
+    const atStart = el.scrollLeft <= 10;
+    const atEnd = el.scrollLeft + el.clientWidth >= el.scrollWidth - 10;
+    setShowLeftArrow(!atStart);
+    setShowRightArrow(!atEnd);
+  }, []);
+
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!el || !carousel) return;
+    
+    // Verificar estado inicial
+    handleScroll();
+    
+    el.addEventListener('scroll', handleScroll, { passive: true });
+    window.addEventListener('resize', handleScroll, { passive: true });
+    
+    return () => {
+      el.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('resize', handleScroll);
+    };
+  }, [carousel, handleScroll]);
 
   const childArray = React.Children.toArray(children);
   const showCarousel = carousel && childArray.length > 1; // activar solo si hay más de un item
@@ -75,10 +105,23 @@ const PackagesSection = ({
         )}
 
         {showCarousel && (
-          <div className="relative group overflow-hidden">
+          <div className="relative overflow-visible">
+            {/* Gradiente indicador de más contenido a la derecha (mobile) */}
+            {showRightArrow && (
+              <div className="md:hidden absolute right-0 top-0 bottom-0 w-12 bg-gradient-to-l from-white via-white/80 to-transparent pointer-events-none z-[5]" />
+            )}
+            {/* Gradiente indicador de más contenido a la izquierda (mobile) */}
+            {showLeftArrow && (
+              <div className="md:hidden absolute left-0 top-0 bottom-0 w-12 bg-gradient-to-r from-white via-white/80 to-transparent pointer-events-none z-[5]" />
+            )}
+            
             <div
               ref={scrollRef}
-              className="flex gap-3 sm:gap-4 lg:gap-5 overflow-x-auto snap-x snap-mandatory pb-4 scrollbar-thin scrollbar-thumb-gray-300 hover:scrollbar-thumb-gray-400 scrollbar-track-transparent overscroll-x-contain"
+              className="carousel-scroll flex gap-3 sm:gap-4 lg:gap-5 overflow-x-auto snap-x snap-mandatory pb-4 scrollbar-thin scrollbar-thumb-gray-300 hover:scrollbar-thumb-gray-400 scrollbar-track-transparent overscroll-x-contain touch-pan-x scroll-smooth"
+              style={{
+                WebkitOverflowScrolling: 'touch',
+                scrollbarWidth: 'thin',
+              }}
             >
               {childArray.map((ch, i) => (
                 <div
@@ -89,23 +132,46 @@ const PackagesSection = ({
                 </div>
               ))}
             </div>
-            {/* Controles */}
-            <button
-              type="button"
-              onClick={() => scrollBy(-1)}
-              aria-label="Desplazar a la izquierda"
-              className="hidden md:flex absolute top-1/2 -translate-y-1/2 -left-6 w-10 h-10 rounded-full bg-white shadow-lg border border-slate-200 items-center justify-center text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition opacity-0 group-hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-blue-600"
-            >
-              <FiChevronLeft className="w-5 h-5" />
-            </button>
-            <button
-              type="button"
-              onClick={() => scrollBy(1)}
-              aria-label="Desplazar a la derecha"
-              className="hidden md:flex absolute top-1/2 -translate-y-1/2 -right-6 w-10 h-10 rounded-full bg-white shadow-lg border border-slate-200 items-center justify-center text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition opacity-0 group-hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-blue-600"
-            >
-              <FiChevronRight className="w-5 h-5" />
-            </button>
+            {/* Controles de navegación - Mejorados para mejor visibilidad */}
+            {showLeftArrow && (
+              <button
+                type="button"
+                onClick={() => scrollBy(-1)}
+                aria-label="Desplazar a la izquierda"
+                className="hidden md:flex absolute top-1/2 -translate-y-1/2 left-0 w-12 h-12 rounded-full bg-white/95 backdrop-blur-sm shadow-xl border-2 border-slate-200 items-center justify-center text-slate-700 hover:bg-blue-600 hover:text-white hover:border-blue-600 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 z-10 hover:scale-110"
+              >
+                <FiChevronLeft className="w-6 h-6" />
+              </button>
+            )}
+            {showRightArrow && (
+              <button
+                type="button"
+                onClick={() => scrollBy(1)}
+                aria-label="Desplazar a la derecha"
+                className="hidden md:flex absolute top-1/2 -translate-y-1/2 right-0 w-12 h-12 rounded-full bg-white/95 backdrop-blur-sm shadow-xl border-2 border-slate-200 items-center justify-center text-slate-700 hover:bg-blue-600 hover:text-white hover:border-blue-600 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 z-10 hover:scale-110"
+              >
+                <FiChevronRight className="w-6 h-6" />
+              </button>
+            )}
+            
+            {/* Indicador de scroll para mobile */}
+            <div className="md:hidden flex justify-center gap-1.5 mt-3">
+              <div
+                className={`h-1 rounded-full transition-all duration-300 ${
+                  showLeftArrow ? 'w-6 bg-blue-600' : 'w-1 bg-slate-300'
+                }`}
+              />
+              <div
+                className={`h-1 rounded-full transition-all duration-300 ${
+                  !showLeftArrow && !showRightArrow ? 'w-6 bg-blue-600' : 'w-1 bg-slate-300'
+                }`}
+              />
+              <div
+                className={`h-1 rounded-full transition-all duration-300 ${
+                  showRightArrow ? 'w-6 bg-blue-600' : 'w-1 bg-slate-300'
+                }`}
+              />
+            </div>
           </div>
         )}
 

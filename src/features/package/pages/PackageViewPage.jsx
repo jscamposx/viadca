@@ -29,19 +29,17 @@ import {
   FiShare2,
   FiHome,
   FiStar,
-  FiCheck,
   FiX,
   FiInfo,
   FiDollarSign,
   FiArrowLeft,
   FiPhone,
-  FiMail,
   FiClock,
   FiUsers,
   FiShield,
   FiAward,
 } from "react-icons/fi";
-import { FaHandPointer } from "react-icons/fa";
+import { FaHandPointer, FaWhatsapp } from "react-icons/fa";
 import { formatPrecio, sanitizeMoneda } from "../../../utils/priceUtils";
 import { useSEO } from "../../../hooks/useSEO";
 import {
@@ -362,6 +360,15 @@ function PackageViewPage() {
       (parseFloat(paquete?.descuento) || 0),
     moneda,
   );
+  const personasValue = parseInt(paquete?.personas, 10);
+  const personasValidas = !isNaN(personasValue) && personasValue > 0;
+  const precioPorPersonaFormatted =
+    personasValidas && paquete?.precio_total
+      ? formatPrecio(
+          (parseFloat(paquete?.precio_total) || 0) / personasValue,
+          moneda,
+        )
+      : null;
 
   // Desglose opcional: vuelo / hospedaje (nuevos campos del backend)
   const hasPrecioVuelo =
@@ -533,7 +540,7 @@ function PackageViewPage() {
           <div className="relative z-10 text-center text-white px-4 max-w-5xl mx-auto">
             <div className="space-y-6 sm:space-y-7">
               <h1 className="font-volkhov tracking-tight text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold leading-[1.1] drop-shadow-[0_4px_12px_rgba(0,0,0,0.35)]">
-                <span className="bg-gradient-to-r from-white via-blue-50 via-40% to-cyan-100/90 dark:from-white dark:via-blue-100 dark:to-fuchsia-100 bg-clip-text text-transparent animate-[pulse_9s_ease-in-out_infinite] [text-wrap:balance]">
+                <span className="text-white [text-wrap:balance]">
                   {paquete.titulo}
                 </span>
               </h1>
@@ -553,13 +560,11 @@ function PackageViewPage() {
                     openWhatsApp(msg);
                   }}
                 >
-                  <span className="absolute inset-0 bg-gradient-to-r from-white/20 via-transparent to-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                   <span className="flex items-center gap-3 relative z-10">
                     <span className="inline-flex items-center gap-2">
                       <FiCalendar className="w-5 h-5 md:group-hover:scale-110 transition-transform duration-300" aria-hidden="true" />
                       Reservar Aventura
                     </span>
-                    <span className="h-2 w-2 rounded-full bg-emerald-300 animate-pulse shadow-[0_0_0_3px_rgba(16,185,129,0.35)]" />
                   </span>
                 </button>
               </div>
@@ -813,9 +818,6 @@ function PackageViewPage() {
                   <AnimatedSection animation="fadeInUp" delay={200}>
                     <section className="group bg-white/80 backdrop-blur-xl rounded-3xl shadow-xl p-6 border border-white/20 hover:shadow-2xl transition-all duration-500">
                       <div className="flex items-center gap-4 mb-6">
-                        <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-green-500 rounded-xl flex items-center justify-center shadow-lg md:group-hover:scale-110 transition-transform duration-300">
-                          <FiCheck className="w-6 h-6 text-white" />
-                        </div>
                         <div>
                           <h3 className="font-volkhov text-xl sm:text-2xl font-bold text-gray-900">
                             ¿Qué Incluye?
@@ -893,8 +895,8 @@ function PackageViewPage() {
                             )}
                           </div>
 
-                          <div className="inline-flex flex-wrap items-baseline justify-center gap-x-2 max-w-full">
-                            <span className="text-3xl sm:text-4xl lg:text-5xl font-extrabold bg-gradient-to-r from-emerald-600 via-green-500 to-teal-500 bg-clip-text text-transparent leading-tight break-words drop-shadow-[0_3px_8px_rgba(16,185,129,0.35)]">
+                          <div className="inline-flex flex-wrap items-baseline justify-center gap-x-2 gap-y-1 max-w-full px-2">
+                            <span className="inline-block text-3xl sm:text-4xl lg:text-[2.5rem] xl:text-[2.75rem] font-extrabold bg-gradient-to-r from-emerald-600 via-green-500 to-teal-500 bg-clip-text text-transparent leading-none drop-shadow-[0_3px_8px_rgba(16,185,129,0.35)]" style={{ whiteSpace: 'nowrap', display: 'inline-block' }}>
                               {precioTotalFormatted}
                             </span>
                             {precioTotalFormatted && (
@@ -904,7 +906,9 @@ function PackageViewPage() {
                             )}
                           </div>
                           <span className="block text-gray-500 text-sm">
-                            por persona
+                            {personasValidas && precioPorPersonaFormatted
+                              ? `${precioPorPersonaFormatted} por persona (para ${personasValue} ${personasValue > 1 ? "viajeros" : "viajero"})`
+                              : "Precio total del paquete"}
                           </span>
                           <div className="inline-flex items-center px-3 py-1.5 bg-gradient-to-r from-rose-500 via-red-500 to-pink-500 text-white rounded-full text-[11px] font-semibold shadow-md tracking-wide">
                             <FiAward className="w-4 h-4 mr-1.5 animate-pulse" />
@@ -913,8 +917,8 @@ function PackageViewPage() {
                         </>
                       ) : (
                         <>
-                          <div className="inline-flex flex-wrap items-baseline justify-center gap-x-2 max-w-full">
-                            <span className="text-3xl sm:text-4xl lg:text-5xl font-extrabold bg-gradient-to-r from-blue-600 via-indigo-600 to-fuchsia-600 bg-clip-text text-transparent leading-tight break-words drop-shadow-[0_3px_8px_rgba(79,70,229,0.35)]">
+                          <div className="inline-flex flex-wrap items-baseline justify-center gap-x-2 gap-y-1 max-w-full px-2">
+                            <span className="inline-block text-3xl sm:text-4xl lg:text-[2.5rem] xl:text-[2.75rem] font-extrabold bg-gradient-to-r from-blue-600 via-indigo-600 to-fuchsia-600 bg-clip-text text-transparent leading-none drop-shadow-[0_3px_8px_rgba(79,70,229,0.35)]" style={{ whiteSpace: 'nowrap', display: 'inline-block' }}>
                               {precioTotalFormatted}
                             </span>
                             {precioTotalFormatted && (
@@ -924,7 +928,9 @@ function PackageViewPage() {
                             )}
                           </div>
                           <span className="block text-gray-500 text-sm">
-                            por persona
+                            {personasValidas && precioPorPersonaFormatted
+                              ? `${precioPorPersonaFormatted} por persona (para ${personasValue} ${personasValue > 1 ? "viajeros" : "viajero"})`
+                              : "Precio total del paquete"}
                           </span>
                         </>
                       )}
@@ -1032,18 +1038,19 @@ function PackageViewPage() {
                         <FiPhone className="w-5 h-5" aria-hidden="true" />
                         <span className="font-medium text-sm">Llamar</span>
                       </a>
-                      <a
-                        href={
-                          contactInfo?.email
-                            ? `mailto:${contactInfo.email}`
-                            : undefined
-                        }
-                        className="flex items-center justify-center gap-2 h-11 min-h-[44px] bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-lg border border-blue-200 transition-all duration-200"
-                        aria-label="Enviar email para consultas"
+                      <button
+                        onClick={() => {
+                          const codigo = paquete.codigo || url;
+                          const currentUrl = window.location.href;
+                          const msg = `Hola, me interesa el viaje "${paquete.titulo}" (código ${codigo}).\n¿Podrían compartir más detalles sobre itinerario, disponibilidad y lo que incluye?\nURL: ${currentUrl}\nGracias.`;
+                          openWhatsApp(msg);
+                        }}
+                        className="flex items-center justify-center gap-2 h-11 min-h-[44px] bg-emerald-50 hover:bg-emerald-100 text-emerald-700 rounded-lg border border-emerald-200 transition-all duration-200"
+                        aria-label="Contactar por WhatsApp"
                       >
-                        <FiMail className="w-5 h-5" aria-hidden="true" />
-                        <span className="font-medium text-sm">Email</span>
-                      </a>
+                        <FaWhatsapp className="w-5 h-5" aria-hidden="true" />
+                        <span className="font-medium text-sm">WhatsApp</span>
+                      </button>
                       </div>
                     </div>{/* inner white card */}
                   </div>{/* gradient border wrapper */}

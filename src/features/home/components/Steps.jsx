@@ -155,7 +155,13 @@ const Steps = () => {
           sessionStorage.setItem(
             "stepsFeaturedPackagesFullPool",
             JSON.stringify(
-              pool.map(p => ({ id: p.id, titulo: p.titulo || p.title || "Paquete", precio: p.precioDesde || p.precio_total || p.precio || p.price || null, moneda: p.moneda || p.currency || null }))
+              pool.map(p => ({
+                id: p.id,
+                titulo: p.titulo || p.title || "Paquete",
+                precio: p.precioDesde || p.precio_total || p.precio || p.price || null,
+                moneda: p.moneda || p.currency || null,
+                personas: p.personas || p.capacidad || null,
+              }))
             )
           );
         } catch {}
@@ -209,6 +215,7 @@ const Steps = () => {
             proveedor: chosen.operador || chosen.proveedor || "VIADCA Tours",
             precio: resolvedPrecio,
             moneda: resolvedMoneda,
+            personas: chosen.personas || chosen.capacidad || null,
             imagen: resolvedImage,
             url: chosen.codigoUrl || chosen.slug || null,
           };
@@ -244,6 +251,7 @@ const Steps = () => {
               proveedor: chosen2.operador || chosen2.proveedor || "VIADCA Tours",
               precio: resolvedPrecio2,
               moneda: resolvedMoneda2,
+              personas: chosen2.personas || chosen2.capacidad || null,
               imagen: resolvedImage2,
               url: chosen2.codigoUrl || chosen2.slug || null,
             };
@@ -296,12 +304,22 @@ const Steps = () => {
     salida: "Sábados",
     proveedor: "VIADCA Tours",
     precio: 92500,
+    personas: null,
     imagen: "/HomePage/como-reservar-card1.avif",
     url: null,
   };
 
   const card = featured || fallbackCard;
   const precioFmt = formatPrice(card.precio, card.moneda || DEFAULT_CURRENCY);
+  const personasValue = parseInt(card.personas, 10);
+  const personasValidas = !Number.isNaN(personasValue) && personasValue > 0;
+  const precioPersonaFmt =
+    personasValidas && card.precio != null
+      ? formatPrice(
+          Number(card.precio) / personasValue,
+          card.moneda || DEFAULT_CURRENCY,
+        )
+      : null;
 
   return (
     <section
@@ -620,6 +638,15 @@ const Steps = () => {
               const mobileSecond = secondFeatured && secondFeatured.id !== mainId ? secondFeatured : null;
               if (!mobileSecond) return null;
               const mobilePrice = mobileSecond.precio != null ? formatPrice(mobileSecond.precio, mobileSecond.moneda || DEFAULT_CURRENCY) : null;
+              const mobilePersonasVal = parseInt(mobileSecond.personas, 10);
+              const mobilePersonasValid = !Number.isNaN(mobilePersonasVal) && mobilePersonasVal > 0;
+              const mobilePerPerson =
+                mobilePersonasValid && mobileSecond.precio != null
+                  ? formatPrice(
+                      Number(mobileSecond.precio) / mobilePersonasVal,
+                      mobileSecond.moneda || DEFAULT_CURRENCY,
+                    )
+                  : null;
               return (
                 <div className={`lg:hidden mt-5 flex items-center gap-4 bg-white rounded-2xl p-3 shadow-sm border border-blue-100 relative ${mobileSecond.url ? 'cursor-pointer' : ''}`}>
                   {mobileSecond.url && (
@@ -646,7 +673,9 @@ const Steps = () => {
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-[11px] uppercase tracking-wide text-slate-500 font-medium mb-1">
-                      Desde
+                      {mobilePersonasValid
+                        ? `Total (${mobilePersonasVal} ${mobilePersonasVal > 1 ? "viajeros" : "viajero"})`
+                        : "Desde"}
                     </p>
                     <p className="text-xl font-bold text-green-600 leading-none">
                       {mobilePrice || (loadingPkg ? "..." : errorPkg ? "--" : "Cotiza")}

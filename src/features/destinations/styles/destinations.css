@@ -1,0 +1,47 @@
+/* Estilos mejorados para carrusel de paquetes */
+
+/* Scrollbar personalizado para navegadores Webkit (Chrome, Safari, Edge) */
+.carousel-scroll::-webkit-scrollbar {
+  height: 8px;
+}
+
+.carousel-scroll::-webkit-scrollbar-track {
+  background: transparent;
+  border-radius: 10px;
+}
+
+.carousel-scroll::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 10px;
+  transition: background 0.3s ease;
+}
+
+.carousel-scroll::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Efecto de momentum en iOS */
+.carousel-scroll {
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+}
+
+/* Prevenir selección de texto durante el scroll */
+.carousel-scroll {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+/* Mejorar el snap en mobile */
+@media (max-width: 768px) {
+  .carousel-scroll {
+    scroll-snap-type: x mandatory;
+    scroll-padding: 0 1rem;
+  }
+  
+  .carousel-scroll > * {
+    scroll-snap-align: start;
+  }
+}

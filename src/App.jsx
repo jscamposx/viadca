@@ -14,6 +14,7 @@ import AdminUsersPage from "./features/admin/pages/AdminUsersPage";
 import AdminProfilePage from "./features/admin/pages/AdminProfilePage";
 import AdminConfigPage from "./features/admin/pages/AdminConfigPage";
 import DestinationsPage from "./features/destinations/pages/DestinationsPage";
+import QueueMonitorPage from "./features/admin/pages/QueueMonitorPage";
 
 import { AuthProvider } from "./contexts/AuthContext";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
@@ -94,6 +95,7 @@ function AppRoutes() {
               element={<NewMayoristaPage />}
             />
             <Route path="usuarios" element={<AdminUsersPage />} />
+            <Route path="cola" element={<QueueMonitorPage />} />
             <Route path="papelera" element={<PapeleraPage />} />
             <Route path="perfil" element={<AdminProfilePage />} />
             <Route path="configuracion" element={<AdminConfigPage />} />

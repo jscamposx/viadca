@@ -1,5 +1,5 @@
 import React from "react";
-import { FiSettings, FiCheck, FiX, FiPackage } from "react-icons/fi";
+import { FiSettings, FiCheck, FiX, FiPackage, FiUsers } from "react-icons/fi";
 import { formatPrecio, sanitizeMoneda } from "../../../utils/priceUtils";
 
 const ConfigurationForm = ({ formData, onFormChange, isEdit = false }) => {
@@ -11,6 +11,14 @@ const ConfigurationForm = ({ formData, onFormChange, isEdit = false }) => {
 
   // Moneda normalizada para el paquete
   const moneda = sanitizeMoneda(formData?.moneda);
+  const personasValue = parseInt(formData?.personas, 10);
+  const personasValidas = !isNaN(personasValue) && personasValue > 0 ? personasValue : null;
+  const precioUnitario = personasValidas
+    ? formatPrecio(
+        (parseFloat(formData?.precio_total) || 0) / personasValidas,
+        moneda,
+      )
+    : null;
 
   return (
     <div className="space-y-6 sm:space-y-8">
@@ -129,6 +137,21 @@ const ConfigurationForm = ({ formData, onFormChange, isEdit = false }) => {
               )}
             </p>
           </div>
+          {personasValidas && (
+            <div>
+              <span className="font-medium text-blue-700 flex items-center gap-1">
+                <FiUsers className="w-4 h-4" /> Personas base
+              </span>
+              <p className="text-blue-600">
+                {personasValidas} viajero{personasValidas > 1 ? "s" : ""}
+                {precioUnitario && (
+                  <span className="text-xs text-blue-500 block sm:inline sm:ml-2">
+                    ({precioUnitario} por persona)
+                  </span>
+                )}
+              </p>
+            </div>
+          )}
           <div>
             <span className="font-medium text-blue-700">Fechas:</span>
             <p className="text-blue-600 break-words">

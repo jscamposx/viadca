@@ -44,6 +44,7 @@ export const usePackageForm = (initialPackageData = null) => {
     descuento: "",
     anticipo: null,
     precio_total: "",
+  personas: "",
     // Nuevos campos desglosados opcionales
     precio_vuelo: "",
     precio_hospedaje: "",
@@ -165,6 +166,13 @@ export const usePackageForm = (initialPackageData = null) => {
         descuento: initialPackageData.descuento || "",
         anticipo: initialPackageData.anticipo || "",
         precio_total: initialPackageData.precio_total || "",
+        personas:
+          initialPackageData.personas === null ||
+          initialPackageData.personas === undefined ||
+          Number.isNaN(parseInt(initialPackageData.personas, 10)) ||
+          parseInt(initialPackageData.personas, 10) <= 0
+            ? ""
+            : String(parseInt(initialPackageData.personas, 10)),
         // Mapear nuevos campos (pueden venir como string o número o null)
         precio_vuelo:
           initialPackageData.precio_vuelo === null || initialPackageData.precio_vuelo === undefined
@@ -358,6 +366,16 @@ export const usePackageForm = (initialPackageData = null) => {
       });
     }
 
+    if (name === "personas") {
+      const cleaned = value === "" || value === null || value === undefined
+        ? ""
+        : String(value).replace(/[^0-9]/g, "");
+      const normalized = cleaned === "" ? "" : cleaned.replace(/^0+/, "");
+      const limited = normalized === "" ? "" : normalized.slice(0, 3);
+      setFormData((prev) => ({ ...prev, personas: limited }));
+      return;
+    }
+
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
@@ -507,6 +525,23 @@ export const usePackageForm = (initialPackageData = null) => {
         const msg = "El precio total debe ser un número positivo";
         errors.push(msg);
         errorMap.precio_total = msg;
+      }
+
+      if (
+        formData.personas !== null &&
+        formData.personas !== undefined &&
+        String(formData.personas).trim() !== ""
+      ) {
+        const personasVal = parseInt(formData.personas, 10);
+        if (Number.isNaN(personasVal) || personasVal <= 0) {
+          const msg = "El número de personas debe ser un entero positivo";
+          errors.push(msg);
+          errorMap.personas = msg;
+        } else if (personasVal > 999) {
+          const msg = "El número de personas no puede exceder 999";
+          errors.push(msg);
+          errorMap.personas = msg;
+        }
       }
 
       // Mantener requisito existente de seleccionar destino (UX previo)
@@ -792,6 +827,16 @@ export const usePackageForm = (initialPackageData = null) => {
             buildDestino(d.name, d.lat, d.lng, idx + 2),
           )),
     ];
+    const personasParsedRaw = parseInt(formData.personas, 10);
+    const personasValue =
+      formData.personas === "" ||
+      formData.personas === null ||
+      formData.personas === undefined ||
+      Number.isNaN(personasParsedRaw) ||
+      personasParsedRaw <= 0
+        ? null
+        : personasParsedRaw;
+
     const payload = {
       titulo: formData.titulo,
       origen: formData.origen,
@@ -812,6 +857,7 @@ export const usePackageForm = (initialPackageData = null) => {
           ? formData.requisitos
           : null,
       precio_total: parseFloat(formData.precio_total),
+      personas: personasValue,
       // Nuevos campos opcionales (enviar sólo si usuario los proporcionó; null si vacío explícito)
       ...(formData.precio_vuelo !== undefined
         ? {

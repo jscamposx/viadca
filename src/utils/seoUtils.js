@@ -1,10 +1,6 @@
-/**
- * Utilidades para SEO y optimización de motores de búsqueda
- */
 
 import { sanitizeMoneda, formatPrecio } from "./priceUtils";
 
-// Dominio del sitio para construir URLs absolutas
 const SITE_ORIGIN = "https://www.viadca.app";
 const API_BASE = (import.meta?.env?.VITE_API_BASE_URL || SITE_ORIGIN).replace(
   /\/$/,
@@ -12,26 +8,24 @@ const API_BASE = (import.meta?.env?.VITE_API_BASE_URL || SITE_ORIGIN).replace(
 );
 const FALLBACK_OG_IMAGE = `${SITE_ORIGIN}/HomePage/Hero-Image.avif`;
 
-// Resolver URL de imagen para SEO/OG (debe ser absoluta, no data:)
+
 const resolveImageUrlForSEO = (img) => {
   if (!img) {
     return FALLBACK_OG_IMAGE;
   }
 
-  // Verificar URLs de Cloudinary
   if (img.cloudinary_url) {
     if (/^https?:\/\//i.test(img.cloudinary_url)) {
       return img.cloudinary_url;
     }
   }
 
-  // Preferir URLs absolutas válidas
+ 
   if (img.url) {
     if (/^https?:\/\//i.test(img.url)) {
       return img.url;
     }
 
-    // Evitar convertir data: URIs
     if (img.url.startsWith("data:")) {
       return FALLBACK_OG_IMAGE;
     }
@@ -39,13 +33,12 @@ const resolveImageUrlForSEO = (img) => {
     return `${API_BASE}${img.url.startsWith("/") ? "" : "/"}${img.url}`;
   }
 
-  // También verificar el campo 'contenido' que veo que se usa en el sistema
   if (img.contenido) {
     if (/^https?:\/\//i.test(img.contenido)) {
       return img.contenido;
     }
 
-    // Evitar data: URIs y content base64
+
     if (img.contenido.startsWith("data:") || img.contenido.length > 500) {
       return FALLBACK_OG_IMAGE;
     }
@@ -62,18 +55,16 @@ const resolveImageUrlForSEO = (img) => {
     return `${API_BASE}/uploads/images/${nm}`;
   }
 
-  // Evitar data: URIs para sociales; usar fallback del sitio
+
   return FALLBACK_OG_IMAGE;
 };
 
-/**
- * Genera keywords optimizadas para un paquete
- */
+
 export const generatePackageKeywords = (paquete) => {
   if (!paquete) return [];
 
   const keywords = [
-    // Términos principales
+
     paquete.titulo,
     "paquete de viaje",
     "tour organizado",
@@ -105,11 +96,10 @@ export const generatePackageKeywords = (paquete) => {
         ].filter(Boolean)
       : []),
 
-    // Mayoristas/Operadores
+
     ...(paquete.mayoristas?.map((m) => m.nombre || m.clave).filter(Boolean) ||
       []),
 
-    // Precio
     ...(paquete.precio_total
       ? [
           `desde ${formatPrecio(paquete.precio_total, sanitizeMoneda(paquete.moneda))}`,
@@ -117,23 +107,20 @@ export const generatePackageKeywords = (paquete) => {
         ]
       : []),
 
-    // Tipos de actividades (extraer de descripción/incluye)
     ...(paquete.incluye ? extractActivityKeywords(paquete.incluye) : []),
     ...(paquete.descripcion
       ? extractActivityKeywords(paquete.descripcion)
       : []),
   ];
 
-  // Filtrar duplicados y vacíos, limitar a 15-20 keywords más relevantes
+
   return [...new Set(keywords)]
     .filter(Boolean)
     .filter((k) => k.length > 2)
     .slice(0, 20);
 };
 
-/**
- * Extrae keywords de actividades de un texto
- */
+
 const extractActivityKeywords = (text) => {
   if (!text || typeof text !== "string") return [];
 
@@ -186,9 +173,6 @@ const extractActivityKeywords = (text) => {
   return activityTerms.filter((term) => lowerText.includes(term));
 };
 
-/**
- * Genera título SEO optimizado para un paquete
- */
 export const generateSEOTitle = (paquete) => {
   if (!paquete) return "Paquete de Viaje | Viadca Viajes";
 
@@ -205,15 +189,12 @@ export const generateSEOTitle = (paquete) => {
 
   const title = `${paquete.titulo} · ${paquete.duracion_dias} días${precioStr} | Viadca Viajes`;
 
-  // Limitar a ~60-65 caracteres para Google sin perder contexto de marca
   return title.length > 65
     ? `${paquete.titulo} · ${paquete.duracion_dias} días | Viadca Viajes`
     : title;
 };
 
-/**
- * Genera descripción SEO optimizada para un paquete
- */
+
 export const generateSEODescription = (paquete) => {
   if (!paquete)
     return "Descubre increíbles paquetes de viaje con Viadca Viajes, tu agencia de confianza desde Durango.";
@@ -236,13 +217,10 @@ export const generateSEODescription = (paquete) => {
 
   const baseDesc = `Vive ${paquete.titulo} con ${paquete.duracion_dias} días de aventura${destinoStr}${hotel}${incluye} Reserva con Viadca Viajes.`;
 
-  // Limitar a 155 caracteres para Google
   return baseDesc.length > 155 ? baseDesc.substring(0, 152) + "..." : baseDesc;
 };
 
-/**
- * Genera datos estructurados JSON-LD para un paquete
- */
+
 export const generatePackageJsonLd = (paquete, url) => {
   if (!paquete) return [];
 
@@ -256,7 +234,7 @@ export const generatePackageJsonLd = (paquete, url) => {
     .slice(0, 6);
 
   return [
-    // Organization (para reforzar entidad)
+
     {
       "@context": "https://schema.org",
       "@type": "Organization",

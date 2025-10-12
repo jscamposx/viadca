@@ -112,6 +112,15 @@ const DestinationCard = React.memo(function DestinationCard({
     "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1200&q=80&auto=format&fit=crop";
   const moneda = sanitizeMoneda(p?.moneda);
   const precio = formatPrecio(p?.precio_total, moneda);
+  const personasValue = parseInt(p?.personas, 10);
+  const personasValidas = !Number.isNaN(personasValue) && personasValue > 0;
+  const precioPorPersona =
+    personasValidas && p?.precio_total
+      ? formatPrecio(
+          (parseFloat(p?.precio_total) || 0) / personasValue,
+          moneda,
+        )
+      : null;
   const duracion = p?.duracion_dias ? `${p.duracion_dias} días` : "";
   const firstDest =
     Array.isArray(p?.destinos) && p.destinos.length > 0 ? p.destinos[0] : null;

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { FiInfo, FiCheck, FiX, FiEye, FiDollarSign, FiImage, FiFileText, FiDatabase } from "react-icons/fi";
+import { FiInfo, FiCheck, FiX, FiEye, FiDollarSign, FiImage, FiFileText, FiDatabase, FiUsers } from "react-icons/fi";
 import { formatPrecio, sanitizeMoneda } from "../../../utils/priceUtils";
 
 const PatchPreview = ({ patchPayload, onToggle }) => {
@@ -28,12 +28,13 @@ const PatchPreview = ({ patchPayload, onToggle }) => {
       titulo: "Título",
       fecha_inicio: "Fecha de inicio",
       fecha_fin: "Fecha de fin",
-      precio_total: "Precio total",
+    precio_total: "Precio total",
       precio_original: "Precio original",
   precio_vuelo: "Precio vuelo",
   precio_hospedaje: "Precio hospedaje",
       descuento: "Descuento",
       anticipo: "Anticipo",
+    personas: "Personas base",
       incluye: "Incluye",
       no_incluye: "No incluye",
       requisitos: "Requisitos",
@@ -81,6 +82,13 @@ const PatchPreview = ({ patchPayload, onToggle }) => {
       return sanitizeMoneda(value);
     }
 
+    if (fieldName === "personas") {
+      if (value === null || value === undefined || value === "") return "Sin especificar";
+      const val = parseInt(value, 10);
+      if (Number.isNaN(val) || val <= 0) return "Sin especificar";
+      return `${val} viajero${val !== 1 ? "s" : ""}`;
+    }
+
     if (fieldName.includes("precio") || fieldName === "anticipo" || fieldName === "descuento") {
       if (!isMeaningfulPrice(value)) return "Sin especificar";
       const formatted = formatPrecio(value, monedaPatch);
@@ -112,6 +120,9 @@ const PatchPreview = ({ patchPayload, onToggle }) => {
   const categoryMeta = (fieldName) => {
     if (fieldName.includes("precio") || ["anticipo", "descuento"].includes(fieldName)) {
       return { label: "Precio", color: "bg-emerald-100 text-emerald-700 border-emerald-200", icon: FiDollarSign };
+    }
+    if (fieldName === "personas") {
+      return { label: "Capacidad", color: "bg-cyan-100 text-cyan-700 border-cyan-200", icon: FiUsers };
     }
     if (["imagenes", "hotel", "destinos", "mayoristasIds"].includes(fieldName)) {
       return { label: "Contenido", color: "bg-indigo-100 text-indigo-700 border-indigo-200", icon: FiImage };

@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   FiSave,
   FiRefreshCw,
@@ -15,6 +16,7 @@ import {
   FiCheckCircle,
   FiAlertCircle,
   FiEye,
+  FiActivity,
 } from "react-icons/fi";
 import contactService from "../../../api/contactService";
 
@@ -106,6 +108,7 @@ const fieldMeta = [
 ];
 
 const AdminConfigPage = () => {
+  const navigate = useNavigate();
   const [data, setData] = useState(EMPTY);
   const [initial, setInitial] = useState(EMPTY);
   const [loading, setLoading] = useState(false);
@@ -393,6 +396,32 @@ const AdminConfigPage = () => {
             inmediatamente después de guardar. Las URLs deben incluir el
             protocolo (ej: https://).
           </p>
+        </div>
+
+        <div className="mt-10">
+          <section className="glass-panel glass-border-gradient rounded-2xl shadow-lg border border-white/50 bg-white/80 p-5 sm:p-6 flex flex-col gap-6 md:flex-row md:items-center md:justify-between text-center md:text-left">
+            <div className="flex flex-col items-center gap-4 md:flex-row md:items-start md:gap-5">
+              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-indigo-500 via-blue-500 to-cyan-500 text-white flex items-center justify-center shadow-md shrink-0">
+                <FiActivity className="w-6 h-6" />
+              </div>
+              <div className="space-y-2 max-w-2xl">
+                <h2 className="text-lg sm:text-xl font-semibold text-slate-800">
+                  Monitor de cola de tareas
+                </h2>
+                <p className="text-sm text-slate-600">
+                  Observa la carga de procesos en tiempo real, detecta cuellos de botella y valida el estado de la cola cuando ajustes la configuración del sistema.
+                </p>
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={() => navigate("/admin/cola")}
+              className="w-full md:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-white bg-gradient-to-r from-indigo-600 via-blue-600 to-cyan-500 hover:from-indigo-500 hover:via-blue-500 hover:to-cyan-500 transition-all shadow-md hover:shadow-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-indigo-500"
+            >
+              <FiActivity className="w-5 h-5" />
+              <span>Ir al monitor</span>
+            </button>
+          </section>
         </div>
       </div>
     </div>

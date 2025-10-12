@@ -7,7 +7,7 @@ import {
   Polyline,
 } from "react-leaflet";
 import L from "leaflet";
-import { FiMapPin, FiRefreshCw } from "react-icons/fi";
+import { FiMapPin, FiRefreshCw, FiExternalLink } from "react-icons/fi";
 
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -57,6 +57,31 @@ const RouteMap = ({ paquete }) => {
   const MAPTILER_KEY = import.meta.env.VITE_MAPTILER_KEY;
   const ES_TILE_URL = import.meta.env.VITE_ES_TILE_URL; // Permite inyectar un tile provider en español
 
+  // Centro de México por defecto (Ciudad de México)
+  const MEXICO_CENTER = [23.6345, -102.5528]; // Centro geográfico de México
+  const MEXICO_BOUNDS = {
+    north: 32.72, // Frontera norte
+    south: 14.53, // Frontera sur
+    east: -86.71, // Frontera este
+    west: -118.40 // Frontera oeste
+  };
+
+  // Función para validar si las coordenadas están en México o son válidas
+  const isValidMexicanCoordinate = (lat, lng) => {
+    const latitude = parseFloat(lat);
+    const longitude = parseFloat(lng);
+    
+    if (isNaN(latitude) || isNaN(longitude)) return false;
+    
+    // Verificar si está dentro de los límites de México (con margen)
+    return (
+      latitude >= MEXICO_BOUNDS.south - 5 && 
+      latitude <= MEXICO_BOUNDS.north + 5 &&
+      longitude >= MEXICO_BOUNDS.west - 10 && 
+      longitude <= MEXICO_BOUNDS.east + 10
+    );
+  };
+
   // Selección de proveedor de tiles priorizando español
   let tileUrl = "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
   let tileAttribution =
@@ -73,6 +98,7 @@ const RouteMap = ({ paquete }) => {
       '<a href="https://www.maptiler.com/copyright/" target="_blank" rel="noopener">&copy; MapTiler</a> & <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>';
     tileMaxZoom = 20;
   }
+  
   const destinos = (paquete?.destinos || []).map((d) => {
     const label = d.ciudad || d.destino || d.nombre || "";
     const composed = [d.ciudad, d.estado, d.pais].filter(Boolean).join(", ");
@@ -135,8 +161,7 @@ const RouteMap = ({ paquete }) => {
     (dest) =>
       dest.destino_lat &&
       dest.destino_lng &&
-      !isNaN(parseFloat(dest.destino_lat)) &&
-      !isNaN(parseFloat(dest.destino_lng)),
+      isValidMexicanCoordinate(dest.destino_lat, dest.destino_lng)
   );
 
   if (destinosConCoordenadas.length === 0) {
@@ -156,6 +181,10 @@ const RouteMap = ({ paquete }) => {
   }
 
   const calculateMapCenter = () => {
+    if (destinosConCoordenadas.length === 0) {
+      return MEXICO_CENTER; // Siempre mostrar México si no hay coordenadas válidas
+    }
+    
     if (destinosConCoordenadas.length === 1) {
       return [
         parseFloat(destinosConCoordenadas[0].destino_lat),
@@ -179,6 +208,10 @@ const RouteMap = ({ paquete }) => {
   };
 
   const calculateZoom = () => {
+    if (destinosConCoordenadas.length === 0) {
+      return 5; // Zoom para ver todo México
+    }
+    
     if (destinosConCoordenadas.length === 1) {
       return 10;
     }
@@ -201,6 +234,36 @@ const RouteMap = ({ paquete }) => {
     if (maxRange > 0.5) return 8;
     if (maxRange > 0.1) return 9;
     return 10;
+  };
+
+  // Función para abrir en Google Maps
+  const openInGoogleMaps = () => {
+    if (destinosConCoordenadas.length === 0) return;
+    
+    if (destinosConCoordenadas.length === 1) {
+      // Un solo destino: abrir ubicación directa
+      const dest = destinosConCoordenadas[0];
+      const lat = parseFloat(dest.destino_lat);
+      const lng = parseFloat(dest.destino_lng);
+      const url = `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`;
+      window.open(url, '_blank');
+    } else {
+      // Múltiples destinos: crear ruta
+      const origin = destinosConCoordenadas[0];
+      const destination = destinosConCoordenadas[destinosConCoordenadas.length - 1];
+      const waypoints = destinosConCoordenadas
+        .slice(1, -1)
+        .map(d => `${parseFloat(d.destino_lat)},${parseFloat(d.destino_lng)}`)
+        .join('|');
+      
+      let url = `https://www.google.com/maps/dir/?api=1&origin=${parseFloat(origin.destino_lat)},${parseFloat(origin.destino_lng)}&destination=${parseFloat(destination.destino_lat)},${parseFloat(destination.destino_lng)}`;
+      
+      if (waypoints) {
+        url += `&waypoints=${waypoints}`;
+      }
+      
+      window.open(url, '_blank');
+    }
   };
 
   const mapCenter = calculateMapCenter();
@@ -273,11 +336,25 @@ const RouteMap = ({ paquete }) => {
         )}
       </MapContainer>
 
-      <div className="absolute top-4 right-4 z-20">
+      <div className="absolute top-4 right-4 z-20 flex flex-col gap-2">
+        {/* Botón para abrir en Google Maps */}
+        {destinosConCoordenadas.length > 0 && (
+          <button
+            onClick={openInGoogleMaps}
+            className="bg-white/90 backdrop-blur p-3 rounded-lg shadow-lg hover:bg-white transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center group"
+            aria-label="Abrir en Google Maps"
+            title="Abrir en Google Maps"
+          >
+            <FiExternalLink className="w-5 h-5 text-green-600 group-hover:text-green-700" aria-hidden="true" />
+          </button>
+        )}
+        
+        {/* Botón refrescar mapa */}
         <button
           onClick={() => setMapKey((prev) => prev + 1)}
           className="bg-white/90 backdrop-blur p-3 rounded-lg shadow-lg hover:bg-white transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center"
           aria-label="Actualizar mapa"
+          title="Actualizar mapa"
         >
           <FiRefreshCw className="w-5 h-5 text-blue-600" aria-hidden="true" />
         </button>
