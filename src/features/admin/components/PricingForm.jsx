@@ -168,21 +168,11 @@ const PricingForm = ({ formData, onFormChange, errors = {} }) => {
     <div className="space-y-6">
       {/* Header con selector de moneda mejorado */}
       <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-6 border border-blue-100">
-        <div className="flex items-center gap-3 mb-4">
-          <div className="p-3 bg-blue-600 rounded-xl shadow-lg">
-            <FiDollarSign className="w-6 h-6 text-white" />
-          </div>
-          <div>
-            <h3 className="text-lg font-bold text-slate-900">Configuración de Precios</h3>
-            <p className="text-sm text-slate-600">Define el costo del paquete y opciones de pago</p>
-          </div>
-        </div>
-        
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label className="flex items-center gap-2 text-sm font-semibold text-slate-700 mb-2">
               <FiTag className="w-4 h-4 text-blue-600" />
-              Moneda del paquete
+              Moneda
             </label>
             <select
               name="moneda"
@@ -577,25 +567,10 @@ const PricingForm = ({ formData, onFormChange, errors = {} }) => {
                   </p>
                 </div>
               )}
-              
-              {calculations.saldoPendiente > 0 && (
-                <div className="space-y-1">
-                  <p className="text-orange-200 text-xs font-semibold uppercase tracking-wide">Saldo Pendiente</p>
-                  <p className="text-xl font-bold text-orange-100">{formatCurrency(calculations.saldoPendiente)}</p>
-                </div>
-              )}
             </div>
             
-            {/* Sección de notas */}
+            {/* Sección de desglose */}
             <div className="lg:max-w-md space-y-3">
-              <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20">
-                <p className="text-xs text-blue-50 leading-relaxed">
-                  <span className="font-semibold text-white">💡 Nota:</span> El "Precio Final" se enviará como 
-                  <span className="font-semibold text-white"> precio_total</span>. El precio original se mostrará 
-                  públicamente como Final + Descuento.
-                </p>
-              </div>
-              
               {calculations.personas && calculations.precioPorPersona && (
                 <div className="bg-purple-500/20 backdrop-blur-sm rounded-xl p-4 border border-purple-300/30">
                   <p className="text-xs text-purple-50 leading-relaxed flex items-start gap-2">
@@ -605,6 +580,34 @@ const PricingForm = ({ formData, onFormChange, errors = {} }) => {
                       persona para <span className="font-bold text-white">{calculations.personas}</span> viajero{calculations.personas > 1 ? "s" : ""}.
                     </span>
                   </p>
+                </div>
+              )}
+              
+              {(calculations.precioVuelo > 0 || calculations.precioHospedaje > 0) && (
+                <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20">
+                  <p className="text-xs font-semibold text-blue-100 mb-2 uppercase tracking-wide">Desglose de Servicios</p>
+                  <div className="space-y-1.5">
+                    {calculations.precioVuelo > 0 && (
+                      <div className="flex items-center justify-between text-xs">
+                        <span className="text-blue-50 flex items-center gap-1.5">
+                          <FiPackage className="w-3.5 h-3.5" />
+                          Vuelo
+                        </span>
+                        <span className="font-semibold text-white">{formatCurrency(calculations.precioVuelo)}</span>
+                      </div>
+                    )}
+                    {calculations.precioHospedaje > 0 && (
+                      <div className="flex items-center justify-between text-xs">
+                        <span className="text-blue-50 flex items-center gap-1.5">
+                          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                          </svg>
+                          Hospedaje
+                        </span>
+                        <span className="font-semibold text-white">{formatCurrency(calculations.precioHospedaje)}</span>
+                      </div>
+                    )}
+                  </div>
                 </div>
               )}
             </div>
