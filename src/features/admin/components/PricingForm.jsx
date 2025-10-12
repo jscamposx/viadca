@@ -222,7 +222,7 @@ const PricingForm = ({ formData, onFormChange, errors = {} }) => {
                   type="text"
                   value={formatNumber(precioBase)}
                   onChange={handlePrecioBaseChange}
-                  className={`w-full pl-8 pr-3 py-3 border-2 rounded-xl focus:ring-2 text-base font-semibold transition-all ${
+                  className={`w-full pl-8 pr-3 py-3 border-2 rounded-xl focus:ring-2 text-base font-semibold transition-all placeholder:text-slate-300 placeholder:font-normal ${
                     errors.precio_total 
                       ? "border-red-400 focus:ring-red-500 focus:border-red-500" 
                       : "border-slate-300 focus:ring-blue-500 focus:border-blue-500 hover:border-slate-400"
@@ -258,7 +258,7 @@ const PricingForm = ({ formData, onFormChange, errors = {} }) => {
                   type="text"
                   value={formatNumber(descuento)}
                   onChange={handleDescuentoChange}
-                  className={`w-full pl-8 pr-3 py-3 border-2 rounded-xl focus:ring-2 text-base font-semibold transition-all ${
+                  className={`w-full pl-8 pr-3 py-3 border-2 rounded-xl focus:ring-2 text-base font-semibold transition-all placeholder:text-slate-300 placeholder:font-normal ${
                     parseFloat(descuento||0) > parseFloat(precioBase||0) 
                       ? "border-red-400 focus:ring-red-500 focus:border-red-500" 
                       : "border-slate-300 focus:ring-green-500 focus:border-green-500 hover:border-slate-400"
@@ -300,7 +300,7 @@ const PricingForm = ({ formData, onFormChange, errors = {} }) => {
                   name="anticipo"
                   value={formatNumber(formData.anticipo)}
                   onChange={handleNumericChange}
-                  className={`w-full pl-8 pr-3 py-3 border-2 rounded-xl focus:ring-2 text-base font-semibold transition-all ${
+                  className={`w-full pl-8 pr-3 py-3 border-2 rounded-xl focus:ring-2 text-base font-semibold transition-all placeholder:text-slate-300 placeholder:font-normal ${
                     formData.anticipo && parseFloat(formData.anticipo) > calculations.precioFinal 
                       ? "border-red-400 focus:ring-red-500 focus:border-red-500" 
                       : "border-slate-300 focus:ring-emerald-500 focus:border-emerald-500 hover:border-slate-400"
@@ -450,7 +450,7 @@ const PricingForm = ({ formData, onFormChange, errors = {} }) => {
                         onFormChange({ target: { name: "precio_vuelo", value: raw } });
                       }
                     }}
-                    className="w-full pl-8 pr-3 py-3 border-2 border-blue-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-base font-semibold bg-white hover:border-blue-300 transition-colors"
+                    className="w-full pl-8 pr-3 py-3 border-2 border-blue-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-base font-semibold bg-white hover:border-blue-300 transition-colors placeholder:text-slate-300 placeholder:font-normal"
                     placeholder="2,500"
                   />
                 </div>
@@ -499,7 +499,7 @@ const PricingForm = ({ formData, onFormChange, errors = {} }) => {
                         onFormChange({ target: { name: "precio_hospedaje", value: raw } });
                       }
                     }}
-                    className="w-full pl-8 pr-3 py-3 border-2 border-emerald-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-base font-semibold bg-white hover:border-emerald-300 transition-colors"
+                    className="w-full pl-8 pr-3 py-3 border-2 border-emerald-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-base font-semibold bg-white hover:border-emerald-300 transition-colors placeholder:text-slate-300 placeholder:font-normal"
                     placeholder="3,800"
                   />
                 </div>
