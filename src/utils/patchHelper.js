@@ -174,6 +174,7 @@ const normalizePackageData = (data) => {
     anticipo: data.anticipo ? parseFloat(data.anticipo) : null,
     notas: data.notas || null,
     activo: Boolean(data.activo),
+    aptoParaMenores: data.aptoParaMenores !== undefined ? Boolean(data.aptoParaMenores) : true,
     itinerario_texto: itinerarioTexto,
     // Nuevo: normalizar moneda
     moneda: sanitizeMoneda(data.moneda),

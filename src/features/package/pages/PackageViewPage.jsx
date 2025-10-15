@@ -38,6 +38,7 @@ import {
   FiUsers,
   FiShield,
   FiAward,
+  FiAlertCircle,
 } from "react-icons/fi";
 import { FaHandPointer, FaWhatsapp } from "react-icons/fa";
 import { formatPrecio, sanitizeMoneda } from "../../../utils/priceUtils";
@@ -225,6 +226,8 @@ function PackageViewPage() {
   // Estados legacy eliminados en favor de ExpandableContent
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState(0);
+  const [showAdultWarning, setShowAdultWarning] = useState(false);
+  const [adultWarningAccepted, setAdultWarningAccepted] = useState(false);
   const { openWhatsApp, getPhoneHref, onPhoneClick, ToastPortal, showToast } =
     useContactActions();
   const { contactInfo, loading: contactLoading } = useContactInfo();
@@ -277,6 +280,26 @@ function PackageViewPage() {
     window.addEventListener("resize", check);
     return () => window.removeEventListener("resize", check);
   }, []);
+
+  // Mostrar advertencia de contenido adulto
+  useEffect(() => {
+    if (paquete && paquete.aptoParaMenores === false && !adultWarningAccepted) {
+      console.log("🔞 Mostrando modal de advertencia - aptoParaMenores:", paquete.aptoParaMenores);
+      setShowAdultWarning(true);
+      // Scroll to top cuando se muestra el modal
+      window.scrollTo({ top: 0, behavior: 'instant' });
+      // Bloquear scroll del body
+      document.body.style.overflow = 'hidden';
+    } else {
+      console.log("✅ No mostrar modal - aptoParaMenores:", paquete?.aptoParaMenores, "accepted:", adultWarningAccepted);
+      // Restaurar scroll del body
+      document.body.style.overflow = 'unset';
+    }
+    
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [paquete, adultWarningAccepted]);
 
   const isMobile = () => {
     if (navigator.userAgentData?.mobile) {
@@ -338,6 +361,40 @@ function PackageViewPage() {
     }
   };
 
+  // Navegación consistente para volver o enviar al Home cuando no hay historial válido
+  const handleNavigateBack = () => {
+    const hasHistory = window.history.length > 1;
+    if (hasHistory) {
+      const prev = document.referrer;
+      if (prev) {
+        try {
+          const prevUrl = new URL(prev, window.location.origin);
+          const sameOrigin = prevUrl.origin === window.location.origin;
+          const samePath = sameOrigin && prevUrl.pathname === window.location.pathname;
+          if (samePath) {
+            window.location.assign("/");
+            return;
+          }
+          window.history.back();
+          return;
+        } catch (err) {
+          window.history.back();
+          return;
+        }
+      }
+      window.location.assign("/");
+      return;
+    }
+    window.location.assign("/");
+  };
+
+  const handleAdultModalBack = () => {
+    setShowAdultWarning(false);
+    setAdultWarningAccepted(false);
+    document.body.style.overflow = "unset";
+    handleNavigateBack();
+  };
+
   if (loading)
     return (
       <>
@@ -390,43 +447,103 @@ function PackageViewPage() {
   const incluyeHasMore = isLongText(incluyeText);
   const noIncluyeHasMore = isLongText(noIncluyeText);
 
+  console.log("🎯 PackageViewPage - showAdultWarning:", showAdultWarning, "aptoParaMenores:", paquete?.aptoParaMenores);
+
   return (
-    <PageTransition className="bg-gradient-to-br from-slate-50 via-white to-blue-50 min-h-screen">
-      {/* Toast global para acciones de contacto */}
-      <ToastPortal />
-      <div
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
-          scrollY > 100
-            ? "bg-white/80 backdrop-blur-xl shadow-lg border-b border-white/20"
-            : "bg-transparent"
-        }`}
-      >
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
+    <>
+      {/* Modal de advertencia de contenido adulto - fuera de PageTransition */}
+      {showAdultWarning && (
+        <div
+          className="fixed top-0 left-0 right-0 bottom-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4"
+          style={{ zIndex: 999999, margin: 0 }}
+          onClick={(e) => {
+            if (e.target === e.currentTarget) {
+              setShowAdultWarning(false);
+              setAdultWarningAccepted(true);
+            }
+          }}
+        >
+          <div
+            className="bg-white rounded-2xl shadow-2xl border-4 border-amber-500 max-w-md w-full"
+            style={{ zIndex: 1000000, position: "relative" }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Header */}
+            <div className="flex items-center justify-between p-4 sm:p-5 border-b border-gray-100">
+              <div className="flex items-center gap-3">
+                <div className="p-2 sm:p-2.5 rounded-full bg-amber-100">
+                  <FiAlertCircle className="w-5 h-5 sm:w-6 sm:h-6 text-amber-600" />
+                </div>
+                <h3 className="text-base sm:text-lg font-semibold text-gray-900">
+                  Contenido para adultos
+                </h3>
+              </div>
+              <button
+                onClick={() => {
+                  setShowAdultWarning(false);
+                  setAdultWarningAccepted(true);
+                }}
+                className="p-1.5 sm:p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-all duration-200"
+                aria-label="Cerrar"
+              >
+                <FiX className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Content */}
+            <div className="p-4 sm:p-6">
+              <div className="flex items-center justify-center mb-3 sm:mb-4">
+                <div className="text-5xl sm:text-6xl">🔞</div>
+              </div>
+              <p className="text-sm sm:text-base text-gray-700 leading-relaxed text-center mb-3">
+                Este paquete incluye actividades{" "}
+                <span className="font-semibold text-amber-600">
+                  exclusivas para mayores de 18 años
+                </span>
+                .
+              </p>
+              <p className="text-xs sm:text-sm text-gray-600 text-center">
+                Al continuar, confirmas que cumples con el requisito de edad.
+              </p>
+            </div>
+
+            {/* Actions */}
+            <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-end gap-2 sm:gap-3 p-4 sm:p-5 border-t border-gray-100 bg-gray-50/50">
+              <button
+                onClick={handleAdultModalBack}
+                className="px-4 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2 transition-all duration-200"
+              >
+                Regresar
+              </button>
+              <button
+                onClick={() => {
+                  setShowAdultWarning(false);
+                  setAdultWarningAccepted(true);
+                }}
+                className="px-4 py-2.5 text-sm font-medium text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 transition-all duration-200 bg-amber-600 hover:bg-amber-700 focus:ring-amber-500"
+              >
+                Tengo +18 años, continuar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <PageTransition className="bg-gradient-to-br from-slate-50 via-white to-blue-50 min-h-screen">
+        {/* Toast global para acciones de contacto */}
+        <ToastPortal />
+
+        <div
+          className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
+            scrollY > 100
+              ? "bg-white/80 backdrop-blur-xl shadow-lg border-b border-white/20"
+              : "bg-transparent"
+          }`}
+        >
+          <div className="container mx-auto px-4 py-4">
+            <div className="flex items-center justify-between">
             <button
-              onClick={() => {
-                // Si hay historial real, intentar regresar manteniendo sección/hash
-                const hasHistory = window.history.length > 1;
-                if (hasHistory) {
-                  const prev = document.referrer;
-                  // Si venimos de la misma página (sin navegación real), hacer fallback a home
-                  const sameOrigin =
-                    prev &&
-                    new URL(prev, window.location.origin).origin ===
-                      window.location.origin;
-                  const samePath =
-                    sameOrigin &&
-                    new URL(prev, window.location.origin).pathname ===
-                      window.location.pathname;
-                  if (!prev || samePath) {
-                    window.location.assign("/");
-                  } else {
-                    window.history.back();
-                  }
-                } else {
-                  window.location.assign("/");
-                }
-              }}
+              onClick={handleNavigateBack}
               className={`group flex items-center gap-3 px-4 py-2 rounded-xl min-h-[44px] transition-all duration-300 ${
                 scrollY > 100
                   ? "bg-gray-100/80 hover:bg-gray-200/80 text-gray-700"
@@ -505,12 +622,12 @@ function PackageViewPage() {
                 </button>
               </div>
             </div>
+            </div>
           </div>
         </div>
-      </div>
 
-      <main className="relative">
-        <div
+        <main className="relative">
+          <div
           className="relative min-h-[70svh] sm:min-h-[80svh] md:min-h-[100svh] h-[100dvh] flex items-center justify-center overflow-hidden"
           style={
             !isSmallScreen
@@ -1084,6 +1201,7 @@ function PackageViewPage() {
 
       {/* CTA pegajosa en móviles eliminada por preferencia de diseño */}
     </PageTransition>
+    </>
   );
 }
 

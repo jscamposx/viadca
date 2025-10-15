@@ -14,6 +14,7 @@ import {
   FiLogOut,
   FiUsers,
   FiTrash2,
+  FiActivity,
 } from "react-icons/fi";
 import UserAvatar from "./UserAvatar";
 import { useAuth } from "../../../contexts/AuthContext";
@@ -123,6 +124,11 @@ const AdminNav = ({ isOpen, setIsOpen }) => {
       to: "/admin/papelera",
       icon: <FiTrash2 size={20} />,
       label: "Papelera",
+    },
+    {
+      to: "/admin/cola",
+      icon: <FiActivity size={18} />,
+      label: "Monitor",
     },
   ];
 
@@ -243,7 +249,7 @@ const AdminNav = ({ isOpen, setIsOpen }) => {
     >
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="absolute top-1/2 -translate-y-1/2 -right-4 p-3 bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-700 
+        className="absolute bottom-24 -right-3.5 p-2.5 bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-700 
                    hover:from-blue-700 hover:via-indigo-700 hover:to-purple-800 rounded-full text-white 
                    transition-all duration-300 shadow-lg hover:shadow-xl flex items-center justify-center
                    border-2 border-white hover:scale-110 transform z-20
@@ -254,25 +260,17 @@ const AdminNav = ({ isOpen, setIsOpen }) => {
         <div className="relative">
           {isOpen ? (
             <FiChevronLeft
-              size={20}
+              size={16}
               className="transition-transform duration-300 group-hover/btn:scale-110"
             />
           ) : (
             <FiChevronRight
-              size={20}
+              size={16}
               className="transition-transform duration-300 group-hover/btn:scale-110"
             />
           )}
         </div>
       </button>
-
-      {!isOpen && (
-        <div
-          className="absolute top-1/2 -translate-y-1/2 -right-1 w-1 h-12 bg-gradient-to-b from-blue-400 via-indigo-500 to-purple-600 
-                        rounded-full opacity-0 group-hover:opacity-60 transition-all duration-300
-                        shadow-lg nav-pulse"
-        ></div>
-      )}
 
       <div
         className={`flex items-center mb-8 mt-4 px-2 py-3 cursor-pointer group/logo

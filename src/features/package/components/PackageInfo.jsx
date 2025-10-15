@@ -54,8 +54,13 @@ const PackageInfo = ({ paquete }) => {
 
   const formatDate = (dateString) => {
     if (!dateString) return "Por confirmar";
-    const d = new Date(dateString);
+    
+    // Parsear la fecha como UTC para evitar desfases de zona horaria
+    const [year, month, day] = dateString.split('T')[0].split('-');
+    const d = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+    
     if (isNaN(d.getTime())) return "Por confirmar";
+    
     return d.toLocaleDateString("es-MX", {
       year: "numeric",
       month: "long",

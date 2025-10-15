@@ -4,6 +4,7 @@ import { formatPrecio, sanitizeMoneda } from "../../../utils/priceUtils";
 
 const ConfigurationForm = ({ formData, onFormChange, isEdit = false }) => {
   const handleToggleChange = (name, value) => {
+    console.log(`🔄 Toggle cambió - Campo: ${name}, Nuevo valor:`, value, `Tipo:`, typeof value);
     onFormChange({
       target: { name, value },
     });
@@ -19,6 +20,15 @@ const ConfigurationForm = ({ formData, onFormChange, isEdit = false }) => {
         moneda,
       )
     : null;
+
+  // Debug: mostrar el estado actual de aptoParaMenores
+  React.useEffect(() => {
+    console.log("🎯 ConfigurationForm - Estado actual:", {
+      aptoParaMenores: formData?.aptoParaMenores,
+      type: typeof formData?.aptoParaMenores,
+      activo: formData?.activo,
+    });
+  }, [formData?.aptoParaMenores, formData?.activo]);
 
   return (
     <div className="space-y-6 sm:space-y-8">
@@ -90,6 +100,72 @@ const ConfigurationForm = ({ formData, onFormChange, isEdit = false }) => {
             />
           </button>
         </div>
+      </div>
+
+      {/* Toggle para restricción de edad */}
+      <div className="bg-gradient-to-br from-slate-50 to-white rounded-xl sm:rounded-2xl border border-slate-200 p-4 sm:p-6 shadow-sm">
+        <h4 className="text-base sm:text-lg font-semibold text-slate-900 mb-4 sm:mb-6 flex items-center gap-2 sm:gap-3">
+          <div className="p-1.5 sm:p-2 bg-amber-100 rounded-lg">
+            <FiUsers className="w-4 h-4 sm:w-5 sm:h-5 text-amber-600" />
+          </div>
+          Restricción de Edad
+        </h4>
+
+        <div className="flex items-center justify-between p-3 sm:p-4 bg-white rounded-lg sm:rounded-xl border border-slate-200 hover:border-slate-300 transition-all duration-200 shadow-sm">
+          <div className="flex items-center gap-3 sm:gap-4 min-w-0 flex-1">
+            <div
+              className={`p-2 sm:p-3 rounded-full transition-all duration-300 flex-shrink-0 ${
+                formData.aptoParaMenores
+                  ? "bg-green-100"
+                  : "bg-amber-100"
+              }`}
+            >
+              {formData.aptoParaMenores ? (
+                <FiUsers className="w-5 h-5 sm:w-6 sm:h-6 text-green-600" />
+              ) : (
+                <FiUsers className="w-5 h-5 sm:w-6 sm:h-6 text-amber-600" />
+              )}
+            </div>
+            <div className="min-w-0 flex-1">
+              <p className="text-sm sm:text-base font-semibold text-slate-900 truncate">
+                {formData.aptoParaMenores ? "Apto para toda la familia" : "Solo para adultos (18+)"}
+              </p>
+              <p className="text-xs sm:text-sm text-slate-600 mt-0.5 line-clamp-2">
+                {formData.aptoParaMenores
+                  ? "Este paquete incluye actividades familiares para todas las edades"
+                  : "Este paquete contiene actividades exclusivas para mayores de edad"}
+              </p>
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={() => handleToggleChange("aptoParaMenores", !formData.aptoParaMenores)}
+            className={`relative inline-flex h-7 w-14 sm:h-8 sm:w-16 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-offset-2 ${
+              formData.aptoParaMenores ? "bg-green-500" : "bg-amber-500"
+            } focus:ring-${formData.aptoParaMenores ? "green" : "amber"}-600`}
+            role="switch"
+            aria-checked={formData.aptoParaMenores}
+          >
+            <span
+              aria-hidden="true"
+              className={`pointer-events-none inline-block h-6 w-6 sm:h-7 sm:w-7 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
+                formData.aptoParaMenores
+                  ? "translate-x-7 sm:translate-x-8"
+                  : "translate-x-0"
+              }`}
+            />
+          </button>
+        </div>
+
+        {/* Nota informativa */}
+        {!formData.aptoParaMenores && (
+          <div className="mt-4 p-3 sm:p-4 bg-amber-50 border border-amber-200 rounded-lg sm:rounded-xl">
+            <p className="text-xs sm:text-sm text-amber-800">
+              <strong className="font-semibold">🔞 Advertencia:</strong> Se mostrará una advertencia indicando que este paquete es solo para adultos (18+). 
+              Úsalo para paquetes con vida nocturna, casinos, catas de vino, o contenido adulto.
+            </p>
+          </div>
+        )}
       </div>
 
       {/* Notas adicionales */}

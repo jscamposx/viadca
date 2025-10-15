@@ -52,6 +52,7 @@ export const usePackageForm = (initialPackageData = null) => {
     notas: null,
     itinerario_texto: "",
     activo: true,
+    aptoParaMenores: true, // Por defecto es apto para toda la familia
     origen: "Durango, México",
     origen_lat: 24.0277,
     origen_lng: -104.6532,
@@ -195,6 +196,10 @@ export const usePackageForm = (initialPackageData = null) => {
         activo:
           initialPackageData.activo !== undefined
             ? initialPackageData.activo
+            : true,
+        aptoParaMenores:
+          initialPackageData.aptoParaMenores !== undefined
+            ? initialPackageData.aptoParaMenores
             : true,
         origen: initialPackageData.origen || "Durango, México",
         origen_lat: initialPackageData.origen_lat || 24.0277,
@@ -700,6 +705,9 @@ export const usePackageForm = (initialPackageData = null) => {
     console.log("📤 Enviando PATCH - Payload final:", {
       keys: Object.keys(finalPayload),
       mayoristasIds: finalPayload.mayoristasIds,
+      aptoParaMenores: finalPayload.aptoParaMenores,
+      aptoParaMenoresInPayload: "aptoParaMenores" in finalPayload,
+      aptoParaMenoresType: typeof finalPayload.aptoParaMenores,
       payload: finalPayload,
     });
 
@@ -887,6 +895,7 @@ export const usePackageForm = (initialPackageData = null) => {
       notas:
         formData.notas && formData.notas.trim() !== "" ? formData.notas : null,
       activo: formData.activo,
+      aptoParaMenores: formData.aptoParaMenores !== undefined ? formData.aptoParaMenores : true,
       mayoristasIds: formData.mayoristasIds,
       itinerario_texto: formData.itinerario_texto || "",
       destinos: destinosPayload,
@@ -896,6 +905,8 @@ export const usePackageForm = (initialPackageData = null) => {
     };
     console.log("📤 Enviando CREATE - Payload completo:", {
       payload,
+      aptoParaMenores: payload.aptoParaMenores,
+      aptoParaMenoresType: typeof payload.aptoParaMenores,
       mayoristasIncluded: "mayoristasIds" in payload,
       mayoristasCount: (payload.mayoristasIds || []).length,
       imagenesResumen: payload.imagenes.map(i => ({ orden: i.orden, tipo: i.tipo, tienePublicId: !!i.cloudinary_public_id })),
