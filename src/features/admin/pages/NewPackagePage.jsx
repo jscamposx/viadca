@@ -26,6 +26,7 @@ import DestinationImageManager from "../components/DestinationImageManager";
 import HotelFinder from "../components/HotelFinder.jsx";
 import MayoristasForm from "../components/MayoristasForm";
 import ConfigurationForm from "../components/ConfigurationForm";
+import UsuariosVisibilidadForm from "../components/UsuariosVisibilidadForm";
 import Loading from "../../package/components/Loading";
 import Error from "../../package/components/Error";
 import PatchPreview from "../components/PatchPreview";
@@ -124,6 +125,7 @@ const NuevoPaquete = () => {
     hotel: <FiCalendar className="w-5 h-5" />,
     mayoristas: <FiUsers className="w-5 h-5" />,
     itinerario: <FiFileText className="w-5 h-5" />,
+    usuarios: <FiUsers className="w-5 h-5" />,
     configuracion: <FiSettings className="w-5 h-5" />,
   };
 
@@ -171,9 +173,15 @@ const NuevoPaquete = () => {
       color: "rose",
     },
     {
+      id: "usuarios",
+      label: "Usuarios",
+      description: "Visibilidad y acceso",
+      color: "purple",
+    },
+    {
       id: "configuracion",
-      label: "Configuración",
-      description: "Estado y notas",
+      label: "Notas",
+      description: "Información adicional",
       color: "gray",
     },
   ];
@@ -500,19 +508,41 @@ const NuevoPaquete = () => {
                     )}
 
                     {activeSection === "itinerario" && (
-                      <div className="space-y-4">
-                        <label className="block text-sm font-medium text-slate-700">
-                          Descripción del itinerario
-                        </label>
-                        <textarea
-                          name="itinerario_texto"
-                          value={formData.itinerario_texto || ""}
-                          onChange={handleFormChange}
-                          rows="8"
-                          className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-slate-300 rounded-lg sm:rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none text-sm sm:text-base"
-                          placeholder="DÍA 1: Salida de CDMX...&#10;DÍA 2: Llegada a Madrid...&#10;&#10;Describe el plan día por día con todos los detalles importantes."
-                        />
+                      <div className="space-y-6 sm:space-y-8">
+                        {/* Header con icono */}
+                        <div className="text-center">
+                          <div className="inline-flex items-center justify-center w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-br from-rose-600 via-pink-600 to-red-700 rounded-xl sm:rounded-2xl shadow-lg mb-3 sm:mb-4 group">
+                            <FiFileText className="w-6 h-6 sm:w-8 sm:h-8 text-white transition-transform duration-300 group-hover:scale-110" />
+                          </div>
+                          <h3 className="text-xl sm:text-2xl font-bold text-slate-900 mb-2">
+                            Itinerario del Viaje
+                          </h3>
+                          <p className="text-sm sm:text-base text-slate-600 px-4">
+                            Describe el plan día por día con todos los detalles
+                          </p>
+                        </div>
+
+                        <div className="bg-gradient-to-br from-slate-50 to-white rounded-xl sm:rounded-2xl border border-slate-200 p-4 sm:p-6 shadow-sm">
+                          <label className="block text-sm font-medium text-slate-700 mb-3">
+                            Descripción del itinerario
+                          </label>
+                          <textarea
+                            name="itinerario_texto"
+                            value={formData.itinerario_texto || ""}
+                            onChange={handleFormChange}
+                            rows="8"
+                            className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-slate-300 rounded-lg sm:rounded-xl focus:ring-2 focus:ring-rose-500 focus:border-transparent resize-none text-sm sm:text-base"
+                            placeholder="DÍA 1: Salida de CDMX...&#10;DÍA 2: Llegada a Madrid...&#10;&#10;Describe el plan día por día con todos los detalles importantes."
+                          />
+                        </div>
                       </div>
+                    )}
+
+                    {activeSection === "usuarios" && (
+                      <UsuariosVisibilidadForm
+                        formData={formData}
+                        onFormChange={handleFormChange}
+                      />
                     )}
 
                     {activeSection === "configuracion" && (

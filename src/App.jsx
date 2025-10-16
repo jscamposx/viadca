@@ -15,6 +15,7 @@ import AdminProfilePage from "./features/admin/pages/AdminProfilePage";
 import AdminConfigPage from "./features/admin/pages/AdminConfigPage";
 import DestinationsPage from "./features/destinations/pages/DestinationsPage";
 import QueueMonitorPage from "./features/admin/pages/QueueMonitorPage";
+import MyPackagesPage from "./features/my-packages/pages/MyPackagesPage";
 
 import { AuthProvider } from "./contexts/AuthContext";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
@@ -45,6 +46,7 @@ function AppRoutes() {
           <Route path="/" element={<Home />} />
           <Route path="/paquetes" element={<DestinationsPage />} />
           <Route path="/paquetes/:url" element={<PaqueteDetalle />} />
+          <Route path="/mis-paquetes" element={<MyPackagesPage />} />
 
           <Route path="/privacidad" element={<PrivacyPage />} />
           <Route path="/terminos" element={<TermsPage />} />

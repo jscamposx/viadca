@@ -59,11 +59,8 @@ export function useFetch(apiFunc, params = []) {
         }
       } catch (err) {
         if (mountedRef.current) {
-          const msg =
-            err?.message ||
-            err?.response?.data?.message ||
-            "Ocurrió un error al obtener los datos.";
-          setError(msg);
+          // Guardar el objeto de error completo para poder acceder a status, response, etc.
+          setError(err);
         }
       } finally {
         if (mountedRef.current) {

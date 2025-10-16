@@ -52,7 +52,8 @@ export const usePackageForm = (initialPackageData = null) => {
     notas: null,
     itinerario_texto: "",
     activo: true,
-    aptoParaMenores: true, // Por defecto es apto para toda la familia
+    esPublico: true, // Por defecto los paquetes son públicos
+    usuariosAutorizadosIds: [], // IDs de usuarios autorizados para paquetes privados
     origen: "Durango, México",
     origen_lat: 24.0277,
     origen_lng: -104.6532,
@@ -197,10 +198,13 @@ export const usePackageForm = (initialPackageData = null) => {
           initialPackageData.activo !== undefined
             ? initialPackageData.activo
             : true,
-        aptoParaMenores:
-          initialPackageData.aptoParaMenores !== undefined
-            ? initialPackageData.aptoParaMenores
+        esPublico:
+          initialPackageData.esPublico !== undefined
+            ? initialPackageData.esPublico
             : true,
+        usuariosAutorizadosIds: initialPackageData.usuariosAutorizados 
+          ? initialPackageData.usuariosAutorizados.map(u => u.id)
+          : (initialPackageData.usuariosAutorizadosIds || []),
         origen: initialPackageData.origen || "Durango, México",
         origen_lat: initialPackageData.origen_lat || 24.0277,
         origen_lng: initialPackageData.origen_lng || -104.6532,
@@ -702,12 +706,13 @@ export const usePackageForm = (initialPackageData = null) => {
       mayoristasIds: finalPayload.mayoristasIds || "no incluidos",
     });
 
+    // NO transformar usuariosAutorizadosIds - el backend espera el array de UUIDs directamente
+    // Formato esperado: usuariosAutorizadosIds: ["uuid-1", "uuid-2"]
+
     console.log("📤 Enviando PATCH - Payload final:", {
       keys: Object.keys(finalPayload),
       mayoristasIds: finalPayload.mayoristasIds,
-      aptoParaMenores: finalPayload.aptoParaMenores,
-      aptoParaMenoresInPayload: "aptoParaMenores" in finalPayload,
-      aptoParaMenoresType: typeof finalPayload.aptoParaMenores,
+      usuariosAutorizadosIds: finalPayload.usuariosAutorizadosIds,
       payload: finalPayload,
     });
 
@@ -726,6 +731,9 @@ export const usePackageForm = (initialPackageData = null) => {
         // Para mayoristas, actualizar tanto mayoristas como mayoristasIds
         updatedOriginalData.mayoristas = formData.mayoristas || [];
         updatedOriginalData.mayoristasIds = formData.mayoristasIds || [];
+      } else if (key === "usuariosAutorizadosIds") {
+        // Para usuarios autorizados, actualizar usuariosAutorizadosIds en el estado
+        updatedOriginalData.usuariosAutorizadosIds = formData.usuariosAutorizadosIds || [];
       } else if (key !== "hotel" || typeof finalPayload[key] !== "string") {
         // Para otros campos (excepto hotel con string), aplicar directamente
         updatedOriginalData[key] = finalPayload[key];
@@ -895,7 +903,8 @@ export const usePackageForm = (initialPackageData = null) => {
       notas:
         formData.notas && formData.notas.trim() !== "" ? formData.notas : null,
       activo: formData.activo,
-      aptoParaMenores: formData.aptoParaMenores !== undefined ? formData.aptoParaMenores : true,
+      esPublico: formData.esPublico !== undefined ? formData.esPublico : true,
+      usuariosAutorizadosIds: formData.usuariosAutorizadosIds || [],
       mayoristasIds: formData.mayoristasIds,
       itinerario_texto: formData.itinerario_texto || "",
       destinos: destinosPayload,
@@ -905,10 +914,9 @@ export const usePackageForm = (initialPackageData = null) => {
     };
     console.log("📤 Enviando CREATE - Payload completo:", {
       payload,
-      aptoParaMenores: payload.aptoParaMenores,
-      aptoParaMenoresType: typeof payload.aptoParaMenores,
       mayoristasIncluded: "mayoristasIds" in payload,
       mayoristasCount: (payload.mayoristasIds || []).length,
+      usuariosAutorizadosIds: payload.usuariosAutorizadosIds || [],
       imagenesResumen: payload.imagenes.map(i => ({ orden: i.orden, tipo: i.tipo, tienePublicId: !!i.cloudinary_public_id })),
     });
     const response = await api.packages.createPaquete(payload);

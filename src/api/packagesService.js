@@ -24,8 +24,23 @@ export const getPaquetes = (page = 1, limit = 6, search) => {
 };
 
 // Nuevo endpoint público para listado de paquetes (fuera de /admin)
+// Devuelve solo paquetes públicos (esPublico = true)
 export const getPaquetesPublic = async (page = 1, limit = 12, search) => {
   const res = await apiClient.get("/paquetes/listado", {
+    params: buildPaginatedParams({ page, limit, search }),
+  });
+  if (!isTestEnv()) return res;
+  // En entorno test filtramos los inactivos (activo === false)
+  if (Array.isArray(res?.data?.data)) {
+    const filtrados = res.data.data.filter((p) => p?.activo !== false);
+    return { ...res, data: { ...res.data, data: filtrados } };
+  }
+  return res;
+};
+
+// Endpoint para usuario autenticado: devuelve paquetes públicos + privados autorizados
+export const getMisPaquetes = async (page = 1, limit = 12, search) => {
+  const res = await apiClient.get("/paquetes/mis-paquetes", {
     params: buildPaginatedParams({ page, limit, search }),
   });
   if (!isTestEnv()) return res;

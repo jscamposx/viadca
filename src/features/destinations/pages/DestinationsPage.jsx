@@ -16,6 +16,7 @@ import CategoryTabs from "../components/CategoryTabs";
 import UnifiedNav from "../../../components/layout/UnifiedNav";
 import Footer from "../../home/components/Footer";
 import { useContactInfo } from "../../../hooks/useContactInfo";
+import { useAuth } from "../../../contexts/AuthContext";
 import { FiArrowRight, FiClock, FiMapPin } from "react-icons/fi";
 
 const PackageCard = ({ paquete }) => {
@@ -173,6 +174,7 @@ const PackageCard = ({ paquete }) => {
 };
 
 const DestinationsPage = () => {
+  const { isAuthenticated } = useAuth();
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -197,7 +199,11 @@ const DestinationsPage = () => {
     try {
       setLoading(true);
       setError(null);
-      const { data: resp } = await apiClient.get("/paquetes/listado");
+      
+      // Usar el endpoint correcto según autenticación
+      const endpoint = isAuthenticated ? "/paquetes/mis-paquetes" : "/paquetes/listado";
+      const { data: resp } = await apiClient.get(endpoint);
+      
       const items = Array.isArray(resp?.data)
         ? resp.data
         : Array.isArray(resp)
@@ -215,7 +221,7 @@ const DestinationsPage = () => {
     if (hasFetched.current) return;
     hasFetched.current = true;
     loadData();
-  }, []);
+  }, [isAuthenticated]); // Recargar cuando cambie el estado de autenticación
 
   // Filtrado base (ahora todo en cliente, incluye búsqueda local)
   const filteredData = useMemo(() => {

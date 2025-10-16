@@ -38,7 +38,6 @@ import {
   FiUsers,
   FiShield,
   FiAward,
-  FiAlertCircle,
 } from "react-icons/fi";
 import { FaHandPointer, FaWhatsapp } from "react-icons/fa";
 import { formatPrecio, sanitizeMoneda } from "../../../utils/priceUtils";
@@ -194,6 +193,75 @@ function InactivePackageMessage() {
   );
 }
 
+function AccessDeniedMessage() {
+  return (
+    <div
+      role="alert"
+      className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-red-50 to-purple-50 p-4 sm:p-6 relative overflow-hidden"
+    >
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-red-400/10 to-purple-400/10 rounded-full blur-3xl"></div>
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-br from-purple-400/10 to-indigo-400/10 rounded-full blur-3xl"></div>
+      </div>
+
+      <div className="max-w-lg w-full bg-white/90 backdrop-blur-xl rounded-2xl shadow-2xl p-8 text-center border border-red-200/50 relative z-10">
+        {/* Icono de acceso denegado */}
+        <div className="relative w-24 h-24 bg-gradient-to-br from-red-100 to-purple-100 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
+          <div className="absolute inset-0 bg-red-500/10 rounded-full animate-ping"></div>
+          <FiShield
+            className="h-12 w-12 text-red-600 relative z-10"
+            aria-hidden="true"
+          />
+        </div>
+
+        {/* Título */}
+        <h3 className="text-3xl font-bold text-gray-900 mb-4">
+          ⛔ Acceso Denegado
+        </h3>
+
+        {/* Mensaje principal */}
+        <div className="bg-red-50 border border-red-200 rounded-xl p-4 mb-6">
+          <p className="text-red-800 font-semibold mb-2 text-base">
+            No tienes permiso para ver este paquete
+          </p>
+          <p className="text-red-700 text-sm leading-relaxed">
+            Este es un paquete <strong>privado exclusivo</strong> y solo está disponible para usuarios autorizados específicos.
+          </p>
+        </div>
+
+        {/* Información adicional */}
+        <p className="text-gray-600 mb-6 text-sm leading-relaxed">
+          Si crees que deberías tener acceso a este contenido, por favor contacta con un administrador del sistema.
+        </p>
+
+        {/* Botones de acción */}
+        <div className="flex flex-col gap-3">
+          <button
+            onClick={() => (window.location.href = "/")}
+            className="w-full py-3 px-6 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all duration-300"
+          >
+            🏠 Volver al Inicio
+          </button>
+          
+          <button
+            onClick={() => (window.location.href = "/paquetes")}
+            className="w-full py-3 px-6 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all duration-300"
+          >
+            📦 Ver Paquetes Disponibles
+          </button>
+          
+          <button
+            onClick={() => window.history.back()}
+            className="w-full py-3 px-6 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium rounded-xl transition-all duration-300"
+          >
+            ← Regresar
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function Badge({ children, variant = "default", icon: Icon }) {
   const variants = {
     default: "bg-gray-100/80 text-gray-700 border-gray-200/50",
@@ -219,15 +287,13 @@ function Badge({ children, variant = "default", icon: Icon }) {
 
 function PackageViewPage() {
   const { url } = useParams();
-  const { paquete, loading, error } = usePackage(url);
+  const { paquete, loading, error, accessDenied } = usePackage(url);
   const [isLiked, setIsLiked] = useState(false);
   const [scrollY, setScrollY] = useState(0);
   const [isSmallScreen, setIsSmallScreen] = useState(false);
   // Estados legacy eliminados en favor de ExpandableContent
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState(0);
-  const [showAdultWarning, setShowAdultWarning] = useState(false);
-  const [adultWarningAccepted, setAdultWarningAccepted] = useState(false);
   const { openWhatsApp, getPhoneHref, onPhoneClick, ToastPortal, showToast } =
     useContactActions();
   const { contactInfo, loading: contactLoading } = useContactInfo();
@@ -280,26 +346,6 @@ function PackageViewPage() {
     window.addEventListener("resize", check);
     return () => window.removeEventListener("resize", check);
   }, []);
-
-  // Mostrar advertencia de contenido adulto
-  useEffect(() => {
-    if (paquete && paquete.aptoParaMenores === false && !adultWarningAccepted) {
-      console.log("🔞 Mostrando modal de advertencia - aptoParaMenores:", paquete.aptoParaMenores);
-      setShowAdultWarning(true);
-      // Scroll to top cuando se muestra el modal
-      window.scrollTo({ top: 0, behavior: 'instant' });
-      // Bloquear scroll del body
-      document.body.style.overflow = 'hidden';
-    } else {
-      console.log("✅ No mostrar modal - aptoParaMenores:", paquete?.aptoParaMenores, "accepted:", adultWarningAccepted);
-      // Restaurar scroll del body
-      document.body.style.overflow = 'unset';
-    }
-    
-    return () => {
-      document.body.style.overflow = 'unset';
-    };
-  }, [paquete, adultWarningAccepted]);
 
   const isMobile = () => {
     if (navigator.userAgentData?.mobile) {
@@ -388,13 +434,6 @@ function PackageViewPage() {
     window.location.assign("/");
   };
 
-  const handleAdultModalBack = () => {
-    setShowAdultWarning(false);
-    setAdultWarningAccepted(false);
-    document.body.style.overflow = "unset";
-    handleNavigateBack();
-  };
-
   if (loading)
     return (
       <>
@@ -402,10 +441,18 @@ function PackageViewPage() {
         <PackageSkeleton />
       </>
     );
-  if (error)
+  if (accessDenied) return <AccessDeniedMessage />;
+  if (error) {
+    // Extraer el mensaje del error
+    const errorMessage = 
+      error?.message || 
+      error?.response?.data?.message || 
+      (typeof error === 'string' ? error : 'Ocurrió un error al cargar el paquete.');
+    
     return (
-      <ErrorMessage message={error} onRetry={() => window.location.reload()} />
+      <ErrorMessage message={errorMessage} onRetry={() => window.location.reload()} />
     );
+  }
   if (!paquete) return <NotFoundMessage />;
   if (paquete.activo === false) return <InactivePackageMessage />;
 
@@ -447,88 +494,8 @@ function PackageViewPage() {
   const incluyeHasMore = isLongText(incluyeText);
   const noIncluyeHasMore = isLongText(noIncluyeText);
 
-  console.log("🎯 PackageViewPage - showAdultWarning:", showAdultWarning, "aptoParaMenores:", paquete?.aptoParaMenores);
-
   return (
     <>
-      {/* Modal de advertencia de contenido adulto - fuera de PageTransition */}
-      {showAdultWarning && (
-        <div
-          className="fixed top-0 left-0 right-0 bottom-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4"
-          style={{ zIndex: 999999, margin: 0 }}
-          onClick={(e) => {
-            if (e.target === e.currentTarget) {
-              setShowAdultWarning(false);
-              setAdultWarningAccepted(true);
-            }
-          }}
-        >
-          <div
-            className="bg-white rounded-2xl shadow-2xl border-4 border-amber-500 max-w-md w-full"
-            style={{ zIndex: 1000000, position: "relative" }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            {/* Header */}
-            <div className="flex items-center justify-between p-4 sm:p-5 border-b border-gray-100">
-              <div className="flex items-center gap-3">
-                <div className="p-2 sm:p-2.5 rounded-full bg-amber-100">
-                  <FiAlertCircle className="w-5 h-5 sm:w-6 sm:h-6 text-amber-600" />
-                </div>
-                <h3 className="text-base sm:text-lg font-semibold text-gray-900">
-                  Contenido para adultos
-                </h3>
-              </div>
-              <button
-                onClick={() => {
-                  setShowAdultWarning(false);
-                  setAdultWarningAccepted(true);
-                }}
-                className="p-1.5 sm:p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-all duration-200"
-                aria-label="Cerrar"
-              >
-                <FiX className="w-5 h-5" />
-              </button>
-            </div>
-
-            {/* Content */}
-            <div className="p-4 sm:p-6">
-              <div className="flex items-center justify-center mb-3 sm:mb-4">
-                <div className="text-5xl sm:text-6xl">🔞</div>
-              </div>
-              <p className="text-sm sm:text-base text-gray-700 leading-relaxed text-center mb-3">
-                Este paquete incluye actividades{" "}
-                <span className="font-semibold text-amber-600">
-                  exclusivas para mayores de 18 años
-                </span>
-                .
-              </p>
-              <p className="text-xs sm:text-sm text-gray-600 text-center">
-                Al continuar, confirmas que cumples con el requisito de edad.
-              </p>
-            </div>
-
-            {/* Actions */}
-            <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-end gap-2 sm:gap-3 p-4 sm:p-5 border-t border-gray-100 bg-gray-50/50">
-              <button
-                onClick={handleAdultModalBack}
-                className="px-4 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2 transition-all duration-200"
-              >
-                Regresar
-              </button>
-              <button
-                onClick={() => {
-                  setShowAdultWarning(false);
-                  setAdultWarningAccepted(true);
-                }}
-                className="px-4 py-2.5 text-sm font-medium text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 transition-all duration-200 bg-amber-600 hover:bg-amber-700 focus:ring-amber-500"
-              >
-                Tengo +18 años, continuar
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
       <PageTransition className="bg-gradient-to-br from-slate-50 via-white to-blue-50 min-h-screen">
         {/* Toast global para acciones de contacto */}
         <ToastPortal />

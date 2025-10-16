@@ -142,7 +142,7 @@ const Steps = () => {
           if (active) {
             setErrorPkg("Sin paquetes disponibles");
           }
-          return; // Usará fallbackCard
+          return; // No mostrará nada - estado vacío
         }
         const activos = items.filter((p) => p.activo !== false);
         const pool = activos.length ? activos : items;
@@ -299,17 +299,107 @@ const Steps = () => {
     }
   };
 
-  const fallbackCard = {
-    titulo: "Tour Pirámides de Teotihuacán",
-    salida: "Sábados",
-    proveedor: "VIADCA Tours",
-    precio: 92500,
-    personas: null,
-    imagen: "/HomePage/como-reservar-card1.avif",
-    url: null,
-  };
+  // No usar fallback - mostrar mensaje cuando no hay paquetes
+  const card = featured;
+  
+  // Si no hay paquete destacado, mostrar estado vacío
+  if (!card) {
+    return (
+      <section
+        id="pasos"
+        className="py-10 sm:py-14 lg:py-18 px-4 sm:px-6 lg:px-8 scroll-mt-32 bg-gradient-to-b from-white to-blue-50"
+        aria-labelledby="pasos-heading"
+      >
+        <style>{`@keyframes fadeInSecond{0%{opacity:0;transform:translateY(12px) scale(.96)}60%{opacity:1;transform:translateY(0) scale(1.01)}100%{opacity:1;transform:translateY(0) scale(1)}}`}</style>
+        <div className="max-w-7xl mx-auto">
+          <div className="grid lg:grid-cols-2 gap-10 sm:gap-12 lg:gap-16 items-start">
+            {/* Left */}
+            <div className="space-y-6 lg:space-y-8 order-1 relative">
+              <div className="absolute inset-0 -z-10 bg-white/70 backdrop-blur-sm rounded-3xl border border-white/60 shadow-sm lg:hidden" />
+              <AnimatedSection
+                animation="fadeInLeft"
+                className="text-center lg:text-left"
+              >
+                <p className="text-slate-600 font-semibold text-sm sm:text-base uppercase tracking-wide mb-2 sm:mb-3">
+                  Proceso simple
+                </p>
 
-  const card = featured || fallbackCard;
+                <h2
+                  id="pasos-heading"
+                  className="font-volkhov font-bold text-2xl sm:text-4xl lg:text-5xl text-slate-800 leading-tight"
+                >
+                  Reserva con VIADCA
+                  <br />
+                  en 3 pasos sencillos
+                </h2>
+
+                <p className="text-slate-600 text-sm sm:text-base mt-3 lg:hidden">
+                  Un proceso diseñado para hacer tu experiencia de reserva fácil y
+                  confiable
+                </p>
+              </AnimatedSection>
+              <div className="space-y-5 sm:space-y-6 lg:space-y-8">
+                {steps.map((s, i) => (
+                  <AnimatedSection
+                    key={s.title}
+                    animation="fadeInLeft"
+                    delay={i * 0.15}
+                    className="flex gap-3 sm:gap-4 group"
+                  >
+                    <div className="flex-shrink-0">
+                      <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-lg transform group-hover:scale-110 transition-transform duration-300 border-2 border-white">
+                        <span className="text-white font-extrabold text-xl sm:text-2xl">
+                          {i + 1}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="flex-1 pt-1">
+                      <h3 className="font-bold text-base sm:text-lg text-slate-800 mb-1 sm:mb-2">
+                        {s.title}
+                      </h3>
+                      <p className="text-slate-600 text-xs sm:text-sm leading-relaxed">
+                        {s.desc}
+                      </p>
+                    </div>
+                  </AnimatedSection>
+                ))}
+              </div>
+            </div>
+
+            {/* Right - Empty State */}
+            <div className="order-2">
+              <AnimatedSection animation="fadeInRight" className="h-full">
+                <div className="bg-white rounded-2xl shadow-xl border border-slate-200 p-8 flex flex-col items-center justify-center min-h-[400px] text-center">
+                  <div className="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center mb-4">
+                    <svg
+                      className="w-10 h-10 text-slate-400"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
+                      />
+                    </svg>
+                  </div>
+                  <h3 className="text-xl font-bold text-slate-800 mb-2">
+                    No hay destinos disponibles
+                  </h3>
+                  <p className="text-slate-600 text-sm">
+                    Actualmente no hay paquetes destacados. Vuelve pronto para descubrir nuevas aventuras.
+                  </p>
+                </div>
+              </AnimatedSection>
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
+  
   const precioFmt = formatPrice(card.precio, card.moneda || DEFAULT_CURRENCY);
   const personasValue = parseInt(card.personas, 10);
   const personasValidas = !Number.isNaN(personasValue) && personasValue > 0;
@@ -453,7 +543,7 @@ const Steps = () => {
                     >
                       <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                     </svg>
-                    {featured ? "Destacado" : errorPkg ? "Fallback" : "Ejemplo"}
+                    Destacado
                   </span>
                 </div>
               </div>
@@ -561,7 +651,7 @@ const Steps = () => {
               style={{ viewTransitionName: secondFeatured ? 'second-package' : undefined }}
             >
               {(() => {
-                let baseMainId = featured?.id || fallbackCard.id;
+                let baseMainId = featured?.id;
                 let small = secondFeatured || null;
                 // Si no hay secondFeatured o coincide con principal, intentar derivar alternativa
                 if (!small || small.id === baseMainId) {
@@ -577,14 +667,15 @@ const Steps = () => {
                     }
                   } catch {}
                 }
+                // Si aún no hay small, usar el featured como fallback
                 if (!small) {
-                  small = featured && featured.id !== fallbackCard.id ? featured : fallbackCard;
+                  small = featured;
                 }
                 const loadingSecond = loadingPkg && !secondFeatured && !featured;
                 const smallPrice = small && small.precio != null ? formatPrice(small.precio, small.moneda || DEFAULT_CURRENCY) : null;
                 return (
                   <>
-                    {small.url && (
+                    {small && small.url && (
                       <Link
                         to={`/paquetes/${small.url}`}
                         aria-label={`Ir al paquete ${small.titulo}`}
@@ -634,7 +725,7 @@ const Steps = () => {
             </div>
             {/* Mini card mobile usando segundo paquete si distinto */}
             {(() => {
-              const mainId = featured?.id || fallbackCard.id;
+              const mainId = featured?.id;
               const mobileSecond = secondFeatured && secondFeatured.id !== mainId ? secondFeatured : null;
               if (!mobileSecond) return null;
               const mobilePrice = mobileSecond.precio != null ? formatPrice(mobileSecond.precio, mobileSecond.moneda || DEFAULT_CURRENCY) : null;

@@ -174,69 +174,84 @@ const AdminNav = ({ isOpen, setIsOpen }) => {
 
   if (isMobile) {
     return (
-      <header className="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-700 text-white fixed top-0 w-full z-50 shadow-2xl border-b border-white/10">
-        <div className="flex justify-between items-center p-4 h-16">
-          <div className="flex items-center">
-            <div
-              className="bg-white/10 backdrop-blur-sm p-2 rounded-xl shadow-lg border border-white/20 flex items-center justify-center"
-              role="img"
-              aria-label="VIADCA Panel"
-            >
-              <FiCompass className="w-6 h-6 text-white drop-shadow-md" />
-            </div>
-            <h1 className="font-bold text-lg ml-3">
-              <span className="font-extrabold">VIADCA</span> Admin
-            </h1>
-          </div>
-
-          <div className="flex items-center">
-            <button
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              aria-label="Toggle menu"
-              className="p-3 rounded-xl bg-white/10 hover:bg-white/20 backdrop-blur-sm transition-all duration-300
-                         hover:scale-110 transform group active:scale-95 border border-white/20"
-            >
-              <div className="relative">
-                {isMobileMenuOpen ? (
-                  <FiX
-                    size={24}
-                    className="transition-transform duration-300 group-hover:rotate-90"
-                  />
-                ) : (
-                  <FiMenu
-                    size={24}
-                    className="transition-transform duration-300 group-hover:scale-110"
-                  />
-                )}
+      <>
+        <header className="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-700 text-white fixed top-0 w-full z-50 shadow-2xl border-b border-white/10">
+          <div className="flex justify-between items-center p-4 h-16">
+            <div className="flex items-center">
+              <div
+                className="bg-white/10 backdrop-blur-sm p-2 rounded-xl shadow-lg border border-white/20 flex items-center justify-center"
+                role="img"
+                aria-label="VIADCA Panel"
+              >
+                <FiCompass className="w-6 h-6 text-white drop-shadow-md" />
               </div>
-            </button>
-          </div>
-        </div>
-        {isMobileMenuOpen && (
-          <nav className="bg-white text-gray-700 shadow-xl border-t border-gray-100">
-            <div className="p-4 border-b border-gray-100 bg-gradient-to-r from-gray-50 to-blue-50">
-              <UserAvatar size="md" showInfo={true} />
+              <h1 className="font-bold text-lg ml-3">
+                <span className="font-extrabold">VIADCA</span> Admin
+              </h1>
             </div>
 
-            <ul className="flex flex-col gap-1 p-4">
-              {navLinks.map((link) => (
-                <NavItem key={link.to} {...link} isMobile={true} />
+            <div className="flex items-center">
+              <button
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                aria-label="Toggle menu"
+                className="p-3 rounded-xl bg-white/10 hover:bg-white/20 backdrop-blur-sm transition-all duration-300
+                           hover:scale-110 transform group active:scale-95 border border-white/20"
+              >
+                <div className="relative">
+                  {isMobileMenuOpen ? (
+                    <FiX
+                      size={24}
+                      className="transition-transform duration-300 group-hover:rotate-90"
+                    />
+                  ) : (
+                    <FiMenu
+                      size={24}
+                      className="transition-transform duration-300 group-hover:scale-110"
+                    />
+                  )}
+                </div>
+              </button>
+            </div>
+          </div>
+        </header>
+
+        {/* Overlay oscuro cuando el menú está abierto */}
+        {isMobileMenuOpen && (
+          <div 
+            className="fixed inset-0 bg-black/50 z-40 backdrop-blur-sm"
+            onClick={() => setIsMobileMenuOpen(false)}
+            aria-hidden="true"
+          />
+        )}
+
+        {/* Menú móvil deslizable */}
+        <nav 
+          className={`fixed top-16 left-0 right-0 bottom-0 bg-white text-gray-700 shadow-2xl z-40 transform transition-transform duration-300 ease-in-out overflow-y-auto ${
+            isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
+          }`}
+        >
+          <div className="p-4 border-b border-gray-100 bg-gradient-to-r from-gray-50 to-blue-50">
+            <UserAvatar size="md" showInfo={true} />
+          </div>
+
+          <ul className="flex flex-col gap-1 p-4">
+            {navLinks.map((link) => (
+              <NavItem key={link.to} {...link} isMobile={true} />
+            ))}
+          </ul>
+
+          <div className="p-4 border-t border-gray-100 bg-gray-50">
+            <h3 className="text-xs uppercase text-gray-500 font-semibold mb-3 tracking-wide">
+              Cuenta
+            </h3>
+            <ul className="flex flex-col gap-1">
+              {userLinks.map((link, index) => (
+                <NavItem key={link.to || index} {...link} isMobile={true} />
               ))}
             </ul>
-
-            <div className="p-4 border-t border-gray-100 bg-gray-50">
-              <h3 className="text-xs uppercase text-gray-500 font-semibold mb-3 tracking-wide">
-                Cuenta
-              </h3>
-              <ul className="flex flex-col gap-1">
-                {userLinks.map((link, index) => (
-                  <NavItem key={link.to || index} {...link} isMobile={true} />
-                ))}
-              </ul>
-            </div>
-          </nav>
-        )}
-      </header>
+          </div>
+        </nav>
+      </>
     );
   }
 

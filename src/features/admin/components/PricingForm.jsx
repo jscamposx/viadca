@@ -360,38 +360,38 @@ const PricingForm = ({ formData, onFormChange, errors = {} }) => {
 
           {/* Tarjetas de resumen visual mejorado */}
           {calculations.precioBase > 0 && (
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 pt-4">
-              <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-4 border-2 border-blue-200">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3 sm:gap-4 pt-4">
+              <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-3 sm:p-4 border-2 border-blue-200">
                 <p className="text-xs font-semibold text-blue-600 mb-1 uppercase tracking-wide">Precio Base</p>
-                <p className="text-2xl font-bold text-blue-900">{formatCurrency(calculations.precioBase)}</p>
+                <p className="text-xl sm:text-2xl font-bold text-blue-900">{formatCurrency(calculations.precioBase)}</p>
               </div>
               
-              <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-xl p-4 border-2 border-green-200">
+              <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-xl p-3 sm:p-4 border-2 border-green-200">
                 <p className="text-xs font-semibold text-green-600 mb-1 uppercase tracking-wide">Descuento</p>
-                <p className={`text-2xl font-bold ${calculations.montoDescuento > 0 ? "text-green-900" : "text-slate-400"}`}>
+                <p className={`text-xl sm:text-2xl font-bold ${calculations.montoDescuento > 0 ? "text-green-900" : "text-slate-400"}`}>
                   {calculations.montoDescuento > 0 ? `- ${formatCurrency(calculations.montoDescuento)}` : formatCurrency(0)}
                 </p>
               </div>
               
-              <div className="bg-gradient-to-br from-indigo-50 to-indigo-100 rounded-xl p-4 border-2 border-indigo-200">
+              <div className="bg-gradient-to-br from-indigo-50 to-indigo-100 rounded-xl p-3 sm:p-4 border-2 border-indigo-200">
                 <p className="text-xs font-semibold text-indigo-600 mb-1 uppercase tracking-wide">Precio Final</p>
-                <p className="text-2xl font-bold text-indigo-900">{formatCurrency(calculations.precioFinal)}</p>
+                <p className="text-xl sm:text-2xl font-bold text-indigo-900">{formatCurrency(calculations.precioFinal)}</p>
               </div>
               
-              <div className="bg-gradient-to-br from-orange-50 to-orange-100 rounded-xl p-4 border-2 border-orange-200">
+              <div className="bg-gradient-to-br from-orange-50 to-orange-100 rounded-xl p-3 sm:p-4 border-2 border-orange-200">
                 <p className="text-xs font-semibold text-orange-600 mb-1 uppercase tracking-wide">Saldo</p>
-                <p className="text-2xl font-bold text-orange-900">
+                <p className="text-xl sm:text-2xl font-bold text-orange-900">
                   {formatCurrency(calculations.saldoPendiente > 0 ? calculations.saldoPendiente : 0)}
                 </p>
               </div>
               
               {calculations.personas && (
-                <div className="bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl p-4 border-2 border-purple-200">
+                <div className="bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl p-3 sm:p-4 border-2 border-purple-200">
                   <p className="text-xs font-semibold text-purple-600 mb-1 uppercase tracking-wide flex items-center gap-1">
                     <FiUsers className="w-3 h-3" /> 
                     Por Persona ({calculations.personas})
                   </p>
-                  <p className="text-2xl font-bold text-purple-900">{formatCurrency(calculations.precioPorPersona)}</p>
+                  <p className="text-xl sm:text-2xl font-bold text-purple-900">{formatCurrency(calculations.precioPorPersona)}</p>
                 </div>
               )}
             </div>
@@ -530,16 +530,16 @@ const PricingForm = ({ formData, onFormChange, errors = {} }) => {
 
       {/* Banner inferior de resumen final */}
       {calculations.precioFinal > 0 && (
-        <div className="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl border-2 border-blue-400 p-6 shadow-lg">
-          <div className="flex flex-col lg:flex-row gap-6 lg:items-start lg:justify-between">
-            {/* Sección de métricas */}
-            <div className="flex flex-wrap gap-6">
+        <div className="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl border-2 border-blue-400 p-4 sm:p-6 shadow-lg">
+          <div className="flex flex-col gap-4 sm:gap-6">
+            {/* Sección de métricas - mejor responsive */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
               <div className="space-y-1">
                 <p className="text-blue-100 text-xs font-semibold uppercase tracking-wide flex items-center gap-1">
                   <FiDollarSign className="w-3.5 h-3.5" />
                   Precio Final
                 </p>
-                <p className="text-3xl font-bold text-white">{formatCurrency(calculations.precioFinal)}</p>
+                <p className="text-2xl sm:text-3xl font-bold text-white">{formatCurrency(calculations.precioFinal)}</p>
               </div>
               
               {calculations.montoDescuento > 0 && (
@@ -548,7 +548,7 @@ const PricingForm = ({ formData, onFormChange, errors = {} }) => {
                     <FiTrendingDown className="w-3.5 h-3.5" />
                     Descuento
                   </p>
-                  <p className="text-xl font-bold text-green-100">
+                  <p className="text-lg sm:text-xl font-bold text-green-100">
                     - {formatCurrency(calculations.montoDescuento)} 
                     <span className="text-sm ml-2 text-green-200">({calculations.porcentajeDescuento}%)</span>
                   </p>
@@ -561,7 +561,7 @@ const PricingForm = ({ formData, onFormChange, errors = {} }) => {
                     <FiCreditCard className="w-3.5 h-3.5" />
                     Anticipo
                   </p>
-                  <p className="text-xl font-bold text-emerald-100">
+                  <p className="text-lg sm:text-xl font-bold text-emerald-100">
                     {formatCurrency(calculations.anticipo)}
                     <span className="text-sm ml-2 text-emerald-200">({calculations.porcentajeAnticipo}%)</span>
                   </p>
@@ -570,7 +570,7 @@ const PricingForm = ({ formData, onFormChange, errors = {} }) => {
             </div>
             
             {/* Sección de desglose */}
-            <div className="lg:max-w-md space-y-3">
+            <div className="space-y-3">
               {calculations.personas && calculations.precioPorPersona && (
                 <div className="bg-purple-500/20 backdrop-blur-sm rounded-xl p-4 border border-purple-300/30">
                   <p className="text-xs text-purple-50 leading-relaxed flex items-start gap-2">

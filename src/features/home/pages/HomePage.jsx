@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo, useRef } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "../../../contexts/AuthContext";
 import { useContactInfo } from "../../../hooks/useContactInfo";
 import PageTransition from "../../../components/ui/PageTransition";
@@ -45,6 +45,8 @@ const Home = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const location = useLocation();
+  const isOnMyPackagesPage = location.pathname === "/mis-paquetes";
   // Medición del header para offset del contenido
   const headerRef = useRef(null);
   const navRef = useRef(null);
@@ -612,6 +614,52 @@ const Home = () => {
                           </Link>
                         )}
                         <Link
+                          to="/mis-paquetes"
+                          onClick={closeUserMenu}
+                          className="group flex items-center gap-3 rounded-xl px-3 py-2.5 text-slate-700 hover:text-purple-700 hover:bg-purple-50/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-600/60 transition-all"
+                          role="menuitem"
+                        >
+                          <svg
+                            className="w-5 h-5 text-purple-600 group-hover:scale-110 transition-transform"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                            aria-hidden="true"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
+                            />
+                          </svg>
+                          <span className="font-medium">Mis Paquetes</span>
+                        </Link>
+                        {isOnMyPackagesPage && (
+                          <Link
+                            to="/"
+                            onClick={closeUserMenu}
+                            className="group flex items-center gap-3 rounded-xl px-3 py-2.5 text-slate-700 hover:text-green-700 hover:bg-green-50/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-600/60 transition-all"
+                            role="menuitem"
+                          >
+                            <svg
+                              className="w-5 h-5 text-green-600 group-hover:scale-110 transition-transform"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                              aria-hidden="true"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
+                              />
+                            </svg>
+                            <span className="font-medium">Volver a Inicio</span>
+                          </Link>
+                        )}
+                        <Link
                           to="/perfil"
                           state={{
                             from: `${window.location.pathname}${window.location.search}${window.location.hash}`,
@@ -934,6 +982,50 @@ const Home = () => {
                             />
                           </svg>
                           <span>Dashboard</span>
+                        </Link>
+                      )}
+                      <Link
+                        to="/mis-paquetes"
+                        onClick={closeMobileMenu}
+                        className="flex items-center gap-3 text-slate-700 hover:text-purple-600 hover:bg-purple-50 transition-all duration-300 py-3 px-4 rounded-xl font-medium transform hover:scale-[1.02]"
+                      >
+                        <svg
+                          className="w-5 h-5"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                          aria-hidden="true"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
+                          />
+                        </svg>
+                        <span className="font-medium">Mis Paquetes</span>
+                      </Link>
+                      {isOnMyPackagesPage && (
+                        <Link
+                          to="/"
+                          onClick={closeMobileMenu}
+                          className="flex items-center gap-3 text-slate-700 hover:text-green-600 hover:bg-green-50 transition-all duration-300 py-3 px-4 rounded-xl font-medium transform hover:scale-[1.02]"
+                        >
+                          <svg
+                            className="w-5 h-5"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                            aria-hidden="true"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
+                            />
+                          </svg>
+                          <span className="font-medium">Volver a Inicio</span>
                         </Link>
                       )}
                       <Link

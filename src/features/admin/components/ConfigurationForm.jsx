@@ -1,15 +1,8 @@
 import React from "react";
-import { FiSettings, FiCheck, FiX, FiPackage, FiUsers } from "react-icons/fi";
+import { FiSettings, FiCheck, FiX, FiPackage, FiUsers, FiLock, FiGlobe, FiFileText } from "react-icons/fi";
 import { formatPrecio, sanitizeMoneda } from "../../../utils/priceUtils";
 
 const ConfigurationForm = ({ formData, onFormChange, isEdit = false }) => {
-  const handleToggleChange = (name, value) => {
-    console.log(`🔄 Toggle cambió - Campo: ${name}, Nuevo valor:`, value, `Tipo:`, typeof value);
-    onFormChange({
-      target: { name, value },
-    });
-  };
-
   // Moneda normalizada para el paquete
   const moneda = sanitizeMoneda(formData?.moneda);
   const personasValue = parseInt(formData?.personas, 10);
@@ -21,172 +14,43 @@ const ConfigurationForm = ({ formData, onFormChange, isEdit = false }) => {
       )
     : null;
 
-  // Debug: mostrar el estado actual de aptoParaMenores
-  React.useEffect(() => {
-    console.log("🎯 ConfigurationForm - Estado actual:", {
-      aptoParaMenores: formData?.aptoParaMenores,
-      type: typeof formData?.aptoParaMenores,
-      activo: formData?.activo,
-    });
-  }, [formData?.aptoParaMenores, formData?.activo]);
-
   return (
     <div className="space-y-6 sm:space-y-8">
       {/* Header con icono animado */}
       <div className="text-center">
-        <div className="inline-flex items-center justify-center w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-700 rounded-xl sm:rounded-2xl shadow-lg mb-3 sm:mb-4 group">
+        <div className="inline-flex items-center justify-center w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-br from-slate-600 via-gray-600 to-slate-700 rounded-xl sm:rounded-2xl shadow-lg mb-3 sm:mb-4 group">
           <FiSettings className="w-6 h-6 sm:w-8 sm:h-8 text-white transition-transform duration-300 group-hover:rotate-180" />
         </div>
         <h3 className="text-xl sm:text-2xl font-bold text-slate-900 mb-2">
-          Configuración Final
+          Notas Adicionales
         </h3>
         <p className="text-sm sm:text-base text-slate-600 px-4">
-          Ajustes finales y notas adicionales del paquete
+          Información adicional importante para el viajero
         </p>
-      </div>
-
-      {/* Toggle moderno para estado del paquete */}
-      <div className="bg-gradient-to-br from-slate-50 to-white rounded-xl sm:rounded-2xl border border-slate-200 p-4 sm:p-6 shadow-sm">
-        <h4 className="text-base sm:text-lg font-semibold text-slate-900 mb-4 sm:mb-6 flex items-center gap-2 sm:gap-3">
-          <div className="p-1.5 sm:p-2 bg-emerald-100 rounded-lg">
-            <FiPackage className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-600" />
-          </div>
-          Estado del Paquete
-        </h4>
-
-        <div className="flex items-center justify-between p-3 sm:p-4 bg-white rounded-lg sm:rounded-xl border border-slate-200 hover:border-slate-300 transition-all duration-200 shadow-sm">
-          <div className="flex items-center gap-3 sm:gap-4 min-w-0 flex-1">
-            <div
-              className={`p-2 sm:p-3 rounded-full transition-all duration-300 flex-shrink-0 ${
-                formData.activo
-                  ? "bg-green-100 text-green-600"
-                  : "bg-slate-100 text-slate-600"
-              }`}
-            >
-              {formData.activo ? (
-                <FiCheck className="w-4 h-4 sm:w-5 sm:h-5" />
-              ) : (
-                <FiX className="w-4 h-4 sm:w-5 sm:h-5" />
-              )}
-            </div>
-            <div className="min-w-0 flex-1">
-              <span className="text-sm sm:text-base font-medium text-slate-700 block">
-                Paquete {formData.activo ? "activo" : "inactivo"}
-              </span>
-              <p className="text-xs sm:text-sm text-slate-500 mt-1 hidden sm:block">
-                {formData.activo
-                  ? "El paquete será visible para los usuarios"
-                  : "El paquete estará oculto para los usuarios"}
-              </p>
-            </div>
-          </div>
-
-          {/* Toggle switch personalizado */}
-          <button
-            type="button"
-            onClick={() => handleToggleChange("activo", !formData.activo)}
-            className={`relative inline-flex h-6 w-11 sm:h-7 sm:w-12 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
-              formData.activo ? "bg-green-500" : "bg-slate-300"
-            }`}
-            role="switch"
-            aria-checked={formData.activo}
-          >
-            <span
-              className={`pointer-events-none inline-block h-5 w-5 sm:h-6 sm:w-6 transform rounded-full bg-white shadow-lg ring-0 transition duration-200 ease-in-out ${
-                formData.activo
-                  ? "translate-x-5 sm:translate-x-5"
-                  : "translate-x-0"
-              }`}
-            />
-          </button>
-        </div>
-      </div>
-
-      {/* Toggle para restricción de edad */}
-      <div className="bg-gradient-to-br from-slate-50 to-white rounded-xl sm:rounded-2xl border border-slate-200 p-4 sm:p-6 shadow-sm">
-        <h4 className="text-base sm:text-lg font-semibold text-slate-900 mb-4 sm:mb-6 flex items-center gap-2 sm:gap-3">
-          <div className="p-1.5 sm:p-2 bg-amber-100 rounded-lg">
-            <FiUsers className="w-4 h-4 sm:w-5 sm:h-5 text-amber-600" />
-          </div>
-          Restricción de Edad
-        </h4>
-
-        <div className="flex items-center justify-between p-3 sm:p-4 bg-white rounded-lg sm:rounded-xl border border-slate-200 hover:border-slate-300 transition-all duration-200 shadow-sm">
-          <div className="flex items-center gap-3 sm:gap-4 min-w-0 flex-1">
-            <div
-              className={`p-2 sm:p-3 rounded-full transition-all duration-300 flex-shrink-0 ${
-                formData.aptoParaMenores
-                  ? "bg-green-100"
-                  : "bg-amber-100"
-              }`}
-            >
-              {formData.aptoParaMenores ? (
-                <FiUsers className="w-5 h-5 sm:w-6 sm:h-6 text-green-600" />
-              ) : (
-                <FiUsers className="w-5 h-5 sm:w-6 sm:h-6 text-amber-600" />
-              )}
-            </div>
-            <div className="min-w-0 flex-1">
-              <p className="text-sm sm:text-base font-semibold text-slate-900 truncate">
-                {formData.aptoParaMenores ? "Apto para toda la familia" : "Solo para adultos (18+)"}
-              </p>
-              <p className="text-xs sm:text-sm text-slate-600 mt-0.5 line-clamp-2">
-                {formData.aptoParaMenores
-                  ? "Este paquete incluye actividades familiares para todas las edades"
-                  : "Este paquete contiene actividades exclusivas para mayores de edad"}
-              </p>
-            </div>
-          </div>
-          <button
-            type="button"
-            onClick={() => handleToggleChange("aptoParaMenores", !formData.aptoParaMenores)}
-            className={`relative inline-flex h-7 w-14 sm:h-8 sm:w-16 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-offset-2 ${
-              formData.aptoParaMenores ? "bg-green-500" : "bg-amber-500"
-            } focus:ring-${formData.aptoParaMenores ? "green" : "amber"}-600`}
-            role="switch"
-            aria-checked={formData.aptoParaMenores}
-          >
-            <span
-              aria-hidden="true"
-              className={`pointer-events-none inline-block h-6 w-6 sm:h-7 sm:w-7 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
-                formData.aptoParaMenores
-                  ? "translate-x-7 sm:translate-x-8"
-                  : "translate-x-0"
-              }`}
-            />
-          </button>
-        </div>
-
-        {/* Nota informativa */}
-        {!formData.aptoParaMenores && (
-          <div className="mt-4 p-3 sm:p-4 bg-amber-50 border border-amber-200 rounded-lg sm:rounded-xl">
-            <p className="text-xs sm:text-sm text-amber-800">
-              <strong className="font-semibold">🔞 Advertencia:</strong> Se mostrará una advertencia indicando que este paquete es solo para adultos (18+). 
-              Úsalo para paquetes con vida nocturna, casinos, catas de vino, o contenido adulto.
-            </p>
-          </div>
-        )}
       </div>
 
       {/* Notas adicionales */}
       <div className="bg-gradient-to-br from-slate-50 to-white rounded-xl sm:rounded-2xl border border-slate-200 p-4 sm:p-6 shadow-sm">
         <h4 className="text-base sm:text-lg font-semibold text-slate-900 mb-4 sm:mb-6 flex items-center gap-2 sm:gap-3">
-          <div className="p-1.5 sm:p-2 bg-blue-100 rounded-lg">
-            <FiSettings className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600" />
+          <div className="p-1.5 sm:p-2 bg-slate-100 rounded-lg">
+            <FiFileText className="w-4 h-4 sm:w-5 sm:h-5 text-slate-600" />
           </div>
-          Notas Adicionales
+          <span className="flex-1">Notas para el Viajero</span>
         </h4>
         <textarea
           name="notas"
           value={formData.notas || ""}
           onChange={onFormChange}
-          rows="4"
-          className="w-full p-3 sm:p-4 border border-slate-300 rounded-lg sm:rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none transition-all duration-200 bg-white hover:border-slate-400 text-sm sm:text-base"
-          placeholder="Notas importantes para el viajero, condiciones especiales, recomendaciones, restricciones, etc..."
+          rows="6"
+          className="w-full p-3 sm:p-4 border border-slate-300 rounded-lg sm:rounded-xl focus:ring-2 focus:ring-slate-500 focus:border-transparent resize-none transition-all duration-200 bg-white hover:border-slate-400 text-sm sm:text-base"
+          placeholder="Notas importantes para el viajero:&#10;&#10;• Condiciones especiales&#10;• Recomendaciones de equipaje&#10;• Documentos necesarios&#10;• Restricciones&#10;• Cualquier información adicional relevante..."
         />
+        <p className="text-xs text-slate-500 mt-2">
+          Estas notas aparecerán en la página de detalles del paquete para que los usuarios las lean antes de reservar
+        </p>
       </div>
 
-      {/* Resumen del paquete - versión original */}
+      {/* Resumen del paquete */}
       <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 sm:p-6">
         <h4 className="text-sm sm:text-base font-medium text-blue-900 mb-3 sm:mb-4">
           Resumen del Paquete

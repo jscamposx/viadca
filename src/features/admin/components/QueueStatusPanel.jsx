@@ -233,27 +233,29 @@ const QueueStatusPanel = ({
           {recentEvents.length === 0 ? (
             <EmptyState message="Sin eventos registrados en los últimos segundos." />
           ) : (
-            <ol className="relative border-l border-slate-200 pl-4 space-y-4">
-              {recentEvents.map((event, idx) => (
-                <li key={`${event.taskId}-${event.timestamp}-${idx}`} className="ml-2">
-                  <div className="absolute -left-[7px] top-1.5 flex items-center justify-center w-3.5 h-3.5 rounded-full bg-indigo-200 border border-indigo-300" aria-hidden="true" />
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <span className={`text-xs px-2 py-0.5 rounded-full ${getBadgeClasses(event.type)}`}>
-                      {getBadgeLabel(event.type)}
-                    </span>
-                    <span className="text-sm font-medium text-slate-700 tabular-nums">Tarea #{event.taskId ?? "—"}</span>
-                    {event.waitMs !== undefined && (
-                      <span className="text-xs text-slate-500">
-                        Esperó {formatMs(event.waitMs)}
+            <div className="max-h-80 overflow-y-auto pr-1">
+              <ol className="relative border-l border-slate-200 pl-4 space-y-4 pb-1">
+                {recentEvents.map((event, idx) => (
+                  <li key={`${event.taskId}-${event.timestamp}-${idx}`} className="ml-2">
+                    <div className="absolute -left-[7px] top-1.5 flex items-center justify-center w-3.5 h-3.5 rounded-full bg-indigo-200 border border-indigo-300" aria-hidden="true" />
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className={`text-xs px-2 py-0.5 rounded-full ${getBadgeClasses(event.type)}`}>
+                        {getBadgeLabel(event.type)}
                       </span>
-                    )}
-                    <span className="text-xs text-slate-400">
-                      {formatDateTime(event.timestamp ? new Date(event.timestamp) : null)}
-                    </span>
-                  </div>
-                </li>
-              ))}
-            </ol>
+                      <span className="text-sm font-medium text-slate-700 tabular-nums">Tarea #{event.taskId ?? "—"}</span>
+                      {event.waitMs !== undefined && (
+                        <span className="text-xs text-slate-500">
+                          Esperó {formatMs(event.waitMs)}
+                        </span>
+                      )}
+                      <span className="text-xs text-slate-400">
+                        {formatDateTime(event.timestamp ? new Date(event.timestamp) : null)}
+                      </span>
+                    </div>
+                  </li>
+                ))}
+              </ol>
+            </div>
           )}
         </div>
       </div>
