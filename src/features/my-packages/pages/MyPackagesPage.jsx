@@ -27,7 +27,6 @@ const MyPackagesPage = () => {
   const [paquetes, setPaquetes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [filter, setFilter] = useState("all"); // all, public, private
 
   useEffect(() => {
     // Solo cargar si está autenticado
@@ -43,7 +42,11 @@ const MyPackagesPage = () => {
       const response = await api.packages.getMisPaquetes();
       // El endpoint devuelve { data: { data: [...], total, page, ... } }
       const paquetesData = response?.data?.data || response?.data || [];
-      setPaquetes(Array.isArray(paquetesData) ? paquetesData : []);
+      // FILTRAR SOLO PAQUETES PRIVADOS (excluir públicos)
+      const paquetesPrivados = Array.isArray(paquetesData) 
+        ? paquetesData.filter(p => p.esPublico === false) 
+        : [];
+      setPaquetes(paquetesPrivados);
     } catch (err) {
       console.error("Error cargando mis paquetes:", err);
       setError("No se pudieron cargar los paquetes. Por favor, intenta de nuevo.");
@@ -51,15 +54,6 @@ const MyPackagesPage = () => {
       setLoading(false);
     }
   };
-
-  const filteredPaquetes = paquetes.filter(p => {
-    if (filter === "public") return p.esPublico === true;
-    if (filter === "private") return p.esPublico === false;
-    return true;
-  });
-
-  const publicCount = paquetes.filter(p => p.esPublico === true).length;
-  const privateCount = paquetes.filter(p => p.esPublico === false).length;
 
   const isAdmin = user?.rol === "admin";
 
@@ -197,7 +191,7 @@ const MyPackagesPage = () => {
                   Mis Paquetes
                 </h1>
                 <p className="text-slate-600 mt-1">
-                  {isAdmin ? "Todos los paquetes del sistema" : "Tus paquetes disponibles"}
+                  {isAdmin ? "Todos los paquetes del sistema" : "Paquetes exclusivos autorizados para ti"}
                 </p>
               </div>
             </div>
@@ -229,47 +223,11 @@ const MyPackagesPage = () => {
                   }`}>
                     {isAdmin 
                       ? "🔓 Como administrador, puedes ver todos los paquetes (públicos y privados)"
-                      : "🔒 Estás viendo paquetes públicos y tus paquetes exclusivos autorizados"}
+                      : "🔒 Aquí solo aparecen los paquetes privados exclusivos autorizados para ti"}
                   </p>
                 </div>
               </div>
             </div>
-          </div>
-
-          {/* Filters */}
-          <div className="mb-6 flex flex-wrap gap-3">
-            <button
-              onClick={() => setFilter("all")}
-              className={`px-4 py-2 rounded-lg font-medium transition-all ${
-                filter === "all"
-                  ? "bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg"
-                  : "bg-white text-slate-700 border border-slate-200 hover:border-purple-300 hover:bg-purple-50"
-              }`}
-            >
-              Todos ({paquetes.length})
-            </button>
-            <button
-              onClick={() => setFilter("public")}
-              className={`px-4 py-2 rounded-lg font-medium transition-all flex items-center gap-2 ${
-                filter === "public"
-                  ? "bg-gradient-to-r from-green-500 to-emerald-600 text-white shadow-lg"
-                  : "bg-white text-slate-700 border border-slate-200 hover:border-green-300 hover:bg-green-50"
-              }`}
-            >
-              <FiGlobe className="w-4 h-4" />
-              Públicos ({publicCount})
-            </button>
-            <button
-              onClick={() => setFilter("private")}
-              className={`px-4 py-2 rounded-lg font-medium transition-all flex items-center gap-2 ${
-                filter === "private"
-                  ? "bg-gradient-to-r from-purple-500 to-pink-600 text-white shadow-lg"
-                  : "bg-white text-slate-700 border border-slate-200 hover:border-purple-300 hover:bg-purple-50"
-              }`}
-            >
-              <FiLock className="w-4 h-4" />
-              Privados ({privateCount})
-            </button>
           </div>
 
           {/* Loading */}
@@ -297,36 +255,31 @@ const MyPackagesPage = () => {
           )}
 
           {/* Empty State */}
-          {!loading && !error && filteredPaquetes.length === 0 && (
+          {!loading && !error && paquetes.length === 0 && (
             <div className="text-center py-20">
-              <div className="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <FiPackage className="w-10 h-10 text-slate-400" />
+              <div className="w-20 h-20 bg-gradient-to-br from-purple-100 to-pink-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <FiLock className="w-10 h-10 text-purple-500" />
               </div>
               <h3 className="text-xl font-semibold text-slate-800 mb-2">
-                No hay paquetes disponibles
+                No hay paquetes exclusivos para ti
               </h3>
               <p className="text-slate-600 mb-6">
-                {filter === "all" 
-                  ? "No tienes paquetes asignados en este momento"
-                  : filter === "public"
-                  ? "No hay paquetes públicos disponibles"
-                  : "No tienes paquetes privados asignados"}
+                No tienes paquetes privados autorizados en este momento.
               </p>
-              {filter !== "all" && (
-                <button
-                  onClick={() => setFilter("all")}
-                  className="text-purple-600 hover:text-purple-700 font-semibold"
-                >
-                  Ver todos los paquetes
-                </button>
-              )}
+              <Link
+                to="/paquetes"
+                className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold rounded-lg transition-all shadow-md hover:shadow-lg"
+              >
+                <FiGlobe className="w-4 h-4" />
+                Explorar Paquetes Públicos
+              </Link>
             </div>
           )}
 
           {/* Packages Grid */}
-          {!loading && !error && filteredPaquetes.length > 0 && (
+          {!loading && !error && paquetes.length > 0 && (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredPaquetes.map((paquete) => (
+              {paquetes.map((paquete) => (
                 <PackageCard key={paquete.id} paquete={paquete} isAdmin={isAdmin} />
               ))}
             </div>
