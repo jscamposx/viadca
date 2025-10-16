@@ -40,13 +40,10 @@ const MyPackagesPage = () => {
       setLoading(true);
       setError(null);
       const response = await api.packages.getMisPaquetes();
-      // El endpoint devuelve { data: { data: [...], total, page, ... } }
+      
+      // El backend YA devuelve solo paquetes privados, no necesitamos filtrar
       const paquetesData = response?.data?.data || response?.data || [];
-      // FILTRAR SOLO PAQUETES PRIVADOS (excluir públicos)
-      const paquetesPrivados = Array.isArray(paquetesData) 
-        ? paquetesData.filter(p => p.esPublico === false) 
-        : [];
-      setPaquetes(paquetesPrivados);
+      setPaquetes(Array.isArray(paquetesData) ? paquetesData : []);
     } catch (err) {
       console.error("Error cargando mis paquetes:", err);
       setError("No se pudieron cargar los paquetes. Por favor, intenta de nuevo.");
@@ -280,7 +277,7 @@ const MyPackagesPage = () => {
           {!loading && !error && paquetes.length > 0 && (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {paquetes.map((paquete) => (
-                <PackageCard key={paquete.id} paquete={paquete} isAdmin={isAdmin} />
+                <PackageCard key={paquete.id || paquete.codigoUrl} paquete={paquete} isAdmin={isAdmin} />
               ))}
             </div>
           )}
@@ -339,18 +336,18 @@ const PackageCard = ({ paquete, isAdmin }) => {
         {/* Badges */}
         <div className="absolute top-3 right-3 flex flex-col gap-2 z-10">
           {showExclusiveBadge && (
-            <div key="exclusive-badge" className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg backdrop-blur-sm">
+            <div className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg backdrop-blur-sm">
               ⭐ Exclusivo para ti
             </div>
           )}
           {showAdminBadge && (
-            <div key="admin-badge" className="bg-gray-900/90 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg backdrop-blur-sm flex items-center gap-1">
+            <div className="bg-gray-900/90 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg backdrop-blur-sm flex items-center gap-1">
               <FiLock className="w-3 h-3" />
               Privado
             </div>
           )}
           {paquete.descuento > 0 && (
-            <div key="descuento-badge" className="bg-red-500 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg">
+            <div className="bg-red-500 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg">
               {paquete.descuento}% OFF
             </div>
           )}
