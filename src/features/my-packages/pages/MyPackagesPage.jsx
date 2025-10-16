@@ -253,23 +253,90 @@ const MyPackagesPage = () => {
 
           {/* Empty State */}
           {!loading && !error && paquetes.length === 0 && (
-            <div className="text-center py-20">
-              <div className="w-20 h-20 bg-gradient-to-br from-purple-100 to-pink-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <FiLock className="w-10 h-10 text-purple-500" />
+            <div className="relative max-w-2xl mx-auto my-12">
+              {/* Decorative Background */}
+              <div className="absolute inset-0 overflow-hidden rounded-3xl">
+                <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-purple-400/20 to-pink-400/20 rounded-full blur-3xl animate-pulse"></div>
+                <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-br from-blue-400/20 to-indigo-400/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
               </div>
-              <h3 className="text-xl font-semibold text-slate-800 mb-2">
-                No hay paquetes exclusivos para ti
-              </h3>
-              <p className="text-slate-600 mb-6">
-                No tienes paquetes privados autorizados en este momento.
-              </p>
-              <Link
-                to="/paquetes"
-                className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold rounded-lg transition-all shadow-md hover:shadow-lg"
-              >
-                <FiGlobe className="w-4 h-4" />
-                Explorar Paquetes Públicos
-              </Link>
+
+              {/* Main Card */}
+              <div className="relative bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-purple-100/50 p-8 md:p-12">
+                {/* Icon Container */}
+                <div className="relative mb-6">
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="w-32 h-32 bg-gradient-to-br from-purple-500/20 to-pink-500/20 rounded-full blur-2xl"></div>
+                  </div>
+                  <div className="relative w-24 h-24 bg-gradient-to-br from-purple-500 to-pink-600 rounded-2xl flex items-center justify-center mx-auto transform hover:scale-110 transition-transform duration-300 shadow-xl">
+                    <FiLock className="w-12 h-12 text-white" />
+                  </div>
+                </div>
+
+                {/* Content */}
+                <div className="text-center space-y-4">
+                  <h3 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+                    No tienes paquetes exclusivos
+                  </h3>
+                  
+                  <p className="text-slate-600 text-base md:text-lg max-w-md mx-auto">
+                    Aún no tienes acceso a paquetes privados. Contacta con nosotros para obtener paquetes personalizados.
+                  </p>
+
+                  {/* Features */}
+                  <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-2xl p-6 my-6">
+                    <p className="text-sm font-semibold text-purple-900 mb-4">
+                      ✨ ¿Qué son los paquetes exclusivos?
+                    </p>
+                    <ul className="space-y-3 text-left max-w-md mx-auto">
+                      <li className="flex items-start gap-3 text-sm text-slate-700">
+                        <div className="w-5 h-5 rounded-full bg-purple-500 flex items-center justify-center flex-shrink-0 mt-0.5">
+                          <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                          </svg>
+                        </div>
+                        <span><strong>Ofertas personalizadas</strong> diseñadas especialmente para ti</span>
+                      </li>
+                      <li className="flex items-start gap-3 text-sm text-slate-700">
+                        <div className="w-5 h-5 rounded-full bg-pink-500 flex items-center justify-center flex-shrink-0 mt-0.5">
+                          <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                          </svg>
+                        </div>
+                        <span><strong>Precios especiales</strong> no disponibles al público</span>
+                      </li>
+                      <li className="flex items-start gap-3 text-sm text-slate-700">
+                        <div className="w-5 h-5 rounded-full bg-indigo-500 flex items-center justify-center flex-shrink-0 mt-0.5">
+                          <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                          </svg>
+                        </div>
+                        <span><strong>Atención prioritaria</strong> y asesoría personalizada</span>
+                      </li>
+                    </ul>
+                  </div>
+
+                  {/* Action Buttons */}
+                  <div className="flex flex-col sm:flex-row gap-3 justify-center pt-2">
+                    <Link
+                      to="/paquetes"
+                      className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-bold rounded-xl transition-all shadow-lg hover:shadow-xl hover:scale-[1.02] transform"
+                    >
+                      <FiGlobe className="w-5 h-5" />
+                      Explorar Paquetes Públicos
+                    </Link>
+                    
+                    <Link
+                      to="/contacto"
+                      className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-white hover:bg-slate-50 text-slate-700 font-semibold rounded-xl transition-all border-2 border-slate-200 hover:border-purple-300 hover:shadow-md"
+                    >
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                      </svg>
+                      Solicitar Paquete Personalizado
+                    </Link>
+                  </div>
+                </div>
+              </div>
             </div>
           )}
 
