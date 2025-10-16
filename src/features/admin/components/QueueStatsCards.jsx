@@ -44,19 +44,19 @@ const TopItem = ({ name, count, rank, icon: Icon }) => {
   };
 
   return (
-    <div className="flex items-center justify-between p-3 hover:bg-slate-50 rounded-lg transition-colors">
-      <div className="flex items-center gap-3 flex-1">
+    <div className="flex items-center justify-between p-3 hover:bg-slate-50 rounded-lg transition-colors gap-2">
+      <div className="flex items-center gap-2 sm:gap-3 flex-1 min-w-0">
         <span
-          className={`inline-flex items-center justify-center w-7 h-7 rounded-full text-xs font-bold border ${getBadgeColor(rank)}`}
+          className={`inline-flex items-center justify-center w-6 h-6 sm:w-7 sm:h-7 rounded-full text-xs font-bold border flex-shrink-0 ${getBadgeColor(rank)}`}
         >
           {rank}
         </span>
-        {Icon && <Icon className="w-4 h-4 text-slate-500 flex-shrink-0" />}
-        <span className="text-sm text-slate-700 truncate font-mono" title={name}>
+        {Icon && <Icon className="w-4 h-4 text-slate-500 flex-shrink-0 hidden sm:block" />}
+        <span className="text-xs sm:text-sm text-slate-700 truncate break-all" title={name} style={{ wordBreak: 'break-all', overflowWrap: 'anywhere' }}>
           {name}
         </span>
       </div>
-      <span className="text-sm font-semibold text-slate-800 ml-2">{count}</span>
+      <span className="text-xs sm:text-sm font-semibold text-slate-800 ml-2 flex-shrink-0">{count}</span>
     </div>
   );
 };
