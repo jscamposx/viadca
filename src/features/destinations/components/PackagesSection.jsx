@@ -105,28 +105,29 @@ const PackagesSection = ({
         )}
 
         {showCarousel && (
-          <div className="relative overflow-visible">
+          <div className="relative -mx-4 sm:mx-0">
             {/* Gradiente indicador de más contenido a la derecha (mobile) */}
             {showRightArrow && (
-              <div className="md:hidden absolute right-0 top-0 bottom-0 w-12 bg-gradient-to-l from-white via-white/80 to-transparent pointer-events-none z-[5]" />
+              <div className="md:hidden absolute right-0 top-0 bottom-0 w-16 bg-gradient-to-l from-white via-white/90 to-transparent pointer-events-none z-[5]" />
             )}
             {/* Gradiente indicador de más contenido a la izquierda (mobile) */}
             {showLeftArrow && (
-              <div className="md:hidden absolute left-0 top-0 bottom-0 w-12 bg-gradient-to-r from-white via-white/80 to-transparent pointer-events-none z-[5]" />
+              <div className="md:hidden absolute left-0 top-0 bottom-0 w-16 bg-gradient-to-r from-white via-white/90 to-transparent pointer-events-none z-[5]" />
             )}
             
             <div
               ref={scrollRef}
-              className="carousel-scroll flex gap-3 sm:gap-4 lg:gap-5 overflow-x-auto snap-x snap-mandatory pb-4 scrollbar-thin scrollbar-thumb-gray-300 hover:scrollbar-thumb-gray-400 scrollbar-track-transparent overscroll-x-contain touch-pan-x scroll-smooth"
+              className="carousel-scroll flex gap-3 sm:gap-4 lg:gap-5 overflow-x-auto snap-x snap-mandatory pb-6 px-4 sm:px-0 overscroll-x-contain touch-pan-x scroll-smooth"
               style={{
                 WebkitOverflowScrolling: 'touch',
-                scrollbarWidth: 'thin',
+                scrollbarWidth: 'none',
+                msOverflowStyle: 'none',
               }}
             >
               {childArray.map((ch, i) => (
                 <div
                   key={i}
-                  className="snap-start shrink-0 w-[82%] max-[360px]:w-[80%] xs:w-[85%] sm:w-[280px] md:w-[300px] lg:w-[320px] first:ml-1 last:mr-1"
+                  className="snap-start shrink-0 w-[85%] xs:w-[80%] sm:w-[280px] md:w-[300px] lg:w-[320px]"
                 >
                   {ch}
                 </div>
@@ -138,7 +139,7 @@ const PackagesSection = ({
                 type="button"
                 onClick={() => scrollBy(-1)}
                 aria-label="Desplazar a la izquierda"
-                className="hidden md:flex absolute top-1/2 -translate-y-1/2 left-0 w-12 h-12 rounded-full bg-white/95 backdrop-blur-sm shadow-xl border-2 border-slate-200 items-center justify-center text-slate-700 hover:bg-blue-600 hover:text-white hover:border-blue-600 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 z-10 hover:scale-110"
+                className="hidden md:flex absolute top-1/2 -translate-y-1/2 -left-6 w-12 h-12 rounded-full bg-white/95 backdrop-blur-sm shadow-xl border border-slate-200 items-center justify-center text-slate-700 hover:bg-blue-600 hover:text-white hover:border-blue-600 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 z-20 hover:scale-110 active:scale-95"
               >
                 <FiChevronLeft className="w-6 h-6" />
               </button>
@@ -148,7 +149,7 @@ const PackagesSection = ({
                 type="button"
                 onClick={() => scrollBy(1)}
                 aria-label="Desplazar a la derecha"
-                className="hidden md:flex absolute top-1/2 -translate-y-1/2 right-0 w-12 h-12 rounded-full bg-white/95 backdrop-blur-sm shadow-xl border-2 border-slate-200 items-center justify-center text-slate-700 hover:bg-blue-600 hover:text-white hover:border-blue-600 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 z-10 hover:scale-110"
+                className="hidden md:flex absolute top-1/2 -translate-y-1/2 -right-6 w-12 h-12 rounded-full bg-white/95 backdrop-blur-sm shadow-xl border border-slate-200 items-center justify-center text-slate-700 hover:bg-blue-600 hover:text-white hover:border-blue-600 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 z-20 hover:scale-110 active:scale-95"
               >
                 <FiChevronRight className="w-6 h-6" />
               </button>

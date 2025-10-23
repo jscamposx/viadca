@@ -62,6 +62,7 @@ export const preparePatchPayload = (originalPackage, currentFormData) => {
       "imagenes",
       "hotel",
       "mayoristasIds",
+      "usuariosAutorizadosIds", // Manejado explícitamente más abajo
       "additionalDestinations",
       "destino",
       "destino_lat",
@@ -70,6 +71,40 @@ export const preparePatchPayload = (originalPackage, currentFormData) => {
   );
 
   const payload = { ...basicDifferences };
+
+  // Sincronizar tipoAcceso con esPublico si hay cambios
+  if (payload.hasOwnProperty('tipoAcceso') || payload.hasOwnProperty('esPublico')) {
+    // Si cambió tipoAcceso, asegurar que esPublico esté sincronizado
+    if (payload.tipoAcceso) {
+      payload.esPublico = payload.tipoAcceso === 'publico';
+    }
+    // Si cambió esPublico pero no tipoAcceso, actualizar tipoAcceso
+    else if (payload.hasOwnProperty('esPublico') && !payload.tipoAcceso) {
+      const originalTipoAcceso = originalPackage?.tipoAcceso || (originalPackage?.esPublico ? 'publico' : 'privado');
+      const currentTipoAcceso = currentFormData.tipoAcceso || (currentFormData.esPublico ? 'publico' : 'privado');
+      if (originalTipoAcceso !== currentTipoAcceso) {
+        payload.tipoAcceso = currentTipoAcceso;
+      }
+    }
+  }
+
+  // Manejar usuariosAutorizadosIds: solo enviar si realmente cambió o si el tipo cambió
+  if (payload.tipoAcceso === 'privado' || currentFormData.tipoAcceso === 'privado') {
+    const originalUsuariosIds = (originalPackage?.usuariosAutorizados || []).map(u => u.id).sort();
+    const currentUsuariosIds = (currentFormData.usuariosAutorizadosIds || []).sort();
+    
+    // Comparar arrays
+    const idsChanged = JSON.stringify(originalUsuariosIds) !== JSON.stringify(currentUsuariosIds);
+    
+    if (idsChanged) {
+      payload.usuariosAutorizadosIds = currentFormData.usuariosAutorizadosIds || [];
+    }
+  } else if (payload.tipoAcceso && payload.tipoAcceso !== 'privado') {
+    // Si cambió a público o link-privado, limpiar usuarios autorizados
+    if ((originalPackage?.usuariosAutorizados || []).length > 0) {
+      payload.usuariosAutorizadosIds = [];
+    }
+  }
 
   if (hasDestinationChanges(originalPackage, currentFormData)) {
     payload.destinos = buildDestinosPayload(currentFormData);
@@ -97,37 +132,46 @@ export const preparePatchPayload = (originalPackage, currentFormData) => {
     payload.hotel = "PROCESS_HOTEL";
   }
 
-    // Manejo explícito de limpieza de campos opcionales precio_vuelo / precio_hospedaje
-    // Si el original tenía valor y el formulario ahora trae cadena vacía -> enviar null
+  // Manejo explícito de limpieza de campos opcionales precio_vuelo / precio_hospedaje
+  // Solo enviar null si realmente cambió de tener valor a estar vacío
+  const originalPrecioVuelo = originalPackage?.precio_vuelo;
+  const currentPrecioVuelo = currentFormData.precio_vuelo;
+  
   if (
-    originalPackage &&
-    Object.prototype.hasOwnProperty.call(originalPackage, "precio_vuelo") &&
-    originalPackage.precio_vuelo !== null &&
-    originalPackage.precio_vuelo !== undefined &&
-    currentFormData.precio_vuelo === ""
+    originalPrecioVuelo !== null &&
+    originalPrecioVuelo !== undefined &&
+    originalPrecioVuelo !== "" &&
+    (currentPrecioVuelo === "" || currentPrecioVuelo === null || currentPrecioVuelo === undefined)
   ) {
+    // Cambió de tener valor a estar vacío -> enviar null explícitamente
     payload.precio_vuelo = null;
   }
+
+  const originalPrecioHospedaje = originalPackage?.precio_hospedaje;
+  const currentPrecioHospedaje = currentFormData.precio_hospedaje;
+  
   if (
-    originalPackage &&
-    Object.prototype.hasOwnProperty.call(originalPackage, "precio_hospedaje") &&
-    originalPackage.precio_hospedaje !== null &&
-    originalPackage.precio_hospedaje !== undefined &&
-    currentFormData.precio_hospedaje === ""
+    originalPrecioHospedaje !== null &&
+    originalPrecioHospedaje !== undefined &&
+    originalPrecioHospedaje !== "" &&
+    (currentPrecioHospedaje === "" || currentPrecioHospedaje === null || currentPrecioHospedaje === undefined)
   ) {
+    // Cambió de tener valor a estar vacío -> enviar null explícitamente
     payload.precio_hospedaje = null;
   }
 
+  const originalPersonas = originalPackage?.personas;
+  const currentPersonas = currentFormData.personas;
+  
   if (
-    originalPackage &&
-    Object.prototype.hasOwnProperty.call(originalPackage, "personas") &&
-    originalPackage.personas !== null &&
-    originalPackage.personas !== undefined &&
-    (currentFormData.personas === "" || currentFormData.personas === null || currentFormData.personas === undefined)
+    originalPersonas !== null &&
+    originalPersonas !== undefined &&
+    originalPersonas !== "" &&
+    (currentPersonas === "" || currentPersonas === null || currentPersonas === undefined)
   ) {
+    // Cambió de tener valor a estar vacío -> enviar null explícitamente
     payload.personas = null;
   }
-
 
   return payload;
 };
@@ -175,6 +219,7 @@ const normalizePackageData = (data) => {
     notas: data.notas || null,
     activo: Boolean(data.activo),
     esPublico: data.esPublico !== undefined ? Boolean(data.esPublico) : true,
+    tipoAcceso: data.tipoAcceso || (data.esPublico ? 'publico' : 'privado'),
     usuariosAutorizadosIds: data.usuariosAutorizados 
       ? data.usuariosAutorizados.map(u => u.id)
       : (Array.isArray(data.usuariosAutorizadosIds) ? data.usuariosAutorizadosIds : []),

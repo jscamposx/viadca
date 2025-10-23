@@ -291,15 +291,6 @@ function PackageViewPage() {
   const [isLiked, setIsLiked] = useState(false);
   const [scrollY, setScrollY] = useState(0);
   const [isSmallScreen, setIsSmallScreen] = useState(false);
-
-  // Debug: verificar estructura de datos del itinerario
-  useEffect(() => {
-    if (paquete) {
-      console.log('🔍 Estructura completa del paquete:', paquete);
-      console.log('📅 Itinerarios:', paquete.itinerarios);
-      console.log('📋 Actividades:', paquete.actividades);
-    }
-  }, [paquete]);
   // Estados legacy eliminados en favor de ExpandableContent
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState(0);

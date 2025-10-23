@@ -79,12 +79,12 @@ const PackageCard = ({ paquete }) => {
     : "bg-gradient-to-r from-slate-500 to-gray-600 text-white";
 
   return (
-    <article className="bg-white rounded-xl shadow-md md:shadow-lg md:hover:shadow-xl md:hover:shadow-blue-500/10 transition-all duration-500 md:hover:-translate-y-2 md:hover:scale-[1.02] overflow-hidden border border-slate-100 group h-full flex flex-col transform-gpu">
-      <div className="relative overflow-hidden">
+    <article className="bg-white rounded-xl shadow-md hover:shadow-xl hover:shadow-blue-500/10 transition-all duration-500 hover:-translate-y-2 hover:scale-[1.02] overflow-hidden border border-slate-100 package-card h-full flex flex-col transform-gpu">
+      <div className="relative overflow-hidden package-card-image-wrapper">
         <OptimizedImage
           src={img}
           alt={paquete?.titulo || destinoPrincipal || "Paquete"}
-          className="w-full h-48 sm:h-52 md:h-56 lg:h-60 object-cover md:group-hover:scale-110 transition-transform duration-700 ease-[cubic-bezier(0.25,0.46,0.45,0.94)]"
+          className="package-card-image w-full h-48 sm:h-52 md:h-56 lg:h-60 object-cover transition-transform duration-700 ease-[cubic-bezier(0.25,0.46,0.45,0.94)]"
           width={800}
           height={480}
           responsive
@@ -93,7 +93,7 @@ const PackageCard = ({ paquete }) => {
           placeholder={true}
         />
         <div
-          className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent opacity-0 md:group-hover:opacity-100 transition-all duration-500"
+          className="package-card-overlay absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent opacity-0 transition-all duration-500"
           aria-hidden="true"
         />
         <div className="absolute top-3 right-3 flex flex-col items-end gap-2 z-20">
@@ -122,7 +122,7 @@ const PackageCard = ({ paquete }) => {
             {statusLabel}
           </span>
         </div>
-        <div className="absolute bottom-3 left-3 opacity-0 md:group-hover:opacity-100 transition-all duration-500 transform translate-y-2 md:group-hover:translate-y-0 z-20">
+        <div className="package-card-location absolute bottom-3 left-3 opacity-0 transition-all duration-500 transform translate-y-2 z-20">
           <span className="bg-white/95 backdrop-blur-md text-slate-800 px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 shadow-lg border border-white/40">
             <FiMapPin className="w-3.5 h-3.5 text-blue-600" aria-hidden="true" />
             {destinoPrincipal}
@@ -131,7 +131,7 @@ const PackageCard = ({ paquete }) => {
       </div>
       <div className="p-4 lg:p-5 flex-1 flex flex-col">
         <div className="flex justify-between items-start gap-3 mb-2">
-          <h3 className="font-bold text-sm sm:text-base lg:text-lg text-slate-800 group-hover:text-blue-600 transition-colors leading-snug line-clamp-2 flex-1 min-h-[2.2rem]">
+          <h3 className="package-card-title font-bold text-sm sm:text-base lg:text-lg text-slate-800 transition-colors leading-snug line-clamp-2 flex-1 min-h-[2.2rem]">
             {paquete?.titulo || "Paquete"}
           </h3>
           <div className="text-right shrink-0">

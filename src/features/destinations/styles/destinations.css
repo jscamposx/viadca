@@ -1,23 +1,13 @@
 /* Estilos mejorados para carrusel de paquetes */
 
-/* Scrollbar personalizado para navegadores Webkit (Chrome, Safari, Edge) */
+/* Ocultar scrollbar completamente */
 .carousel-scroll::-webkit-scrollbar {
-  height: 8px;
+  display: none;
 }
 
-.carousel-scroll::-webkit-scrollbar-track {
-  background: transparent;
-  border-radius: 10px;
-}
-
-.carousel-scroll::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
-  border-radius: 10px;
-  transition: background 0.3s ease;
-}
-
-.carousel-scroll::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+.carousel-scroll {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
 }
 
 /* Efecto de momentum en iOS */
@@ -34,14 +24,46 @@
   user-select: none;
 }
 
-/* Mejorar el snap en mobile */
+/* Mejorar el snap en todas las pantallas */
+.carousel-scroll {
+  scroll-snap-type: x mandatory;
+  scroll-padding: 0 1rem;
+}
+
+.carousel-scroll > * {
+  scroll-snap-align: start;
+  scroll-snap-stop: normal;
+}
+
 @media (max-width: 768px) {
   .carousel-scroll {
-    scroll-snap-type: x mandatory;
     scroll-padding: 0 1rem;
   }
-  
-  .carousel-scroll > * {
-    scroll-snap-align: start;
+}
+
+/* Package Card Hover Effects - Solo en dispositivos con hover real */
+@media (hover: hover) and (pointer: fine) {
+  .package-card:hover .package-card-image {
+    transform: scale(1.1);
+  }
+
+  .package-card:hover .package-card-overlay {
+    opacity: 1;
+  }
+
+  .package-card:hover .package-card-location {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .package-card:hover .package-card-title {
+    color: #2563eb;
+  }
+}
+
+/* En dispositivos táctiles, mantener efectos desactivados */
+@media (hover: none) {
+  .package-card {
+    transform: none !important;
   }
 }
