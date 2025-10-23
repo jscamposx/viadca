@@ -53,6 +53,7 @@ export const usePackageForm = (initialPackageData = null) => {
     itinerario_texto: "",
     activo: true,
     esPublico: true, // Por defecto los paquetes son públicos
+    tipoAcceso: "publico", // Tipo de acceso: 'publico', 'privado', 'link-privado'
     usuariosAutorizadosIds: [], // IDs de usuarios autorizados para paquetes privados
     origen: "Durango, México",
     origen_lat: 24.0277,
@@ -202,6 +203,8 @@ export const usePackageForm = (initialPackageData = null) => {
           initialPackageData.esPublico !== undefined
             ? initialPackageData.esPublico
             : true,
+        tipoAcceso: initialPackageData.tipoAcceso || 
+          (initialPackageData.esPublico ? 'publico' : 'privado'),
         usuariosAutorizadosIds: initialPackageData.usuariosAutorizados 
           ? initialPackageData.usuariosAutorizados.map(u => u.id)
           : (initialPackageData.usuariosAutorizadosIds || []),
@@ -904,6 +907,7 @@ export const usePackageForm = (initialPackageData = null) => {
         formData.notas && formData.notas.trim() !== "" ? formData.notas : null,
       activo: formData.activo,
       esPublico: formData.esPublico !== undefined ? formData.esPublico : true,
+      tipoAcceso: formData.tipoAcceso || (formData.esPublico ? 'publico' : 'privado'),
       usuariosAutorizadosIds: formData.usuariosAutorizadosIds || [],
       mayoristasIds: formData.mayoristasIds,
       itinerario_texto: formData.itinerario_texto || "",

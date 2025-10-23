@@ -291,6 +291,15 @@ function PackageViewPage() {
   const [isLiked, setIsLiked] = useState(false);
   const [scrollY, setScrollY] = useState(0);
   const [isSmallScreen, setIsSmallScreen] = useState(false);
+
+  // Debug: verificar estructura de datos del itinerario
+  useEffect(() => {
+    if (paquete) {
+      console.log('🔍 Estructura completa del paquete:', paquete);
+      console.log('📅 Itinerarios:', paquete.itinerarios);
+      console.log('📋 Actividades:', paquete.actividades);
+    }
+  }, [paquete]);
   // Estados legacy eliminados en favor de ExpandableContent
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState(0);
@@ -902,6 +911,9 @@ function PackageViewPage() {
                   <AnimatedSection animation="fadeInUp" delay={200}>
                     <section className="group bg-white/80 backdrop-blur-xl rounded-3xl shadow-xl p-6 border border-white/20 hover:shadow-2xl transition-all duration-500">
                       <div className="flex items-center gap-4 mb-6">
+                        <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-green-500 rounded-xl flex items-center justify-center shadow-lg md:group-hover:scale-110 transition-transform duration-300">
+                          <FiCheckSquare className="w-6 h-6 text-white" />
+                        </div>
                         <div>
                           <h3 className="font-volkhov text-xl sm:text-2xl font-bold text-gray-900">
                             ¿Qué Incluye?

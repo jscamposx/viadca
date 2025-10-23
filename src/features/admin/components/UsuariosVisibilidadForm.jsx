@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { FiUsers, FiGlobe, FiLock, FiCheck, FiX, FiAlertCircle, FiSearch, FiPackage } from "react-icons/fi";
+import { FiUsers, FiGlobe, FiLock, FiCheck, FiX, FiAlertCircle, FiSearch, FiPackage, FiLink } from "react-icons/fi";
 import api from "../../../api";
 
 const UsuariosVisibilidadForm = ({ formData, onFormChange }) => {
@@ -28,11 +28,25 @@ const UsuariosVisibilidadForm = ({ formData, onFormChange }) => {
     fetchUsuarios();
   }, []);
 
-  const handleToggleChange = (name, value) => {
-    console.log(`🔄 Toggle cambió - Campo: ${name}, Nuevo valor:`, value);
+  const handleTipoAccesoChange = (tipoAcceso) => {
+    console.log(`🔄 Tipo de acceso cambió:`, tipoAcceso);
+    
+    // Actualizar tipoAcceso y esPublico
     onFormChange({
-      target: { name, value },
+      target: { name: 'tipoAcceso', value: tipoAcceso },
     });
+    
+    // Actualizar esPublico basado en el tipo
+    onFormChange({
+      target: { name: 'esPublico', value: tipoAcceso === 'publico' },
+    });
+
+    // Si cambia a link-privado, limpiar usuarios autorizados
+    if (tipoAcceso === 'link-privado') {
+      onFormChange({
+        target: { name: 'usuariosAutorizadosIds', value: [] },
+      });
+    }
   };
 
   const handleToggleUsuario = (usuarioId) => {
@@ -71,92 +85,163 @@ const UsuariosVisibilidadForm = ({ formData, onFormChange }) => {
   });
 
   const usuariosSeleccionados = formData.usuariosAutorizadosIds || [];
+  const tipoAcceso = formData.tipoAcceso || 'publico';
 
   return (
     <div className="space-y-6 sm:space-y-8">
-      {/* Toggle para visibilidad pública/privada - Diseño tipo tarjeta de selección */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        {/* Opción: Paquete Público */}
-        <button
-          type="button"
-          onClick={() => handleToggleChange("esPublico", true)}
-          className={`relative p-4 sm:p-6 rounded-xl sm:rounded-2xl border-2 transition-all duration-300 text-left ${
-            formData.esPublico
-              ? "border-green-500 bg-gradient-to-br from-green-50 to-emerald-50 shadow-lg scale-105"
-              : "border-slate-200 bg-white hover:border-green-300 hover:shadow-md"
-          }`}
-        >
-          {/* Badge de seleccionado */}
-          {formData.esPublico && (
-            <div className="absolute -top-2 -right-2 bg-green-500 text-white rounded-full p-1.5 shadow-lg">
-              <FiCheck className="w-4 h-4" />
-            </div>
-          )}
+      {/* Selector de Tipo de Acceso - 3 opciones */}
+      <div>
+        <div className="flex items-center gap-2 mb-4">
+          <FiPackage className="w-5 h-5 text-indigo-600" />
+          <h3 className="text-lg font-bold text-slate-900">Tipo de Acceso</h3>
+        </div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {/* Opción 1: PÚBLICO */}
+          <button
+            type="button"
+            onClick={() => handleTipoAccesoChange("publico")}
+            className={`relative p-4 sm:p-5 rounded-xl border-2 transition-all duration-300 text-left ${
+              tipoAcceso === 'publico'
+                ? "border-green-500 bg-gradient-to-br from-green-50 to-emerald-50 shadow-lg scale-[1.02]"
+                : "border-slate-200 bg-white hover:border-green-300 hover:shadow-md"
+            }`}
+          >
+            {tipoAcceso === 'publico' && (
+              <div className="absolute -top-2 -right-2 bg-green-500 text-white rounded-full p-1.5 shadow-lg">
+                <FiCheck className="w-4 h-4" />
+              </div>
+            )}
 
-          <div className="flex items-start gap-3">
-            <div className={`p-3 rounded-xl ${formData.esPublico ? "bg-green-500" : "bg-green-100"}`}>
-              <FiGlobe className={`w-6 h-6 ${formData.esPublico ? "text-white" : "text-green-600"}`} />
+            <div className="flex flex-col gap-3">
+              <div className={`p-3 rounded-xl w-fit ${tipoAcceso === 'publico' ? "bg-green-500" : "bg-green-100"}`}>
+                <FiGlobe className={`w-6 h-6 ${tipoAcceso === 'publico' ? "text-white" : "text-green-600"}`} />
+              </div>
+              
+              <div>
+                <h4 className="text-base font-bold text-slate-900 mb-1">
+                  Público
+                </h4>
+                <p className="text-xs sm:text-sm text-slate-600 leading-relaxed mb-2">
+                  Visible para todos en el listado público
+                </p>
+                
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2 text-xs text-slate-500">
+                    <FiCheck className="w-3 h-3 text-green-600" />
+                    <span>Aparece en /paquetes</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-xs text-slate-500">
+                    <FiCheck className="w-3 h-3 text-green-600" />
+                    <span>No requiere login</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-xs text-slate-500">
+                    <FiCheck className="w-3 h-3 text-green-600" />
+                    <span>Accesible por URL directa</span>
+                  </div>
+                </div>
+              </div>
             </div>
-            <div className="flex-1 min-w-0">
-              <h4 className="text-base sm:text-lg font-bold text-slate-900 mb-1">
-                Público
-              </h4>
-              <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
-                Todos pueden verlo
-              </p>
-            </div>
-          </div>
+          </button>
 
-          <div className={`mt-3 pt-3 border-t ${formData.esPublico ? "border-green-200" : "border-slate-200"}`}>
-            <div className="flex items-center gap-2 text-xs text-slate-500">
-              <FiCheck className="w-3 h-3" />
-              <span>Disponible sin login</span>
-            </div>
-          </div>
-        </button>
+          {/* Opción 2: PRIVADO */}
+          <button
+            type="button"
+            onClick={() => handleTipoAccesoChange("privado")}
+            className={`relative p-4 sm:p-5 rounded-xl border-2 transition-all duration-300 text-left ${
+              tipoAcceso === 'privado'
+                ? "border-purple-500 bg-gradient-to-br from-purple-50 to-indigo-50 shadow-lg scale-[1.02]"
+                : "border-slate-200 bg-white hover:border-purple-300 hover:shadow-md"
+            }`}
+          >
+            {tipoAcceso === 'privado' && (
+              <div className="absolute -top-2 -right-2 bg-purple-500 text-white rounded-full p-1.5 shadow-lg">
+                <FiCheck className="w-4 h-4" />
+              </div>
+            )}
 
-        {/* Opción: Paquete Privado */}
-        <button
-          type="button"
-          onClick={() => handleToggleChange("esPublico", false)}
-          className={`relative p-4 sm:p-6 rounded-xl sm:rounded-2xl border-2 transition-all duration-300 text-left ${
-            !formData.esPublico
-              ? "border-purple-500 bg-gradient-to-br from-purple-50 to-indigo-50 shadow-lg scale-105"
-              : "border-slate-200 bg-white hover:border-purple-300 hover:shadow-md"
-          }`}
-        >
-          {/* Badge de seleccionado */}
-          {!formData.esPublico && (
-            <div className="absolute -top-2 -right-2 bg-purple-500 text-white rounded-full p-1.5 shadow-lg">
-              <FiCheck className="w-4 h-4" />
+            <div className="flex flex-col gap-3">
+              <div className={`p-3 rounded-xl w-fit ${tipoAcceso === 'privado' ? "bg-purple-500" : "bg-purple-100"}`}>
+                <FiLock className={`w-6 h-6 ${tipoAcceso === 'privado' ? "text-white" : "text-purple-600"}`} />
+              </div>
+              
+              <div>
+                <h4 className="text-base font-bold text-slate-900 mb-1">
+                  Privado
+                </h4>
+                <p className="text-xs sm:text-sm text-slate-600 leading-relaxed mb-2">
+                  Solo usuarios autorizados con login
+                </p>
+                
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2 text-xs text-slate-500">
+                    <FiCheck className="w-3 h-3 text-purple-600" />
+                    <span>Aparece en /mis-paquetes</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-xs text-slate-500">
+                    <FiCheck className="w-3 h-3 text-purple-600" />
+                    <span>Requiere autenticación</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-xs text-slate-500">
+                    <FiCheck className="w-3 h-3 text-purple-600" />
+                    <span>Envía notificaciones email</span>
+                  </div>
+                </div>
+              </div>
             </div>
-          )}
+          </button>
 
-          <div className="flex items-start gap-3">
-            <div className={`p-3 rounded-xl ${!formData.esPublico ? "bg-purple-500" : "bg-purple-100"}`}>
-              <FiLock className={`w-6 h-6 ${!formData.esPublico ? "text-white" : "text-purple-600"}`} />
-            </div>
-            <div className="flex-1 min-w-0">
-              <h4 className="text-base sm:text-lg font-bold text-slate-900 mb-1">
-                Privado
-              </h4>
-              <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
-                Solo usuarios seleccionados
-              </p>
-            </div>
-          </div>
+          {/* Opción 3: LINK-PRIVADO */}
+          <button
+            type="button"
+            onClick={() => handleTipoAccesoChange("link-privado")}
+            className={`relative p-4 sm:p-5 rounded-xl border-2 transition-all duration-300 text-left ${
+              tipoAcceso === 'link-privado'
+                ? "border-blue-500 bg-gradient-to-br from-blue-50 to-cyan-50 shadow-lg scale-[1.02]"
+                : "border-slate-200 bg-white hover:border-blue-300 hover:shadow-md"
+            }`}
+          >
+            {tipoAcceso === 'link-privado' && (
+              <div className="absolute -top-2 -right-2 bg-blue-500 text-white rounded-full p-1.5 shadow-lg">
+                <FiCheck className="w-4 h-4" />
+              </div>
+            )}
 
-          <div className={`mt-3 pt-3 border-t ${!formData.esPublico ? "border-purple-200" : "border-slate-200"}`}>
-            <div className="flex items-center gap-2 text-xs text-slate-500">
-              <FiLock className="w-3 h-3" />
-              <span>Acceso restringido</span>
+            <div className="flex flex-col gap-3">
+              <div className={`p-3 rounded-xl w-fit ${tipoAcceso === 'link-privado' ? "bg-blue-500" : "bg-blue-100"}`}>
+                <FiLink className={`w-6 h-6 ${tipoAcceso === 'link-privado' ? "text-white" : "text-blue-600"}`} />
+              </div>
+              
+              <div>
+                <h4 className="text-base font-bold text-slate-900 mb-1">
+                  Link Privado
+                </h4>
+                <p className="text-xs sm:text-sm text-slate-600 leading-relaxed mb-2">
+                  Solo accesible por URL directa
+                </p>
+                
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2 text-xs text-slate-500">
+                    <FiCheck className="w-3 h-3 text-blue-600" />
+                    <span>No aparece en listados</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-xs text-slate-500">
+                    <FiCheck className="w-3 h-3 text-blue-600" />
+                    <span>No requiere login</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-xs text-slate-500">
+                    <FiCheck className="w-3 h-3 text-blue-600" />
+                    <span>Ideal para WhatsApp/Email</span>
+                  </div>
+                </div>
+              </div>
             </div>
-          </div>
-        </button>
+          </button>
+        </div>
       </div>
 
-      {/* Selector de usuarios autorizados - Solo visible si es privado */}
-      {!formData.esPublico && (
+      {/* Selector de usuarios autorizados - Solo visible si es PRIVADO */}
+      {tipoAcceso === 'privado' && (
         <div className="bg-gradient-to-br from-purple-50 via-white to-indigo-50 rounded-xl sm:rounded-2xl border-2 border-purple-200 p-4 sm:p-6 shadow-lg">
           {/* Header con contador */}
           <div className="flex items-center justify-between mb-4">

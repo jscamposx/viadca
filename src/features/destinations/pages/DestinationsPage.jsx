@@ -200,9 +200,8 @@ const DestinationsPage = () => {
       setLoading(true);
       setError(null);
       
-      // Usar el endpoint correcto según autenticación
-      const endpoint = isAuthenticated ? "/paquetes/mis-paquetes" : "/paquetes/listado";
-      const { data: resp } = await apiClient.get(endpoint);
+      // SIEMPRE usar /paquetes/listado (solo públicos, no requiere login)
+      const { data: resp } = await apiClient.get("/paquetes/listado");
       
       const items = Array.isArray(resp?.data)
         ? resp.data
@@ -221,7 +220,7 @@ const DestinationsPage = () => {
     if (hasFetched.current) return;
     hasFetched.current = true;
     loadData();
-  }, [isAuthenticated]); // Recargar cuando cambie el estado de autenticación
+  }, []); // Solo cargar una vez al montar
 
   // Filtrado base (ahora todo en cliente, incluye búsqueda local)
   const filteredData = useMemo(() => {
