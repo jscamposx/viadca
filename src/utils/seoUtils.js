@@ -72,10 +72,15 @@ export const generatePackageKeywords = (paquete) => {
     "vacaciones",
     "turismo",
 
-    // Ubicación
-    "agencia viajes Durango",
-    "Viadca viajes",
+    // Ubicación LOCAL - MUY IMPORTANTE para SEO
+    "agencia de viajes en Durango",
+    "agencia de viajes Durango",
+    "viajes Durango",
+    "Viadca Durango",
+    "agencia viajes Durango Dgo",
     "tours desde Durango",
+    "paquetes vacacionales Durango",
+    "viajes económicos Durango",
 
     // Duración
     `${paquete.duracion_dias} días`,
@@ -175,7 +180,7 @@ const extractActivityKeywords = (text) => {
 };
 
 export const generateSEOTitle = (paquete) => {
-  if (!paquete) return "Viajes y Tours Organizados | Viadca Viajes";
+  if (!paquete) return "Agencia de Viajes en Durango - Tours y Viajes | Viadca";
 
   const destinos =
     paquete.destinos
@@ -188,17 +193,18 @@ export const generateSEOTitle = (paquete) => {
     ? ` desde ${formatPrecio(paquete.precio_total, sanitizeMoneda(paquete.moneda))} ${sanitizeMoneda(paquete.moneda)}`
     : "";
 
-  const title = `${paquete.titulo} · ${paquete.duracion_dias} días${precioStr} | Viadca Viajes`;
+  // SEO optimizado con ubicación
+  const title = `${paquete.titulo}${destinoStr} · ${paquete.duracion_dias} días | Agencia Durango`;
 
   return title.length > 65
-    ? `${paquete.titulo} · ${paquete.duracion_dias} días | Viadca Viajes`
+    ? `${paquete.titulo} · ${paquete.duracion_dias} días | Viadca Durango`
     : title;
 };
 
 
 export const generateSEODescription = (paquete) => {
   if (!paquete)
-    return "Descubre increíbles viajes y tours organizados con Viadca Viajes, tu agencia de confianza desde Durango.";
+    return "Agencia de viajes en Durango con los mejores tours y paquetes vacacionales. Viajes nacionales e internacionales. Reserva con Viadca, tu agencia de confianza.";
 
   if (paquete.descripcion && paquete.descripcion.length <= 155) {
     return paquete.descripcion;
@@ -212,11 +218,11 @@ export const generateSEODescription = (paquete) => {
   const destinoStr = destinos.length ? ` a ${destinos.join(", ")}` : "";
 
   const incluye = paquete.incluye
-    ? `. Incluye: ${paquete.incluye.substring(0, 80)}...`
+    ? `. Incluye: ${paquete.incluye.substring(0, 60)}...`
     : "";
   const hotel = paquete.hotel ? `. Hotel ${paquete.hotel.estrellas}★` : "";
 
-  const baseDesc = `Vive ${paquete.titulo} con ${paquete.duracion_dias} días de aventura${destinoStr}${hotel}${incluye} Reserva con Viadca Viajes.`;
+  const baseDesc = `Viaje${destinoStr} · ${paquete.duracion_dias} días${hotel}${incluye} Agencia de viajes en Durango | Viadca`;
 
   return baseDesc.length > 155 ? baseDesc.substring(0, 152) + "..." : baseDesc;
 };
@@ -236,23 +242,83 @@ export const generatePackageJsonLd = (paquete, url) => {
 
   return [
 
+    // Organización principal con LocalBusiness para SEO local
     {
       "@context": "https://schema.org",
-      "@type": "Organization",
-      name: "Viadca Viajes",
+      "@type": ["TravelAgency", "LocalBusiness", "Organization"],
+      name: "Viadca - Agencia de Viajes en Durango",
+      alternateName: "Viadca Viajes Durango",
       url: "https://www.viadca.app",
       logo: "https://www.viadca.app/viadcalogo.avif",
+      image: "https://www.viadca.app/HomePage/Hero-Image.avif",
+      description: "Agencia de viajes en Durango especializada en tours, paquetes vacacionales nacionales e internacionales con más de 10 años de experiencia",
+      address: {
+        "@type": "PostalAddress",
+        addressLocality: "Durango",
+        addressRegion: "Durango",
+        postalCode: "34000",
+        addressCountry: "MX"
+      },
+      geo: {
+        "@type": "GeoCoordinates",
+        latitude: "24.0277",
+        longitude: "-104.6532"
+      },
+      areaServed: [
+        {
+          "@type": "City",
+          name: "Durango"
+        },
+        {
+          "@type": "State",
+          name: "Durango"
+        },
+        {
+          "@type": "Country",
+          name: "México"
+        }
+      ],
+      priceRange: "$$",
+      telephone: "+52-618-XXX-XXXX",
+      openingHours: "Mo-Fr 09:00-19:00, Sa 10:00-14:00",
       sameAs: [
         "https://www.facebook.com/viadcaviajes",
         "https://www.instagram.com/viadca.viajes",
       ],
+      hasOfferCatalog: {
+        "@type": "OfferCatalog",
+        name: "Paquetes de Viaje",
+        itemListElement: [
+          {
+            "@type": "Offer",
+            itemOffered: {
+              "@type": "Service",
+              name: "Viajes nacionales desde Durango"
+            }
+          },
+          {
+            "@type": "Offer",
+            itemOffered: {
+              "@type": "Service",
+              name: "Viajes internacionales desde Durango"
+            }
+          },
+          {
+            "@type": "Offer",
+            itemOffered: {
+              "@type": "Service",
+              name: "Tours organizados"
+            }
+          }
+        ]
+      }
     },
 
     // WebSite (para búsquedas de sitio)
     {
       "@context": "https://schema.org",
       "@type": "WebSite",
-      name: "Viadca Viajes",
+      name: "Viadca - Agencia de Viajes Durango",
       url: "https://www.viadca.app",
       potentialAction: {
         "@type": "SearchAction",
@@ -525,15 +591,15 @@ export const generateOGExtras = (paquete, url) => {
 export const generateHomepageOG = () => {
   return {
     type: "website",
-    title: "Viadca Viajes - Tu próxima aventura comienza aquí",
+    title: "Agencia de Viajes en Durango - Tours y Paquetes | Viadca",
     description:
-      "En Viadca, convertimos sus sueños de viajar en realidad. Con atención personalizada y paquetes exclusivos, te llevamos a los destinos más fascinantes.",
+      "Agencia de viajes en Durango con los mejores tours nacionales e internacionales. Paquetes todo incluido, cruceros, circuitos y más. ¡Cotiza sin compromiso!",
     image: FALLBACK_OG_IMAGE,
-    "image:alt": "Viadca Viajes - Agencia de viajes en Durango",
+    "image:alt": "Viadca - Agencia de viajes en Durango, Durango",
     "image:width": "1200",
     "image:height": "630",
     url: "https://www.viadca.app",
-    site_name: "Viadca Viajes",
+    site_name: "Viadca Durango",
     locale: "es_MX",
   };
 };
@@ -544,13 +610,13 @@ export const generateHomepageOG = () => {
 export const generateHomepageTwitter = () => {
   return {
     card: "summary_large_image",
-    title: "Viadca Viajes - Tu próxima aventura comienza aquí",
+    title: "Agencia de Viajes en Durango | Viadca",
     description:
-      "En Viadca, convertimos sus sueños de viajar en realidad. Con atención personalizada y paquetes exclusivos, te llevamos a los destinos más fascinantes.",
+      "Los mejores tours y paquetes vacacionales desde Durango. Viajes nacionales e internacionales con atención personalizada. ¡Reserva ahora!",
     image: FALLBACK_OG_IMAGE,
     site: "@viadcaviajes",
     creator: "@viadcaviajes",
-    "image:alt": "Viadca Viajes - Agencia de viajes en Durango",
+    "image:alt": "Viadca - Agencia de viajes en Durango, Dgo",
   };
 };
 
@@ -559,41 +625,115 @@ export const generateHomepageTwitter = () => {
  */
 export const generateHomepageJsonLd = () => {
   return [
-    // Organización principal
+    // LocalBusiness + TravelAgency optimizado para SEO local
     {
       "@context": "https://schema.org",
-      "@type": "TravelAgency",
-      name: "Viadca Viajes",
-      alternateName: "Viadca",
+      "@type": ["TravelAgency", "LocalBusiness"],
+      name: "Viadca - Agencia de Viajes en Durango",
+      alternateName: ["Viadca", "Viadca Viajes Durango", "Agencia Viadca"],
       url: "https://www.viadca.app",
       logo: "https://www.viadca.app/viadcalogo.avif",
-      image: FALLBACK_OG_IMAGE,
+      image: [
+        FALLBACK_OG_IMAGE,
+        "https://www.viadca.app/viadcalogo.avif"
+      ],
       description:
-        "Agencia de viajes especializada en paquetes turísticos personalizados desde Durango, México.",
+        "Agencia de viajes en Durango con más de 10 años de experiencia. Tours nacionales e internacionales, paquetes todo incluido, cruceros, circuitos y viajes a medida.",
       address: {
         "@type": "PostalAddress",
+        streetAddress: "Centro",
         addressLocality: "Durango",
         addressRegion: "Durango",
-        addressCountry: "México",
+        postalCode: "34000",
+        addressCountry: "MX"
       },
+      geo: {
+        "@type": "GeoCoordinates",
+        latitude: "24.0277",
+        longitude: "-104.6532"
+      },
+      telephone: "+52-618-XXX-XXXX",
+      priceRange: "$$",
+      openingHours: "Mo-Fr 09:00-19:00, Sa 10:00-14:00",
       contactPoint: {
         "@type": "ContactPoint",
         contactType: "customer service",
-        availableLanguage: "Spanish",
+        telephone: "+52-618-XXX-XXXX",
+        availableLanguage: ["Spanish"],
+        areaServed: "MX"
       },
       sameAs: [
         "https://www.facebook.com/viadcaviajes",
         "https://www.instagram.com/viadca.viajes",
       ],
-      areaServed: {
-        "@type": "Country",
-        name: "México",
+      areaServed: [
+        {
+          "@type": "City",
+          name: "Durango",
+          "@id": "https://www.wikidata.org/wiki/Q46422"
+        },
+        {
+          "@type": "State",
+          name: "Durango"
+        },
+        {
+          "@type": "Country",
+          name: "México"
+        }
+      ],
+      hasOfferCatalog: {
+        "@type": "OfferCatalog",
+        name: "Catálogo de Viajes",
+        itemListElement: [
+          {
+            "@type": "Offer",
+            itemOffered: {
+              "@type": "TouristTrip",
+              name: "Viajes nacionales desde Durango",
+              description: "Tours y paquetes a destinos nacionales de México"
+            }
+          },
+          {
+            "@type": "Offer",
+            itemOffered: {
+              "@type": "TouristTrip",
+              name: "Viajes internacionales desde Durango",
+              description: "Paquetes a Europa, Asia, América y más"
+            }
+          },
+          {
+            "@type": "Offer",
+            itemOffered: {
+              "@type": "Service",
+              name: "Cruceros",
+              description: "Cruceros por el Caribe, Mediterráneo y más"
+            }
+          },
+          {
+            "@type": "Offer",
+            itemOffered: {
+              "@type": "Service",
+              name: "Tours organizados",
+              description: "Circuitos guiados nacionales e internacionales"
+            }
+          }
+        ]
       },
       serviceType: [
         "Viajes organizados",
         "Tours personalizados",
         "Viajes a medida",
+        "Paquetes vacacionales",
+        "Cruceros",
+        "Circuitos turísticos"
       ],
+      knowsAbout: [
+        "Viajes a Europa",
+        "Tours por México",
+        "Viajes a playa",
+        "Circuitos culturales",
+        "Viajes todo incluido"
+      ]
     },
     // WebSite para búsquedas
     {

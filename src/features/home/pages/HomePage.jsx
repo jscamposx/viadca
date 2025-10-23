@@ -390,15 +390,25 @@ const Home = () => {
   };
 
   useSEO({
-    title: "Agencia de Viajes en Durango | Paquetes y Ofertas | Viadca",
+    title: "Agencia de Viajes en Durango - Tours y Paquetes | Viadca",
     description:
-      "Agencia de viajes en Durango especializada en paquetes personalizados, destinos nacionales e internacionales, vuelos, hoteles y experiencias únicas.",
+      "Agencia de viajes en Durango con los mejores tours nacionales e internacionales. Paquetes todo incluido, cruceros, circuitos. ¡Cotiza sin compromiso! ☎️ 618-XXX-XXXX",
     keywords: [
+      "agencia de viajes en Durango",
       "agencia de viajes Durango",
-      "paquetes de viaje",
-      "viajes internacionales",
-      "vacaciones México",
-      "turismo Durango",
+      "viajes Durango",
+      "tours desde Durango",
+      "paquetes vacacionales Durango",
+      "agencia viajes Durango Dgo",
+      "viajes económicos Durango",
+      "tours nacionales Durango",
+      "viajes internacionales Durango",
+      "Viadca Durango",
+      "agencia de viajes en Durango Mexico",
+      "mejores agencias de viajes Durango",
+      "paquetes todo incluido Durango",
+      "cruceros desde Durango",
+      "circuitos Europa Durango",
     ],
     canonical: "https://www.viadca.app/",
     og: generateHomepageOG(),
