@@ -66,9 +66,9 @@ export const generatePackageKeywords = (paquete) => {
   const keywords = [
 
     paquete.titulo,
-    "paquete de viaje",
-    "tour organizado",
     "viajes",
+    "viaje a medida",
+    "tour organizado",
     "vacaciones",
     "turismo",
 
@@ -79,6 +79,7 @@ export const generatePackageKeywords = (paquete) => {
 
     // Duración
     `${paquete.duracion_dias} días`,
+    `viaje ${paquete.duracion_dias} días`,
     `tour ${paquete.duracion_dias} días`,
 
     // Destinos
@@ -103,7 +104,7 @@ export const generatePackageKeywords = (paquete) => {
     ...(paquete.precio_total
       ? [
           `desde ${formatPrecio(paquete.precio_total, sanitizeMoneda(paquete.moneda))}`,
-          `paquete ${sanitizeMoneda(paquete.moneda)}`,
+          `viaje ${sanitizeMoneda(paquete.moneda)}`,
         ]
       : []),
 
@@ -174,7 +175,7 @@ const extractActivityKeywords = (text) => {
 };
 
 export const generateSEOTitle = (paquete) => {
-  if (!paquete) return "Paquete de Viaje | Viadca Viajes";
+  if (!paquete) return "Viajes y Tours Organizados | Viadca Viajes";
 
   const destinos =
     paquete.destinos
@@ -197,7 +198,7 @@ export const generateSEOTitle = (paquete) => {
 
 export const generateSEODescription = (paquete) => {
   if (!paquete)
-    return "Descubre increíbles paquetes de viaje con Viadca Viajes, tu agencia de confianza desde Durango.";
+    return "Descubre increíbles viajes y tours organizados con Viadca Viajes, tu agencia de confianza desde Durango.";
 
   if (paquete.descripcion && paquete.descripcion.length <= 155) {
     return paquete.descripcion;
@@ -273,7 +274,7 @@ export const generatePackageJsonLd = (paquete, url) => {
         {
           "@type": "ListItem",
           position: 2,
-          name: "Paquetes",
+          name: "Viajes",
           item: "https://www.viadca.app/paquetes",
         },
         {
@@ -294,7 +295,7 @@ export const generatePackageJsonLd = (paquete, url) => {
       image: resolvedImages.length ? resolvedImages : [FALLBACK_OG_IMAGE],
       sku: paquete.codigo || url,
       brand: { "@type": "Brand", name: "Viadca Viajes" },
-      category: "Travel Package",
+      category: "Viajes y Tours",
       aggregateRating: paquete.rating
         ? {
             "@type": "AggregateRating",
@@ -405,13 +406,13 @@ export const generatePackageOG = (paquete, url) => {
     }
   }
 
-  const alt = paquete.titulo || "Paquete de viaje - Viadca Viajes";
+  const alt = paquete.titulo || "Viaje organizado - Viadca Viajes";
   const updated = new Date().toISOString();
 
   return {
     type: "product",
     title: `${paquete.titulo}${destinoStr} - ${paquete.duracion_dias} días`,
-    description: `Descubre ${paquete.titulo} con Viadca Viajes${precioStr}. ¡Reserva ahora!`,
+    description: `Descubre ${paquete.titulo} con Viadca Viajes${precioStr}. ¡Reserva tu viaje ahora!`,
     image: firstImage,
     "image:alt": alt,
     "image:width": "1200",
@@ -442,12 +443,12 @@ export const generatePackageTwitter = (paquete) => {
 
   const firstImage =
     resolveImageUrlForSEO(paquete.imagenes?.[0]) || FALLBACK_OG_IMAGE;
-  const alt = paquete.titulo || "Paquete de viaje - Viadca Viajes";
+  const alt = paquete.titulo || "Viaje organizado - Viadca Viajes";
 
   return {
     card: "summary_large_image",
     title: `${paquete.titulo}${destinoStr}`,
-    description: `${paquete.duracion_dias} días de aventura${precioStr}. ¡Reserva con Viadca Viajes!`,
+    description: `${paquete.duracion_dias} días de aventura${precioStr}. ¡Reserva tu viaje con Viadca!`,
     image: firstImage,
     site: "@viadcaviajes",
     creator: "@viadcaviajes",
@@ -589,9 +590,9 @@ export const generateHomepageJsonLd = () => {
         name: "México",
       },
       serviceType: [
-        "Paquetes turísticos",
         "Viajes organizados",
         "Tours personalizados",
+        "Viajes a medida",
       ],
     },
     // WebSite para búsquedas
@@ -601,7 +602,7 @@ export const generateHomepageJsonLd = () => {
       name: "Viadca Viajes",
       url: "https://www.viadca.app",
       description:
-        "Portal de viajes con paquetes turísticos exclusivos desde Durango, México.",
+        "Portal de viajes con tours y viajes organizados exclusivos desde Durango, México.",
       publisher: {
         "@type": "TravelAgency",
         name: "Viadca Viajes",

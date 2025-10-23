@@ -134,11 +134,11 @@ function NotFoundMessage() {
         </div>
 
         <h3 className="text-2xl font-bold text-gray-900 mb-4">
-          Paquete no encontrado
+          Viaje no encontrado
         </h3>
 
         <p className="text-gray-600 mb-8 leading-relaxed text-base">
-          Lo sentimos, no pudimos encontrar el paquete que buscas. Puede que
+          Lo sentimos, no pudimos encontrar el viaje que buscas. Puede que
           haya sido movido o ya no esté disponible.
         </p>
 
@@ -146,7 +146,7 @@ function NotFoundMessage() {
           onClick={() => window.history.back()}
           className="w-full py-3 px-6 bg-gradient-to-r from-gray-600 to-blue-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all duration-300"
         >
-          Explorar otros paquetes
+          Explorar otros viajes
         </button>
       </div>
     </div>
@@ -173,11 +173,11 @@ function InactivePackageMessage() {
         </div>
 
         <h3 className="text-2xl font-bold text-gray-900 mb-4">
-          Paquete no disponible públicamente
+          Viaje no disponible públicamente
         </h3>
 
         <p className="text-gray-600 mb-8 leading-relaxed text-base">
-          Este paquete fue desactivado por el administrador y no está visible en
+          Este viaje fue desactivado por el administrador y no está visible en
           la vista pública.
         </p>
 
@@ -222,10 +222,10 @@ function AccessDeniedMessage() {
         {/* Mensaje principal */}
         <div className="bg-red-50 border border-red-200 rounded-xl p-4 mb-6">
           <p className="text-red-800 font-semibold mb-2 text-base">
-            No tienes permiso para ver este paquete
+            No tienes permiso para ver este viaje
           </p>
           <p className="text-red-700 text-sm leading-relaxed">
-            Este es un paquete <strong>privado exclusivo</strong> y solo está disponible para usuarios autorizados específicos.
+            Este es un viaje <strong>privado exclusivo</strong> y solo está disponible para usuarios autorizados específicos.
           </p>
         </div>
 
@@ -247,7 +247,7 @@ function AccessDeniedMessage() {
             onClick={() => (window.location.href = "/paquetes")}
             className="w-full py-3 px-6 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all duration-300"
           >
-            📦 Ver Paquetes Disponibles
+            ✈️ Ver Viajes Disponibles
           </button>
           
           <button
@@ -319,15 +319,15 @@ function PackageViewPage() {
       jsonLd: generatePackageJsonLd(paquete, url),
     };
   } else if (loading) {
-    seoConfig = { title: "Cargando paquete | Viadca Viajes", noindex: true };
+    seoConfig = { title: "Cargando viaje | Viadca Viajes", noindex: true };
   } else if (error) {
     seoConfig = {
-      title: "Error al cargar paquete | Viadca Viajes",
+      title: "Error al cargar viaje | Viadca Viajes",
       noindex: true,
     };
   } else {
     seoConfig = {
-      title: "Paquete no encontrado | Viadca Viajes",
+      title: "Viaje no encontrado | Viadca Viajes",
       noindex: true,
     };
   }

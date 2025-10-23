@@ -170,7 +170,7 @@ const PackageCard = ({ paquete }) => {
               OFERTA
             </span>
           )}
-          {tipoPaquete && (
+          {tipoPaquete ? (
             <span
               className={`bg-gradient-to-r ${tipoConfig.gradient} text-white px-2.5 py-1 rounded-full text-xs font-semibold flex items-center gap-1 shadow-lg backdrop-blur-sm border border-white/20`}
             >
@@ -184,6 +184,21 @@ const PackageCard = ({ paquete }) => {
                 dangerouslySetInnerHTML={{ __html: tipoConfig.icon }}
               />
               {tipoConfig.label}
+            </span>
+          ) : (
+            <span className="bg-gradient-to-r from-green-500 to-emerald-600 text-white px-2.5 py-1 rounded-full text-xs font-semibold flex items-center gap-1 shadow-lg backdrop-blur-sm border border-white/20">
+              <svg
+                className="w-3 h-3"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                viewBox="0 0 24 24"
+                aria-hidden="true"
+              >
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                <polyline points="22 4 12 14.01 9 11.01" />
+              </svg>
+              Activo
             </span>
           )}
         </div>
@@ -433,7 +448,7 @@ const DestinationsPage = () => {
     list.push({
       key: "todos",
       title: "Todos",
-      description: "Todos los paquetes disponibles",
+      description: "Todos los viajes disponibles",
       items: todos,
     });
     return list;
@@ -576,10 +591,10 @@ const DestinationsPage = () => {
 
                   {/* Contenido */}
                   <h2 className="font-volkhov text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-                    No hay paquetes disponibles
+                    No hay viajes disponibles
                   </h2>
                   <p className="text-gray-600 text-base sm:text-lg mb-8 leading-relaxed">
-                    Actualmente no tenemos paquetes que coincidan con tu búsqueda.
+                    Actualmente no tenemos viajes que coincidan con tu búsqueda.
                     <br className="hidden sm:block" />
                     Intenta ajustar los filtros o contáctanos para opciones personalizadas.
                   </p>
