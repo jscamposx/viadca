@@ -71,12 +71,77 @@ const PackageCard = ({ paquete }) => {
     : paquete?.duracion_noches
       ? `${paquete.duracion_noches} noches`
       : paquete?.duracion_texto || paquete?.duracion || "";
-  const isActivo = paquete?.activo !== false;
   const hasDescuento = paquete?.precio_descuento || paquete?.en_oferta;
-  const statusLabel = isActivo ? "Activo" : "No disponible";
-  const statusClasses = isActivo
-    ? "bg-gradient-to-r from-green-500 to-emerald-600 text-white"
-    : "bg-gradient-to-r from-slate-500 to-gray-600 text-white";
+  
+  // Obtener tipo de paquete
+  const tipoPaquete = (
+    paquete?.tipo_producto ||
+    paquete?.tipo ||
+    (paquete.mayoristas_tipos && paquete.mayoristas_tipos[0]) ||
+    ""
+  ).trim();
+
+  // Configuración de iconos y colores por tipo
+  const getTipoConfig = (tipo) => {
+    const tipoLower = tipo.toLowerCase();
+    if (tipoLower.includes('circuito')) {
+      return {
+        label: 'Circuito',
+        icon: '<path d="M12 22s-8-4.5-8-11.8A8 8 0 0 1 12 2a8 8 0 0 1 8 8.2c0 7.3-8 11.8-8 11.8z"/><circle cx="12" cy="10" r="3"/>',
+        gradient: 'from-emerald-500 to-teal-600'
+      };
+    } else if (tipoLower.includes('paquete')) {
+      return {
+        label: 'Paquete',
+        icon: '<line x1="16.5" y1="9.4" x2="7.5" y2="4.21"></line><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line>',
+        gradient: 'from-blue-500 to-indigo-600'
+      };
+    } else if (tipoLower.includes('hotel')) {
+      return {
+        label: 'Hotel',
+        icon: '<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline>',
+        gradient: 'from-pink-500 to-rose-600'
+      };
+    } else if (tipoLower.includes('vuelo')) {
+      return {
+        label: 'Vuelo',
+        icon: '<path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"></path>',
+        gradient: 'from-sky-500 to-blue-600'
+      };
+    } else if (tipoLower.includes('crucero')) {
+      return {
+        label: 'Crucero',
+        icon: '<path d="M2 21c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1 .6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"></path><path d="M19.38 20A11.6 11.6 0 0 0 21 14l-9-4-9 4c0 2.9.94 5.34 2.81 7.76"></path><path d="M19 13V7a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2v6"></path><path d="M12 10v4"></path><path d="M12 2v3"></path>',
+        gradient: 'from-cyan-500 to-blue-600'
+      };
+    } else if (tipoLower.includes('combinado')) {
+      return {
+        label: 'Combinado',
+        icon: '<polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline>',
+        gradient: 'from-purple-500 to-violet-600'
+      };
+    } else if (tipoLower.includes('excursión') || tipoLower.includes('excursion')) {
+      return {
+        label: 'Excursión',
+        icon: '<polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>',
+        gradient: 'from-amber-500 to-orange-600'
+      };
+    } else if (tipoLower.includes('traslado')) {
+      return {
+        label: 'Traslado',
+        icon: '<rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle>',
+        gradient: 'from-slate-500 to-gray-600'
+      };
+    } else {
+      return {
+        label: tipo || 'Paquete',
+        icon: '<line x1="16.5" y1="9.4" x2="7.5" y2="4.21"></line><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line>',
+        gradient: 'from-blue-500 to-indigo-600'
+      };
+    }
+  };
+
+  const tipoConfig = getTipoConfig(tipoPaquete);
 
   return (
     <article className="bg-white rounded-xl shadow-md hover:shadow-xl hover:shadow-blue-500/10 transition-all duration-500 hover:-translate-y-2 hover:scale-[1.02] overflow-hidden border border-slate-100 package-card h-full flex flex-col transform-gpu">
@@ -105,22 +170,22 @@ const PackageCard = ({ paquete }) => {
               OFERTA
             </span>
           )}
-          <span
-            className={`${statusClasses} px-2.5 py-1 rounded-full text-xs font-semibold flex items-center gap-1 shadow-lg backdrop-blur-sm border border-white/20`}
-          >
-            <svg
-              className="w-3 h-3"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              viewBox="0 0 24 24"
-              aria-hidden="true"
+          {tipoPaquete && (
+            <span
+              className={`bg-gradient-to-r ${tipoConfig.gradient} text-white px-2.5 py-1 rounded-full text-xs font-semibold flex items-center gap-1 shadow-lg backdrop-blur-sm border border-white/20`}
             >
-              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
-              <polyline points="22 4 12 14.01 9 11.01" />
-            </svg>
-            {statusLabel}
-          </span>
+              <svg
+                className="w-3 h-3"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                viewBox="0 0 24 24"
+                aria-hidden="true"
+                dangerouslySetInnerHTML={{ __html: tipoConfig.icon }}
+              />
+              {tipoConfig.label}
+            </span>
+          )}
         </div>
         <div className="package-card-location absolute bottom-3 left-3 opacity-0 transition-all duration-500 transform translate-y-2 z-20">
           <span className="bg-white/95 backdrop-blur-md text-slate-800 px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 shadow-lg border border-white/40">
