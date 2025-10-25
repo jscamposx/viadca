@@ -8,6 +8,8 @@
     "dev": "vite",
     "build": "vite build",
     "build:seo": "node scripts/generateSitemap.js && vite build",
+    "build:full": "node scripts/generateSitemap.js && vite build && node scripts/prerender-packages.js",
+    "prerender": "node scripts/prerender-packages.js",
     "lint": "eslint .",
     "format": "prettier --write .",
     "preview": "vite preview",
