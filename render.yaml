@@ -1,0 +1,22 @@
+# Configuración para Render.com
+# Este archivo automatiza el deploy con meta tags dinámicos
+
+services:
+  # Web Service Principal
+  - type: web
+    name: viadca-frontend
+    env: node
+    region: oregon
+    plan: free
+    branch: main
+    buildCommand: pnpm install && pnpm run build
+    startCommand: pnpm run start:prod
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: VITE_API_URL
+        value: https://api.viadca.app
+      - key: PORT
+        value: 10000
+    healthCheckPath: /
+    autoDeploy: true
