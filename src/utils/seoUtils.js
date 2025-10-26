@@ -6,7 +6,7 @@ const API_BASE = (import.meta?.env?.VITE_API_BASE_URL || SITE_ORIGIN).replace(
   /\/$/,
   "",
 );
-const FALLBACK_OG_IMAGE = `${SITE_ORIGIN}/viadcalogo.avif`;
+const FALLBACK_OG_IMAGE = `${SITE_ORIGIN}/seo%20image.png`;
 const FALLBACK_HERO_IMAGE = `${SITE_ORIGIN}/HomePage/Hero-Image.avif`;
 
 
@@ -213,18 +213,18 @@ export const generateSEOTitle = (paquete) => {
       ?.map((d) => d.ciudad || d.destino)
       .filter(Boolean)
       .slice(0, 2) || [];
-  const destinoStr = destinos.length ? ` ${destinos.join(" y ")}` : "";
+  const destinoStr = destinos.length ? ` a ${destinos.join(" y ")}` : "";
 
   const precioStr = paquete.precio_total
     ? ` desde $${Math.floor(paquete.precio_total).toLocaleString('es-MX')}`
     : "";
 
-  // SEO optimizado con emojis para CTR y ubicación para SEO local
-  const title = `✈️${destinoStr} · ${paquete.duracion_dias} días${precioStr} | Viadca Durango`;
+  // Título con nombre del paquete + destinos + días + ubicación
+  const title = `${paquete.titulo}${destinoStr} · ${paquete.duracion_dias} días | Viadca Durango`;
 
   // Si es muy largo, versión corta
   return title.length > 60
-    ? `✈️${destinoStr} ${paquete.duracion_dias}d | Viadca Durango`
+    ? `${paquete.titulo} ${paquete.duracion_dias}d | Viadca Durango`
     : title;
 };
 
@@ -278,8 +278,8 @@ export const generatePackageJsonLd = (paquete, url) => {
       name: "Viadca - Agencia de Viajes en Durango",
       alternateName: "Viadca Viajes Durango",
       url: "https://www.viadca.app",
-      logo: "https://www.viadca.app/viadcalogo.avif",
-      image: "https://www.viadca.app/viadcalogo.avif",
+      logo: "https://www.viadca.app/seo%20image.png",
+      image: "https://www.viadca.app/seo%20image.png",
       description: "Agencia de viajes en Durango especializada en tours, viajes vacacionales nacionales e internacionales con más de 10 años de experiencia",
       address: {
         "@type": "PostalAddress",
@@ -661,10 +661,10 @@ export const generateHomepageJsonLd = () => {
       name: "Viadca - Agencia de Viajes en Durango",
       alternateName: ["Viadca", "Viadca Viajes Durango", "Agencia Viadca"],
       url: "https://www.viadca.app",
-      logo: "https://www.viadca.app/viadcalogo.avif",
+      logo: "https://www.viadca.app/seo%20image.png",
       image: [
         FALLBACK_OG_IMAGE,
-        "https://www.viadca.app/viadcalogo.avif"
+        "https://www.viadca.app/HomePage/Hero-Image.avif"
       ],
       description:
         "Agencia de viajes en Durango con más de 10 años de experiencia. Tours nacionales e internacionales, viajes todo incluido, cruceros, circuitos y viajes a medida.",

@@ -19,13 +19,19 @@
       "purpose": "any maskable"
     },
     {
-      "src": "/viadcalogo.avif",
-      "sizes": "512x512",
-      "type": "image/avif",
+      "src": "/seo%20image.png",
+      "sizes": "1200x630",
+      "type": "image/png",
       "purpose": "any maskable"
     }
   ],
   "screenshots": [
+    {
+      "src": "/seo%20image.png",
+      "sizes": "1200x630",
+      "type": "image/png",
+      "label": "Viadca - Agencia de Viajes en Durango"
+    },
     {
       "src": "/HomePage/Hero-Image.avif",
       "sizes": "1280x720",

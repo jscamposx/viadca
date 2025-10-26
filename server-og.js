@@ -49,12 +49,12 @@ const generateOGHtml = (paquete, codigoUrl) => {
   <meta property="og:site_name" content="Viadca Durango">
   <meta property="og:title" content="Agencia de Viajes en Durango - Tours y Viajes | Viadca">
   <meta property="og:description" content="Agencia de viajes en Durango con los mejores tours y viajes vacacionales. Viajes nacionales e internacionales.">
-  <meta property="og:image" content="https://www.viadca.app/viadcalogo.avif">
+  <meta property="og:image" content="https://www.viadca.app/seo%20image.png">
   <meta property="og:url" content="https://www.viadca.app">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Agencia de Viajes en Durango | Viadca">
   <meta name="twitter:description" content="Los mejores tours y viajes vacacionales desde Durango">
-  <meta name="twitter:image" content="https://www.viadca.app/viadcalogo.avif">
+  <meta name="twitter:image" content="https://www.viadca.app/seo%20image.png">
   <meta http-equiv="refresh" content="0;url=https://www.viadca.app">
 </head>
 <body>
@@ -68,7 +68,7 @@ const generateOGHtml = (paquete, codigoUrl) => {
   const imagen = paquete.imagenes?.[0]?.cloudinary_url || 
                  paquete.imagenes?.[0]?.url || 
                  paquete.primera_imagen || 
-                 'https://www.viadca.app/viadcalogo.avif';
+                 'https://www.viadca.app/seo%20image.png';
   
   const destinos = paquete.destinos?.map(d => d.ciudad || d.destino).filter(Boolean).join(', ') || '';
   const precio = paquete.precio_total ? `desde $${paquete.precio_total.toLocaleString('es-MX')} ${paquete.moneda || 'MXN'}` : '';
