@@ -1,0 +1,89 @@
+{
+  "name": "Viadca - Agencia de Viajes en Durango",
+  "short_name": "Viadca Durango",
+  "description": "Agencia de viajes #1 en Durango. Tours nacionales e internacionales, paquetes todo incluido, mejores precios.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "theme_color": "#0b4fa3",
+  "background_color": "#ffffff",
+  "orientation": "portrait-primary",
+  "lang": "es-MX",
+  "dir": "ltr",
+  "categories": ["travel", "tourism", "vacation", "tours"],
+  "icons": [
+    {
+      "src": "/viadca-icon.avif",
+      "sizes": "192x192",
+      "type": "image/avif",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/viadcalogo.avif",
+      "sizes": "512x512",
+      "type": "image/avif",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/HomePage/Hero-Image.avif",
+      "sizes": "1280x720",
+      "type": "image/avif",
+      "label": "Página principal de Viadca"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Ver Viajes",
+      "short_name": "Viajes",
+      "description": "Explora nuestros paquetes de viaje",
+      "url": "/paquetes",
+      "icons": [
+        {
+          "src": "/viadca-icon.avif",
+          "sizes": "96x96",
+          "type": "image/avif"
+        }
+      ]
+    },
+    {
+      "name": "Destinos",
+      "short_name": "Destinos",
+      "description": "Descubre destinos increíbles",
+      "url": "/destinos",
+      "icons": [
+        {
+          "src": "/viadca-icon.avif",
+          "sizes": "96x96",
+          "type": "image/avif"
+        }
+      ]
+    },
+    {
+      "name": "Contacto",
+      "short_name": "Contacto",
+      "description": "Cotiza tu viaje",
+      "url": "/contacto",
+      "icons": [
+        {
+          "src": "/viadca-icon.avif",
+          "sizes": "96x96",
+          "type": "image/avif"
+        }
+      ]
+    }
+  ],
+  "related_applications": [],
+  "prefer_related_applications": false,
+  "iarc_rating_id": "",
+  "share_target": {
+    "action": "/contacto",
+    "method": "GET",
+    "enctype": "application/x-www-form-urlencoded",
+    "params": {
+      "title": "subject",
+      "text": "message"
+    }
+  }
+}

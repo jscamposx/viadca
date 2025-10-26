@@ -65,15 +65,17 @@ export const generatePackageKeywords = (paquete) => {
   if (!paquete) return [];
 
   const keywords = [
-
+    // Título del paquete
     paquete.titulo,
+    
+    // Keywords generales de viaje
     "viajes",
     "viaje a medida",
     "tour organizado",
     "vacaciones",
     "turismo",
 
-    // Ubicación LOCAL - MUY IMPORTANTE para SEO
+    // KEYWORDS LOCALES - SEO LOCAL ULTRA OPTIMIZADO
     "agencia de viajes en Durango",
     "agencia de viajes Durango",
     "viajes Durango",
@@ -82,35 +84,58 @@ export const generatePackageKeywords = (paquete) => {
     "tours desde Durango",
     "viajes vacacionales Durango",
     "viajes económicos Durango",
+    "mejores agencias de viajes Durango",
+    "agencia de viajes en Durango centro",
+    "paquetes turísticos Durango",
+    "viajes baratos Durango",
+    "tours organizados Durango",
+    "agencia viajes confiable Durango",
+    
+    // Long-tail transaccionales (alta intención de compra)
+    "cotizar viaje Durango",
+    "reservar viaje Durango",
+    "comprar paquete viaje Durango",
+    "precio viajes Durango",
 
     // Duración
     `${paquete.duracion_dias} días`,
     `viaje ${paquete.duracion_dias} días`,
     `tour ${paquete.duracion_dias} días`,
 
-    // Destinos
-    ...(paquete.destinos?.map((d) => d.ciudad || d.destino).filter(Boolean) ||
-      []),
+    // Destinos con combinaciones locales
+    ...(paquete.destinos?.map((d) => {
+      const ciudad = d.ciudad || d.destino;
+      return [
+        ciudad,
+        `viaje a ${ciudad}`,
+        `viaje a ${ciudad} desde Durango`,
+        `tour ${ciudad} desde Durango`
+      ];
+    }).flat().filter(Boolean) || []),
     ...(paquete.destinos?.map((d) => d.estado).filter(Boolean) || []),
     ...(paquete.destinos?.map((d) => d.pais).filter(Boolean) || []),
 
-    // Hotel
+    // Hotel con especificaciones
     ...(paquete.hotel
       ? [
           `hotel ${paquete.hotel.estrellas} estrellas`,
           `alojamiento ${paquete.hotel.estrellas}★`,
+          `hotel ${paquete.hotel.estrellas}★ todo incluido`,
           paquete.hotel.nombre,
         ].filter(Boolean)
       : []),
 
-
+    // Mayoristas
     ...(paquete.mayoristas?.map((m) => m.nombre || m.clave).filter(Boolean) ||
       []),
 
+    // Precio con variaciones
     ...(paquete.precio_total
       ? [
           `desde ${formatPrecio(paquete.precio_total, sanitizeMoneda(paquete.moneda))}`,
           `viaje ${sanitizeMoneda(paquete.moneda)}`,
+          `oferta ${sanitizeMoneda(paquete.moneda)}`,
+          `promoción viaje ${sanitizeMoneda(paquete.moneda)}`,
         ]
       : []),
 
@@ -120,11 +145,11 @@ export const generatePackageKeywords = (paquete) => {
       : []),
   ];
 
-
+  // Retornar keywords únicas, filtradas y optimizadas (máximo 30 para mejor relevancia)
   return [...new Set(keywords)]
     .filter(Boolean)
-    .filter((k) => k.length > 2)
-    .slice(0, 20);
+    .filter((k) => k.length > 2 && k.length < 80) // Evitar keywords demasiado largas
+    .slice(0, 30);
 };
 
 
@@ -181,51 +206,54 @@ const extractActivityKeywords = (text) => {
 };
 
 export const generateSEOTitle = (paquete) => {
-  if (!paquete) return "Agencia de Viajes en Durango - Tours y Viajes | Viadca";
+  if (!paquete) return "🌎 Agencia de Viajes en Durango | Tours Nacionales e Internacionales ✈️ Viadca";
 
   const destinos =
     paquete.destinos
       ?.map((d) => d.ciudad || d.destino)
       .filter(Boolean)
       .slice(0, 2) || [];
-  const destinoStr = destinos.length ? ` a ${destinos.join(", ")}` : "";
+  const destinoStr = destinos.length ? ` ${destinos.join(" y ")}` : "";
 
   const precioStr = paquete.precio_total
-    ? ` desde ${formatPrecio(paquete.precio_total, sanitizeMoneda(paquete.moneda))} ${sanitizeMoneda(paquete.moneda)}`
+    ? ` desde $${Math.floor(paquete.precio_total).toLocaleString('es-MX')}`
     : "";
 
-  // SEO optimizado con ubicación
-  const title = `${paquete.titulo}${destinoStr} · ${paquete.duracion_dias} días | Agencia Durango`;
+  // SEO optimizado con emojis para CTR y ubicación para SEO local
+  const title = `✈️${destinoStr} · ${paquete.duracion_dias} días${precioStr} | Viadca Durango`;
 
-  return title.length > 65
-    ? `${paquete.titulo} · ${paquete.duracion_dias} días | Viadca Durango`
+  // Si es muy largo, versión corta
+  return title.length > 60
+    ? `✈️${destinoStr} ${paquete.duracion_dias}d | Viadca Durango`
     : title;
 };
 
 
 export const generateSEODescription = (paquete) => {
   if (!paquete)
-    return "Agencia de viajes en Durango con los mejores tours y viajes vacacionales. Viajes nacionales e internacionales. Reserva con Viadca, tu agencia de confianza.";
+    return "✅ Agencia de viajes #1 en Durango, Dgo. Tours nacionales e internacionales 🌴 Paquetes todo incluido 💰 Mejores precios 📞 Cotización gratis. ¡Reserva tu aventura!";
 
   if (paquete.descripcion && paquete.descripcion.length <= 155) {
-    return paquete.descripcion;
+    return `✨ ${paquete.descripcion}`;
   }
 
   const destinos =
     paquete.destinos
       ?.map((d) => d.ciudad || d.destino)
       .filter(Boolean)
-      .slice(0, 2) || [];
-  const destinoStr = destinos.length ? ` a ${destinos.join(", ")}` : "";
+      .slice(0, 3) || [];
+  const destinoStr = destinos.length ? `${destinos.join(", ")}` : "";
 
   const incluye = paquete.incluye
-    ? `. Incluye: ${paquete.incluye.substring(0, 60)}...`
+    ? `. Incluye: ${paquete.incluye.substring(0, 50)}...`
     : "";
-  const hotel = paquete.hotel ? `. Hotel ${paquete.hotel.estrellas}★` : "";
+  const hotel = paquete.hotel ? ` Hotel ${paquete.hotel.estrellas}★` : "";
+  const precio = paquete.precio_total ? ` desde $${Math.floor(paquete.precio_total).toLocaleString('es-MX')}` : "";
 
-  const baseDesc = `Viaje${destinoStr} · ${paquete.duracion_dias} días${hotel}${incluye} Agencia de viajes en Durango | Viadca`;
+  // Descripción optimizada con emojis y call-to-action
+  const baseDesc = `✈️ ${destinoStr} · ${paquete.duracion_dias} días${hotel}${precio}${incluye} 📞 Cotiza gratis | Viadca Durango`;
 
-  return baseDesc.length > 155 ? baseDesc.substring(0, 152) + "..." : baseDesc;
+  return baseDesc.length > 158 ? baseDesc.substring(0, 155) + "..." : baseDesc;
 };
 
 

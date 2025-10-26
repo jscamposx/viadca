@@ -1,0 +1,105 @@
+# .htaccess para optimización SEO - Viadca
+# Este archivo mejora performance y SEO mediante headers y compresión
+
+# =======================================
+# COMPRESIÓN GZIP (mejora Page Speed)
+# =======================================
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css text/javascript
+  AddOutputFilterByType DEFLATE application/xml application/xhtml+xml application/rss+xml
+  AddOutputFilterByType DEFLATE application/javascript application/x-javascript
+  AddOutputFilterByType DEFLATE application/json
+</IfModule>
+
+# =======================================
+# CACHE CONTROL (mejora Core Web Vitals)
+# =======================================
+<IfModule mod_expires.c>
+  ExpiresActive On
+  
+  # Imágenes - cache 1 año
+  ExpiresByType image/jpeg "access plus 1 year"
+  ExpiresByType image/png "access plus 1 year"
+  ExpiresByType image/webp "access plus 1 year"
+  ExpiresByType image/avif "access plus 1 year"
+  ExpiresByType image/svg+xml "access plus 1 year"
+  
+  # CSS y JavaScript - cache 1 mes
+  ExpiresByType text/css "access plus 1 month"
+  ExpiresByType text/javascript "access plus 1 month"
+  ExpiresByType application/javascript "access plus 1 month"
+  
+  # HTML - sin cache (contenido dinámico)
+  ExpiresByType text/html "access plus 0 seconds"
+  
+  # Fonts - cache 1 año
+  ExpiresByType font/woff "access plus 1 year"
+  ExpiresByType font/woff2 "access plus 1 year"
+  ExpiresByType application/font-woff "access plus 1 year"
+  ExpiresByType application/font-woff2 "access plus 1 year"
+  
+  # Otros
+  ExpiresByType application/pdf "access plus 1 month"
+  ExpiresByType application/xml "access plus 0 seconds"
+  ExpiresByType text/xml "access plus 0 seconds"
+</IfModule>
+
+# =======================================
+# HEADERS DE SEGURIDAD (mejora confianza)
+# =======================================
+<IfModule mod_headers.c>
+  # Prevenir clickjacking
+  Header set X-Frame-Options "SAMEORIGIN"
+  
+  # XSS Protection
+  Header set X-XSS-Protection "1; mode=block"
+  
+  # Prevenir MIME sniffing
+  Header set X-Content-Type-Options "nosniff"
+  
+  # Referrer Policy
+  Header set Referrer-Policy "strict-origin-when-cross-origin"
+  
+  # Permissions Policy
+  Header set Permissions-Policy "geolocation=(), microphone=(), camera=()"
+</IfModule>
+
+# =======================================
+# REWRITE RULES (SEO Friendly URLs)
+# =======================================
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  
+  # Forzar HTTPS (obligatorio para SEO)
+  RewriteCond %{HTTPS} off
+  RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+  
+  # Forzar WWW (consistencia SEO)
+  RewriteCond %{HTTP_HOST} !^www\. [NC]
+  RewriteRule ^(.*)$ https://www.%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+  
+  # Remover trailing slash (evitar contenido duplicado)
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteCond %{REQUEST_URI} (.+)/$
+  RewriteRule ^ %1 [R=301,L]
+</IfModule>
+
+# =======================================
+# PREVENIR HOTLINKING (ahorra bandwidth)
+# =======================================
+<IfModule mod_rewrite.c>
+  RewriteEngine on
+  RewriteCond %{HTTP_REFERER} !^$
+  RewriteCond %{HTTP_REFERER} !^https://(www\.)?viadca\.app [NC]
+  RewriteRule \.(jpg|jpeg|png|gif|webp|avif)$ - [F,NC]
+</IfModule>
+
+# =======================================
+# TIPOS MIME (asegurar reconocimiento)
+# =======================================
+<IfModule mod_mime.c>
+  AddType image/avif .avif
+  AddType image/webp .webp
+  AddType font/woff2 .woff2
+  AddType application/manifest+json .webmanifest
+</IfModule>

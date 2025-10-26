@@ -1,36 +1,105 @@
+# Robots.txt optimizado para SEO - Viadca Agencia de Viajes
+# Actualizado: 2025
+
+# ========================================
+# Reglas generales para todos los bots
+# ========================================
 User-agent: *
 Allow: /
 
-# Sitemaps
-Sitemap: https://www.viadca.app/sitemap.xml
+# ========================================
+# Páginas públicas importantes (prioridad)
+# ========================================
+Allow: /paquetes
+Allow: /paquetes/
+Allow: /destinos
+Allow: /destinos/
+Allow: /contacto
+Allow: /preguntas-frecuentes
+Allow: /ayuda
+Allow: /nosotros
+Allow: /destinos-populares
 
-# Disallow admin areas and auth pages
+# ========================================
+# Bloquear áreas privadas y administrativas
+# ========================================
 Disallow: /admin
+Disallow: /admin/
+Disallow: /dashboard
+Disallow: /dashboard/
 Disallow: /iniciar-sesion
 Disallow: /registro
+Disallow: /login
+Disallow: /auth/
 Disallow: /verificar-correo
 Disallow: /recuperar-contraseña
 Disallow: /restablecer-contraseña
-Disallow: /login
-Disallow: /dashboard
-Disallow: /auth
+Disallow: /perfil
+Disallow: /perfil/
+Disallow: /aprobacion-pendiente
 
-# Allow important public pages
-Allow: /paquetes
-Allow: /destinos
-Allow: /contacto
-Allow: /preguntas-frecuentes
+# ========================================
+# Bloquear archivos y directorios técnicos
+# ========================================
+Disallow: /api/
+Disallow: /*.json$
+Disallow: /node_modules/
+Disallow: /src/
+Disallow: /*.map$
 
-# SEO optimizations
-Crawl-delay: 1
-
-# Additional directives for better indexing
+# ========================================
+# Googlebot específico (máxima indexación)
+# ========================================
 User-agent: Googlebot
 Allow: /
-
-User-agent: Bingbot
-Allow: /
-Disallow: /aprobacion-pendiente
+Allow: /paquetes
+Allow: /destinos
+Disallow: /admin
+Disallow: /dashboard
 Disallow: /perfil
 
+# ========================================
+# Bingbot
+# ========================================
+User-agent: Bingbot
+Allow: /
+Allow: /paquetes
+Allow: /destinos
+Disallow: /admin
+Disallow: /dashboard
+Disallow: /perfil
+
+# ========================================
+# Bots de redes sociales (necesitan acceso)
+# ========================================
+User-agent: facebookexternalhit
+Allow: /
+
+User-agent: Twitterbot
+Allow: /
+
+User-agent: LinkedInBot
+Allow: /
+
+User-agent: WhatsApp
+Allow: /
+
+User-agent: Slackbot
+Allow: /
+
+# ========================================
+# Crawl delay (evitar sobrecarga)
+# ========================================
+Crawl-delay: 1
+
+# ========================================
+# Sitemaps (múltiples para mejor indexación)
+# ========================================
 Sitemap: https://www.viadca.app/sitemap.xml
+Sitemap: https://www.viadca.app/sitemap-packages.xml
+Sitemap: https://www.viadca.app/sitemap-destinations.xml
+
+# ========================================
+# Host preferido (www)
+# ========================================
+Host: https://www.viadca.app
