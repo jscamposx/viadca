@@ -326,14 +326,15 @@ const Services = () => {
               </div>
             </Carousel>
             {/* Indicadores personalizados */}
-            <div className="mt-3 flex items-center justify-center gap-2">
+            <div className="mt-4 flex items-center justify-center gap-2">
               {[0, 1, 2, 3].map((i) => (
                 <button
                   key={i}
                   type="button"
                   onClick={() => setCurrentSlide(i)}
                   aria-label={`Ir al slide ${i + 1}`}
-                  className={`w-2.5 h-2.5 rounded-full transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-blue-500 ${currentSlide === i ? "bg-gradient-to-r from-blue-600 to-indigo-600 scale-110 shadow" : "bg-slate-300 hover:bg-slate-400"}`}
+                  style={{ width: '8px', height: '8px', minWidth: '8px', minHeight: '8px', padding: 0, border: 'none' }}
+                  className={`rounded-full transition-all duration-300 focus:outline-none focus:ring-1 focus:ring-offset-1 focus:ring-blue-500 ${currentSlide === i ? "bg-blue-600" : "bg-slate-300 hover:bg-slate-400"}`}
                 />
               ))}
             </div>

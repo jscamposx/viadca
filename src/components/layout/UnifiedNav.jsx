@@ -196,7 +196,7 @@ const UnifiedNav = ({
       )}
       <header
         ref={headerRef}
-        className={`fixed top-0 left-0 right-0 z-[50] px-4 sm:px-6 lg:px-8 transition-colors duration-500 ${headerBgClass}`}
+        className={`fixed top-0 left-0 right-0 z-[50] transition-colors duration-500 ${headerBgClass}`}
       >
         {transparentOnTop && !isScrolled && (
           <div
@@ -205,7 +205,7 @@ const UnifiedNav = ({
           />
         )}
         <nav
-          className={`max-w-7xl mx-auto flex items-center justify-between transition-[padding] duration-300 ${isScrolled ? "py-2.5" : "py-4 sm:py-6"}`}
+          className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between transition-[padding] duration-300 ${isScrolled ? "py-2.5" : "py-4 sm:py-6"}`}
           aria-label="Navegación principal"
         >
           {/* Logo */}
@@ -474,17 +474,23 @@ const UnifiedNav = ({
               onClick={() => setMobileOpen((o) => !o)}
               aria-label={mobileOpen ? "Cerrar menú" : "Abrir menú"}
               aria-expanded={mobileOpen}
-              className={`relative h-10 w-10 flex items-center justify-center rounded-lg transition-colors ${transparentOnTop && !isScrolled ? "text-white hover:text-white hover:bg-white/20 bg-white/10 border border-white/30 backdrop-blur" : isScrolled ? "text-slate-700 hover:text-blue-600 hover:bg-blue-50" : "text-slate-700 hover:text-blue-600 hover:bg-white/30"} ${mobileOpen ? "bg-white/90 shadow-sm text-slate-700" : ""}`}
+              className={`relative h-11 w-11 flex items-center justify-center rounded-xl transition-all duration-300 ${
+                mobileOpen 
+                  ? "bg-white text-slate-800 shadow-lg border-2 border-blue-500" 
+                  : transparentOnTop && !isScrolled 
+                    ? "text-white bg-white/10 hover:bg-white/20 border-2 border-white/30 hover:border-white/50 backdrop-blur-md shadow-lg" 
+                    : "text-slate-700 bg-white hover:bg-blue-50 border-2 border-slate-200 hover:border-blue-300 shadow-md"
+              }`}
             >
-              <div className="relative w-7 h-7">
+              <div className="relative w-6 h-6">
                 <span
-                  className={`absolute left-1/2 top-1/2 w-6 h-1 bg-current rounded-full transition-transform ${mobileOpen ? "-translate-x-1/2 -translate-y-0 rotate-45" : "-translate-x-1/2 -translate-y-[8px]"}`}
+                  className={`absolute left-1/2 top-1/2 w-6 h-0.5 bg-current rounded-full transition-all duration-300 ${mobileOpen ? "-translate-x-1/2 -translate-y-0 rotate-45" : "-translate-x-1/2 -translate-y-[7px]"}`}
                 />
                 <span
-                  className={`absolute left-1/2 top-1/2 w-6 h-1 bg-current rounded-full transition-all ${mobileOpen ? "opacity-0 scale-x-0 -translate-x-1/2" : "opacity-100 scale-x-100 -translate-x-1/2 -translate-y-0"}`}
+                  className={`absolute left-1/2 top-1/2 w-6 h-0.5 bg-current rounded-full transition-all duration-300 ${mobileOpen ? "opacity-0 scale-x-0 -translate-x-1/2" : "opacity-100 scale-x-100 -translate-x-1/2 -translate-y-0"}`}
                 />
                 <span
-                  className={`absolute left-1/2 top-1/2 w-6 h-1 bg-current rounded-full transition-transform ${mobileOpen ? "-translate-x-1/2 -translate-y-0 -rotate-45" : "-translate-x-1/2 translate-y-[8px]"}`}
+                  className={`absolute left-1/2 top-1/2 w-6 h-0.5 bg-current rounded-full transition-all duration-300 ${mobileOpen ? "-translate-x-1/2 -translate-y-0 -rotate-45" : "-translate-x-1/2 translate-y-[7px]"}`}
                 />
               </div>
             </button>
@@ -493,10 +499,10 @@ const UnifiedNav = ({
 
         {/* Panel móvil */}
         <div
-          className={`lg:hidden overflow-hidden transition-all duration-300 ${mobileOpen ? "max-h-screen opacity-100" : "max-h-0 opacity-0"}`}
+          className={`lg:hidden overflow-hidden transition-all duration-300 ease-out ${mobileOpen ? "max-h-screen opacity-100" : "max-h-0 opacity-0"}`}
         >
           <div
-            className={`${transparentOnTop && !isScrolled ? "backdrop-blur-md border-t bg-slate-900/85 border-white/10" : "backdrop-blur-md border-t bg-white/98 border-blue-100/50"}`}
+            className={`shadow-2xl ${transparentOnTop && !isScrolled ? "backdrop-blur-xl border-t bg-slate-900/95 border-white/20" : "backdrop-blur-md border-t bg-white/98 border-slate-200"}`}
           >
             <div className="px-4 py-6 space-y-5">
               <div className="space-y-2">
@@ -506,11 +512,11 @@ const UnifiedNav = ({
                       const variantClasses =
                         transparentOnTop && !isScrolled
                           ? active
-                            ? "text-white bg-white/15 border border-white/30"
-                            : "text-white/90 hover:text-white hover:bg-white/10"
+                            ? "text-white bg-white/20 shadow-lg border-2 border-white/40"
+                            : "text-white/95 hover:text-white hover:bg-white/15 border-2 border-white/20 hover:border-white/40"
                           : active
-                            ? "text-blue-600 bg-blue-50 shadow border border-blue-200"
-                            : "text-slate-700 hover:text-blue-600 hover:bg-blue-50/70";
+                            ? "text-blue-600 bg-blue-50 shadow-md border-2 border-blue-300"
+                            : "text-slate-700 hover:text-blue-600 hover:bg-blue-50 border-2 border-slate-200 hover:border-blue-300";
                       return (
                         <button
                           key={link.id}
@@ -518,7 +524,7 @@ const UnifiedNav = ({
                             scrollToSection(link.id);
                             setMobileOpen(false);
                           }}
-                          className={`w-full text-left flex items-center gap-3 py-3 px-4 rounded-xl font-medium transition ${variantClasses}`}
+                          className={`w-full text-left flex items-center gap-3 py-3.5 px-4 rounded-xl font-semibold transition-all ${variantClasses}`}
                         >
                           {link.label}
                         </button>
@@ -529,17 +535,17 @@ const UnifiedNav = ({
                       const variantClasses =
                         transparentOnTop && !isScrolled
                           ? active
-                            ? "text-white bg-white/15 border border-white/30"
-                            : "text-white/90 hover:text-white hover:bg-white/10"
+                            ? "text-white bg-white/20 shadow-lg border-2 border-white/40"
+                            : "text-white/95 hover:text-white hover:bg-white/15 border-2 border-white/20 hover:border-white/40"
                           : active
-                            ? "text-blue-600 bg-blue-50 shadow border border-blue-200"
-                            : "text-slate-700 hover:text-blue-600 hover:bg-blue-50/70";
+                            ? "text-blue-600 bg-blue-50 shadow-md border-2 border-blue-300"
+                            : "text-slate-700 hover:text-blue-600 hover:bg-blue-50 border-2 border-slate-200 hover:border-blue-300";
                       return (
                         <Link
                           key={link.to}
                           to={link.to}
                           onClick={() => setMobileOpen(false)}
-                          className={`flex items-center gap-3 py-3 px-4 rounded-xl font-medium transition ${variantClasses}`}
+                          className={`flex items-center gap-3 py-3.5 px-4 rounded-xl font-semibold transition-all ${variantClasses}`}
                         >
                           {link.label}
                         </Link>
@@ -547,7 +553,7 @@ const UnifiedNav = ({
                     })}
               </div>
               <div
-                className={`pt-4 ${transparentOnTop && !isScrolled ? "border-t border-white/10" : "border-t border-blue-100/50"}`}
+                className={`pt-4 ${transparentOnTop && !isScrolled ? "border-t border-white/20" : "border-t border-slate-200"}`}
               >
                 {isAuthenticated() ? (
                   <div className="space-y-3">
@@ -681,14 +687,14 @@ const UnifiedNav = ({
                     <Link
                       to="/iniciar-sesion"
                       onClick={() => setMobileOpen(false)}
-                      className={`flex items-center justify-center gap-3 py-3 px-4 rounded-xl font-medium border ${transparentOnTop && !isScrolled ? "border-white/30 text-white/90 hover:text-white hover:bg-white/15" : "border-slate-200 text-slate-700 hover:text-blue-600 hover:border-blue-300 hover:bg-blue-50/60"}`}
+                      className={`flex items-center justify-center gap-3 py-3.5 px-4 rounded-xl font-semibold border-2 transition-all ${transparentOnTop && !isScrolled ? "border-white/40 text-white hover:bg-white/15 hover:border-white/60 shadow-lg" : "border-slate-300 text-slate-700 hover:text-blue-600 hover:border-blue-400 hover:bg-blue-50 shadow-md"}`}
                     >
                       Iniciar sesión
                     </Link>
                     <Link
                       to="/registro"
                       onClick={() => setMobileOpen(false)}
-                      className={`flex items-center justify-center gap-3 py-4 px-4 rounded-xl font-semibold shadow ${transparentOnTop && !isScrolled ? "bg-gradient-to-r from-white/25 to-white/10 text-white hover:from-white/35 hover:to-white/20" : "bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:from-blue-700 hover:to-indigo-700"}`}
+                      className={`flex items-center justify-center gap-3 py-4 px-4 rounded-xl font-bold shadow-xl transition-all ${transparentOnTop && !isScrolled ? "bg-white text-blue-700 hover:bg-white/90 border-2 border-white/30" : "bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:from-blue-700 hover:to-indigo-700 border-2 border-transparent"}`}
                     >
                       Registrarse
                     </Link>
