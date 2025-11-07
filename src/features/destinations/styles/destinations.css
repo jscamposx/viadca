@@ -5,9 +5,18 @@
   display: none;
 }
 
-.carousel-scroll {
+.carousel-scroll { 
   -ms-overflow-style: none;  /* IE and Edge */
   scrollbar-width: none;  /* Firefox */
+}
+
+.category-tabs-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.category-tabs-scroll {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 
 /* Efecto de momentum en iOS */

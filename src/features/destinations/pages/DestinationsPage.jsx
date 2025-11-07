@@ -477,22 +477,33 @@ const DestinationsPage = () => {
           {/* Anchor para scroll desde el botón "Buscar paquetes" del hero */}
           <div
             id="top-search"
-            className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mt-6 sm:mt-4 md:-mt-6 lg:-mt-10 relative z-10 space-y-4 sm:space-y-6 scroll-mt-28"
+            className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mt-6 sm:mt-4 md:-mt-6 lg:-mt-10 relative scroll-mt-28"
             style={{
               paddingLeft: "max(1rem, env(safe-area-inset-left))",
               paddingRight: "max(1rem, env(safe-area-inset-right))",
             }}
           >
-            <PackagesSearchBar
-              value={search}
-              onChange={setSearch}
-              onOpenFilters={() => setFiltersOpen(true)}
-            />
-            <CategoryTabs
-              categories={categories}
-              current={activeCategory}
-              onChange={setActiveCategory}
-            />
+            <div
+              className="sticky z-[8000]"
+              style={{
+                top: "calc(var(--unified-nav-height, 72px) + 1.25rem + env(safe-area-inset-top, 0px) / 2)",
+              }}
+            >
+              <div className="flex flex-col gap-4 sm:gap-5 bg-white/80 supports-[backdrop-filter]:backdrop-blur-2xl border border-white/60 shadow-xl shadow-blue-500/10 rounded-[2rem] p-4 sm:p-6">
+                <PackagesSearchBar
+                  value={search}
+                  onChange={setSearch}
+                  onOpenFilters={() => setFiltersOpen(true)}
+                />
+                <div className="relative overflow-hidden rounded-2xl border border-blue-100/60 bg-white/80 supports-[backdrop-filter]:backdrop-blur-lg shadow-sm">
+                  <CategoryTabs
+                    categories={categories}
+                    current={activeCategory}
+                    onChange={setActiveCategory}
+                  />
+                </div>
+              </div>
+            </div>
           </div>
           {/* Eliminado AlphaIndex */}
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 sm:pt-10 flex-1 w-full">

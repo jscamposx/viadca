@@ -111,6 +111,17 @@ const UnifiedNav = ({
     }
   }, [isScrolled, hasSectionNav, sectionLinks.length]);
 
+  useEffect(() => {
+    if (typeof document === "undefined") return;
+    const root = document.documentElement;
+    if (!root) return;
+    const value = `${headerHeight || 0}px`;
+    root.style.setProperty("--unified-nav-height", value);
+    return () => {
+      root.style.removeProperty("--unified-nav-height");
+    };
+  }, [headerHeight]);
+
   // Scroll spy para secciones
   useEffect(() => {
     if (!hasSectionNav) return;
