@@ -185,7 +185,7 @@ const UnifiedNav = ({
     <>
       {showScrollProgress && (
         <div
-          className="fixed top-0 left-0 right-0 h-0.5 z-[10000]"
+          className="fixed top-0 left-0 right-0 h-0.5 z-[50]"
           aria-hidden="true"
         >
           <div
@@ -196,7 +196,7 @@ const UnifiedNav = ({
       )}
       <header
         ref={headerRef}
-        className={`fixed top-0 left-0 right-0 z-[9999] px-3 sm:px-6 lg:px-8 transition-colors duration-500 ${headerBgClass}`}
+        className={`fixed top-0 left-0 right-0 z-[50] px-3 sm:px-6 lg:px-8 transition-colors duration-500 ${headerBgClass}`}
       >
         {transparentOnTop && !isScrolled && (
           <div
@@ -318,7 +318,7 @@ const UnifiedNav = ({
                 {userMenuOpen && (
                   <div
                     ref={dropdownRef}
-                    className="absolute right-0 mt-3 w-72 overflow-hidden rounded-2xl border border-slate-200/70 bg-white shadow-2xl ring-1 ring-slate-900/5 z-[10000]"
+                    className="absolute right-0 mt-3 w-72 overflow-hidden rounded-2xl border border-slate-200/70 bg-white shadow-2xl ring-1 ring-slate-900/5 z-[60]"
                   >
                     <div className="h-1 w-full bg-gradient-to-r from-blue-500 via-indigo-500 to-cyan-500" />
                     <div className="px-4 py-4">

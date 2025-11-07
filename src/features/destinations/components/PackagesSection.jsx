@@ -16,11 +16,12 @@ const PackagesSection = ({
   const scrollRef = useRef(null);
   const [showLeftArrow, setShowLeftArrow] = useState(false);
   const [showRightArrow, setShowRightArrow] = useState(false);
+  const [canScroll, setCanScroll] = useState(false);
 
   const scrollBy = useCallback((dir) => {
     if (!scrollRef.current) return;
     const el = scrollRef.current;
-    const amount = el.clientWidth * 0.85 * dir;
+    const amount = el.clientWidth * 0.8 * dir;
     el.scrollBy({ left: amount, behavior: "smooth" });
   }, []);
 
@@ -28,10 +29,13 @@ const PackagesSection = ({
   const handleScroll = useCallback(() => {
     if (!scrollRef.current) return;
     const el = scrollRef.current;
-    const atStart = el.scrollLeft <= 10;
-    const atEnd = el.scrollLeft + el.clientWidth >= el.scrollWidth - 10;
-    setShowLeftArrow(!atStart);
-    setShowRightArrow(!atEnd);
+    const atStart = el.scrollLeft <= 5;
+    const atEnd = el.scrollLeft + el.clientWidth >= el.scrollWidth - 5;
+    const hasOverflow = el.scrollWidth > el.clientWidth;
+    
+    setCanScroll(hasOverflow);
+    setShowLeftArrow(!atStart && hasOverflow);
+    setShowRightArrow(!atEnd && hasOverflow);
   }, []);
 
   useEffect(() => {
@@ -41,17 +45,19 @@ const PackagesSection = ({
     // Verificar estado inicial
     handleScroll();
     
+    const resizeObserver = new ResizeObserver(handleScroll);
+    resizeObserver.observe(el);
+    
     el.addEventListener('scroll', handleScroll, { passive: true });
-    window.addEventListener('resize', handleScroll, { passive: true });
     
     return () => {
       el.removeEventListener('scroll', handleScroll);
-      window.removeEventListener('resize', handleScroll);
+      resizeObserver.disconnect();
     };
-  }, [carousel, handleScroll]);
+  }, [carousel, handleScroll, children]);
 
   const childArray = React.Children.toArray(children);
-  const showCarousel = carousel && childArray.length > 1; // activar solo si hay más de un item
+  const showCarousel = carousel && childArray.length > 1;
   const [visibleCount, setVisibleCount] = useState(
     progressive ? Math.min(initialCount, childArray.length) : childArray.length,
   );
@@ -74,23 +80,23 @@ const PackagesSection = ({
           }
         }
       },
-      { rootMargin: "200px 0px", threshold: 0.01 },
+      { rootMargin: "300px 0px", threshold: 0.01 },
     );
     io.observe(sentinel);
     return () => io.disconnect();
   }, [progressive, childArray.length, step]);
 
   return (
-    <section id={id} className="py-14 sm:py-16 lg:py-20 scroll-mt-28">
+    <section id={id} className="py-10 sm:py-12 lg:py-16 scroll-mt-32">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <AnimatedSection animation="fadeInUp" className="mb-10">
-          <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-6">
+        <AnimatedSection animation="fadeInUp" className="mb-8">
+          <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
             <div>
-              <h2 className="font-volkhov text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-800 mb-3">
+              <h2 className="font-volkhov text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900 mb-2">
                 {title}
               </h2>
               {description && (
-                <p className="text-slate-600 max-w-2xl text-sm sm:text-base">
+                <p className="text-slate-600 max-w-2xl text-sm sm:text-base leading-relaxed">
                   {description}
                 </p>
               )}
@@ -99,26 +105,19 @@ const PackagesSection = ({
         </AnimatedSection>
 
         {!showCarousel && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5 lg:gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 lg:gap-6">
             {progressive ? childArray.slice(0, visibleCount) : childArray}
           </div>
         )}
 
         {showCarousel && (
-          <div className="relative -mx-4 sm:mx-0">
-            {/* Gradiente indicador de más contenido a la derecha (mobile) */}
-            {showRightArrow && (
-              <div className="md:hidden absolute right-0 top-0 bottom-0 w-16 bg-gradient-to-l from-white via-white/90 to-transparent pointer-events-none z-[5]" />
-            )}
-            {/* Gradiente indicador de más contenido a la izquierda (mobile) */}
-            {showLeftArrow && (
-              <div className="md:hidden absolute left-0 top-0 bottom-0 w-16 bg-gradient-to-r from-white via-white/90 to-transparent pointer-events-none z-[5]" />
-            )}
-            
+          <div className="relative">
             <div
               ref={scrollRef}
-              className="carousel-scroll flex gap-3 sm:gap-4 lg:gap-5 overflow-x-auto snap-x snap-mandatory pb-6 px-4 sm:px-0 overscroll-x-contain touch-pan-x scroll-smooth"
+              className="carousel-scroll flex gap-4 sm:gap-5 overflow-x-auto pb-4 -mx-4 px-4 sm:mx-0 sm:px-0"
               style={{
+                scrollSnapType: 'x mandatory',
+                scrollPadding: '0 1rem',
                 WebkitOverflowScrolling: 'touch',
                 scrollbarWidth: 'none',
                 msOverflowStyle: 'none',
@@ -127,19 +126,21 @@ const PackagesSection = ({
               {childArray.map((ch, i) => (
                 <div
                   key={i}
-                  className="snap-start shrink-0 w-[85%] xs:w-[80%] sm:w-[280px] md:w-[300px] lg:w-[320px]"
+                  className="flex-shrink-0 w-[280px] sm:w-[300px] md:w-[320px] lg:w-[340px]"
+                  style={{ scrollSnapAlign: 'start' }}
                 >
                   {ch}
                 </div>
               ))}
             </div>
-            {/* Controles de navegación - Mejorados para mejor visibilidad */}
+            
+            {/* Controles de navegación desktop */}
             {showLeftArrow && (
               <button
                 type="button"
                 onClick={() => scrollBy(-1)}
                 aria-label="Desplazar a la izquierda"
-                className="hidden md:flex absolute top-1/2 -translate-y-1/2 -left-6 w-12 h-12 rounded-full bg-white/95 backdrop-blur-sm shadow-xl border border-slate-200 items-center justify-center text-slate-700 hover:bg-blue-600 hover:text-white hover:border-blue-600 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 z-20 hover:scale-110 active:scale-95"
+                className="hidden sm:flex absolute top-1/2 -translate-y-1/2 -left-5 lg:-left-6 w-11 h-11 lg:w-12 lg:h-12 rounded-full bg-white shadow-xl border border-slate-200 items-center justify-center text-slate-700 hover:bg-blue-600 hover:text-white hover:border-blue-600 hover:shadow-2xl transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 z-20 hover:scale-110 active:scale-95"
               >
                 <FiChevronLeft className="w-6 h-6" />
               </button>
@@ -149,30 +150,32 @@ const PackagesSection = ({
                 type="button"
                 onClick={() => scrollBy(1)}
                 aria-label="Desplazar a la derecha"
-                className="hidden md:flex absolute top-1/2 -translate-y-1/2 -right-6 w-12 h-12 rounded-full bg-white/95 backdrop-blur-sm shadow-xl border border-slate-200 items-center justify-center text-slate-700 hover:bg-blue-600 hover:text-white hover:border-blue-600 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 z-20 hover:scale-110 active:scale-95"
+                className="hidden sm:flex absolute top-1/2 -translate-y-1/2 -right-5 lg:-right-6 w-11 h-11 lg:w-12 lg:h-12 rounded-full bg-white shadow-xl border border-slate-200 items-center justify-center text-slate-700 hover:bg-blue-600 hover:text-white hover:border-blue-600 hover:shadow-2xl transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 z-20 hover:scale-110 active:scale-95"
               >
                 <FiChevronRight className="w-6 h-6" />
               </button>
             )}
             
-            {/* Indicador de scroll para mobile */}
-            <div className="md:hidden flex justify-center gap-1.5 mt-3">
-              <div
-                className={`h-1 rounded-full transition-all duration-300 ${
-                  showLeftArrow ? 'w-6 bg-blue-600' : 'w-1 bg-slate-300'
-                }`}
-              />
-              <div
-                className={`h-1 rounded-full transition-all duration-300 ${
-                  !showLeftArrow && !showRightArrow ? 'w-6 bg-blue-600' : 'w-1 bg-slate-300'
-                }`}
-              />
-              <div
-                className={`h-1 rounded-full transition-all duration-300 ${
-                  showRightArrow ? 'w-6 bg-blue-600' : 'w-1 bg-slate-300'
-                }`}
-              />
-            </div>
+            {/* Indicador de posición para mobile */}
+            {canScroll && (
+              <div className="sm:hidden flex justify-center gap-1.5 mt-4">
+                <div
+                  className={`h-1.5 rounded-full transition-all duration-300 ${
+                    showLeftArrow ? 'w-8 bg-blue-600' : 'w-1.5 bg-slate-300'
+                  }`}
+                />
+                <div
+                  className={`h-1.5 rounded-full transition-all duration-300 ${
+                    !showLeftArrow && !showRightArrow ? 'w-8 bg-blue-600' : 'w-1.5 bg-slate-300'
+                  }`}
+                />
+                <div
+                  className={`h-1.5 rounded-full transition-all duration-300 ${
+                    showRightArrow ? 'w-8 bg-blue-600' : 'w-1.5 bg-slate-300'
+                  }`}
+                />
+              </div>
+            )}
           </div>
         )}
 
@@ -180,13 +183,13 @@ const PackagesSection = ({
         {progressive && !showCarousel && (
           <div ref={sentinelRef} className="mt-6">
             {visibleCount < childArray.length && (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 lg:gap-7">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 lg:gap-6">
                 {Array.from({
                   length: Math.min(step, childArray.length - visibleCount),
                 }).map((_, i) => (
                   <div
                     key={i}
-                    className="h-72 bg-slate-100 rounded-xl animate-pulse border border-slate-200"
+                    className="h-96 bg-slate-100 rounded-2xl animate-pulse border border-slate-200"
                   />
                 ))}
               </div>

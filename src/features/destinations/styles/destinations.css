@@ -1,4 +1,9 @@
-/* Estilos mejorados para carrusel de paquetes */
+/* ========================================
+   ESTILOS MEJORADOS PARA PÁGINA DE PAQUETES
+   Optimizados para móvil y desktop
+   ======================================== */
+
+/* ==================== CARRUSEL ==================== */
 
 /* Ocultar scrollbar completamente */
 .carousel-scroll::-webkit-scrollbar {
@@ -19,10 +24,12 @@
   scrollbar-width: none;
 }
 
-/* Efecto de momentum en iOS */
-.carousel-scroll {
+/* Efecto de momentum en iOS y scroll suave */
+.carousel-scroll,
+.category-tabs-scroll {
   -webkit-overflow-scrolling: touch;
   scroll-behavior: smooth;
+  overscroll-behavior-x: contain;
 }
 
 /* Prevenir selección de texto durante el scroll */
@@ -33,15 +40,9 @@
   user-select: none;
 }
 
-/* Mejorar el snap en todas las pantallas */
+/* Mejorar el snap para scroll más natural */
 .carousel-scroll {
   scroll-snap-type: x mandatory;
-  scroll-padding: 0 1rem;
-}
-
-.carousel-scroll > * {
-  scroll-snap-align: start;
-  scroll-snap-stop: normal;
 }
 
 @media (max-width: 768px) {
@@ -50,29 +51,206 @@
   }
 }
 
-/* Package Card Hover Effects - Solo en dispositivos con hover real */
+/* ==================== TARJETAS DE PAQUETES ==================== */
+
+/* Contenedor de imagen con aspect ratio fijo */
+.package-card-image-wrapper {
+  position: relative;
+  overflow: hidden;
+  background-color: #f1f5f9; /* Slate-100 como placeholder */
+}
+
+/* Imagen con transición suave */
+.package-card-image {
+  object-fit: cover;
+  transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Overlay que aparece en hover */
+.package-card-overlay {
+  transition: opacity 0.3s ease-in-out;
+}
+
+/* Ubicación que aparece en hover */
+.package-card-location {
+  opacity: 0;
+  transform: translateY(0.5rem);
+  transition: all 0.3s ease-out;
+}
+
+/* Título con transición de color */
+.package-card-title {
+  transition: color 0.2s ease-in-out;
+}
+
+/* ==================== EFECTOS HOVER (solo desktop) ==================== */
+
+/* Solo aplicar efectos hover en dispositivos con mouse */
 @media (hover: hover) and (pointer: fine) {
-  .package-card:hover .package-card-image {
-    transform: scale(1.1);
+  
+  /* Escala de imagen en hover del grupo (Link) */
+  .group:hover .package-card-image {
+    transform: scale(1.08);
   }
 
-  .package-card:hover .package-card-overlay {
-    opacity: 1;
+  /* Overlay más visible en hover */
+  .group:hover .package-card-overlay {
+    opacity: 0.9;
   }
 
-  .package-card:hover .package-card-location {
+  /* Mostrar ubicación en hover */
+  .group:hover .package-card-location {
     opacity: 1;
     transform: translateY(0);
   }
 
-  .package-card:hover .package-card-title {
-    color: #2563eb;
+  /* Animación sutil de la tarjeta completa */
+  .package-card {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .group:hover .package-card {
+    transform: translateY(-4px);
   }
 }
 
-/* En dispositivos táctiles, mantener efectos desactivados */
-@media (hover: none) {
+/* ==================== OPTIMIZACIONES MÓVIL ==================== */
+
+/* En dispositivos táctiles, evitar transformaciones que pueden causar bugs */
+@media (hover: none) and (pointer: coarse) {
+  
   .package-card {
     transform: none !important;
+  }
+
+  /* Mejorar el tap en móvil */
+  .package-card {
+    -webkit-tap-highlight-color: rgba(59, 130, 246, 0.1);
+  }
+
+  /* Hacer los botones más grandes para mejor UX táctil */
+  button {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
+
+/* ==================== ANIMACIONES PERSONALIZADAS ==================== */
+
+/* Animación de aparición progresiva para tarjetas */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Animación de pulse mejorada para badges de oferta */
+@keyframes pulse-subtle {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.95;
+    transform: scale(1.02);
+  }
+}
+
+/* Aplicar animación a badges de oferta */
+.animate-pulse {
+  animation: pulse-subtle 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* ==================== ESTADOS DE CARGA ==================== */
+
+/* Skeleton loading mejorado */
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
+.animate-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* ==================== ACCESIBILIDAD ==================== */
+
+/* Focus visible mejorado */
+.package-card:focus-within {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+  border-radius: 1rem;
+}
+
+/* Reducir movimiento para usuarios que lo prefieran */
+@media (prefers-reduced-motion: reduce) {
+  .package-card-image,
+  .package-card-overlay,
+  .package-card-location,
+  .package-card-title,
+  .package-card,
+  .carousel-scroll,
+  .category-tabs-scroll {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+
+/* ==================== UTILIDADES ==================== */
+
+/* Prevenir overflow horizontal en toda la página */
+.overflow-x-hidden {
+  overflow-x: hidden;
+}
+
+/* Asegurar que las imágenes no se deformen */
+.object-cover {
+  object-fit: cover;
+}
+
+/* ==================== PERFORMANCE ==================== */
+
+/* Usar GPU acceleration para animaciones suaves */
+.package-card-image,
+.package-card {
+  will-change: transform;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+/* Limpiar will-change después de la animación */
+.package-card:not(:hover) .package-card-image {
+  will-change: auto;
+}
+
+/* ==================== RESPONSIVE UTILITIES ==================== */
+
+/* Mejorar espaciado en pantallas pequeñas */
+@media (max-width: 640px) {
+  .package-card {
+    margin-bottom: 0.5rem;
+  }
+}
+
+/* Optimizar para tablets */
+@media (min-width: 768px) and (max-width: 1024px) {
+  .carousel-scroll {
+    scroll-padding: 0 2rem;
+  }
+}
+
+/* Desktop grande */
+@media (min-width: 1536px) {
+  .package-card-image {
+    transition-duration: 0.6s;
   }
 }

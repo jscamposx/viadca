@@ -17,7 +17,6 @@ import UnifiedNav from "../../../components/layout/UnifiedNav";
 import Footer from "../../home/components/Footer";
 import { useContactInfo } from "../../../hooks/useContactInfo";
 import { useAuth } from "../../../contexts/AuthContext";
-import { FiArrowRight, FiClock, FiMapPin } from "react-icons/fi";
 
 const PackageCard = ({ paquete }) => {
   const img =
@@ -35,11 +34,13 @@ const PackageCard = ({ paquete }) => {
         )
       : null;
   const url = `/paquetes/${paquete?.codigoUrl}`;
+  
   // Nuevo formato Estado, Ciudad
   const firstDest =
     Array.isArray(paquete?.destinos) && paquete.destinos.length > 0
       ? paquete.destinos[0]
       : null;
+  
   const buildDestinoPrincipal = () => {
     let estado = "";
     let ciudad = "";
@@ -61,16 +62,19 @@ const PackageCard = ({ paquete }) => {
     if (pais) return pais;
     return paquete?.destino || paquete?.destinos_nombres || "Destino";
   };
+  
   const destinoPrincipal =
     buildDestinoPrincipal() ||
     paquete?.destino ||
     paquete?.destinos_nombres ||
     "Destino";
+  
   const duracion = paquete?.duracion_dias
     ? `${paquete.duracion_dias} días`
     : paquete?.duracion_noches
       ? `${paquete.duracion_noches} noches`
       : paquete?.duracion_texto || paquete?.duracion || "";
+  
   const hasDescuento = paquete?.precio_descuento || paquete?.en_oferta;
   
   // Obtener tipo de paquete
@@ -87,55 +91,22 @@ const PackageCard = ({ paquete }) => {
     if (tipoLower.includes('circuito')) {
       return {
         label: 'Circuito',
-        icon: '<path d="M12 22s-8-4.5-8-11.8A8 8 0 0 1 12 2a8 8 0 0 1 8 8.2c0 7.3-8 11.8-8 11.8z"/><circle cx="12" cy="10" r="3"/>',
-        gradient: 'from-emerald-500 to-teal-600'
+        icon: '<path d="M416 320h-96c-17.6 0-32-14.4-32-32s14.4-32 32-32h96s96-107 96-160-43-96-96-96-96 43-96 96c0 25.5 22.2 63.4 45.3 96H320c-52.9 0-96 43.1-96 96s43.1 96 96 96h96c17.6 0 32 14.4 32 32s-14.4 32-32 32H185.5c-16 24.8-33.8 47.7-47.3 64H416c52.9 0 96-43.1 96-96s-43.1-96-96-96zm0-256c17.7 0 32 14.3 32 32s-14.3 32-32 32-32-14.3-32-32 14.3-32 32-32zM96 256c-53 0-96 43-96 96s96 160 96 160 96-107 96-160-43-96-96-96zm0 128c-17.7 0-32-14.3-32-32s14.3-32 32-32 32 14.3 32 32-14.3 32-32 32z"></path>',
+        viewBox: '0 0 512 512',
+        gradient: 'from-amber-500 to-orange-600'
       };
     } else if (tipoLower.includes('paquete')) {
       return {
         label: 'Paquete',
         icon: '<line x1="16.5" y1="9.4" x2="7.5" y2="4.21"></line><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line>',
+        viewBox: '0 0 24 24',
         gradient: 'from-blue-500 to-indigo-600'
-      };
-    } else if (tipoLower.includes('hotel')) {
-      return {
-        label: 'Hotel',
-        icon: '<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline>',
-        gradient: 'from-pink-500 to-rose-600'
-      };
-    } else if (tipoLower.includes('vuelo')) {
-      return {
-        label: 'Vuelo',
-        icon: '<path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"></path>',
-        gradient: 'from-sky-500 to-blue-600'
-      };
-    } else if (tipoLower.includes('crucero')) {
-      return {
-        label: 'Crucero',
-        icon: '<path d="M2 21c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1 .6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"></path><path d="M19.38 20A11.6 11.6 0 0 0 21 14l-9-4-9 4c0 2.9.94 5.34 2.81 7.76"></path><path d="M19 13V7a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2v6"></path><path d="M12 10v4"></path><path d="M12 2v3"></path>',
-        gradient: 'from-cyan-500 to-blue-600'
-      };
-    } else if (tipoLower.includes('combinado')) {
-      return {
-        label: 'Combinado',
-        icon: '<polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline>',
-        gradient: 'from-purple-500 to-violet-600'
-      };
-    } else if (tipoLower.includes('excursión') || tipoLower.includes('excursion')) {
-      return {
-        label: 'Excursión',
-        icon: '<polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>',
-        gradient: 'from-amber-500 to-orange-600'
-      };
-    } else if (tipoLower.includes('traslado')) {
-      return {
-        label: 'Traslado',
-        icon: '<rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle>',
-        gradient: 'from-slate-500 to-gray-600'
       };
     } else {
       return {
         label: tipo || 'Paquete',
         icon: '<line x1="16.5" y1="9.4" x2="7.5" y2="4.21"></line><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line>',
+        viewBox: '0 0 24 24',
         gradient: 'from-blue-500 to-indigo-600'
       };
     }
@@ -144,12 +115,13 @@ const PackageCard = ({ paquete }) => {
   const tipoConfig = getTipoConfig(tipoPaquete);
 
   return (
-    <article className="bg-white rounded-xl shadow-md hover:shadow-xl hover:shadow-blue-500/10 transition-all duration-500 hover:-translate-y-2 hover:scale-[1.02] overflow-hidden border border-slate-100 package-card h-full flex flex-col transform-gpu">
-      <div className="relative overflow-hidden package-card-image-wrapper">
+    <article className="bg-white rounded-xl shadow-md shadow-lg hover:shadow-xl hover:shadow-blue-500/10 transition-all duration-500 hover:-translate-y-2 hover:scale-[1.02] overflow-hidden border border-slate-100 group h-full flex flex-col transform-gpu">
+      {/* Imagen del paquete */}
+      <div className="relative overflow-hidden">
         <OptimizedImage
           src={img}
           alt={paquete?.titulo || destinoPrincipal || "Paquete"}
-          className="package-card-image w-full h-48 sm:h-52 md:h-56 lg:h-60 object-cover transition-transform duration-700 ease-[cubic-bezier(0.25,0.46,0.45,0.94)]"
+          className="w-full h-48 sm:h-52 md:h-56 lg:h-60 object-cover group-hover:scale-110 transition-transform duration-700 ease-[cubic-bezier(0.25,0.46,0.45,0.94)]"
           width={800}
           height={480}
           responsive
@@ -157,30 +129,29 @@ const PackageCard = ({ paquete }) => {
           lazy={true}
           placeholder={true}
         />
+        
+        {/* Gradient overlay on hover */}
         <div
-          className="package-card-overlay absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent opacity-0 transition-all duration-500"
+          className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500"
           aria-hidden="true"
         />
-        <div className="absolute top-3 right-3 flex flex-col items-end gap-2 z-20">
-          {hasDescuento && (
-            <span className="bg-gradient-to-r from-orange-500 to-red-500 text-white px-3 py-1.5 rounded-full text-xs font-bold flex items-center gap-1 shadow-lg backdrop-blur-sm border border-white/20 animate-pulse">
-              <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-              </svg>
-              OFERTA
-            </span>
-          )}
+        
+        {/* Badges superiores */}
+        <div className="absolute top-3 right-3 flex flex-col items-end gap-2">
           {tipoPaquete ? (
             <span
               className={`bg-gradient-to-r ${tipoConfig.gradient} text-white px-2.5 py-1 rounded-full text-xs font-semibold flex items-center gap-1 shadow-lg backdrop-blur-sm border border-white/20`}
             >
               <svg
-                className="w-3 h-3"
-                fill="none"
                 stroke="currentColor"
-                strokeWidth="2"
-                viewBox="0 0 24 24"
+                fill="currentColor"
+                strokeWidth="0"
+                viewBox={tipoConfig.viewBox}
+                className="w-3 h-3"
                 aria-hidden="true"
+                height="1em"
+                width="1em"
+                xmlns="http://www.w3.org/2000/svg"
                 dangerouslySetInnerHTML={{ __html: tipoConfig.icon }}
               />
               {tipoConfig.label}
@@ -188,32 +159,55 @@ const PackageCard = ({ paquete }) => {
           ) : (
             <span className="bg-gradient-to-r from-green-500 to-emerald-600 text-white px-2.5 py-1 rounded-full text-xs font-semibold flex items-center gap-1 shadow-lg backdrop-blur-sm border border-white/20">
               <svg
-                className="w-3 h-3"
-                fill="none"
                 stroke="currentColor"
-                strokeWidth="2"
-                viewBox="0 0 24 24"
+                fill="currentColor"
+                strokeWidth="0"
+                viewBox="0 0 512 512"
+                className="w-3 h-3"
                 aria-hidden="true"
+                height="1em"
+                width="1em"
+                xmlns="http://www.w3.org/2000/svg"
               >
-                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
-                <polyline points="22 4 12 14.01 9 11.01" />
+                <path d="M173.898 439.404l-166.4-166.4c-9.997-9.997-9.997-26.206 0-36.204l36.203-36.204c9.997-9.998 26.207-9.998 36.204 0L192 312.69 432.095 72.596c9.997-9.997 26.207-9.997 36.204 0l36.203 36.204c9.997 9.997 9.997 26.206 0 36.204l-294.4 294.401c-9.998 9.997-26.207 9.997-36.204-.001z"></path>
               </svg>
               Activo
             </span>
           )}
         </div>
-        <div className="package-card-location absolute bottom-3 left-3 opacity-0 transition-all duration-500 transform translate-y-2 z-20">
-          <span className="bg-white/95 backdrop-blur-md text-slate-800 px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 shadow-lg border border-white/40">
-            <FiMapPin className="w-3.5 h-3.5 text-blue-600" aria-hidden="true" />
+        
+        {/* Location badge - appears on hover */}
+        <div className="absolute bottom-2 left-2 opacity-0 group-hover:opacity-100 transition-all duration-500 transform translate-y-2 group-hover:translate-y-0">
+          <span className="bg-white/90 backdrop-blur-sm text-slate-800 px-2 py-1 rounded-lg text-[11px] font-medium flex items-center gap-1.5 shadow border border-white/30">
+            <svg
+              stroke="currentColor"
+              fill="none"
+              strokeWidth="2"
+              viewBox="0 0 24 24"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="w-3.5 h-3.5 text-blue-600"
+              aria-hidden="true"
+              height="1em"
+              width="1em"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+              <circle cx="12" cy="10" r="3"></circle>
+            </svg>
             {destinoPrincipal}
           </span>
         </div>
       </div>
+
+      {/* Contenido de la tarjeta */}
       <div className="p-4 lg:p-5 flex-1 flex flex-col">
+        {/* Título y precio */}
         <div className="flex justify-between items-start gap-3 mb-2">
-          <h3 className="package-card-title font-bold text-sm sm:text-base lg:text-lg text-slate-800 transition-colors leading-snug line-clamp-2 flex-1 min-h-[2.2rem]">
+          <h3 className="font-bold text-sm sm:text-base lg:text-lg text-slate-800 group-hover:text-blue-600 transition-colors leading-snug line-clamp-2 flex-1 min-h-[2.2rem]">
             {paquete?.titulo || "Paquete"}
           </h3>
+          
           <div className="text-right shrink-0">
             <span className="text-[10px] text-slate-500 block uppercase tracking-wide">
               Desde
@@ -228,24 +222,72 @@ const PackageCard = ({ paquete }) => {
             </div>
           </div>
         </div>
+
+        {/* Duración */}
         {duracion && (
           <div className="flex items-center text-slate-600 mb-3 text-xs sm:text-sm">
-            <FiClock className="w-4 h-4 mr-1.5 text-slate-400 shrink-0" aria-hidden="true" />
+            <svg
+              stroke="currentColor"
+              fill="none"
+              strokeWidth="2"
+              viewBox="0 0 24 24"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="w-4 h-4 mr-1.5 text-slate-400 shrink-0"
+              aria-hidden="true"
+              height="1em"
+              width="1em"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <circle cx="12" cy="12" r="10"></circle>
+              <polyline points="12 6 12 12 16 14"></polyline>
+            </svg>
             <span className="truncate">{duracion}</span>
           </div>
         )}
+
+        {/* Footer - Location y CTA */}
         <div className="mt-auto flex items-center justify-between pt-1">
-          <div className="text-[11px] text-slate-500 flex items-center max-w-[140px]">
-            <FiMapPin className="w-3.5 h-3.5 mr-1 text-blue-500" aria-hidden="true" />
+          <div className="text-[11px] text-slate-500 flex items-center max-w-[120px]">
+            <svg
+              stroke="currentColor"
+              fill="none"
+              strokeWidth="2"
+              viewBox="0 0 24 24"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="w-3.5 h-3.5 mr-1 text-blue-500"
+              height="1em"
+              width="1em"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+              <circle cx="12" cy="10" r="3"></circle>
+            </svg>
             <span className="truncate">{destinoPrincipal}</span>
           </div>
-          <Link
+          
+          <Link 
             to={url}
             className="text-blue-600 hover:text-blue-700 font-medium text-xs sm:text-sm hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2 rounded flex items-center gap-1 group-hover:gap-1.5 transition-all"
-            aria-label={`Ver detalles de ${paquete?.titulo || "paquete"}`}
+            aria-label={`Ver detalles de ${paquete?.titulo || "Paquete"}`}
           >
             Ver más
-            <FiArrowRight className="w-3.5 h-3.5" aria-hidden="true" />
+            <svg
+              stroke="currentColor"
+              fill="none"
+              strokeWidth="2"
+              viewBox="0 0 24 24"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="w-3.5 h-3.5"
+              height="1em"
+              width="1em"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+              <polyline points="12 5 19 12 12 19"></polyline>
+            </svg>
           </Link>
         </div>
       </div>
@@ -470,32 +512,36 @@ const DestinationsPage = () => {
             .map(s => ({ id: s.key, label: s.title }))
         }
       />
+      
+      {/* Panel de filtros fuera del PageTransition para evitar problemas de z-index */}
+      <FiltersPanel
+        open={filtersOpen}
+        onClose={() => setFiltersOpen(false)}
+        onApply={setFilters}
+        initial={filters}
+      />
+      
       <PageTransition>
-  <div className="flex flex-col min-h-screen bg-gradient-to-b from-slate-50 to-white overflow-x-hidden [contain:paint]">
-          {/* removido id=top */}
+        <div className="flex flex-col min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50/20">
+          {/* Hero Section */}
           <DestinationsHero />
-          {/* Anchor para scroll desde el botón "Buscar paquetes" del hero */}
+          
+          {/* Barra de búsqueda - posición estática normal */}
           <div
             id="top-search"
-            className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mt-6 sm:mt-4 md:-mt-6 lg:-mt-10 relative scroll-mt-28"
-            style={{
-              paddingLeft: "max(1rem, env(safe-area-inset-left))",
-              paddingRight: "max(1rem, env(safe-area-inset-right))",
-            }}
+            className="w-full bg-white/90 backdrop-blur-xl border-b border-slate-200/60 shadow-md"
           >
-            <div
-              className="sticky z-[8000]"
-              style={{
-                top: "calc(var(--unified-nav-height, 72px) + 1.25rem + env(safe-area-inset-top, 0px) / 2)",
-              }}
-            >
-              <div className="flex flex-col gap-4 sm:gap-5 bg-white/80 supports-[backdrop-filter]:backdrop-blur-2xl border border-white/60 shadow-xl shadow-blue-500/10 rounded-[2rem] p-4 sm:p-6">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 sm:py-4">
+              <div className="flex flex-col gap-3 sm:gap-4">
+                {/* Barra de búsqueda */}
                 <PackagesSearchBar
                   value={search}
                   onChange={setSearch}
                   onOpenFilters={() => setFiltersOpen(true)}
                 />
-                <div className="relative overflow-hidden rounded-2xl border border-blue-100/60 bg-white/80 supports-[backdrop-filter]:backdrop-blur-lg shadow-sm">
+                
+                {/* Tabs de categorías */}
+                <div className="rounded-xl border border-slate-200/60 bg-white/90 shadow-sm overflow-hidden">
                   <CategoryTabs
                     categories={categories}
                     current={activeCategory}
@@ -505,21 +551,34 @@ const DestinationsPage = () => {
               </div>
             </div>
           </div>
-          {/* Eliminado AlphaIndex */}
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 sm:pt-10 flex-1 w-full">
+
+          {/* Contenido principal */}
+          <div 
+            className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-1 w-full"
+          >
             {error && (
-              <div className="p-4 mb-6 bg-red-50 border border-red-200 text-red-600 rounded-xl text-sm">
-                {error}
+              <div className="p-4 mb-6 bg-red-50 border border-red-200 text-red-600 rounded-xl text-sm flex items-start gap-3">
+                <svg className="w-5 h-5 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                </svg>
+                <span>{error}</span>
               </div>
             )}
 
             {loading && (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5 lg:gap-6 animate-pulse">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 lg:gap-6">
                 {Array.from({ length: 8 }).map((_, i) => (
                   <div
                     key={i}
-                    className="h-72 bg-white rounded-xl border border-slate-100"
-                  />
+                    className="h-96 bg-white rounded-2xl border border-slate-200 animate-pulse"
+                  >
+                    <div className="w-full h-64 bg-slate-200 rounded-t-2xl" />
+                    <div className="p-5 space-y-3">
+                      <div className="h-4 bg-slate-200 rounded w-3/4" />
+                      <div className="h-3 bg-slate-200 rounded w-1/2" />
+                      <div className="h-3 bg-slate-200 rounded w-2/3" />
+                    </div>
+                  </div>
                 ))}
               </div>
             )}
@@ -530,11 +589,11 @@ const DestinationsPage = () => {
                 return (
                   <div
                     key={section.key}
-                    className={isDescuentos ? "bg-gradient-to-br from-orange-50 via-amber-50 to-yellow-50 -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8 py-6 sm:py-8 rounded-2xl border-2 border-dashed border-orange-300 my-8 shadow-lg shadow-orange-100" : ""}
+                    className={isDescuentos ? "bg-gradient-to-br from-orange-50 via-amber-50 to-yellow-50 -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8 py-8 rounded-2xl border-2 border-dashed border-orange-300 my-10 shadow-lg shadow-orange-100" : ""}
                   >
                     {isDescuentos && (
-                      <div className="text-center mb-6">
-                        <div className="inline-flex items-center gap-2 bg-gradient-to-r from-orange-500 to-red-500 text-white px-6 py-2 rounded-full text-sm font-bold shadow-lg animate-pulse">
+                      <div className="text-center mb-8">
+                        <div className="inline-flex items-center gap-2 bg-gradient-to-r from-orange-500 via-red-500 to-pink-500 text-white px-6 py-2.5 rounded-full text-sm font-bold shadow-xl animate-pulse">
                           <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                             <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                           </svg>
@@ -673,12 +732,6 @@ const DestinationsPage = () => {
             )}
           </div>
 
-          <FiltersPanel
-            open={filtersOpen}
-            onClose={() => setFiltersOpen(false)}
-            onApply={setFilters}
-            initial={filters}
-          />
           <Footer
             contactInfo={contactInfo}
             contactLoading={contactLoading}
