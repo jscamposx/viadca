@@ -90,7 +90,7 @@ const PackagesSection = ({
           }
         }
       },
-      { rootMargin: "300px 0px", threshold: 0.01 },
+      { rootMargin: "600px 0px", threshold: 0 },
     );
     io.observe(sentinel);
     return () => io.disconnect();
@@ -121,7 +121,7 @@ const PackagesSection = ({
         )}
 
         {showCarousel && (
-          <div className="relative py-2">
+          <div className="relative pt-4 pb-2">
             <div
               ref={scrollRef}
               className="carousel-scroll flex gap-4 sm:gap-5 overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0"

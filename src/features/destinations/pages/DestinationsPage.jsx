@@ -548,19 +548,27 @@ const DestinationsPage = () => {
                       description={section.description}
                       carousel={section.key !== "todos" && section.items.length > 1}
                       progressive={section.key === "todos"}
-                      initialCount={12}
-                      step={8}
+                      initialCount={16}
+                      step={12}
                     >
                       {section.items.map((p, i) => (
-                        <AnimatedSection
-                          key={p.codigoUrl || p.id || i}
-                          animation="destCard"
-                          index={i}
-                          stagger={70}
-                          className="h-full"
-                        >
-                          <PackageCard paquete={p} />
-                        </AnimatedSection>
+                        section.key === "todos" ? (
+                          // Con animación solo en vista "todos"
+                          <AnimatedSection
+                            key={p.codigoUrl || p.id || i}
+                            animation="destCard"
+                            index={i}
+                            stagger={40}
+                            className="h-full"
+                          >
+                            <PackageCard paquete={p} />
+                          </AnimatedSection>
+                        ) : (
+                          // Sin animación en carruseles - aparecen inmediatamente
+                          <div key={p.codigoUrl || p.id || i} className="h-full">
+                            <PackageCard paquete={p} />
+                          </div>
+                        )
                       ))}
                     </PackagesSection>
                   </div>

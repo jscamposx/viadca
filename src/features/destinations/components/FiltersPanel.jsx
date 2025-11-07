@@ -38,7 +38,13 @@ const FiltersPanel = ({ open, onClose, onApply, initial }) => {
         : [...v[key], val],
     }));
   };
-  const reset = () => setValues(defaultState);
+  
+  const reset = () => {
+    setValues(defaultState);
+    // Aplicar automáticamente los filtros vacíos
+    onApply?.(defaultState);
+    onClose?.();
+  };
 
   const apply = () => {
     onApply?.(values);

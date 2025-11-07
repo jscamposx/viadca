@@ -145,10 +145,10 @@ const animationClasses = {
     transition: "transition-all duration-800 ease-out",
   },
   destCard: {
-    initial: "opacity-0 translate-y-10 scale-[0.98]",
+    initial: "opacity-0 translate-y-6 scale-[0.99]",
     animate: "opacity-100 translate-y-0 scale-100",
     transition:
-      "transition-all duration-600 ease-[cubic-bezier(.4,0,.2,1)] will-change-transform",
+      "transition-all duration-300 ease-out will-change-transform",
   },
 };
 
