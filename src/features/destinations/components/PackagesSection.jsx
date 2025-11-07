@@ -105,22 +105,23 @@ const PackagesSection = ({
         </AnimatedSection>
 
         {!showCarousel && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 lg:gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 lg:gap-6 py-2">
             {progressive ? childArray.slice(0, visibleCount) : childArray}
           </div>
         )}
 
         {showCarousel && (
-          <div className="relative">
+          <div className="relative py-2">
             <div
               ref={scrollRef}
-              className="carousel-scroll flex gap-4 sm:gap-5 overflow-x-auto pb-4 -mx-4 px-4 sm:mx-0 sm:px-0"
+              className="carousel-scroll flex gap-4 sm:gap-5 overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0"
               style={{
                 scrollSnapType: 'x mandatory',
                 scrollPadding: '0 1rem',
                 WebkitOverflowScrolling: 'touch',
                 scrollbarWidth: 'none',
                 msOverflowStyle: 'none',
+                overflowY: 'hidden',
               }}
             >
               {childArray.map((ch, i) => (
@@ -156,22 +157,22 @@ const PackagesSection = ({
               </button>
             )}
             
-            {/* Indicador de posición para mobile */}
+            {/* Indicador de posición para mobile - Simplificado */}
             {canScroll && (
-              <div className="sm:hidden flex justify-center gap-1.5 mt-4">
+              <div className="sm:hidden flex justify-center gap-2 mt-6">
                 <div
-                  className={`h-1.5 rounded-full transition-all duration-300 ${
-                    showLeftArrow ? 'w-8 bg-blue-600' : 'w-1.5 bg-slate-300'
+                  className={`h-2 w-2 rounded-full transition-all duration-300 ${
+                    showLeftArrow ? 'bg-slate-300' : 'bg-blue-600 scale-125'
                   }`}
                 />
                 <div
-                  className={`h-1.5 rounded-full transition-all duration-300 ${
-                    !showLeftArrow && !showRightArrow ? 'w-8 bg-blue-600' : 'w-1.5 bg-slate-300'
+                  className={`h-2 w-2 rounded-full transition-all duration-300 ${
+                    !showLeftArrow && !showRightArrow ? 'bg-blue-600 scale-125' : 'bg-slate-300'
                   }`}
                 />
                 <div
-                  className={`h-1.5 rounded-full transition-all duration-300 ${
-                    showRightArrow ? 'w-8 bg-blue-600' : 'w-1.5 bg-slate-300'
+                  className={`h-2 w-2 rounded-full transition-all duration-300 ${
+                    showRightArrow ? 'bg-blue-600 scale-125' : 'bg-slate-300'
                   }`}
                 />
               </div>
@@ -181,7 +182,7 @@ const PackagesSection = ({
 
         {/* Sentinel para carga progresiva */}
         {progressive && !showCarousel && (
-          <div ref={sentinelRef} className="mt-6">
+          <div ref={sentinelRef} className="mt-6 py-2">
             {visibleCount < childArray.length && (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 lg:gap-6">
                 {Array.from({

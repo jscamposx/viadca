@@ -91,7 +91,7 @@ const PackageCard = ({ paquete }) => {
     if (tipoLower.includes('circuito')) {
       return {
         label: 'Circuito',
-        icon: '<path d="M416 320h-96c-17.6 0-32-14.4-32-32s14.4-32 32-32h96s96-107 96-160-43-96-96-96-96 43-96 96c0 25.5 22.2 63.4 45.3 96H320c-52.9 0-96 43.1-96 96s43.1 96 96 96h96c17.6 0 32 14.4 32 32s-14.4 32-32 32H185.5c-16 24.8-33.8 47.7-47.3 64H416c52.9 0 96-43.1 96-96s-43.1-96-96-96zm0-256c17.7 0 32 14.3 32 32s-14.3 32-32 32-32-14.3-32-32 14.3-32 32-32zM96 256c-53 0-96 43-96 96s96 160 96 160 96-107 96-160-43-96-96-96zm0 128c-17.7 0-32-14.3-32-32s14.3-32 32-32 32 14.3 32 32-14.3 32-32 32z"></path>',
+        icon: '<path d="M416 320h-96c-17.6 0-32-14.4-32-32s14.4-32 32-32h96s96-107 96-160-43-96-96-96-96 43-96 96c0 25.5 22.2 63.4 45.3 96H320c-52.9 0-96 43.1-96 96s43.1 96 96 96h96c17.6 0 32 14.4 32 32s-14.4 32-32 32H185.5c-16 24.8-33.8 47.7-47.3 64H416c52.9 0 96-43.1 96-96s-43.1-96-96-96zm0-256c17.7 0 32 14.3 32 32s-14.3 32-32 32-32-14.3-32-32 14.3-32 32-32zM96 256c-53 0-96 43-96 96s43 96 96 96 96-43 96-96-43-96-96-96z"></path>',
         viewBox: '0 0 512 512',
         gradient: 'from-amber-500 to-orange-600'
       };
@@ -526,13 +526,10 @@ const DestinationsPage = () => {
           {/* Hero Section */}
           <DestinationsHero />
           
-          {/* Barra de búsqueda - posición estática normal */}
-          <div
-            id="top-search"
-            className="w-full bg-white/90 backdrop-blur-xl border-b border-slate-200/60 shadow-md"
-          >
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 sm:py-4">
-              <div className="flex flex-col gap-3 sm:gap-4">
+          {/* Barra de búsqueda y filtros */}
+          <div className="bg-white border-b border-slate-100">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
+              <div className="space-y-4">
                 {/* Barra de búsqueda */}
                 <PackagesSearchBar
                   value={search}
@@ -541,13 +538,11 @@ const DestinationsPage = () => {
                 />
                 
                 {/* Tabs de categorías */}
-                <div className="rounded-xl border border-slate-200/60 bg-white/90 shadow-sm overflow-hidden">
-                  <CategoryTabs
-                    categories={categories}
-                    current={activeCategory}
-                    onChange={setActiveCategory}
-                  />
-                </div>
+                <CategoryTabs
+                  categories={categories}
+                  current={activeCategory}
+                  onChange={setActiveCategory}
+                />
               </div>
             </div>
           </div>
