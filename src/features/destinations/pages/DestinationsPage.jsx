@@ -12,6 +12,7 @@ import { AnimatedSection } from "../../../hooks/scrollAnimations";
 import { Link } from "react-router-dom";
 import FiltersPanel from "../components/FiltersPanel";
 import CategoryTabs from "../components/CategoryTabs";
+import { FiClock, FiMapPin, FiArrowRight } from "react-icons/fi";
 // import AlphaIndex from '../components/AlphaIndex'; // Eliminado: ya no agrupamos por letra
 import UnifiedNav from "../../../components/layout/UnifiedNav";
 import Footer from "../../home/components/Footer";
@@ -179,22 +180,7 @@ const PackageCard = ({ paquete }) => {
         {/* Location badge - appears on hover */}
         <div className="absolute bottom-2 left-2 opacity-0 group-hover:opacity-100 transition-all duration-500 transform translate-y-2 group-hover:translate-y-0">
           <span className="bg-white/90 backdrop-blur-sm text-slate-800 px-2 py-1 rounded-lg text-[11px] font-medium flex items-center gap-1.5 shadow border border-white/30">
-            <svg
-              stroke="currentColor"
-              fill="none"
-              strokeWidth="2"
-              viewBox="0 0 24 24"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="w-3.5 h-3.5 text-blue-600"
-              aria-hidden="true"
-              height="1em"
-              width="1em"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
-              <circle cx="12" cy="10" r="3"></circle>
-            </svg>
+            <FiMapPin className="w-3.5 h-3.5 text-blue-600" aria-hidden="true" />
             {destinoPrincipal}
           </span>
         </div>
@@ -226,22 +212,7 @@ const PackageCard = ({ paquete }) => {
         {/* Duración */}
         {duracion && (
           <div className="flex items-center text-slate-600 mb-3 text-xs sm:text-sm">
-            <svg
-              stroke="currentColor"
-              fill="none"
-              strokeWidth="2"
-              viewBox="0 0 24 24"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="w-4 h-4 mr-1.5 text-slate-400 shrink-0"
-              aria-hidden="true"
-              height="1em"
-              width="1em"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <circle cx="12" cy="12" r="10"></circle>
-              <polyline points="12 6 12 12 16 14"></polyline>
-            </svg>
+            <FiClock className="w-4 h-4 mr-1.5 text-slate-400 shrink-0" aria-hidden="true" />
             <span className="truncate">{duracion}</span>
           </div>
         )}
@@ -249,21 +220,7 @@ const PackageCard = ({ paquete }) => {
         {/* Footer - Location y CTA */}
         <div className="mt-auto flex items-center justify-between pt-1">
           <div className="text-[11px] text-slate-500 flex items-center max-w-[120px]">
-            <svg
-              stroke="currentColor"
-              fill="none"
-              strokeWidth="2"
-              viewBox="0 0 24 24"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="w-3.5 h-3.5 mr-1 text-blue-500"
-              height="1em"
-              width="1em"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
-              <circle cx="12" cy="10" r="3"></circle>
-            </svg>
+            <FiMapPin className="w-3.5 h-3.5 mr-1 text-blue-500" />
             <span className="truncate">{destinoPrincipal}</span>
           </div>
           
@@ -273,21 +230,7 @@ const PackageCard = ({ paquete }) => {
             aria-label={`Ver detalles de ${paquete?.titulo || "Paquete"}`}
           >
             Ver más
-            <svg
-              stroke="currentColor"
-              fill="none"
-              strokeWidth="2"
-              viewBox="0 0 24 24"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="w-3.5 h-3.5"
-              height="1em"
-              width="1em"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <line x1="5" y1="12" x2="19" y2="12"></line>
-              <polyline points="12 5 19 12 12 19"></polyline>
-            </svg>
+            <FiArrowRight className="w-3.5 h-3.5" />
           </Link>
         </div>
       </div>

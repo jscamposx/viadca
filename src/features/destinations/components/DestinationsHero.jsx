@@ -22,7 +22,7 @@ const DestinationsHero = () => {
 
   return (
     <section
-      className="relative h-[60svh] sm:h-[68svh] min-h-[380px] sm:min-h-[520px] w-full flex items-center justify-center overflow-hidden rounded-b-2xl sm:rounded-b-[3rem]"
+      className="relative h-[55svh] sm:h-[70svh] lg:h-[80svh] min-h-[420px] sm:min-h-[560px] lg:min-h-[680px] w-full flex items-center justify-center overflow-hidden"
       aria-label="Hero destinos"
     >
       {/* Video / Imagen */}
@@ -49,82 +49,42 @@ const DestinationsHero = () => {
         />
       )}
 
-      {/* Multi overlay dinámico mejorado */}
+      {/* Overlay simple y limpio - Sin degradados complejos */}
       <div
-        className="absolute inset-0 bg-gradient-to-br from-slate-900/70 via-slate-800/40 to-slate-900/85"
-        aria-hidden="true"
-      />
-      <div
-        className="absolute inset-0 mix-blend-soft-light bg-[radial-gradient(circle_at_25%_35%,rgba(59,130,246,0.4),transparent_65%),radial-gradient(circle_at_75%_65%,rgba(168,85,247,0.35),transparent_60%)]"
-        aria-hidden="true"
-      />
-      <div
-        className="absolute inset-0 bg-[linear-gradient(125deg,rgba(255,255,255,0.08)_0%,rgba(255,255,255,0)_35%,rgba(255,255,255,0)_70%,rgba(255,255,255,0.06)_100%)]"
-        aria-hidden="true"
-      />
-
-      {/* Partículas flotantes mejoradas */}
-      <div className="pointer-events-none absolute inset-0" aria-hidden="true">
-        {[...Array(12)].map((_, i) => (
-          <span
-            key={i}
-            className="absolute w-1.5 h-1.5 rounded-full bg-gradient-to-r from-blue-300/60 to-purple-300/60 animate-pulse"
-            style={{
-              top: `${Math.random() * 100}%`,
-              left: `${Math.random() * 100}%`,
-              animationDelay: `${i * 0.4}s`,
-              animationDuration: `${2 + Math.random() * 2}s`,
-              opacity: 0.3 + Math.random() * 0.4,
-            }}
-          />
-        ))}
-      </div>
-
-      {/* Glow corners mejorados */}
-      <div
-        className="absolute -top-32 -left-32 w-96 h-96 bg-blue-500/25 blur-[100px] rounded-full animate-pulse"
-        style={{ animationDuration: '4s' }}
-        aria-hidden="true"
-      />
-      <div
-        className="absolute -bottom-32 -right-32 w-96 h-96 bg-purple-500/25 blur-[100px] rounded-full animate-pulse"
-        style={{ animationDuration: '6s', animationDelay: '2s' }}
+        className="absolute inset-0 bg-black/40"
         aria-hidden="true"
       />
 
       {/* Contenido */}
-      <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 text-center text-white">
+      <div className="relative z-10 max-w-7xl mx-auto px-6 sm:px-6 lg:px-8 text-center text-white">
         <div
           className={`transition-all duration-1000 ease-out ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}
         >
-          <p className="uppercase tracking-[0.4em] text-xs sm:text-sm font-bold text-blue-200/95 mb-5 sm:mb-6 drop-shadow-lg animate-pulse" style={{ animationDuration: '3s' }}>
-            Explora el mundo
-          </p>
-          <h1 className="font-volkhov text-4xl sm:text-5xl lg:text-[4rem] xl:text-[4.5rem] font-bold leading-[0.95] mb-6 sm:mb-8 drop-shadow-2xl">
-            <span className="block mb-2 bg-gradient-to-r from-white via-blue-50 to-white bg-clip-text text-transparent">
-              Todos los destinos
+          {/* Título principal */}
+          <h1 className="font-volkhov text-[2.25rem] leading-[1.1] sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-bold sm:leading-tight mb-5 sm:mb-6 lg:mb-8">
+            <span className="block text-white drop-shadow-2xl mb-2 sm:mb-3">
+              Descubre tu próximo
             </span>
-            <span className="block text-white drop-shadow-[0_8px_18px_rgba(59,130,246,0.45)]">
-              y viajes exclusivos
+            <span className="block text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-cyan-300 to-blue-400 drop-shadow-2xl">
+              destino soñado
             </span>
           </h1>
-          <p className="text-sm sm:text-base lg:text-xl max-w-2xl sm:max-w-3xl mx-auto text-slate-100/90 leading-relaxed font-light px-1">
-            Inspírate con destinos únicos, filtra por tus intereses y encuentra experiencias
-            diseñadas especialmente para ti. Tu próxima aventura comienza aquí.
+
+          {/* Descripción */}
+          <p className="text-sm sm:text-base lg:text-xl max-w-lg sm:max-w-xl lg:max-w-3xl mx-auto text-white/95 leading-relaxed font-light">
+            Encuentra experiencias únicas, filtra por tus intereses y diseña el viaje perfecto.
           </p>
         </div>
       </div>
 
-      {/* Mensaje de error del video (sin controles) */}
+      {/* Mensaje de error del video */}
       {videoError && (
-        <div className="absolute top-5 right-5 z-20">
-          <span className="px-3.5 py-2 rounded-lg bg-red-600/80 text-white text-xs font-medium">
+        <div className="absolute top-4 sm:top-6 right-4 sm:right-6 z-20">
+          <span className="px-3 sm:px-4 py-2 rounded-lg bg-red-600/90 backdrop-blur-sm text-white text-xs sm:text-sm font-medium shadow-lg">
             Video no disponible
           </span>
         </div>
       )}
-
-      {/* Indicador de scroll removido por solicitud */}
     </section>
   );
 };

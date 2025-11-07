@@ -196,7 +196,7 @@ const UnifiedNav = ({
       )}
       <header
         ref={headerRef}
-        className={`fixed top-0 left-0 right-0 z-[50] px-3 sm:px-6 lg:px-8 transition-colors duration-500 ${headerBgClass}`}
+        className={`fixed top-0 left-0 right-0 z-[50] px-4 sm:px-6 lg:px-8 transition-colors duration-500 ${headerBgClass}`}
       >
         {transparentOnTop && !isScrolled && (
           <div
@@ -229,7 +229,7 @@ const UnifiedNav = ({
 
           {/* Links desktop */}
           {/* Reemplazo enlaces para colorear según modo */}
-          <div className="hidden lg:flex items-center justify-center space-x-6 xl:space-x-8 flex-1 min-w-0 px-4">
+          <div className="hidden lg:flex items-center justify-center space-x-6 xl:space-x-8 flex-1 min-w-0">
             {hasSectionNav
               ? sectionLinks.map((l) => {
                   const active = activeSectionId === l.id;

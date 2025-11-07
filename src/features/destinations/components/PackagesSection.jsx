@@ -17,6 +17,7 @@ const PackagesSection = ({
   const [showLeftArrow, setShowLeftArrow] = useState(false);
   const [showRightArrow, setShowRightArrow] = useState(false);
   const [canScroll, setCanScroll] = useState(false);
+  const [scrollPosition, setScrollPosition] = useState(0); // 0=inicio, 1=medio, 2=final
 
   const scrollBy = useCallback((dir) => {
     if (!scrollRef.current) return;
@@ -25,7 +26,7 @@ const PackagesSection = ({
     el.scrollBy({ left: amount, behavior: "smooth" });
   }, []);
 
-  // Detectar posición de scroll para mostrar/ocultar flechas
+  // Detectar posición de scroll para mostrar/ocultar flechas e indicadores
   const handleScroll = useCallback(() => {
     if (!scrollRef.current) return;
     const el = scrollRef.current;
@@ -36,6 +37,15 @@ const PackagesSection = ({
     setCanScroll(hasOverflow);
     setShowLeftArrow(!atStart && hasOverflow);
     setShowRightArrow(!atEnd && hasOverflow);
+    
+    // Calcular posición para indicadores (0=inicio, 1=medio, 2=final)
+    if (atStart) {
+      setScrollPosition(0);
+    } else if (atEnd) {
+      setScrollPosition(2);
+    } else {
+      setScrollPosition(1);
+    }
   }, []);
 
   useEffect(() => {
@@ -162,17 +172,17 @@ const PackagesSection = ({
               <div className="sm:hidden flex justify-center gap-2 mt-6">
                 <div
                   className={`h-2 w-2 rounded-full transition-all duration-300 ${
-                    showLeftArrow ? 'bg-slate-300' : 'bg-blue-600 scale-125'
+                    scrollPosition === 0 ? 'bg-blue-600 scale-125' : 'bg-slate-300'
                   }`}
                 />
                 <div
                   className={`h-2 w-2 rounded-full transition-all duration-300 ${
-                    !showLeftArrow && !showRightArrow ? 'bg-blue-600 scale-125' : 'bg-slate-300'
+                    scrollPosition === 1 ? 'bg-blue-600 scale-125' : 'bg-slate-300'
                   }`}
                 />
                 <div
                   className={`h-2 w-2 rounded-full transition-all duration-300 ${
-                    showRightArrow ? 'bg-blue-600 scale-125' : 'bg-slate-300'
+                    scrollPosition === 2 ? 'bg-blue-600 scale-125' : 'bg-slate-300'
                   }`}
                 />
               </div>
