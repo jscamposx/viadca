@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import api from "../../../api";
 
-// Caché e in-flight por combinación page|limit|search a nivel de módulo
+// Caché e in-flight por combinación page|limit|search|filters a nivel de módulo
 const paquetesCache = new Map(); // key -> { data, totalPages, totalItems }
 const paquetesInFlight = new Map(); // key -> Promise<{ data, totalPages, totalItems }>
 
@@ -9,9 +9,14 @@ export const usePaginatedPackages = (initialPage = 1, initialLimit = 6) => {
   const [page, setPage] = useState(initialPage);
   const [limit, setLimit] = useState(initialLimit);
   const [search, setSearch] = useState("");
+  const [filters, setFilters] = useState({}); // Nuevo: filtros adicionales
 
-  const getKey = (p = page, l = limit, s = search) => `${p}|${l}|${s || ""}`;
-  const keyRef = useRef(getKey(initialPage, initialLimit, ""));
+  const getKey = (p = page, l = limit, s = search, f = filters) => {
+    const filtersStr = JSON.stringify(f || {});
+    return `${p}|${l}|${s || ""}|${filtersStr}`;
+  };
+  
+  const keyRef = useRef(getKey(initialPage, initialLimit, "", {}));
 
   // Inicializar desde caché si existe
   const cached = paquetesCache.get(keyRef.current);
@@ -46,9 +51,10 @@ export const usePaginatedPackages = (initialPage = 1, initialLimit = 6) => {
       currentPage = page,
       currentLimit = limit,
       currentSearch = search,
+      currentFilters = filters,
       force = false,
     ) => {
-      const reqKey = getKey(currentPage, currentLimit, currentSearch);
+      const reqKey = getKey(currentPage, currentLimit, currentSearch, currentFilters);
       keyRef.current = reqKey;
 
       try {
@@ -80,8 +86,13 @@ export const usePaginatedPackages = (initialPage = 1, initialLimit = 6) => {
 
         // Lanzar nueva petición y deduplicar concurrentes
         setLoading(true);
+        
+        // Construir filtros para el API
+        // Los filtros se aplicarán con la paginación normal del backend
+        const apiFilters = { ...currentFilters };
+        
         const promise = api.packages
-          .getPaquetes(currentPage, currentLimit, currentSearch)
+          .getPaquetes(currentPage, currentLimit, currentSearch, apiFilters)
           .then(normalizeResponse)
           .then((result) => {
             paquetesCache.set(reqKey, result);
@@ -107,18 +118,18 @@ export const usePaginatedPackages = (initialPage = 1, initialLimit = 6) => {
         throw err;
       } finally {
         if (
-          keyRef.current === getKey(currentPage, currentLimit, currentSearch)
+          keyRef.current === getKey(currentPage, currentLimit, currentSearch, currentFilters)
         ) {
           setLoading(false);
         }
       }
     },
-    [page, limit, search],
+    [page, limit, search, filters],
   );
 
   useEffect(() => {
-    fetchPaquetes(page, limit, search);
-  }, [page, limit, search, fetchPaquetes]);
+    fetchPaquetes(page, limit, search, filters);
+  }, [page, limit, search, filters, fetchPaquetes]);
 
   const goToPage = (newPage) => {
     if (newPage >= 1 && (totalPages === 0 || newPage <= totalPages)) {
@@ -147,8 +158,13 @@ export const usePaginatedPackages = (initialPage = 1, initialLimit = 6) => {
     setSearch(newSearch || "");
     setPage(1); // Reiniciar a la primera página al cambiar búsqueda
   }, []);
+  
+  const updateFilters = useCallback((newFilters) => {
+    setFilters(newFilters || {});
+    setPage(1); // Reiniciar a la primera página al cambiar filtros
+  }, []);
 
-  const refetch = (force = false) => fetchPaquetes(page, limit, search, force);
+  const refetch = (force = false) => fetchPaquetes(page, limit, search, filters, force);
 
   return {
     paquetes,
@@ -167,5 +183,8 @@ export const usePaginatedPackages = (initialPage = 1, initialLimit = 6) => {
     // búsqueda
     search,
     setSearch: setSearchQuery,
+    // filtros
+    filters,
+    setFilters: updateFilters,
   };
 };

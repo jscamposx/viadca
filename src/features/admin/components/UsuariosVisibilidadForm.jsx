@@ -14,11 +14,21 @@ const UsuariosVisibilidadForm = ({ formData, onFormChange }) => {
         setLoading(true);
         setError(null);
         const response = await api.users.getAllUsers({ page: 1, limit: 1000 });
-        const usuariosNoAdmin = (response?.usuarios || response?.data || [])
-          .filter(u => u.rol !== 'admin');
+        
+        // La respuesta tiene estructura: { data: { data: [...usuarios], pagination: {...} } }
+        // authService ya devuelve response.data, así que aquí recibimos { data: [...], pagination: {...} }
+        const usuariosList = response?.data || [];
+        
+        console.log("👥 Total de usuarios recibidos:", usuariosList.length);
+        
+        // Filtrar usuarios que NO sean admin
+        const usuariosNoAdmin = usuariosList.filter(u => u.rol !== 'admin');
+        console.log("✅ Usuarios disponibles (sin admin):", usuariosNoAdmin.length);
+        
         setUsuarios(usuariosNoAdmin);
       } catch (err) {
-        console.error("Error cargando usuarios:", err);
+        console.error("❌ Error cargando usuarios:", err);
+        console.error("❌ Detalles del error:", err.response?.data || err.message);
         setError("No se pudieron cargar los usuarios");
       } finally {
         setLoading(false);

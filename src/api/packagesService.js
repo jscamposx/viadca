@@ -17,10 +17,30 @@ const isTestEnv = () => {
   }
 };
 
-export const getPaquetes = (page = 1, limit = 6, search) => {
-  return apiClient.get("/admin/paquetes", {
-    params: buildPaginatedParams({ page, limit, search }),
+export const getPaquetes = (page = 1, limit = 6, search, filters = {}) => {
+  // Construir params base
+  const params = buildPaginatedParams({ page, limit, search });
+  
+  // Detectar si hay filtros activos (excluyendo valores vacíos/null/undefined)
+  const hasActiveFilters = Object.entries(filters).some(([key, value]) => 
+    value !== undefined && value !== null && value !== ''
+  );
+  
+  // Si hay filtros activos, activar noPagination para buscar en todos los paquetes
+  if (hasActiveFilters) {
+    params.noPagination = 'true';
+    console.log('🔍 Filtros activos detectados, activando noPagination=true');
+  }
+  
+  // Agregar filtros, convirtiendo booleanos a strings si es necesario
+  Object.entries(filters).forEach(([key, value]) => {
+    if (value !== undefined && value !== null && value !== '') {
+      // Convertir booleanos a strings para compatibilidad con query params
+      params[key] = typeof value === 'boolean' ? String(value) : value;
+    }
   });
+  
+  return apiClient.get("/admin/paquetes", { params });
 };
 
 // Nuevo endpoint público para listado de paquetes (fuera de /admin)

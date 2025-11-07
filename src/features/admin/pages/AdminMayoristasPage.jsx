@@ -72,6 +72,7 @@ const AdminMayoristasPage = () => {
   // Carga inicial: mientras el hook indica loading y aún no hay datos cargados
   const isInitialLoading = loading && (!Array.isArray(mayoristas) || mayoristas.length === 0);
   const [tipoFilter, setTipoFilter] = useState("");
+  const [tipoProductoFilter, setTipoProductoFilter] = useState(''); // '' = todos, 'Crucero', 'Circuito', 'Paquete', 'Hotel'
   const [isFiltersOpen, setIsFiltersOpen] = useState(false);
   // Gestionar operación pendiente (bloque restaurado dentro de useEffect)
   useEffect(() => {
@@ -210,6 +211,7 @@ const AdminMayoristasPage = () => {
   const clearFilters = () => {
     setSearchTerm("");
     setTipoFilter("");
+    setTipoProductoFilter("");
     setSortConfig({ key: "nombre", direction: "asc" });
   };
 
@@ -234,7 +236,15 @@ const AdminMayoristasPage = () => {
 
     // La búsqueda ahora se hace en el backend (no filtrar por deferredSearchTerm aquí)
 
-    if (tipoFilter) {
+    // Filtrar por tipo de producto (filtros rápidos)
+    if (tipoProductoFilter) {
+      filtered = filtered.filter(
+        (mayorista) => mayorista.tipo_producto === tipoProductoFilter,
+      );
+    }
+
+    // Filtrar por tipo de producto (filtro avanzado)
+    if (tipoFilter && tipoFilter !== tipoProductoFilter) {
       filtered = filtered.filter(
         (mayorista) => mayorista.tipo_producto === tipoFilter,
       );
@@ -261,7 +271,7 @@ const AdminMayoristasPage = () => {
     }
 
     return filtered;
-  }, [mayoristas, /*deferredSearchTerm,*/ tipoFilter, sortConfig]);
+  }, [mayoristas, /*deferredSearchTerm,*/ tipoFilter, tipoProductoFilter, sortConfig]);
 
   const tiposUnicos = useMemo(
     () =>
@@ -633,7 +643,7 @@ const AdminMayoristasPage = () => {
           )}
         </div>
 
-        {/* Filtros Rápidos - sección separada, como en el diseño de ejemplo */}
+        {/* 🎯 FILTROS RÁPIDOS POR TIPO DE PRODUCTO */}
         <section
           className="bg-gradient-to-r from-white via-gray-50 to-white rounded-xl sm:rounded-2xl shadow-lg border border-gray-100 p-3 sm:p-4 lg:p-5 mb-4 sm:mb-6"
           aria-labelledby="filtros-rapidos-mayoristas"
@@ -656,46 +666,213 @@ const AdminMayoristasPage = () => {
               role="group"
               aria-labelledby="filtros-rapidos-mayoristas"
             >
+              {/* Botón: Todos */}
               <button
-                aria-pressed={tipoFilter === ""}
+                onClick={() => {
+                  setTipoProductoFilter('');
+                  goToPage(1);
+                }}
+                aria-pressed={tipoProductoFilter === ''}
                 aria-label="Mostrar todos los mayoristas sin filtros"
-                onClick={() => setTipoFilter("")}
-                className={`group relative px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg sm:rounded-xl text-xs sm:text-sm font-medium transition-all duration-200 ${
-                  tipoFilter === ""
-                    ? "bg-gradient-to-r from-purple-500 to-indigo-600 text-white shadow-lg"
-                    : "bg-white text-gray-600 hover:bg-gray-50 border border-gray-200"
-                }`}
+                className={`
+                  group relative px-3 sm:px-4 py-2 sm:py-2.5 
+                  rounded-lg sm:rounded-xl text-xs sm:text-sm font-medium 
+                  transition-all duration-200
+                  ${tipoProductoFilter === '' 
+                    ? 'bg-gradient-to-r from-purple-500 to-indigo-600 text-white shadow-lg' 
+                    : 'bg-white text-gray-600 hover:bg-blue-50 hover:text-blue-700 border border-gray-200 hover:border-blue-200'
+                  }
+                `}
               >
                 <div className="flex items-center justify-center gap-2">
-                  <FiUsers className="w-3 h-3 sm:w-4 sm:h-4" />
+                  <svg 
+                    className="w-3 h-3 sm:w-4 sm:h-4" 
+                    fill="none" 
+                    stroke="currentColor" 
+                    viewBox="0 0 24 24"
+                  >
+                    <path 
+                      strokeLinecap="round" 
+                      strokeLinejoin="round" 
+                      strokeWidth={2} 
+                      d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" 
+                    />
+                  </svg>
                   <span className="hidden sm:inline">Todos los Mayoristas</span>
                   <span className="sm:hidden">Todos</span>
                 </div>
               </button>
 
-              {tiposUnicos.map((tipo) => (
-                <button
-                  key={tipo}
-                  aria-pressed={tipoFilter === tipo}
-                  aria-label={`Mostrar solo ${tipo}`}
-                  onClick={() => setTipoFilter(tipo)}
-                  className={`group relative px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg sm:rounded-xl text-xs sm:text-sm font-medium transition-all duration-200 ${
-                    tipoFilter === tipo
-                      ? "bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-lg"
-                      : "bg-white text-gray-600 hover:bg-blue-50 hover:text-blue-700 border border-gray-200 hover:border-blue-200"
-                  }`}
-                >
-                  <div className="flex items-center justify-center gap-2">
-                    <FiTag className="w-3 h-3 sm:w-4 sm:h-4" />
-                    <span className="hidden sm:inline">{tipo}</span>
-                    <span className="sm:hidden truncate max-w-[70px]">
-                      {tipo}
-                    </span>
-                  </div>
-                </button>
-              ))}
+              {/* Botón: Crucero */}
+              <button
+                onClick={() => {
+                  setTipoProductoFilter('Crucero');
+                  goToPage(1);
+                }}
+                aria-pressed={tipoProductoFilter === 'Crucero'}
+                aria-label="Mostrar solo Crucero"
+                className={`
+                  group relative px-3 sm:px-4 py-2 sm:py-2.5 
+                  rounded-lg sm:rounded-xl text-xs sm:text-sm font-medium 
+                  transition-all duration-200
+                  ${tipoProductoFilter === 'Crucero'
+                    ? 'bg-gradient-to-r from-purple-500 to-indigo-600 text-white shadow-lg' 
+                    : 'bg-white text-gray-600 hover:bg-blue-50 hover:text-blue-700 border border-gray-200 hover:border-blue-200'
+                  }
+                `}
+              >
+                <div className="flex items-center justify-center gap-2">
+                  <svg 
+                    className="w-3 h-3 sm:w-4 sm:h-4" 
+                    fill="none" 
+                    stroke="currentColor" 
+                    viewBox="0 0 24 24"
+                  >
+                    <path 
+                      strokeLinecap="round" 
+                      strokeLinejoin="round" 
+                      strokeWidth={2} 
+                      d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" 
+                    />
+                  </svg>
+                  <span className="hidden sm:inline">Crucero</span>
+                  <span className="sm:hidden truncate max-w-[70px]">Crucero</span>
+                </div>
+              </button>
+
+              {/* Botón: Circuito */}
+              <button
+                onClick={() => {
+                  setTipoProductoFilter('Circuito');
+                  goToPage(1);
+                }}
+                aria-pressed={tipoProductoFilter === 'Circuito'}
+                aria-label="Mostrar solo Circuito"
+                className={`
+                  group relative px-3 sm:px-4 py-2 sm:py-2.5 
+                  rounded-lg sm:rounded-xl text-xs sm:text-sm font-medium 
+                  transition-all duration-200
+                  ${tipoProductoFilter === 'Circuito'
+                    ? 'bg-gradient-to-r from-purple-500 to-indigo-600 text-white shadow-lg' 
+                    : 'bg-white text-gray-600 hover:bg-blue-50 hover:text-blue-700 border border-gray-200 hover:border-blue-200'
+                  }
+                `}
+              >
+                <div className="flex items-center justify-center gap-2">
+                  <svg 
+                    className="w-3 h-3 sm:w-4 sm:h-4" 
+                    fill="none" 
+                    stroke="currentColor" 
+                    viewBox="0 0 24 24"
+                  >
+                    <path 
+                      strokeLinecap="round" 
+                      strokeLinejoin="round" 
+                      strokeWidth={2} 
+                      d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" 
+                    />
+                  </svg>
+                  <span className="hidden sm:inline">Circuito</span>
+                  <span className="sm:hidden truncate max-w-[70px]">Circuito</span>
+                </div>
+              </button>
+
+              {/* Botón: Paquete */}
+              <button
+                onClick={() => {
+                  setTipoProductoFilter('Paquete');
+                  goToPage(1);
+                }}
+                aria-pressed={tipoProductoFilter === 'Paquete'}
+                aria-label="Mostrar solo Paquete"
+                className={`
+                  group relative px-3 sm:px-4 py-2 sm:py-2.5 
+                  rounded-lg sm:rounded-xl text-xs sm:text-sm font-medium 
+                  transition-all duration-200
+                  ${tipoProductoFilter === 'Paquete'
+                    ? 'bg-gradient-to-r from-purple-500 to-indigo-600 text-white shadow-lg' 
+                    : 'bg-white text-gray-600 hover:bg-blue-50 hover:text-blue-700 border border-gray-200 hover:border-blue-200'
+                  }
+                `}
+              >
+                <div className="flex items-center justify-center gap-2">
+                  <svg 
+                    className="w-3 h-3 sm:w-4 sm:h-4" 
+                    fill="none" 
+                    stroke="currentColor" 
+                    viewBox="0 0 24 24"
+                  >
+                    <path 
+                      strokeLinecap="round" 
+                      strokeLinejoin="round" 
+                      strokeWidth={2} 
+                      d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" 
+                    />
+                  </svg>
+                  <span className="hidden sm:inline">Paquete</span>
+                  <span className="sm:hidden truncate max-w-[70px]">Paquete</span>
+                </div>
+              </button>
+
+              {/* Botón: Hotel */}
+              <button
+                onClick={() => {
+                  setTipoProductoFilter('Hotel');
+                  goToPage(1);
+                }}
+                aria-pressed={tipoProductoFilter === 'Hotel'}
+                aria-label="Mostrar solo Hotel"
+                className={`
+                  group relative px-3 sm:px-4 py-2 sm:py-2.5 
+                  rounded-lg sm:rounded-xl text-xs sm:text-sm font-medium 
+                  transition-all duration-200
+                  ${tipoProductoFilter === 'Hotel'
+                    ? 'bg-gradient-to-r from-purple-500 to-indigo-600 text-white shadow-lg' 
+                    : 'bg-white text-gray-600 hover:bg-blue-50 hover:text-blue-700 border border-gray-200 hover:border-blue-200'
+                  }
+                `}
+              >
+                <div className="flex items-center justify-center gap-2">
+                  <svg 
+                    className="w-3 h-3 sm:w-4 sm:h-4" 
+                    fill="none" 
+                    stroke="currentColor" 
+                    viewBox="0 0 24 24"
+                  >
+                    <path 
+                      strokeLinecap="round" 
+                      strokeLinejoin="round" 
+                      strokeWidth={2} 
+                      d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" 
+                    />
+                  </svg>
+                  <span className="hidden sm:inline">Hotel</span>
+                  <span className="sm:hidden truncate max-w-[70px]">Hotel</span>
+                </div>
+              </button>
             </div>
           </div>
+
+          {/* Badge de filtros activos */}
+          {tipoProductoFilter && (
+            <div className="mt-3">
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-blue-50 text-blue-700 rounded-full text-sm">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+                </svg>
+                <span>Filtrando por: {tipoProductoFilter}</span>
+                <button
+                  onClick={() => setTipoProductoFilter('')}
+                  className="ml-1 hover:bg-blue-100 rounded-full p-0.5"
+                  aria-label="Quitar filtro"
+                >
+                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+          )}
         </section>
 
         {/* Lista / Skeleton / Vacío */}

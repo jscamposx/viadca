@@ -57,6 +57,9 @@ const AdminPaquetes = () => {
     refetch,
     // búsqueda backend
     setSearch,
+    // filtros backend (dinámicos)
+    filters,
+    setFilters,
   } = usePaginatedPackages();
   const { mayoristas, loading: mayoristasLoading } = useMayoristas();
   const [searchTerm, setSearchTerm] = useState("");
@@ -92,6 +95,11 @@ const AdminPaquetes = () => {
       ),
     [mayoristas],
   );
+
+  // Debug: verificar que los mayoristas se cargan
+  useEffect(() => {
+    console.log('👥 Mayoristas cargados:', mayoristas?.length || 0, mayoristas);
+  }, [mayoristas]);
 
   // Sincronizar búsqueda con backend (consulta global)
   useEffect(() => {
@@ -240,12 +248,53 @@ const AdminPaquetes = () => {
     }
   };
 
+  // Sincronizar filtros con backend - Sistema dinámico
+  useEffect(() => {
+    const backendFilters = {};
+    
+    console.log('🔍 Estados de filtros:', { statusFilter, favoritoFilter, mayoristaFilter, tipoProductoFilter });
+    
+    // Filtro de estado: activo=true o activo=false
+    if (statusFilter) {
+      backendFilters.activo = statusFilter === 'activo';
+      console.log('✅ Agregando filtro activo:', backendFilters.activo);
+    }
+    
+    // Filtro de favoritos: favorito=true
+    if (favoritoFilter) {
+      backendFilters.favorito = true;
+      console.log('✅ Agregando filtro favorito');
+    }
+    
+    // Filtro de mayorista: mayorista=nombre (el backend usa el nombre, no el ID)
+    if (mayoristaFilter) {
+      // Buscar el nombre del mayorista por su ID
+      const mayorista = mayoristas?.find(m => m.id === mayoristaFilter);
+      if (mayorista?.nombre) {
+        backendFilters.mayorista = mayorista.nombre;
+        console.log('✅ Agregando filtro mayorista:', mayorista.nombre);
+      }
+    }
+    
+    // Filtro de tipo de producto: tipoProducto=tours/hospedaje/etc
+    if (tipoProductoFilter) {
+      backendFilters.tipoProducto = tipoProductoFilter;
+      console.log('✅ Agregando filtro tipoProducto:', tipoProductoFilter);
+    }
+    
+    // Solo actualizar si hay filtros activos
+    const hasFilters = Object.keys(backendFilters).length > 0;
+    console.log('📊 Filtros finales que se enviarán al backend:', hasFilters ? backendFilters : '⭕ NINGUNO (objeto vacío)');
+    setFilters(hasFilters ? backendFilters : {});
+  }, [statusFilter, favoritoFilter, mayoristaFilter, tipoProductoFilter, mayoristas, setFilters]);
+
+  // Aplicar filtros locales: SOLO precio y ordenamiento
+  // Los demás filtros (activo, favorito, mayorista, tipo) los maneja el backend
   useEffect(() => {
     if (paquetes && Array.isArray(paquetes)) {
       let result = [...paquetes];
 
-      // La búsqueda ahora se hace en el backend (no filtrar por searchTerm aquí)
-
+      // Filtro de precio (local - no soportado aún en backend)
       if (priceFilter.min || priceFilter.max) {
         const minPrice = priceFilter.min ? parseFloat(priceFilter.min) : 0;
         const maxPrice = priceFilter.max
@@ -258,35 +307,7 @@ const AdminPaquetes = () => {
         });
       }
 
-      if (mayoristaFilter) {
-        result = result.filter((p) => {
-          return (
-            p.mayoristas && p.mayoristas.some((m) => m.id === mayoristaFilter)
-          );
-        });
-      }
-
-      if (tipoProductoFilter) {
-        result = result.filter((p) => {
-          return (
-            p.mayoristas &&
-            p.mayoristas.some((m) => m.tipo_producto === tipoProductoFilter)
-          );
-        });
-      }
-
-      if (statusFilter) {
-        if (statusFilter === "activo") {
-          result = result.filter((p) => p.activo === true);
-        } else if (statusFilter === "inactivo") {
-          result = result.filter((p) => p.activo === false);
-        }
-      }
-
-      if (favoritoFilter) {
-        result = result.filter((p) => !!p.favorito);
-      }
-
+      // Ordenamiento (local)
       if (sortConfig.key) {
         result.sort((a, b) => {
           let aValue = a[sortConfig.key];
@@ -318,13 +339,8 @@ const AdminPaquetes = () => {
     }
   }, [
     paquetes,
-    // searchTerm eliminado del filtrado local (búsqueda en backend)
     sortConfig,
     priceFilter,
-    mayoristaFilter,
-    statusFilter,
-    tipoProductoFilter,
-    favoritoFilter,
   ]);
 
   const requestSort = (key) => {
@@ -382,6 +398,7 @@ const AdminPaquetes = () => {
   };
 
   const clearFilters = () => {
+    // Limpiar filtros locales (UI)
     setPriceFilter({ min: "", max: "" });
     setDurationFilter("");
     setMayoristaFilter("");
@@ -390,6 +407,7 @@ const AdminPaquetes = () => {
     setFavoritoFilter(false);
     setSearchTerm("");
     setSearch("");
+    // Nota: setFilters({}) se llamará automáticamente por el useEffect de sincronización
   };
 
   // Efecto para manejar operaciones pendientes de creación/edición iniciadas en NewPackagePage
