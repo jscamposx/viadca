@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useDeferredValue, useMemo } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { usePaginatedPackages } from "../../package/hooks/usePaginatedPackages";
-import { useMayoristas } from "../hooks/useMayoristas";
+import { useAllMayoristas } from "../hooks/useAllMayoristas";
 import {
   FiDownload,
   FiArrowUp,
@@ -61,7 +61,7 @@ const AdminPaquetes = () => {
     filters,
     setFilters,
   } = usePaginatedPackages();
-  const { mayoristas, loading: mayoristasLoading } = useMayoristas();
+  const { mayoristas, loading: mayoristasLoading } = useAllMayoristas();
   const [searchTerm, setSearchTerm] = useState("");
   const deferredSearchTerm = useDeferredValue(searchTerm);
   const [filteredPaquetes, setFilteredPaquetes] = useState([]);

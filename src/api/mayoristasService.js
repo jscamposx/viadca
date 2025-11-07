@@ -7,6 +7,13 @@ export const getMayoristas = (page = 1, limit = 6, search) => {
   });
 };
 
+// Obtener TODOS los mayoristas sin paginación (para filtros rápidos)
+export const getAllMayoristas = () => {
+  return apiClient.get("/admin/mayoristas", {
+    params: { noPagination: 'true' },
+  });
+};
+
 export const getMayoristaById = (id) => {
   return apiClient.get(`/admin/mayoristas/${id}`);
 };
