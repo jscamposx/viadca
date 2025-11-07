@@ -108,8 +108,8 @@ const DestinationsHero = () => {
               y viajes exclusivos
             </span>
           </h1>
-          <p className="hidden sm:block text-base sm:text-lg lg:text-xl max-w-3xl mx-auto text-slate-100/90 leading-relaxed font-light">
-            Inspírate con destinos únicos, filtra por tus intereses y encuentra experiencias 
+          <p className="text-sm sm:text-base lg:text-xl max-w-2xl sm:max-w-3xl mx-auto text-slate-100/90 leading-relaxed font-light px-1">
+            Inspírate con destinos únicos, filtra por tus intereses y encuentra experiencias
             diseñadas especialmente para ti. Tu próxima aventura comienza aquí.
           </p>
         </div>
