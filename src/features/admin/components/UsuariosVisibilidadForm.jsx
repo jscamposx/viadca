@@ -59,6 +59,14 @@ const UsuariosVisibilidadForm = ({ formData, onFormChange }) => {
     }
   };
 
+  // Función para manejar el cambio del toggle de activo/inactivo
+  const handleToggleChange = (fieldName, value) => {
+    console.log(`🔄 Toggle cambió - ${fieldName}:`, value);
+    onFormChange({
+      target: { name: fieldName, value: value },
+    });
+  };
+
   const handleToggleUsuario = (usuarioId) => {
     const currentIds = formData.usuariosAutorizadosIds || [];
     const isSelected = currentIds.includes(usuarioId);
