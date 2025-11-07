@@ -1,38 +1,43 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import PageTransition from "../../../components/ui/PageTransition";
-import { useContactActions } from "../../../hooks/useContactActions"; // nuevo
+import UnifiedNav from "../../../components/layout/UnifiedNav";
+import Footer from "../../home/components/Footer";
+import { useContactActions } from "../../../hooks/useContactActions";
+import { useContactInfo } from "../../../hooks/useContactInfo";
 
 const CookiesPage = () => {
   const lastUpdate = "Agosto 2025";
   const { openWhatsApp, getPhoneHref, onPhoneClick, ToastPortal } =
     useContactActions();
+  const { contactInfo } = useContactInfo();
   const whatsappMsg =
     "Hola, tengo dudas sobre su política de cookies. ¿Podrían brindarme más información?";
 
   return (
-    <PageTransition>
-      <main className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/20 to-orange-50/10 relative overflow-hidden">
+    <>
+      <UnifiedNav contactInfo={contactInfo} transparentOnTop={true} />
+      <PageTransition>
+        <div className="flex flex-col min-h-screen">
+          <main className="flex-grow bg-gradient-to-b from-slate-50 via-white to-purple-50/10 relative">
         {/* Fondo decorativo mejorado */}
         <div
-          className="absolute inset-0 pointer-events-none"
+          className="absolute inset-0 pointer-events-none -z-10"
           aria-hidden="true"
         >
-          <div className="absolute -top-20 -left-32 w-64 h-64 rounded-full bg-blue-200/20 blur-3xl animate-pulse-slow" />
-          <div className="absolute top-1/4 -right-20 w-80 h-80 rounded-full bg-orange-200/20 blur-3xl animate-pulse-slow delay-1000" />
-          <div className="absolute bottom-20 left-1/3 w-48 h-48 rounded-full bg-purple-200/15 blur-2xl animate-pulse-slow delay-500" />
-          <div className="absolute bottom-1/3 right-1/4 w-32 h-32 rounded-full bg-amber-200/15 blur-2xl animate-pulse-slow delay-1500" />
-          <div className="absolute top-1/3 left-1/4 w-40 h-40 rounded-full bg-cyan-200/15 blur-2xl animate-pulse-slow delay-2000" />
+          <div className="absolute -top-20 -left-32 w-64 h-64 rounded-full bg-purple-200/20 blur-3xl animate-pulse-slow" />
+          <div className="absolute top-1/4 -right-20 w-80 h-80 rounded-full bg-indigo-200/20 blur-3xl animate-pulse-slow delay-1000" />
+          <div className="absolute bottom-20 left-1/3 w-48 h-48 rounded-full bg-pink-200/15 blur-2xl animate-pulse-slow delay-500" />
         </div>
 
         {/* Sección Hero mejorada */}
-        <div className="relative bg-gradient-to-r from-purple-600 via-purple-700 to-indigo-700 text-white">
-          <div className="absolute inset-0 bg-gradient-to-b from-black/5 to-black/10"></div>
-          <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-24">
+        <div className="relative bg-gradient-to-r from-purple-600 via-purple-700 to-indigo-700 text-white pt-28 md:pt-32">
+          <div className="absolute inset-0 bg-gradient-to-b from-black/10 to-black/20"></div>
+          <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-16 md:pb-20">
             <div className="text-center">
-              <div className="inline-flex items-center justify-center w-20 h-20 bg-white/20 backdrop-blur-sm rounded-xl mb-8 transform transition-transform duration-500 hover:rotate-12">
+              <div className="inline-flex items-center justify-center w-16 h-16 md:w-20 md:h-20 bg-white/20 backdrop-blur-sm rounded-2xl mb-6 md:mb-8 shadow-2xl">
                 <svg
-                  className="w-10 h-10 text-white"
+                  className="w-8 h-8 md:w-10 md:h-10 text-white"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -45,14 +50,13 @@ const CookiesPage = () => {
                   />
                 </svg>
               </div>
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-4 animate-fade-in-down">
+              <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight mb-4">
                 Política de Cookies
               </h1>
-              <p className="text-xl text-purple-100 max-w-2xl mx-auto mb-8 leading-relaxed">
-                Información transparente sobre el uso de cookies y tecnologías
-                similares en nuestro sitio web.
+              <p className="text-lg md:text-xl text-purple-100 max-w-2xl mx-auto mb-6 leading-relaxed">
+                Información transparente sobre el uso de cookies y tecnologías similares en nuestro sitio web.
               </p>
-              <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-full px-4 py-2 border border-white/20 transform transition-transform hover:scale-105">
+              <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-full px-4 py-2 border border-white/20">
                 <svg
                   className="w-4 h-4 text-purple-200"
                   fill="none"
@@ -75,10 +79,9 @@ const CookiesPage = () => {
 
           {/* Onda decorativa */}
           <div className="absolute -bottom-1 left-0 right-0">
-            <svg viewBox="0 0 1440 120" className="w-full h-auto text-white">
+            <svg viewBox="0 0 1440 120" className="w-full h-auto" fill="currentColor">
               <path
-                fill="currentColor"
-                fillOpacity="1"
+                fillOpacity="0.1"
                 d="M0,64L80,58.7C160,53,320,43,480,48C640,53,800,75,960,74.7C1120,75,1280,53,1360,42.7L1440,32L1440,120L1360,120C1280,120,1120,120,960,120C800,120,640,120,480,120C320,120,160,120,80,120L0,120Z"
               ></path>
             </svg>
@@ -86,8 +89,8 @@ const CookiesPage = () => {
         </div>
 
         {/* Contenido principal */}
-        <section className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-20 -mt-6">
-          <div className="bg-white/90 backdrop-blur-lg rounded-3xl shadow-xl border border-white/80 p-6 md:p-10 lg:p-12 transform transition-all duration-300 hover:shadow-2xl">
+        <section className="relative max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16">
+          <div className="bg-white rounded-3xl shadow-xl border border-slate-200/50 p-6 md:p-10 lg:p-12">
             <div className="prose prose-slate max-w-none prose-headings:font-bold prose-headings:text-slate-800 prose-h2:text-2xl md:prose-h2:text-3xl prose-h2:mt-10 prose-h2:mb-6 prose-p:text-slate-600 prose-p:leading-relaxed prose-li:text-slate-600 prose-li:marker:text-purple-500 prose-a:text-purple-600 prose-a:no-underline hover:prose-a:text-purple-700 prose-a:font-medium">
               <div className="bg-purple-50/70 rounded-xl p-6 mb-10 border-l-4 border-purple-500">
                 <p className="text-lg font-medium text-purple-800">
@@ -481,8 +484,11 @@ const CookiesPage = () => {
           }
         `}</style>
         <ToastPortal />
-      </main>
-    </PageTransition>
+        </main>
+        <Footer contactInfo={contactInfo} />
+        </div>
+      </PageTransition>
+    </>
   );
 };
 

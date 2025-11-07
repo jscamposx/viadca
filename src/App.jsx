@@ -30,6 +30,7 @@ import ProtectedUserProfilePage from "./features/profile/pages/UserProfilePage";
 import PrivacyPage from "./features/legal/pages/PrivacyPage";
 import TermsPage from "./features/legal/pages/TermsPage";
 import CookiesPage from "./features/legal/pages/CookiesPage";
+import ContactPage from "./features/contact/pages/ContactPage";
 import React, { Suspense } from "react";
 const FaqPage = React.lazy(() => import("./features/help/pages/FaqPage"));
 import FaqPageSkeleton from "./features/help/components/FaqPageSkeleton";
@@ -51,6 +52,7 @@ function AppRoutes() {
           <Route path="/privacidad" element={<PrivacyPage />} />
           <Route path="/terminos" element={<TermsPage />} />
           <Route path="/cookies" element={<CookiesPage />} />
+          <Route path="/contacto" element={<ContactPage />} />
           {/* FAQ / Centro de ayuda */}
           <Route
             path="/preguntas-frecuentes"

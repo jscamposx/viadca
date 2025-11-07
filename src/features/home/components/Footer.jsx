@@ -487,6 +487,15 @@ const Footer = ({ contactInfo, contactLoading, currentYear }) => {
               aria-label="Enlaces legales"
             >
               <Link
+                to="/contacto"
+                className="text-slate-700 hover:text-blue-700 transition-colors duration-300 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-600"
+              >
+                Contacto
+              </Link>
+              <span className="text-slate-400" aria-hidden="true">
+                •
+              </span>
+              <Link
                 to="/preguntas-frecuentes"
                 className="text-slate-700 hover:text-blue-700 transition-colors duration-300 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-600"
               >

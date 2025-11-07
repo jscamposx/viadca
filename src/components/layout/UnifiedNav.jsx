@@ -99,10 +99,13 @@ const UnifiedNav = ({
     { to: "/preguntas-frecuentes", label: "Ayuda" },
   ];
 
+  // Si el menú móvil está abierto y la navbar es transparente, forzar fondo sólido
   const headerBgClass = isScrolled
     ? "bg-white/95 shadow-md border-b border-blue-200/60 lg:backdrop-blur-lg"
     : transparentOnTop
-      ? "bg-transparent"
+      ? mobileOpen
+        ? "bg-white/95 shadow-md border-b border-blue-200/60 backdrop-blur-lg"
+        : "bg-transparent"
       : "bg-white/80 lg:bg-gradient-to-br lg:from-blue-50/90 lg:to-orange-50/90";
 
   useEffect(() => {
@@ -185,7 +188,7 @@ const UnifiedNav = ({
     <>
       {showScrollProgress && (
         <div
-          className="fixed top-0 left-0 right-0 h-0.5 z-[50]"
+          className="fixed top-0 left-0 right-0 h-1 z-[60]"
           aria-hidden="true"
         >
           <div
@@ -198,7 +201,7 @@ const UnifiedNav = ({
         ref={headerRef}
         className={`fixed top-0 left-0 right-0 z-[50] transition-colors duration-500 ${headerBgClass}`}
       >
-        {transparentOnTop && !isScrolled && (
+        {transparentOnTop && !isScrolled && !mobileOpen && (
           <div
             className="absolute inset-0 pointer-events-none bg-gradient-to-b from-black/40 via-black/20 to-transparent"
             aria-hidden="true"
@@ -499,24 +502,20 @@ const UnifiedNav = ({
 
         {/* Panel móvil */}
         <div
-          className={`lg:hidden overflow-hidden transition-all duration-300 ease-out ${mobileOpen ? "max-h-screen opacity-100" : "max-h-0 opacity-0"}`}
+          className={`lg:hidden overflow-hidden transition-all duration-300 ease-in-out ${mobileOpen ? "max-h-screen opacity-100" : "max-h-0 opacity-0"}`}
         >
           <div
-            className={`shadow-2xl ${transparentOnTop && !isScrolled ? "backdrop-blur-xl border-t bg-slate-900/95 border-white/20" : "backdrop-blur-md border-t bg-white/98 border-slate-200"}`}
+            className="backdrop-blur-md border-t bg-white/98 border-blue-100/50 transition-all duration-300"
           >
-            <div className="px-4 py-6 space-y-5">
-              <div className="space-y-2">
+            <div className="px-4 py-6 space-y-2">
+              {/* Enlaces de navegación principales */}
+              <div className="space-y-1">
                 {hasSectionNav
                   ? sectionLinks.map((link) => {
                       const active = activeSectionId === link.id;
-                      const variantClasses =
-                        transparentOnTop && !isScrolled
-                          ? active
-                            ? "text-white bg-white/20 shadow-lg border-2 border-white/40"
-                            : "text-white/95 hover:text-white hover:bg-white/15 border-2 border-white/20 hover:border-white/40"
-                          : active
-                            ? "text-blue-600 bg-blue-50 shadow-md border-2 border-blue-300"
-                            : "text-slate-700 hover:text-blue-600 hover:bg-blue-50 border-2 border-slate-200 hover:border-blue-300";
+                      const variantClasses = active
+                        ? "text-blue-600 bg-blue-50 shadow-md border border-blue-200"
+                        : "text-slate-700 hover:text-blue-600 hover:bg-blue-50/70 hover:shadow-sm";
                       return (
                         <button
                           key={link.id}
@@ -524,179 +523,268 @@ const UnifiedNav = ({
                             scrollToSection(link.id);
                             setMobileOpen(false);
                           }}
-                          className={`w-full text-left flex items-center gap-3 py-3.5 px-4 rounded-xl font-semibold transition-all ${variantClasses}`}
+                          className={`flex items-center gap-3 transition-all duration-300 py-3 px-4 rounded-xl font-medium transform hover:scale-[1.02] w-full text-left ${variantClasses}`}
                         >
-                          {link.label}
+                          <span className="font-medium flex-1">{link.label}</span>
+                          {active && (
+                            <div
+                              className="w-2 h-2 bg-blue-600 rounded-full animate-pulse"
+                              aria-hidden="true"
+                            />
+                          )}
                         </button>
                       );
                     })
                   : navLinks.map((link) => {
                       const active = location.pathname === link.to;
-                      const variantClasses =
-                        transparentOnTop && !isScrolled
-                          ? active
-                            ? "text-white bg-white/20 shadow-lg border-2 border-white/40"
-                            : "text-white/95 hover:text-white hover:bg-white/15 border-2 border-white/20 hover:border-white/40"
-                          : active
-                            ? "text-blue-600 bg-blue-50 shadow-md border-2 border-blue-300"
-                            : "text-slate-700 hover:text-blue-600 hover:bg-blue-50 border-2 border-slate-200 hover:border-blue-300";
+                      const variantClasses = active
+                        ? "text-blue-600 bg-blue-50 shadow-md border border-blue-200"
+                        : "text-slate-700 hover:text-blue-600 hover:bg-blue-50/70 hover:shadow-sm";
+                      
+                      // Iconos para cada enlace
+                      const getIcon = () => {
+                        if (link.to === "/") {
+                          return (
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                            </svg>
+                          );
+                        } else if (link.to === "/paquetes") {
+                          return (
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                            </svg>
+                          );
+                        } else if (link.to === "/preguntas-frecuentes") {
+                          return (
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                          );
+                        }
+                        return null;
+                      };
+
                       return (
                         <Link
                           key={link.to}
                           to={link.to}
                           onClick={() => setMobileOpen(false)}
-                          className={`flex items-center gap-3 py-3.5 px-4 rounded-xl font-semibold transition-all ${variantClasses}`}
+                          className={`flex items-center gap-3 transition-all duration-300 py-3 px-4 rounded-xl font-medium transform hover:scale-[1.02] ${variantClasses}`}
                         >
-                          {link.label}
+                          {getIcon()}
+                          <span className="font-medium flex-1">{link.label}</span>
+                          {active && (
+                            <div
+                              className="w-2 h-2 bg-blue-600 rounded-full animate-pulse"
+                              aria-hidden="true"
+                            />
+                          )}
                         </Link>
                       );
                     })}
               </div>
-              <div
-                className={`pt-4 ${transparentOnTop && !isScrolled ? "border-t border-white/20" : "border-t border-slate-200"}`}
-              >
+              
+              {/* Sección de usuario / autenticación */}
+              <div className="pt-6 space-y-3 border-t border-blue-100/50">
                 {isAuthenticated() ? (
-                  <div className="space-y-3">
+                  <div>
+                    {/* Tarjeta de perfil */}
                     <div
-                      className={`flex items-center gap-3 p-4 rounded-xl border ${transparentOnTop && !isScrolled ? "bg-white/10 border-white/25 text-white" : "bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200"}`}
+                      className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 p-4 rounded-xl shadow-sm"
+                      aria-label="Información rápida de usuario"
+                      role="group"
                     >
-                      <div
-                        className={`w-12 h-12 rounded-full flex items-center justify-center text-lg font-bold ${transparentOnTop && !isScrolled ? "bg-white/20 text-white" : "bg-gradient-to-r from-blue-600 to-indigo-600 text-white"}`}
-                      >
-                        {userInitial}
+                      <div className="flex items-center space-x-3">
+                        <div
+                          className="w-12 h-12 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-full flex items-center justify-center text-lg font-bold shadow-md"
+                          aria-hidden="true"
+                        >
+                          {userInitial}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-slate-800 font-semibold text-lg truncate">
+                            {displayName}
+                          </p>
+                          <p className="text-slate-600 text-sm truncate">
+                            {displayEmail || "Sin email"}
+                          </p>
+                        </div>
+                        <div
+                          className="w-3 h-3 bg-green-500 rounded-full animate-pulse"
+                          aria-hidden="true"
+                        />
                       </div>
-                      <div className="min-w-0 flex-1">
-                        <p
-                          className={`font-semibold truncate ${transparentOnTop && !isScrolled ? "text-white" : "text-slate-800"}`}
-                        >
-                          {displayName}
-                        </p>
-                        <p
-                          className={`text-sm truncate ${transparentOnTop && !isScrolled ? "text-white/80" : "text-slate-600"}`}
-                        >
-                          {displayEmail || "Sin email"}
-                        </p>
-                      </div>
-                      {isAdmin() && (
-                        <span
-                          className={`text-[11px] px-2 py-1 rounded-full font-semibold ${transparentOnTop && !isScrolled ? "bg-white/25 text-white" : "bg-blue-600 text-white/95"}`}
-                        >
-                          ADMIN
-                        </span>
-                      )}
                     </div>
-                    {isAdmin() && (
+                    
+                    {/* Enlaces de usuario */}
+                    <div className="space-y-2 mt-3">
+                      {isAdmin() && (
+                        <Link
+                          to="/admin"
+                          onClick={() => setMobileOpen(false)}
+                          className="flex items-center gap-3 text-slate-700 hover:text-blue-600 hover:bg-blue-50 transition-all duration-300 py-3 px-4 rounded-xl font-medium transform hover:scale-[1.02]"
+                        >
+                          <svg
+                            className="w-5 h-5"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                            aria-hidden="true"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
+                            />
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                            />
+                          </svg>
+                          <span>Dashboard</span>
+                        </Link>
+                      )}
                       <Link
-                        to="/admin"
+                        to="/mis-paquetes"
                         onClick={() => setMobileOpen(false)}
-                        className={`flex items-center gap-3 py-3 px-4 rounded-xl font-medium ${transparentOnTop && !isScrolled ? "text-white/90 hover:text-white hover:bg-white/10" : "text-slate-700 hover:text-blue-600 hover:bg-blue-50/70"}`}
+                        className="flex items-center gap-3 text-slate-700 hover:text-purple-600 hover:bg-purple-50 transition-all duration-300 py-3 px-4 rounded-xl font-medium transform hover:scale-[1.02]"
                       >
                         <svg
                           className="w-5 h-5"
                           fill="none"
                           stroke="currentColor"
                           viewBox="0 0 24 24"
+                          aria-hidden="true"
                         >
                           <path
                             strokeLinecap="round"
                             strokeLinejoin="round"
                             strokeWidth={2}
-                            d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
+                            d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
                           />
                         </svg>
-                        <span className="font-medium">Dashboard</span>
+                        <span className="font-medium">Mis Paquetes</span>
                       </Link>
-                    )}
-                    <Link
-                      to="/mis-paquetes"
-                      onClick={() => setMobileOpen(false)}
-                      className={`flex items-center gap-3 py-3 px-4 rounded-xl font-medium ${transparentOnTop && !isScrolled ? "text-white/90 hover:text-white hover:bg-white/10" : "text-slate-700 hover:text-purple-600 hover:bg-purple-50/70"}`}
-                    >
-                      <svg
-                        className="w-5 h-5"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
-                        />
-                      </svg>
-                      <span className="font-medium">Mis Paquetes</span>
-                    </Link>
-                    {location.pathname === "/mis-paquetes" && (
+                      {location.pathname === "/mis-paquetes" && (
+                        <Link
+                          to="/"
+                          onClick={() => setMobileOpen(false)}
+                          className="flex items-center gap-3 text-slate-700 hover:text-green-600 hover:bg-green-50 transition-all duration-300 py-3 px-4 rounded-xl font-medium transform hover:scale-[1.02]"
+                        >
+                          <svg
+                            className="w-5 h-5"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                            aria-hidden="true"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
+                            />
+                          </svg>
+                          <span className="font-medium">Volver a Inicio</span>
+                        </Link>
+                      )}
                       <Link
-                        to="/"
+                        to="/perfil"
+                        state={{
+                          from: `${location.pathname}${location.search}${location.hash}`,
+                        }}
                         onClick={() => setMobileOpen(false)}
-                        className={`flex items-center gap-3 py-3 px-4 rounded-xl font-medium ${transparentOnTop && !isScrolled ? "text-white/90 hover:text-white hover:bg-white/10" : "text-slate-700 hover:text-green-600 hover:bg-green-50/70"}`}
+                        className="flex items-center gap-3 text-slate-700 hover:text-blue-600 hover:bg-blue-50 transition-all duration-300 py-3 px-4 rounded-xl font-medium transform hover:scale-[1.02]"
                       >
                         <svg
                           className="w-5 h-5"
                           fill="none"
                           stroke="currentColor"
                           viewBox="0 0 24 24"
+                          aria-hidden="true"
                         >
                           <path
                             strokeLinecap="round"
                             strokeLinejoin="round"
                             strokeWidth={2}
-                            d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
+                            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
                           />
                         </svg>
-                        <span className="font-medium">Volver a Inicio</span>
+                        <span className="font-medium">Mi Perfil</span>
                       </Link>
-                    )}
-                    <Link
-                      to="/perfil"
-                      state={{
-                        from: `${location.pathname}${location.search}${location.hash}`,
-                      }}
-                      onClick={() => setMobileOpen(false)}
-                      className={`flex items-center gap-3 py-3 px-4 rounded-xl font-medium ${transparentOnTop && !isScrolled ? "text-white/90 hover:text-white hover:bg-white/10" : "text-slate-700 hover:text-blue-600 hover:bg-blue-50/70"}`}
-                    >
-                      <svg
-                        className="w-5 h-5"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
+                      <button
+                        onClick={() => {
+                          logout();
+                          setMobileOpen(false);
+                        }}
+                        className="flex items-center gap-3 w-full text-left text-red-600 hover:text-red-700 hover:bg-red-50 transition-all duration-300 py-3 px-4 rounded-xl font-medium transform hover:scale-[1.02]"
+                        type="button"
                       >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                        />
-                      </svg>
-                      <span className="font-medium">Mi Perfil</span>
-                    </Link>
-                    <button
-                      onClick={() => {
-                        logout();
-                        setMobileOpen(false);
-                      }}
-                      className={`flex items-center gap-3 w-full text-left py-3 px-4 rounded-xl font-medium ${transparentOnTop && !isScrolled ? "text-red-300 hover:text-red-200 hover:bg-red-500/20" : "text-red-600 hover:text-red-700 hover:bg-red-50"}`}
-                    >
-                      Cerrar Sesión
-                    </button>
+                        <svg
+                          className="w-5 h-5"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                          aria-hidden="true"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+                          />
+                        </svg>
+                        <span>Cerrar Sesión</span>
+                      </button>
+                    </div>
                   </div>
                 ) : (
                   <div className="space-y-3">
                     <Link
                       to="/iniciar-sesion"
                       onClick={() => setMobileOpen(false)}
-                      className={`flex items-center justify-center gap-3 py-3.5 px-4 rounded-xl font-semibold border-2 transition-all ${transparentOnTop && !isScrolled ? "border-white/40 text-white hover:bg-white/15 hover:border-white/60 shadow-lg" : "border-slate-300 text-slate-700 hover:text-blue-600 hover:border-blue-400 hover:bg-blue-50 shadow-md"}`}
+                      className="flex items-center justify-center gap-3 text-slate-700 hover:text-blue-600 hover:bg-blue-50 transition-all duration-300 py-3 px-4 rounded-xl font-medium border border-slate-200 hover:border-blue-300 transform hover:scale-[1.02]"
                     >
-                      Iniciar sesión
+                      <svg
+                        className="w-5 h-5"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                        aria-hidden="true"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"
+                        />
+                      </svg>
+                      <span>Iniciar sesión</span>
                     </Link>
                     <Link
                       to="/registro"
                       onClick={() => setMobileOpen(false)}
-                      className={`flex items-center justify-center gap-3 py-4 px-4 rounded-xl font-bold shadow-xl transition-all ${transparentOnTop && !isScrolled ? "bg-white text-blue-700 hover:bg-white/90 border-2 border-white/30" : "bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:from-blue-700 hover:to-indigo-700 border-2 border-transparent"}`}
+                      className="flex items-center justify-center gap-3 w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-6 py-4 rounded-xl hover:from-blue-700 hover:to-indigo-700 hover:shadow-lg transition-all duration-300 font-semibold transform hover:scale-[1.02]"
                     >
-                      Registrarse
+                      <svg
+                        className="w-5 h-5"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                        aria-hidden="true"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"
+                        />
+                      </svg>
+                      <span>Registrarse</span>
                     </Link>
                   </div>
                 )}
