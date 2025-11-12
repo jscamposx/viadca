@@ -16,6 +16,7 @@ import {
   createPatchSummary,
 } from "../../../utils/patchLogger";
 import { sanitizeMoneda } from "../../../utils/priceUtils";
+import { formatDateForBackend, formatDateForInput, isValidISODate } from "../../../utils/dateHelpers";
 // Import Cloudinary (named + default fallback al final para robustez en dev hot reload)
 import cloudinaryDefault, { cloudinaryService as cloudinaryNamed } from "../../../services/cloudinaryService.js";
 
@@ -159,23 +160,10 @@ export const usePackageForm = (initialPackageData = null) => {
         directMayoristasIds: initialPackageData.mayoristasIds,
       });
 
-      // Helper: convertir fecha ISO/Date a formato YYYY-MM-DD para inputs type="date"
-      const toDateInputFormat = (dateValue) => {
-        if (!dateValue) return "";
-        try {
-          // Si es string ISO o Date, extraer solo YYYY-MM-DD
-          const date = typeof dateValue === 'string' ? dateValue : new Date(dateValue).toISOString();
-          return date.split('T')[0]; // "2025-01-15T00:00:00.000Z" → "2025-01-15"
-        } catch (e) {
-          console.warn("⚠️ Error al convertir fecha:", dateValue, e);
-          return "";
-        }
-      };
-
       setFormData({
         titulo: initialPackageData.titulo || "",
-        fecha_inicio: toDateInputFormat(initialPackageData.fecha_inicio),
-        fecha_fin: toDateInputFormat(initialPackageData.fecha_fin),
+        fecha_inicio: formatDateForInput(initialPackageData.fecha_inicio),
+        fecha_fin: formatDateForInput(initialPackageData.fecha_fin),
         incluye: initialPackageData.incluye || "",
         no_incluye: initialPackageData.no_incluye || "",
         requisitos: initialPackageData.requisitos || "",
@@ -470,10 +458,6 @@ export const usePackageForm = (initialPackageData = null) => {
       throw new Error(msg);
     }
     // Validación de creación: campos obligatorios top-level
-    const validateISODate = (val) =>
-      typeof val === "string" &&
-      /^\d{4}-\d{2}-\d{2}$/.test(val) &&
-      !isNaN(new Date(val).getTime());
 
     const errors = [];
     const errorMap = {};
@@ -522,7 +506,7 @@ export const usePackageForm = (initialPackageData = null) => {
         const msg = "La fecha de inicio es obligatoria";
         errors.push(msg);
         errorMap.fecha_inicio = msg;
-      } else if (!validateISODate(formData.fecha_inicio)) {
+      } else if (!isValidISODate(formData.fecha_inicio)) {
         const msg = "La fecha de inicio no tiene un formato válido (YYYY-MM-DD)";
         errors.push(msg);
         errorMap.fecha_inicio = msg;
@@ -531,7 +515,7 @@ export const usePackageForm = (initialPackageData = null) => {
         const msg = "La fecha de fin es obligatoria";
         errors.push(msg);
         errorMap.fecha_fin = msg;
-      } else if (!validateISODate(formData.fecha_fin)) {
+      } else if (!isValidISODate(formData.fecha_fin)) {
         const msg = "La fecha de fin no tiene un formato válido (YYYY-MM-DD)";
         errors.push(msg);
         errorMap.fecha_fin = msg;
@@ -729,6 +713,12 @@ export const usePackageForm = (initialPackageData = null) => {
       keys: Object.keys(finalPayload),
       mayoristasIds: finalPayload.mayoristasIds,
       usuariosAutorizadosIds: finalPayload.usuariosAutorizadosIds,
+      fechas: finalPayload.fecha_inicio || finalPayload.fecha_fin ? {
+        fecha_inicio: finalPayload.fecha_inicio,
+        fecha_fin: finalPayload.fecha_fin,
+        formatoCorrecto: (!finalPayload.fecha_inicio || /^\d{4}-\d{2}-\d{2}$/.test(finalPayload.fecha_inicio)) && 
+                        (!finalPayload.fecha_fin || /^\d{4}-\d{2}-\d{2}$/.test(finalPayload.fecha_fin))
+      } : 'sin cambios en fechas',
       payload: finalPayload,
     });
 
@@ -874,8 +864,8 @@ export const usePackageForm = (initialPackageData = null) => {
       origen: formData.origen,
       origen_lat: parseFloat(formData.origen_lat),
       origen_lng: parseFloat(formData.origen_lng),
-      fecha_inicio: formData.fecha_inicio,
-      fecha_fin: formData.fecha_fin,
+      fecha_inicio: formatDateForBackend(formData.fecha_inicio),
+      fecha_fin: formatDateForBackend(formData.fecha_fin),
       incluye:
         formData.incluye && formData.incluye.trim() !== ""
           ? formData.incluye
@@ -931,6 +921,11 @@ export const usePackageForm = (initialPackageData = null) => {
     };
     console.log("📤 Enviando CREATE - Payload completo:", {
       payload,
+      fechas: {
+        fecha_inicio: payload.fecha_inicio,
+        fecha_fin: payload.fecha_fin,
+        formatoCorrecto: /^\d{4}-\d{2}-\d{2}$/.test(payload.fecha_inicio) && /^\d{4}-\d{2}-\d{2}$/.test(payload.fecha_fin)
+      },
       mayoristasIncluded: "mayoristasIds" in payload,
       mayoristasCount: (payload.mayoristasIds || []).length,
       usuariosAutorizadosIds: payload.usuariosAutorizadosIds || [],
