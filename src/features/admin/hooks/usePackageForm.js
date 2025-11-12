@@ -709,6 +709,14 @@ export const usePackageForm = (initialPackageData = null) => {
     // NO transformar usuariosAutorizadosIds - el backend espera el array de UUIDs directamente
     // Formato esperado: usuariosAutorizadosIds: ["uuid-1", "uuid-2"]
 
+    // Extraer metadata de fechas antes de limpiar el payload
+    const fechasMetadata = finalPayload._fechasMetadata;
+    
+    // Limpiar metadata del payload antes de enviar (no debe ir al backend)
+    if (finalPayload._fechasMetadata) {
+      delete finalPayload._fechasMetadata;
+    }
+
     console.log("📤 Enviando PATCH - Payload final:", {
       keys: Object.keys(finalPayload),
       mayoristasIds: finalPayload.mayoristasIds,
@@ -716,6 +724,10 @@ export const usePackageForm = (initialPackageData = null) => {
       fechas: finalPayload.fecha_inicio || finalPayload.fecha_fin ? {
         fecha_inicio: finalPayload.fecha_inicio,
         fecha_fin: finalPayload.fecha_fin,
+        cambiosReales: fechasMetadata ? {
+          inicio: fechasMetadata.cambioInicio ? `${fechasMetadata.valorOriginalInicio} → ${fechasMetadata.valorNuevoInicio}` : 'sin cambios',
+          fin: fechasMetadata.cambioFin ? `${fechasMetadata.valorOriginalFin} → ${fechasMetadata.valorNuevoFin}` : 'sin cambios'
+        } : 'ambas fechas actualizadas',
         formatoCorrecto: (!finalPayload.fecha_inicio || /^\d{4}-\d{2}-\d{2}$/.test(finalPayload.fecha_inicio)) && 
                         (!finalPayload.fecha_fin || /^\d{4}-\d{2}-\d{2}$/.test(finalPayload.fecha_fin))
       } : 'sin cambios en fechas',
@@ -769,12 +781,31 @@ export const usePackageForm = (initialPackageData = null) => {
       responseTime,
     });
 
+    // Generar mensaje descriptivo de los cambios
+    const changesDescription = [];
+    if (fechasMetadata) {
+      if (fechasMetadata.cambioInicio && fechasMetadata.cambioFin) {
+        changesDescription.push('📅 Fechas de inicio y fin actualizadas');
+      } else if (fechasMetadata.cambioInicio) {
+        changesDescription.push('📅 Fecha de inicio actualizada');
+      } else if (fechasMetadata.cambioFin) {
+        changesDescription.push('📅 Fecha de fin actualizada');
+      }
+    }
+    
+    const fieldsCount = Object.keys(finalPayload).filter(k => k !== 'fecha_inicio' && k !== 'fecha_fin').length;
+    if (fieldsCount > 0) {
+      changesDescription.push(`${fieldsCount} campo(s) más`);
+    }
+
     return {
       hasChanges: true,
       fieldsModified: Object.keys(finalPayload).length,
       responseTime,
       packageId: initialPackageData.id,
       packageTitle: formData.titulo,
+      fechasMetadata, // Incluir metadata para notificaciones personalizadas
+      changesDescription: changesDescription.join(', ') || 'Campos actualizados'
     };
   };
 

@@ -116,6 +116,33 @@ export const preparePatchPayload = (originalPackage, currentFormData) => {
     payload.mayoristasIds = currentFormData.mayoristasIds || [];
   }
 
+  // Manejo inteligente de fechas: el backend requiere ambas fechas si se actualiza alguna
+  // Pero solo mostramos al usuario lo que realmente cambió
+  const fechaInicioChanged = normalizedOriginal.fecha_inicio !== normalizedCurrent.fecha_inicio;
+  const fechaFinChanged = normalizedOriginal.fecha_fin !== normalizedCurrent.fecha_fin;
+  
+  if (fechaInicioChanged || fechaFinChanged) {
+    // El backend requiere AMBAS fechas siempre que se actualice alguna
+    payload.fecha_inicio = normalizedCurrent.fecha_inicio;
+    payload.fecha_fin = normalizedCurrent.fecha_fin;
+    
+    // Guardar metadata para logs: qué fechas realmente cambiaron
+    payload._fechasMetadata = {
+      cambioInicio: fechaInicioChanged,
+      cambioFin: fechaFinChanged,
+      valorOriginalInicio: normalizedOriginal.fecha_inicio,
+      valorOriginalFin: normalizedOriginal.fecha_fin,
+      valorNuevoInicio: normalizedCurrent.fecha_inicio,
+      valorNuevoFin: normalizedCurrent.fecha_fin
+    };
+    
+    console.log("📅 Cambio en fechas detectado:", {
+      fecha_inicio: fechaInicioChanged ? `${normalizedOriginal.fecha_inicio} → ${normalizedCurrent.fecha_inicio}` : 'sin cambios',
+      fecha_fin: fechaFinChanged ? `${normalizedOriginal.fecha_fin} → ${normalizedCurrent.fecha_fin}` : 'sin cambios',
+      enviandoAmbas: true
+    });
+  }
+
   const imageAnalysis = analyzeImageChanges(originalPackage, currentFormData);
   if (imageAnalysis.hasChanges) {
     console.log("🖼️ Cambios detectados en imágenes:", imageAnalysis);

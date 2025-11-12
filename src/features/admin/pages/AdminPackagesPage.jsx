@@ -417,7 +417,7 @@ const AdminPaquetes = () => {
       location.state?.pendingOperation &&
       location.key !== processedLocationKey.current
     ) {
-      const { operationType, packageTitle, opKey } = location.state;
+      const { operationType, packageTitle, opKey, changesDescription } = location.state;
       processedLocationKey.current = location.key;
 
       const loadingId = notify.loading(
@@ -433,13 +433,18 @@ const AdminPaquetes = () => {
         },
       );
 
-      const doneSuccess = () =>
+      const doneSuccess = () => {
+        // Mensaje personalizado si hay descripción de cambios
+        const successMessage = operationType === "update"
+          ? changesDescription 
+            ? `"${packageTitle}" actualizado: ${changesDescription}`
+            : `"${packageTitle}" actualizado exitosamente`
+          : `"${packageTitle}" creado exitosamente`;
+        
         notify.updateLoadingNotification(
           loadingId,
           "success",
-          operationType === "update"
-            ? `"${packageTitle}" actualizado exitosamente`
-            : `"${packageTitle}" creado exitosamente`,
+          successMessage,
           {
             title:
               operationType === "update"
@@ -448,6 +453,7 @@ const AdminPaquetes = () => {
             duration: 5000,
           },
         );
+      };
 
       const doneError = (err) =>
         notify.updateLoadingNotification(
