@@ -159,10 +159,23 @@ export const usePackageForm = (initialPackageData = null) => {
         directMayoristasIds: initialPackageData.mayoristasIds,
       });
 
+      // Helper: convertir fecha ISO/Date a formato YYYY-MM-DD para inputs type="date"
+      const toDateInputFormat = (dateValue) => {
+        if (!dateValue) return "";
+        try {
+          // Si es string ISO o Date, extraer solo YYYY-MM-DD
+          const date = typeof dateValue === 'string' ? dateValue : new Date(dateValue).toISOString();
+          return date.split('T')[0]; // "2025-01-15T00:00:00.000Z" → "2025-01-15"
+        } catch (e) {
+          console.warn("⚠️ Error al convertir fecha:", dateValue, e);
+          return "";
+        }
+      };
+
       setFormData({
         titulo: initialPackageData.titulo || "",
-        fecha_inicio: initialPackageData.fecha_inicio || "",
-        fecha_fin: initialPackageData.fecha_fin || "",
+        fecha_inicio: toDateInputFormat(initialPackageData.fecha_inicio),
+        fecha_fin: toDateInputFormat(initialPackageData.fecha_fin),
         incluye: initialPackageData.incluye || "",
         no_incluye: initialPackageData.no_incluye || "",
         requisitos: initialPackageData.requisitos || "",
