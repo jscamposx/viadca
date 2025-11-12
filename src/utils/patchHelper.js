@@ -190,10 +190,21 @@ const normalizePackageData = (data) => {
       .join("\n\n");
   }
 
+  // Helper: convertir fecha ISO/Date a formato YYYY-MM-DD
+  const toDateFormat = (dateValue) => {
+    if (!dateValue) return "";
+    try {
+      const dateStr = typeof dateValue === 'string' ? dateValue : new Date(dateValue).toISOString();
+      return dateStr.split('T')[0]; // "2025-01-15T00:00:00.000Z" → "2025-01-15"
+    } catch (e) {
+      return "";
+    }
+  };
+
   return {
     titulo: data.titulo || "",
-    fecha_inicio: data.fecha_inicio || "",
-    fecha_fin: data.fecha_fin || "",
+    fecha_inicio: toDateFormat(data.fecha_inicio),
+    fecha_fin: toDateFormat(data.fecha_fin),
     incluye: data.incluye || null,
     no_incluye: data.no_incluye || null,
     requisitos: data.requisitos || null,
