@@ -68,6 +68,8 @@ export const preparePatchPayload = (originalPackage, currentFormData) => {
       "destino",
       "destino_lat",
       "destino_lng",
+      "fecha_inicio", // Manejado explícitamente más abajo
+      "fecha_fin", // Manejado explícitamente más abajo
     ],
   );
 
@@ -116,30 +118,18 @@ export const preparePatchPayload = (originalPackage, currentFormData) => {
     payload.mayoristasIds = currentFormData.mayoristasIds || [];
   }
 
-  // Manejo inteligente de fechas: el backend requiere ambas fechas si se actualiza alguna
-  // Pero solo mostramos al usuario lo que realmente cambió
+  // Manejo de fechas: si cambia cualquier fecha, enviar AMBAS (requerimiento del backend)
   const fechaInicioChanged = normalizedOriginal.fecha_inicio !== normalizedCurrent.fecha_inicio;
   const fechaFinChanged = normalizedOriginal.fecha_fin !== normalizedCurrent.fecha_fin;
   
   if (fechaInicioChanged || fechaFinChanged) {
-    // El backend requiere AMBAS fechas siempre que se actualice alguna
+    // Enviar ambas fechas tal cual están en el formulario
     payload.fecha_inicio = normalizedCurrent.fecha_inicio;
     payload.fecha_fin = normalizedCurrent.fecha_fin;
     
-    // Guardar metadata para logs: qué fechas realmente cambiaron
-    payload._fechasMetadata = {
-      cambioInicio: fechaInicioChanged,
-      cambioFin: fechaFinChanged,
-      valorOriginalInicio: normalizedOriginal.fecha_inicio,
-      valorOriginalFin: normalizedOriginal.fecha_fin,
-      valorNuevoInicio: normalizedCurrent.fecha_inicio,
-      valorNuevoFin: normalizedCurrent.fecha_fin
-    };
-    
-    console.log("📅 Cambio en fechas detectado:", {
-      fecha_inicio: fechaInicioChanged ? `${normalizedOriginal.fecha_inicio} → ${normalizedCurrent.fecha_inicio}` : 'sin cambios',
-      fecha_fin: fechaFinChanged ? `${normalizedOriginal.fecha_fin} → ${normalizedCurrent.fecha_fin}` : 'sin cambios',
-      enviandoAmbas: true
+    console.log("📅 Actualizando fechas:", {
+      fecha_inicio: normalizedCurrent.fecha_inicio,
+      fecha_fin: normalizedCurrent.fecha_fin
     });
   }
 

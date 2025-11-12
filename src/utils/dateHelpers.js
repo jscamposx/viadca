@@ -22,23 +22,27 @@
 export const formatDateForBackend = (date) => {
   if (!date) return '';
   
-  // Si ya está en formato correcto, devolverlo
+  // Si ya está en formato correcto YYYY-MM-DD, devolverlo sin modificar
   if (typeof date === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(date)) {
     return date;
   }
   
   try {
-    // Convertir a Date object si es string
-    const dateObj = date instanceof Date ? date : new Date(date);
-    
-    // Validar que sea fecha válida
-    if (isNaN(dateObj.getTime())) {
-      console.error('❌ Fecha inválida:', date);
-      return '';
+    // Si es ISO string completo, extraer solo la parte de fecha
+    if (typeof date === 'string' && date.includes('T')) {
+      return date.split('T')[0];
     }
     
-    // Extraer solo YYYY-MM-DD del ISO string
-    return dateObj.toISOString().split('T')[0];
+    // Si es Date object, convertir a formato local YYYY-MM-DD
+    if (date instanceof Date) {
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    }
+    
+    console.warn('⚠️ Formato de fecha no reconocido:', date);
+    return '';
   } catch (error) {
     console.error('❌ Error al formatear fecha:', date, error);
     return '';

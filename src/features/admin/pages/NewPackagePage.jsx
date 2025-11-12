@@ -93,7 +93,6 @@ const NuevoPaquete = () => {
             pendingOperation: true,
             operationType: result.isEdit ? "update" : "create",
             packageTitle: result.packageTitle,
-            changesDescription: result.changesDescription, // Descripción específica de cambios
             opKey,
           },
         });
