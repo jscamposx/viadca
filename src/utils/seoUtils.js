@@ -6,7 +6,7 @@ const API_BASE = (import.meta?.env?.VITE_API_BASE_URL || SITE_ORIGIN).replace(
   /\/$/,
   "",
 );
-const FALLBACK_OG_IMAGE = `${SITE_ORIGIN}/seo%20image.png`;
+const FALLBACK_OG_IMAGE = `${SITE_ORIGIN}/HomePage/Hero-Image.avif`;
 const FALLBACK_HERO_IMAGE = `${SITE_ORIGIN}/HomePage/Hero-Image.avif`;
 
 

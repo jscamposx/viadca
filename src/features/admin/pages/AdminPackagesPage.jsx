@@ -640,7 +640,7 @@ const AdminPaquetes = () => {
             {/* Controles y estadísticas - Simplificado para móvil */}
             <div className="flex flex-col gap-3 sm:gap-4">
               {/* Botones de control - Solo en móvil */}
-              <div className="grid grid-cols-2 gap-2 lg:hidden">
+              <div className="grid grid-cols-1 gap-2 lg:hidden">
                 <button
                   onClick={() => setIsFiltersOpen(!isFiltersOpen)}
                   className={`flex items-center justify-center gap-2 font-medium py-3 px-3 rounded-lg transition text-xs ${
@@ -652,23 +652,6 @@ const AdminPaquetes = () => {
                 >
                   <FiFilter className="w-4 h-4" />
                   <span>Filtros</span>
-                </button>
-
-                <button
-                  onClick={() => setIsSortMenuOpen(!isSortMenuOpen)}
-                  className={`flex items-center justify-center gap-2 py-3 px-3 rounded-lg font-medium transition text-xs ${
-                    isSortMenuOpen
-                      ? "bg-blue-100 text-blue-700 border border-blue-200"
-                      : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-                  }`}
-                  disabled={isLoading}
-                >
-                  {sortConfig.direction === "asc" ? (
-                    <FiArrowUp className="w-4 h-4" />
-                  ) : (
-                    <FiArrowDown className="w-4 h-4" />
-                  )}
-                  <span>Ordenar</span>
                 </button>
               </div>
 
