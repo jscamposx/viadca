@@ -533,7 +533,7 @@ const Footer = ({ contactInfo, contactLoading, currentYear }) => {
         </div>
       </div>
       <ToastPortal />
-    </footer>
+    </footer >
   );
 };
 

@@ -8,11 +8,9 @@ import { useSEO } from "../../../hooks/useSEO";
 import Footer from "../../home/components/Footer";
 import { useContactInfo } from "../../../hooks/useContactInfo";
 import UnifiedNav from "../../../components/layout/UnifiedNav";
-import { useContactActions } from "../../../hooks/useContactActions"; // nuevo
+import { useContactActions } from "../../../hooks/useContactActions";
 
 // Estructuramos las FAQs en categorías con preguntas y respuestas.
-// Para el JSON-LD, sólo necesitamos question/answer plano; combinaremos todas.
-
 const faqCategories = [
   {
     id: "conoce-viadca",
@@ -151,7 +149,7 @@ const faqCategories = [
 
 // Convertimos a items planos para Schema
 const allFaqItems = faqCategories.flatMap((cat) =>
-  cat.faqs.map((f) => ({ question: f.q, answer: f.a })),
+  cat.faqs.map((f) => ({ question: f.q, answer: f.a }))
 );
 
 export default function FaqPage() {
@@ -171,18 +169,16 @@ export default function FaqPage() {
 
   const toc = useMemo(
     () => faqCategories.map((c) => ({ id: c.id, title: c.title })),
-    [],
+    []
   );
 
   const handleFaqClick = (question) => {
-    // Evento simple (puede reemplazarse por analytics real)
     if (window && window.dispatchEvent) {
       const ev = new CustomEvent("faq:open", { detail: { question } });
       window.dispatchEvent(ev);
     }
   };
 
-  // BreadcrumbList Schema
   const breadcrumbJsonLd = {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
@@ -204,7 +200,6 @@ export default function FaqPage() {
 
   return (
     <>
-      {/* Navbar unificada con links a secciones */}
       <UnifiedNav
         transparentOnTop={false}
         sectionLinks={toc.map((t) => ({ id: t.id, label: t.title }))}
@@ -226,7 +221,7 @@ export default function FaqPage() {
                   <li key={item.id}>
                     <a
                       href={`#${item.id}`}
-                      className="block px-3 py-2 rounded-md hover:bg-white shadow-sm hover:shadow transition text-slate-700 hover:text-blue-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600"
+                      className="block px-3 py-2 rounded-md hover:bg-slate-50 transition text-slate-700 hover:text-blue-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600"
                     >
                       {item.title}
                     </a>
@@ -278,85 +273,85 @@ export default function FaqPage() {
             ))}
           </div>
         </div>
+        
         {/* JSON-LD para SEO */}
         <FaqSchema items={allFaqItems} />
 
-        {/* CTA de contacto */}
-        <section className="max-w-5xl mx-auto mt-24">
-          <div className="relative overflow-hidden rounded-3xl p-8 sm:p-12 bg-white text-slate-800 shadow-2xl ring-1 ring-slate-200">
-            <div className="pointer-events-none" aria-hidden="true">
-              <div className="absolute -top-24 -right-24 w-80 h-80 bg-gradient-to-br from-blue-300/60 to-rose-300/60 rounded-full blur-3xl opacity-60" />
-              <div className="absolute -bottom-28 -left-24 w-80 h-80 bg-gradient-to-br from-indigo-300/60 to-teal-300/60 rounded-full blur-3xl opacity-60" />
+        {/* --- CTA DE CONTACTO: DISEÑO LIMPIO Y ABIERTO --- */}
+        <section className="max-w-7xl mx-auto mt-24 pt-12 border-t border-slate-100">
+          <div className="flex flex-col lg:flex-row gap-8 lg:gap-12 items-start lg:items-center justify-between">
+            <div className="max-w-2xl space-y-5">
+              <h2 className="text-3xl font-bold font-volkhov leading-tight text-slate-900">
+                ¿Aún necesitas ayuda?
+              </h2>
+              <p className="text-base sm:text-lg text-slate-600 leading-relaxed">
+                Escríbenos y un asesor te responderá personalmente para planificar
+                tu viaje o aclarar cualquier duda que no encontraste arriba.
+              </p>
+              
+              {/* Badges simples y elegantes */}
+              <ul className="flex flex-wrap gap-3">
+                <li className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-50 text-slate-700 text-xs font-medium border border-slate-100">
+                  <span className="w-1.5 h-1.5 rounded-full bg-blue-500" />
+                  Asesoría personalizada
+                </li>
+                <li className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-50 text-slate-700 text-xs font-medium border border-slate-100">
+                   <span className="w-1.5 h-1.5 rounded-full bg-rose-500" />
+                  Respuestas rápidas
+                </li>
+                <li className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-50 text-slate-700 text-xs font-medium border border-slate-100">
+                   <span className="w-1.5 h-1.5 rounded-full bg-indigo-500" />
+                  Experiencia en viajes
+                </li>
+              </ul>
             </div>
-            <div className="relative z-10 flex flex-col lg:flex-row gap-10 items-start lg:items-center">
-              <div className="flex-1 space-y-4">
-                <h2 className="text-3xl sm:text-4xl font-bold font-volkhov leading-tight text-slate-900">
-                  ¿Aún necesitas ayuda?
-                </h2>
-                <p className="text-base sm:text-lg text-slate-600 max-w-2xl">
-                  Escríbenos y un asesor te responderá personalmente para
-                  planificar tu viaje o aclarar cualquier duda que no
-                  encontraste en esta sección.
-                </p>
-                <ul className="flex flex-wrap gap-3 text-xs text-slate-600">
-                  <li className="px-3 py-1 rounded-full bg-blue-50 text-blue-700">
-                    Asesoría personalizada
-                  </li>
-                  <li className="px-3 py-1 rounded-full bg-rose-50 text-rose-700">
-                    Respuestas rápidas
-                  </li>
-                  <li className="px-3 py-1 rounded-full bg-indigo-50 text-indigo-700">
-                    Experiencia en viajes
-                  </li>
-                </ul>
-              </div>
-              <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
-                <button
-                  type="button"
-                  onClick={() => openWhatsApp(whatsappMsg)}
-                  className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-blue-600 text-white font-medium shadow-lg hover:shadow-xl hover:scale-[1.03] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2 transition"
+
+            <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto shrink-0">
+              <button
+                type="button"
+                onClick={() => openWhatsApp(whatsappMsg)}
+                className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-medium shadow-md shadow-blue-600/20 hover:shadow-lg hover:shadow-blue-600/30 hover:-translate-y-0.5 transition-all duration-200"
+              >
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
                 >
-                  <svg
-                    className="w-5 h-5"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-                    />
-                  </svg>
-                  WhatsApp
-                </button>
-                <a
-                  href={getPhoneHref()}
-                  onClick={onPhoneClick}
-                  className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-700 font-medium shadow-lg hover:shadow-xl hover:scale-[1.03] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2 transition"
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                  />
+                </svg>
+                WhatsApp
+              </button>
+              <a
+                href={getPhoneHref()}
+                onClick={onPhoneClick}
+                className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-white text-slate-700 font-medium border border-slate-200 hover:bg-slate-50 hover:border-slate-300 transition-all duration-200"
+              >
+                <svg
+                  className="w-5 h-5 text-slate-400 group-hover:text-slate-600"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
                 >
-                  <svg
-                    className="w-5 h-5"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
-                    />
-                  </svg>
-                  Llamar / Copiar
-                </a>
-              </div>
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
+                  />
+                </svg>
+                Llamar / Copiar
+              </a>
             </div>
           </div>
         </section>
+
       </main>
-      {/* ...existing code... */}
       <Footer
         contactInfo={contactInfo}
         contactLoading={contactLoading}
@@ -403,14 +398,14 @@ function FaqCategorySection({ cat, onFaqClick }) {
             index={idx}
           >
             <details
-              className="group bg-white rounded-xl border border-slate-200 shadow-sm transition overflow-hidden"
+              className="group bg-white rounded-xl border border-slate-200 shadow-sm hover:shadow-md hover:border-blue-200 transition-all duration-300 overflow-hidden"
               onToggle={(e) => e.target.open && onFaqClick(f.q)}
             >
               <summary className="list-none px-5 py-4 sm:px-6 cursor-pointer flex items-center justify-between gap-4 select-none focus-visible:outline-none">
-                <h3 className="font-semibold text-slate-800 text-base sm:text-lg">
+                <h3 className="font-semibold text-slate-800 text-base sm:text-lg group-hover:text-blue-700 transition-colors">
                   {f.q}
                 </h3>
-                <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-slate-50 text-slate-500 ring-1 ring-slate-200 group-open:rotate-180 transition">
+                <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-slate-50 text-slate-500 group-hover:bg-blue-50 group-hover:text-blue-600 ring-1 ring-slate-200 group-hover:ring-blue-100 group-open:rotate-180 transition-all duration-300 shrink-0">
                   <svg
                     className="w-4 h-4"
                     fill="none"
@@ -428,7 +423,7 @@ function FaqCategorySection({ cat, onFaqClick }) {
                 </span>
               </summary>
               <div className="px-5 pb-5 sm:px-6 -mt-1">
-                <p className="text-slate-600 leading-relaxed text-sm sm:text-base whitespace-pre-line">
+                <p className="text-slate-600 leading-relaxed text-sm sm:text-base whitespace-pre-line border-t border-slate-100 pt-3">
                   {f.a}
                 </p>
               </div>

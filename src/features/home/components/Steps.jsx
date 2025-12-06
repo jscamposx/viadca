@@ -164,18 +164,18 @@ const Steps = () => {
               }))
             )
           );
-        } catch {}
+        } catch { }
         const idx1 = Math.floor(Math.random() * pool.length);
         const chosen = pool[idx1];
         let chosen2 = null;
         if (pool.length > 1) {
           // intentar seleccionar diferente
-            for (let i = 0; i < 4; i++) {
-              const tentative = pool[Math.floor(Math.random() * pool.length)];
-              if (tentative !== chosen) {
-                chosen2 = tentative; break;
-              }
+          for (let i = 0; i < 4; i++) {
+            const tentative = pool[Math.floor(Math.random() * pool.length)];
+            if (tentative !== chosen) {
+              chosen2 = tentative; break;
             }
+          }
           if (!chosen2) {
             // fallback: siguiente índice circular
             chosen2 = pool[(idx1 + 1) % pool.length];
@@ -261,14 +261,14 @@ const Steps = () => {
                 "stepsFeaturedPackages",
                 JSON.stringify({ featured: newFeatured, secondFeatured: newSecond })
               );
-            } catch {}
+            } catch { }
           } else {
             try {
               sessionStorage.setItem(
                 "stepsFeaturedPackages",
                 JSON.stringify({ featured: newFeatured })
               );
-            } catch {}
+            } catch { }
           }
         } else if (active && !chosen) {
           setErrorPkg("No se pudo seleccionar paquete");
@@ -301,7 +301,7 @@ const Steps = () => {
 
   // No usar fallback - mostrar mensaje cuando no hay paquetes
   const card = featured;
-  
+
   // Si no hay paquete destacado, mostrar estado vacío
   if (!card) {
     return (
@@ -399,16 +399,16 @@ const Steps = () => {
       </section>
     );
   }
-  
+
   const precioFmt = formatPrice(card.precio, card.moneda || DEFAULT_CURRENCY);
   const personasValue = parseInt(card.personas, 10);
   const personasValidas = !Number.isNaN(personasValue) && personasValue > 0;
   const precioPersonaFmt =
     personasValidas && card.precio != null
       ? formatPrice(
-          Number(card.precio) / personasValue,
-          card.moneda || DEFAULT_CURRENCY,
-        )
+        Number(card.precio) / personasValue,
+        card.moneda || DEFAULT_CURRENCY,
+      )
       : null;
 
   return (
@@ -417,14 +417,14 @@ const Steps = () => {
       className="py-10 sm:py-14 lg:py-18 px-4 sm:px-6 lg:px-8 scroll-mt-32 bg-gradient-to-b from-white to-blue-50"
       aria-labelledby="pasos-heading"
     >
-        <style>{`@keyframes fadeInSecond{0%{opacity:0;transform:translateY(12px) scale(.96)}60%{opacity:1;transform:translateY(0) scale(1.01)}100%{opacity:1;transform:translateY(0) scale(1)}}`}</style>
+      <style>{`@keyframes fadeInSecond{0%{opacity:0;transform:translateY(12px) scale(.96)}60%{opacity:1;transform:translateY(0) scale(1.01)}100%{opacity:1;transform:translateY(0) scale(1)}}`}</style>
       <div className="max-w-7xl mx-auto">
         <div className="grid lg:grid-cols-2 gap-10 sm:gap-12 lg:gap-16 items-start">
           {/* Left */}
           <div className="space-y-6 lg:space-y-8 order-1 relative">
             <div className="absolute inset-0 -z-10 bg-white/70 backdrop-blur-sm rounded-3xl border border-white/60 shadow-sm lg:hidden" />
             <AnimatedSection
-              animation="fadeInLeft"
+              animation="fadeUpPremium"
               className="text-center lg:text-left"
             >
               <p className="text-slate-600 font-semibold text-sm sm:text-base uppercase tracking-wide mb-2 sm:mb-3">
@@ -449,8 +449,9 @@ const Steps = () => {
               {steps.map((s, i) => (
                 <AnimatedSection
                   key={s.title}
-                  animation="fadeInLeft"
-                  delay={200 + i * 180}
+                  animation="staggeredReveal"
+                  index={i}
+                  stagger={150}
                   className="flex items-start space-x-3 sm:space-x-4 lg:space-x-6 group"
                 >
                   <div
@@ -665,7 +666,7 @@ const Steps = () => {
                         if (alt) small = alt;
                       }
                     }
-                  } catch {}
+                  } catch { }
                 }
                 // Si aún no hay small, usar el featured como fallback
                 if (!small) {
@@ -734,9 +735,9 @@ const Steps = () => {
               const mobilePerPerson =
                 mobilePersonasValid && mobileSecond.precio != null
                   ? formatPrice(
-                      Number(mobileSecond.precio) / mobilePersonasVal,
-                      mobileSecond.moneda || DEFAULT_CURRENCY,
-                    )
+                    Number(mobileSecond.precio) / mobilePersonasVal,
+                    mobileSecond.moneda || DEFAULT_CURRENCY,
+                  )
                   : null;
               return (
                 <div className={`lg:hidden mt-5 flex items-center gap-4 bg-white rounded-2xl p-3 shadow-sm border border-blue-100 relative ${mobileSecond.url ? 'cursor-pointer' : ''}`}>

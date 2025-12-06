@@ -33,11 +33,11 @@ const PackagesSection = ({
     const atStart = el.scrollLeft <= 5;
     const atEnd = el.scrollLeft + el.clientWidth >= el.scrollWidth - 5;
     const hasOverflow = el.scrollWidth > el.clientWidth;
-    
+
     setCanScroll(hasOverflow);
     setShowLeftArrow(!atStart && hasOverflow);
     setShowRightArrow(!atEnd && hasOverflow);
-    
+
     // Calcular posición para indicadores (0=inicio, 1=medio, 2=final)
     if (atStart) {
       setScrollPosition(0);
@@ -51,15 +51,15 @@ const PackagesSection = ({
   useEffect(() => {
     const el = scrollRef.current;
     if (!el || !carousel) return;
-    
+
     // Verificar estado inicial
     handleScroll();
-    
+
     const resizeObserver = new ResizeObserver(handleScroll);
     resizeObserver.observe(el);
-    
+
     el.addEventListener('scroll', handleScroll, { passive: true });
-    
+
     return () => {
       el.removeEventListener('scroll', handleScroll);
       resizeObserver.disconnect();
@@ -99,7 +99,7 @@ const PackagesSection = ({
   return (
     <section id={id} className="py-10 sm:py-12 lg:py-16 scroll-mt-32">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <AnimatedSection animation="fadeInUp" className="mb-8">
+        <AnimatedSection animation="fadeUpPremium" className="mb-8">
           <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
             <div>
               <h2 className="font-volkhov text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900 mb-2">
@@ -124,14 +124,13 @@ const PackagesSection = ({
           <div className="relative pt-4 pb-2">
             <div
               ref={scrollRef}
-              className="carousel-scroll flex gap-4 sm:gap-5 overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0"
+              className="carousel-scroll flex gap-4 sm:gap-5 overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0 py-8"
               style={{
                 scrollSnapType: 'x mandatory',
                 scrollPadding: '0 1rem',
                 WebkitOverflowScrolling: 'touch',
                 scrollbarWidth: 'none',
                 msOverflowStyle: 'none',
-                overflowY: 'hidden',
               }}
             >
               {childArray.map((ch, i) => (
@@ -144,7 +143,7 @@ const PackagesSection = ({
                 </div>
               ))}
             </div>
-            
+
             {/* Controles de navegación desktop */}
             {showLeftArrow && (
               <button
@@ -166,24 +165,21 @@ const PackagesSection = ({
                 <FiChevronRight className="w-6 h-6" />
               </button>
             )}
-            
+
             {/* Indicador de posición para mobile - Simplificado */}
             {canScroll && (
               <div className="sm:hidden flex justify-center gap-2 mt-6">
                 <div
-                  className={`h-2 w-2 rounded-full transition-all duration-300 ${
-                    scrollPosition === 0 ? 'bg-blue-600 scale-125' : 'bg-slate-300'
-                  }`}
+                  className={`h-2 w-2 rounded-full transition-all duration-300 ${scrollPosition === 0 ? 'bg-blue-600 scale-125' : 'bg-slate-300'
+                    }`}
                 />
                 <div
-                  className={`h-2 w-2 rounded-full transition-all duration-300 ${
-                    scrollPosition === 1 ? 'bg-blue-600 scale-125' : 'bg-slate-300'
-                  }`}
+                  className={`h-2 w-2 rounded-full transition-all duration-300 ${scrollPosition === 1 ? 'bg-blue-600 scale-125' : 'bg-slate-300'
+                    }`}
                 />
                 <div
-                  className={`h-2 w-2 rounded-full transition-all duration-300 ${
-                    scrollPosition === 2 ? 'bg-blue-600 scale-125' : 'bg-slate-300'
-                  }`}
+                  className={`h-2 w-2 rounded-full transition-all duration-300 ${scrollPosition === 2 ? 'bg-blue-600 scale-125' : 'bg-slate-300'
+                    }`}
                 />
               </div>
             )}

@@ -68,7 +68,7 @@ const Services = () => {
       <div className="max-w-7xl mx-auto relative">
         {/* Encabezado animado */}
         <AnimatedSection
-          animation="fadeInUp"
+          animation="fadeUpPremium"
           className="text-center mb-12 lg:mb-16"
           forceVisible={sectionVisible}
         >
@@ -113,7 +113,7 @@ const Services = () => {
               {/* Slide 1 */}
               <div className="px-3 pb-2">
                 <AnimatedSection
-                  animation="fadeInUp"
+                  animation="fadeUpPremium"
                   delay={0}
                   className="h-full"
                   forceVisible={sectionVisible}
@@ -345,8 +345,9 @@ const Services = () => {
         <div className="hidden lg:grid sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
           {/* Card 1 */}
           <AnimatedSection
-            animation="fadeInUp"
-            delay={0}
+            animation="staggeredReveal"
+            index={0}
+            stagger={100}
             className="h-full"
             forceVisible={sectionVisible}
           >
@@ -398,8 +399,9 @@ const Services = () => {
 
           {/* Card 2 */}
           <AnimatedSection
-            animation="fadeInUp"
-            delay={150}
+            animation="staggeredReveal"
+            index={1}
+            stagger={100}
             className="h-full"
             forceVisible={sectionVisible}
           >
@@ -449,8 +451,9 @@ const Services = () => {
 
           {/* Card 3 */}
           <AnimatedSection
-            animation="fadeInUp"
-            delay={300}
+            animation="staggeredReveal"
+            index={2}
+            stagger={100}
             className="h-full"
             forceVisible={sectionVisible}
           >
@@ -500,8 +503,9 @@ const Services = () => {
 
           {/* Card 4 */}
           <AnimatedSection
-            animation="fadeInUp"
-            delay={450}
+            animation="staggeredReveal"
+            index={3}
+            stagger={100}
             className="h-full"
             forceVisible={sectionVisible}
           >

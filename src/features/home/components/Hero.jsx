@@ -68,8 +68,8 @@ const Hero = () => {
             <div className="grid lg:grid-cols-2 gap-10 lg:gap-12 items-center max-w-3xl md:max-w-4xl lg:max-w-none mx-auto">
               {/* Imagen primero en mobile */}
               <AnimatedSection
-                animation="fadeInRight"
-                delay={d(400)}
+                animation="scaleInPremium"
+                delay={d(200)}
                 forceVisible={heroVisible}
                 className="relative order-first lg:order-last"
               >
@@ -95,8 +95,8 @@ const Hero = () => {
                 {/* Backdrop sutil solo mobile para mejorar contraste (sin borde ni sombra) */}
                 <div className="absolute inset-0 -z-10 rounded-3xl sm:hidden"></div>
                 <AnimatedSection
-                  animation="fadeInLeft"
-                  delay={d(150)}
+                  animation="fadeUpPremium"
+                  delay={d(100)}
                   forceVisible={heroVisible}
                 >
                   <div className="space-y-3">
@@ -110,8 +110,8 @@ const Hero = () => {
                 </AnimatedSection>
 
                 <AnimatedSection
-                  animation="fadeInLeft"
-                  delay={d(300)}
+                  animation="fadeUpPremium"
+                  delay={d(250)}
                   forceVisible={heroVisible}
                 >
                   <h1
@@ -127,8 +127,8 @@ const Hero = () => {
                 </AnimatedSection>
 
                 <AnimatedSection
-                  animation="fadeInLeft"
-                  delay={d(450)}
+                  animation="fadeUpPremium"
+                  delay={d(400)}
                   forceVisible={heroVisible}
                 >
                   <p className="text-slate-600 text-[15px] sm:text-lg md:text-lg lg:text-xl leading-relaxed max-w-xl mx-auto lg:mx-0">
@@ -139,8 +139,8 @@ const Hero = () => {
 
                 {/* CTA */}
                 <AnimatedSection
-                  animation="fadeInUp"
-                  delay={d(650)}
+                  animation="fadeUpPremium"
+                  delay={d(550)}
                   forceVisible={heroVisible}
                 >
                   <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3 sm:gap-4 pt-2 sm:pt-4">
@@ -167,8 +167,8 @@ const Hero = () => {
 
                 {/* Stats desktop + versión comprimida mobile */}
                 <AnimatedSection
-                  animation="fadeInUp"
-                  delay={d(850)}
+                  animation="staggeredReveal"
+                  delay={d(700)}
                   forceVisible={heroVisible}
                 >
                   <div className="hidden lg:flex items-center gap-8 pt-3">

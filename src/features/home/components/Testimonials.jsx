@@ -202,7 +202,7 @@ const Testimonials = () => {
       <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-8 md:gap-12 xl:gap-16 items-center">
         {/* Left content */}
         <AnimatedSection
-          animation="fadeInLeft"
+          animation="fadeUpPremium"
           className="space-y-4 sm:space-y-6 md:space-y-8 text-center lg:text-left"
         >
           <p className="text-text-gray font-semibold text-sm sm:text-base uppercase tracking-wide">
@@ -220,8 +220,8 @@ const Testimonials = () => {
 
         {/* Right: carrusel dinámico */}
         <AnimatedSection
-          animation="fadeInRight"
-          delay={300}
+          animation="scaleInPremium"
+          delay={200}
           className="relative"
         >
           <div className="sm:hidden absolute inset-0 -z-10 bg-white/70 backdrop-blur-sm rounded-3xl border border-white/60" />
@@ -323,11 +323,10 @@ const Testimonials = () => {
                       aria-current={i === index ? "true" : undefined}
                     >
                       <span
-                        className={`block rounded-full ${
-                          i === index
+                        className={`block rounded-full ${i === index
                             ? `h-2.5 w-2.5 bg-gradient-to-r ${t.accentFrom} ${t.accentTo} border-2 border-white`
                             : "h-2 w-2 bg-slate-400/80"
-                        }`}
+                          }`}
                         aria-hidden="true"
                       />
                     </button>

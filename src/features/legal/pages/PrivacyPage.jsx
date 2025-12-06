@@ -5,6 +5,18 @@ import UnifiedNav from "../../../components/layout/UnifiedNav";
 import Footer from "../../home/components/Footer";
 import { useContactActions } from "../../../hooks/useContactActions";
 import { useContactInfo } from "../../../hooks/useContactInfo";
+import {
+  FiShield,
+  FiLock,
+  FiDatabase,
+  FiShare2,
+  FiUserCheck,
+  FiGlobe,
+  FiServer,
+  FiAlertTriangle,
+  FiCheck,
+} from "react-icons/fi";
+import { FaWhatsapp, FaCookieBite } from "react-icons/fa";
 
 const PrivacyPage = () => {
   const lastUpdate = "Agosto 2025";
@@ -15,653 +27,218 @@ const PrivacyPage = () => {
   const whatsappMsg =
     "Hola, tengo dudas sobre su política de privacidad. ¿Podrían ayudarme?";
 
+  // Clase reutilizable para los bloques de contenido
+  // En móvil: Ancho completo, fondo blanco, borde inferior sutil, sin radio.
+  // En escritorio (md): Tarjeta flotante, borde redondeado, sombra suave.
+  const sectionClass =
+    "bg-white p-6 md:p-10 border-b border-slate-100 md:border md:border-slate-200/60 md:rounded-3xl md:shadow-sm transition-all hover:shadow-md";
+
   return (
     <>
-      <UnifiedNav contactInfo={contactInfo} transparentOnTop={true} />
+      <UnifiedNav contactInfo={contactInfo} transparentOnTop={false} />
       <PageTransition>
-        <div className="flex flex-col min-h-screen">
-          <main className="flex-grow bg-gradient-to-b from-slate-50 via-white to-blue-50/10 relative">
-        {/* Fondo decorativo mejorado */}
-        <div
-          className="absolute inset-0 pointer-events-none -z-10"
-          aria-hidden="true"
-        >
-          <div className="absolute -top-20 -left-32 w-64 h-64 rounded-full bg-blue-200/20 blur-3xl animate-pulse-slow" />
-          <div className="absolute top-1/4 -right-20 w-80 h-80 rounded-full bg-indigo-200/20 blur-3xl animate-pulse-slow delay-1000" />
-          <div className="absolute bottom-20 left-1/3 w-48 h-48 rounded-full bg-cyan-200/15 blur-2xl animate-pulse-slow delay-500" />
-        </div>
-
-        {/* Sección Hero mejorada */}
-        <div className="relative bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-700 text-white pt-28 md:pt-32">
-          <div className="absolute inset-0 bg-gradient-to-b from-black/10 to-black/20"></div>
-          <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-16 md:pb-20">
-            <div className="text-center">
-              <div className="inline-flex items-center justify-center w-16 h-16 md:w-20 md:h-20 bg-white/20 backdrop-blur-sm rounded-2xl mb-6 md:mb-8 shadow-2xl">
-                <svg
-                  className="w-8 h-8 md:w-10 md:h-10 text-white"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={1.8}
-                    d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
-                  />
-                </svg>
+        <div className="flex flex-col min-h-screen bg-white md:bg-slate-50 font-sans selection:bg-blue-100 selection:text-blue-700">
+          
+          {/* --- HERO SECTION --- */}
+          {/* En móvil reducimos padding lateral para dar aire */}
+          <div className="relative pt-32 pb-12 overflow-hidden border-b border-slate-100 md:border-none">
+            <div className="relative max-w-4xl mx-auto px-6 lg:px-8 text-center">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 border border-blue-100 text-blue-700 text-xs font-bold uppercase tracking-wider mb-6">
+                <FiShield className="w-3.5 h-3.5" />
+                Legal & Transparencia
               </div>
-              <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight mb-4">
+
+              <h1 className="text-3xl md:text-5xl font-extrabold text-slate-900 tracking-tight mb-4 font-volkhov">
                 Política de Privacidad
               </h1>
-              <p className="text-lg md:text-xl text-blue-100 max-w-2xl mx-auto mb-6 leading-relaxed">
-                Tu privacidad es nuestra prioridad. Conoce cómo protegemos y utilizamos tu información.
+
+              <p className="text-lg text-slate-500 max-w-2xl mx-auto mb-6 leading-relaxed">
+                Tu confianza es nuestra prioridad. Explicamos de forma clara y sin tecnicismos cómo protegemos tus datos en <span className="font-semibold text-slate-900">Viadca Viajes</span>.
               </p>
-              <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-full px-4 py-2 border border-white/20">
-                <svg
-                  className="w-4 h-4 text-blue-200"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                  />
-                </svg>
-                <span className="text-sm text-blue-100 font-medium">
-                  Última actualización: {lastUpdate}
-                </span>
+
+              <div className="inline-block px-4 py-1.5 rounded-full bg-slate-50 text-slate-500 text-sm font-medium border border-slate-200">
+                Última actualización: {lastUpdate}
               </div>
             </div>
           </div>
 
-          {/* Onda decorativa */}
-          <div className="absolute -bottom-1 left-0 right-0">
-            <svg viewBox="0 0 1440 120" className="w-full h-auto" fill="currentColor">
-              <path
-                fillOpacity="0.1"
-                d="M0,64L80,58.7C160,53,320,43,480,48C640,53,800,75,960,74.7C1120,75,1280,53,1360,42.7L1440,32L1440,120L1360,120C1280,120,1120,120,960,120C800,120,640,120,480,120C320,120,160,120,80,120L0,120Z"
-              ></path>
-            </svg>
-          </div>
-        </div>
-
-        {/* Contenido principal */}
-        <section className="relative max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16">
-          <div className="bg-white rounded-3xl shadow-xl border border-slate-200/50 p-6 md:p-10 lg:p-12">
-            <div className="prose prose-slate max-w-none prose-headings:font-bold prose-headings:text-slate-800 prose-h2:text-2xl md:prose-h2:text-3xl prose-h2:mt-10 prose-h2:mb-6 prose-p:text-slate-600 prose-p:leading-relaxed prose-li:text-slate-600 prose-li:marker:text-blue-500 prose-a:text-blue-600 prose-a:no-underline hover:prose-a:text-blue-700 prose-a:font-medium">
-              <div className="bg-blue-50/70 rounded-xl p-6 mb-10 border-l-4 border-blue-500">
-                <p className="text-lg font-medium text-blue-800">
-                  En{" "}
-                  <strong className="font-bold">VIADCA by Zafiro Tours</strong>{" "}
-                  nos comprometemos a proteger tu privacidad. Este documento
-                  explica qué datos recopilamos, cómo los utilizamos y las
-                  opciones que tienes sobre su tratamiento. Operamos en México y
-                  cumplimos con la normativa aplicable en materia de protección
-                  de datos personales.
-                </p>
+          {/* --- MAIN CONTENT --- */}
+          {/* px-0 en móvil para que los elementos toquen los bordes */}
+          <main className="flex-grow relative z-20 px-0 md:px-6 lg:px-8 pb-24 md:-mt-6">
+            <div className="max-w-5xl mx-auto space-y-0 md:space-y-8">
+              
+              {/* --- BLOQUE 1: INTRODUCCIÓN --- */}
+              <div className={sectionClass}>
+                <div className="flex flex-col md:flex-row gap-6 items-start">
+                  <div className="w-12 h-12 md:w-16 md:h-16 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center text-2xl md:text-3xl shrink-0">
+                    <FiUserCheck />
+                  </div>
+                  <div>
+                    <h2 className="text-xl font-bold text-slate-900 mb-2">Compromiso de Privacidad</h2>
+                    <p className="text-slate-600 leading-relaxed text-base md:text-lg">
+                      Operamos bajo la estricta normativa vigente en México. <strong>No vendemos tus datos.</strong> Toda la información que nos compartes se utiliza exclusivamente para diseñar, gestionar y asegurar tus experiencias de viaje.
+                    </p>
+                  </div>
+                </div>
               </div>
 
-              <div className="grid md:grid-cols-2 gap-10">
-                <div>
-                  <h2 className="flex items-center gap-3">
-                    <span className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                      <svg
-                        className="w-4 h-4 text-blue-600"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
-                        />
-                      </svg>
-                    </span>
-                    Datos que recopilamos
-                  </h2>
-                  <ul>
-                    <li className="mb-3 flex items-start">
-                      <span className="inline-flex items-center justify-center w-5 h-5 bg-blue-100 rounded-full mr-2 mt-0.5 flex-shrink-0">
-                        <span className="w-1.5 h-1.5 bg-blue-600 rounded-full"></span>
-                      </span>
-                      <span>
-                        <strong className="text-slate-800">
-                          Datos de contacto:
-                        </strong>{" "}
-                        nombre, correo electrónico, teléfono, y la información
-                        que nos facilites al solicitar información o contratar
-                        un servicio.
-                      </span>
+              {/* --- BLOQUE 2: GRID DATOS (2 columnas en escritorio, pila en móvil) --- */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-0 md:gap-6">
+                
+                {/* Columna Izquierda: Qué pedimos */}
+                <div className={sectionClass}>
+                  <div className="flex items-center gap-3 mb-6">
+                    <div className="p-2 bg-indigo-50 text-indigo-600 rounded-lg">
+                      <FiDatabase className="w-5 h-5" />
+                    </div>
+                    <h2 className="text-lg md:text-xl font-bold text-slate-900">Datos Solicitados</h2>
+                  </div>
+                  <ul className="space-y-6">
+                    <li className="flex gap-4">
+                      <div className="mt-1 text-indigo-500 shrink-0"><FiUserCheck /></div>
+                      <div>
+                        <strong className="block text-slate-900 text-sm font-semibold">Identidad y Contacto</strong>
+                        <span className="text-sm text-slate-500 block mt-1">Nombre completo, teléfono y correo electrónico para la gestión de reservas.</span>
+                      </div>
                     </li>
-                    <li className="mb-3 flex items-start">
-                      <span className="inline-flex items-center justify-center w-5 h-5 bg-blue-100 rounded-full mr-2 mt-0.5 flex-shrink-0">
-                        <span className="w-1.5 h-1.5 bg-blue-600 rounded-full"></span>
-                      </span>
-                      <span>
-                        <strong className="text-slate-800">
-                          Datos de navegación:
-                        </strong>{" "}
-                        dirección IP, identificadores de dispositivo y analítica
-                        básica para mejorar la experiencia del sitio.
-                      </span>
-                    </li>
-                    <li className="flex items-start">
-                      <span className="inline-flex items-center justify-center w-5 h-5 bg-blue-100 rounded-full mr-2 mt-0.5 flex-shrink-0">
-                        <span className="w-1.5 h-1.5 bg-blue-600 rounded-full"></span>
-                      </span>
-                      <span>
-                        <strong className="text-slate-800">
-                          Cookies y tecnologías similares:
-                        </strong>{" "}
-                        ver la{" "}
-                        <Link to="/cookies" className="font-medium">
-                          Política de Cookies
-                        </Link>
-                        .
-                      </span>
+                    <li className="flex gap-4">
+                      <div className="mt-1 text-indigo-500 shrink-0"><FaCookieBite /></div>
+                      <div>
+                        <strong className="block text-slate-900 text-sm font-semibold">Navegación (Cookies)</strong>
+                        <span className="text-sm text-slate-500 block mt-1">Datos técnicos para mejorar la web. <Link to="/cookies" className="text-indigo-600 hover:underline">Ver política</Link>.</span>
+                      </div>
                     </li>
                   </ul>
                 </div>
 
-                <div>
-                  <h2 className="flex items-center gap-3">
-                    <span className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                      <svg
-                        className="w-4 h-4 text-blue-600"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z"
-                        />
-                      </svg>
-                    </span>
-                    Finalidades y base legal
-                  </h2>
-                  <ul>
-                    <li className="mb-2 flex items-start">
-                      <span className="inline-flex items-center justify-center w-5 h-5 bg-blue-100 rounded-full mr-2 mt-0.5 flex-shrink-0">
-                        <span className="w-1.5 h-1.5 bg-blue-600 rounded-full"></span>
-                      </span>
-                      <span>
-                        Atender consultas y gestionar reservas o presupuestos
-                        (ejecución de contrato o medidas precontractuales).
-                      </span>
-                    </li>
-                    <li className="mb-2 flex items-start">
-                      <span className="inline-flex items-center justify-center w-5 h-5 bg-blue-100 rounded-full mr-2 mt-0.5 flex-shrink-0">
-                        <span className="w-1.5 h-1.5 bg-blue-600 rounded-full"></span>
-                      </span>
-                      <span>
-                        Comunicación comercial relacionada con viajes y ofertas,
-                        cuando corresponda (consentimiento revocable).
-                      </span>
-                    </li>
-                    <li className="flex items-start">
-                      <span className="inline-flex items-center justify-center w-5 h-5 bg-blue-100 rounded-full mr-2 mt-0.5 flex-shrink-0">
-                        <span className="w-1.5 h-1.5 bg-blue-600 rounded-full"></span>
-                      </span>
-                      <span>
-                        Mejorar nuestros servicios y la seguridad del sitio
-                        (interés legítimo).
-                      </span>
-                    </li>
-                  </ul>
+                {/* Columna Derecha: Para qué */}
+                <div className={sectionClass}>
+                  <div className="flex items-center gap-3 mb-6">
+                    <div className="p-2 bg-emerald-50 text-emerald-600 rounded-lg">
+                      <FiGlobe className="w-5 h-5" />
+                    </div>
+                    <h2 className="text-lg md:text-xl font-bold text-slate-900">Uso de la Información</h2>
+                  </div>
+                  <div className="space-y-4">
+                    {[
+                      'Gestionar tus vuelos y hoteles.',
+                      'Crear itinerarios a medida.',
+                      'Facturación y trámites legales.'
+                    ].map((text, i) => (
+                      <div key={i} className="flex items-start gap-3 text-slate-600">
+                        <FiCheck className="w-5 h-5 text-emerald-500 shrink-0 mt-0.5" />
+                        <span className="text-sm md:text-base">{text}</span>
+                      </div>
+                    ))}
+                    
+                    <div className="mt-6 pt-4 border-t border-slate-100">
+                        <p className="text-xs text-slate-400">
+                            Nota: Solo enviamos promociones con tu consentimiento explícito.
+                        </p>
+                    </div>
+                  </div>
                 </div>
               </div>
 
-              <div className="grid md:grid-cols-2 gap-10 mt-12">
-                <div>
-                  <h2 className="flex items-center gap-3">
-                    <span className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                      <svg
-                        className="w-4 h-4 text-blue-600"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                        />
-                      </svg>
-                    </span>
-                    Conservación
-                  </h2>
-                  <p>
-                    Conservamos los datos durante el tiempo necesario para
-                    cumplir las finalidades indicadas y las obligaciones
-                    legales. Transcurridos esos plazos, se eliminarán o
-                    anonimizarán de forma segura.
-                  </p>
+              {/* --- BLOQUE 3: SEGURIDAD (Ya no es negro) --- */}
+              {/* Cambiado a un fondo azul muy claro para diferenciarlo sin ser agresivo */}
+              <div className="bg-blue-50/50 p-6 md:p-10 border-b border-blue-100 md:border md:border-blue-100 md:rounded-3xl relative overflow-hidden">
+                <div className="relative z-10">
+                    <div className="flex items-center gap-3 mb-8">
+                        <div className="w-10 h-10 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center text-xl">
+                            <FiLock />
+                        </div>
+                        <h2 className="text-xl md:text-2xl font-bold text-slate-900">Seguridad de Alto Nivel</h2>
+                    </div>
 
-                  <div className="mt-6 bg-slate-50 rounded-xl p-4 border border-slate-100">
-                    <h3 className="font-semibold text-slate-800 mb-2 flex items-center gap-2">
-                      <svg
-                        className="w-4 h-4 text-blue-500"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
-                        />
-                      </svg>
-                      Plazos de conservación
+                    <div className="grid sm:grid-cols-3 gap-8 md:gap-6">
+                        <div className="flex flex-col gap-2">
+                            <FiServer className="w-6 h-6 text-blue-600 mb-1" />
+                            <h3 className="font-bold text-slate-900 text-sm uppercase tracking-wide">Encriptación</h3>
+                            <p className="text-sm text-slate-600">Protocolos SSL/TLS para blindar tus datos en tránsito.</p>
+                        </div>
+                        <div className="flex flex-col gap-2">
+                            <FiShield className="w-6 h-6 text-blue-600 mb-1" />
+                            <h3 className="font-bold text-slate-900 text-sm uppercase tracking-wide">Acceso Limitado</h3>
+                            <p className="text-sm text-slate-600">Solo personal autorizado gestiona tu información sensible.</p>
+                        </div>
+                        <div className="flex flex-col gap-2">
+                            <FiAlertTriangle className="w-6 h-6 text-blue-600 mb-1" />
+                            <h3 className="font-bold text-slate-900 text-sm uppercase tracking-wide">Monitoreo</h3>
+                            <p className="text-sm text-slate-600">Sistemas activos de detección de amenazas 24/7.</p>
+                        </div>
+                    </div>
+                </div>
+              </div>
+
+              {/* --- BLOQUE 4: COMPARTICIÓN --- */}
+              <div className={sectionClass}>
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+                    <div>
+                        <div className="flex items-center gap-3 mb-3">
+                            <FiShare2 className="w-5 h-5 text-rose-500" />
+                            <h2 className="text-lg md:text-xl font-bold text-slate-900">Terceros Necesarios</h2>
+                        </div>
+                        <p className="text-slate-600 text-sm md:text-base max-w-xl">
+                            Solo compartimos los datos estrictamente necesarios con los proveedores que hacen posible tu viaje (tu nombre para el boleto de avión, por ejemplo).
+                        </p>
+                    </div>
+                    
+                    {/* Tags visuales */}
+                    <div className="flex flex-wrap gap-2 md:justify-end">
+                        {['Aerolíneas', 'Hoteles', 'Seguros', 'Tours'].map((item, i) => (
+                            <span key={i} className="px-3 py-1 bg-slate-100 text-slate-600 text-xs font-semibold rounded-md border border-slate-200">
+                                {item}
+                            </span>
+                        ))}
+                    </div>
+                </div>
+              </div>
+
+              {/* --- CTA FINAL --- */}
+              <div className="px-6 md:px-0 mt-12 pt-10 border-t border-slate-100 md:border-transparent">
+                <div className="bg-white md:bg-transparent rounded-2xl p-6 md:p-0 border border-slate-100 md:border-none shadow-sm md:shadow-none flex flex-col lg:flex-row gap-8 items-center justify-between">
+                  <div className="max-w-lg text-center lg:text-left">
+                    <h3 className="text-2xl font-bold font-volkhov text-slate-900 mb-2">
+                      ¿Dudas sobre tus derechos ARCO?
                     </h3>
-                    <p className="text-sm text-slate-600">
-                      Los datos personales se conservan durante el tiempo
-                      necesario para cumplir con las finalidades para las que
-                      fueron recopilados, así como para cumplir con las
-                      obligaciones legales y resolver posibles disputas.
+                    <p className="text-slate-500">
+                      Tienes derecho a acceder, rectificar o cancelar tus datos en cualquier momento.
                     </p>
                   </div>
-                </div>
 
-                <div>
-                  <h2 className="flex items-center gap-3">
-                    <span className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                      <svg
-                        className="w-4 h-4 text-blue-600"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
-                        />
-                      </svg>
-                    </span>
-                    Cesiones y encargados
-                  </h2>
-                  <p>
-                    No vendemos datos personales. Podemos compartir información
-                    estrictamente necesaria con proveedores de servicios
-                    turísticos (mayoristas, aerolíneas, hoteles, aseguradoras)
-                    para gestionar tu reserva, así como con proveedores
-                    tecnológicos que nos prestan servicios (por ejemplo,
-                    alojamiento web), bajo contratos que garantizan la
-                    confidencialidad y el tratamiento seguro de los datos.
-                  </p>
-
-                  <div className="mt-4 flex flex-wrap gap-2">
-                    <span className="px-3 py-1 bg-slate-100 rounded-full text-xs font-medium text-slate-700">
-                      Aerolíneas
-                    </span>
-                    <span className="px-3 py-1 bg-slate-100 rounded-full text-xs font-medium text-slate-700">
-                      Hoteles
-                    </span>
-                    <span className="px-3 py-1 bg-slate-100 rounded-full text-xs font-medium text-slate-700">
-                      Aseguradoras
-                    </span>
-                    <span className="px-3 py-1 bg-slate-100 rounded-full text-xs font-medium text-slate-700">
-                      Proveedores tecnológicos
-                    </span>
-                  </div>
-                </div>
-              </div>
-
-              <div className="grid md:grid-cols-2 gap-10 mt-12">
-                <div>
-                  <h2 className="flex items-center gap-3">
-                    <span className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                      <svg
-                        className="w-4 h-4 text-blue-600"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                        />
-                      </svg>
-                    </span>
-                    Derechos
-                  </h2>
-                  <p>
-                    Puedes ejercer tus derechos de acceso, rectificación,
-                    cancelación, oposición, así como solicitar la limitación o
-                    portabilidad cuando proceda. Para ello, contáctanos por los
-                    medios publicados en la sección de contacto de este sitio.
-                  </p>
-                  <p className="mt-3">
-                    Si consideras que no hemos tratado tus datos conforme a la
-                    norma, puedes presentar una reclamación ante la autoridad
-                    competente.
-                  </p>
-
-                  <div className="mt-6 bg-blue-50 rounded-xl p-4 border border-blue-100">
-                    <h3 className="font-semibold text-blue-800 mb-2 flex items-center gap-2">
-                      <svg
-                        className="w-4 h-4 text-blue-500"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                        />
-                      </svg>
-                      Ejercer tus derechos
-                    </h3>
-                    <p className="text-sm text-blue-700">
-                      Para ejercer tus derechos, envía una solicitud escrita a
-                      nuestro correo electrónico de protección de datos con
-                      copia de tu identificación.
-                    </p>
-                  </div>
-                </div>
-
-                <div>
-                  <h2 className="flex items-center gap-3">
-                    <span className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                      <svg
-                        className="w-4 h-4 text-blue-600"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
-                        />
-                      </svg>
-                    </span>
-                    Seguridad
-                  </h2>
-                  <p>
-                    Aplicamos medidas técnicas y organizativas razonables para
-                    proteger tu información. No obstante, ningún sistema es 100%
-                    seguro; te recomendamos no compartir información sensible
-                    innecesaria a través de canales no cifrados.
-                  </p>
-
-                  <div className="mt-4">
-                    <div className="flex items-center gap-2 text-sm text-slate-600 mb-1">
-                      <svg
-                        className="w-4 h-4 text-green-500"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M5 13l4 4L19 7"
-                        />
-                      </svg>
-                      <span>Encriptación de datos en tránsito (SSL/TLS)</span>
-                    </div>
-                    <div className="flex items-center gap-2 text-sm text-slate-600 mb-1">
-                      <svg
-                        className="w-4 h-4 text-green-500"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M5 13l4 4L19 7"
-                        />
-                      </svg>
-                      <span>Acceso restringido a datos sensibles</span>
-                    </div>
-                    <div className="flex items-center gap-2 text-sm text-slate-600">
-                      <svg
-                        className="w-4 h-4 text-green-500"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M5 13l4 4L19 7"
-                        />
-                      </svg>
-                      <span>Copias de seguridad regulares</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="mt-12">
-                <h2 className="flex items-center gap-3">
-                  <span className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                    <svg
-                      className="w-4 h-4 text-blue-600"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"
-                      />
-                    </svg>
-                  </span>
-                  Cambios en esta política
-                </h2>
-                <p>
-                  Podremos actualizar esta política cuando sea necesario.
-                  Publicaremos la versión vigente en esta página con su fecha de
-                  actualización.
-                </p>
-
-                <div className="mt-6 bg-blue-50 rounded-xl p-5 border border-blue-100">
-                  <h3 className="font-semibold text-blue-800 flex items-center gap-2 mb-2">
-                    <svg
-                      className="w-5 h-5 text-blue-600"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
-                      />
-                    </svg>
-                    Notificaciones de cambios
-                  </h3>
-                  <p className="text-blue-700 text-sm">
-                    Para cambios importantes en nuestra política de privacidad,
-                    te notificaremos mediante un banner destacado en nuestro
-                    sitio web durante al menos 15 días antes de que los cambios
-                    entren en vigor.
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div className="mt-16 p-8 bg-gradient-to-r from-blue-50 to-orange-50 rounded-2xl border border-blue-100/60 shadow-sm transition-all duration-300 hover:shadow-md hover:border-blue-300">
-              <div className="flex flex-col md:flex-row items-start gap-6">
-                <div className="flex-shrink-0">
-                  <div className="w-14 h-14 bg-blue-600 rounded-lg flex items-center justify-center">
-                    <svg
-                      className="w-7 h-7 text-white"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-                      />
-                    </svg>
-                  </div>
-                </div>
-                <div className="flex-grow">
-                  <h3 className="font-semibold text-slate-800 text-xl mb-3">
-                    ¿Tienes dudas sobre tu privacidad?
-                  </h3>
-                  <p className="text-slate-600 mb-6">
-                    Estamos aquí para resolver cualquier pregunta sobre cómo
-                    manejamos tu información personal. Nuestro equipo de
-                    protección de datos responderá a tu consulta en un plazo
-                    máximo de 72 horas.
-                  </p>
-                  <div className="flex flex-col sm:flex-row gap-4">
+                  <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto shrink-0">
                     <button
                       type="button"
                       onClick={() => openWhatsApp(whatsappMsg)}
-                      className="inline-flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-medium px-5 py-2.5 rounded-lg transition-all duration-300 hover:scale-[1.03] shadow-sm hover:shadow-md"
+                      className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-medium transition-colors"
                     >
-                      <svg
-                        className="w-5 h-5"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-                        />
-                      </svg>
-                      Contáctanos por WhatsApp
+                      <FaWhatsapp className="w-5 h-5" />
+                      Chat de Privacidad
                     </button>
                     <a
                       href={getPhoneHref()}
                       onClick={onPhoneClick}
-                      className="inline-flex items-center justify-center gap-2 bg-white border border-slate-200 hover:border-blue-300 text-slate-700 hover:text-blue-700 font-medium px-5 py-2.5 rounded-lg transition-all duration-300 hover:scale-[1.03] shadow-sm hover:shadow-md"
+                      className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-slate-50 text-slate-700 font-medium border border-slate-200 hover:bg-slate-100 transition-colors"
                     >
-                      <svg
-                        className="w-5 h-5"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
-                        />
-                      </svg>
-                      Llamar / Copiar teléfono
+                      Soporte
                     </a>
                   </div>
                 </div>
               </div>
+
+              <div className="text-center pt-8 pb-4">
+                <Link to="/" className="text-sm font-semibold text-slate-400 hover:text-blue-600 transition-colors">
+                  &larr; Volver al inicio
+                </Link>
+              </div>
+
             </div>
-          </div>
-
-          <div className="mt-16 text-center">
-            <Link
-              to="/"
-              className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-medium px-7 py-3.5 rounded-xl transition-all duration-300 hover:scale-[1.03] shadow-lg hover:shadow-xl"
-            >
-              <svg
-                className="w-5 h-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M10 19l-7-7m0 0l7-7m-7 7h18"
-                />
-              </svg>
-              Volver al inicio
-            </Link>
-
-            <p className="mt-8 text-sm text-slate-500 max-w-md mx-auto">
-              Al continuar navegando en nuestro sitio, aceptas nuestro uso de
-              tus datos personales según lo descrito en esta política.
-            </p>
-          </div>
-        </section>
-
-        <style jsx>{`
-          .animate-pulse-slow {
-            animation: pulse 6s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-          }
-
-          @keyframes pulse {
-            0%,
-            100% {
-              opacity: 0.2;
-            }
-            50% {
-              opacity: 0.4;
-            }
-          }
-
-          .animate-fade-in-down {
-            animation: fadeInDown 0.8s ease-out forwards;
-          }
-
-          @keyframes fadeInDown {
-            0% {
-              opacity: 0;
-              transform: translateY(-20px);
-            }
-            100% {
-              opacity: 1;
-              transform: translateY(0);
-            }
-          }
-
-          .delay-500 {
-            animation-delay: 500ms;
-          }
-
-          .delay-1000 {
-            animation-delay: 1000ms;
-          }
-
-          .delay-1500 {
-            animation-delay: 1500ms;
-          }
-
-          .delay-2000 {
-            animation-delay: 2000ms;
-          }
-        `}</style>
-        <ToastPortal />
-        </main>
-        <Footer contactInfo={contactInfo} />
+          </main>
+          <Footer contactInfo={contactInfo} />
         </div>
       </PageTransition>
+      <ToastPortal />
     </>
   );
 };

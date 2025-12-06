@@ -121,6 +121,22 @@ const animationClasses = {
     animate: "opacity-100 scale-100",
     transition: "transition-all duration-700 ease-out",
   },
+  // Nuevas animaciones Premium (Apple-style)
+  fadeUpPremium: {
+    initial: "opacity-0 translate-y-10 blur-[2px]",
+    animate: "opacity-100 translate-y-0 blur-0",
+    transition: "transition-all duration-1000 ease-[cubic-bezier(0.2,0.8,0.2,1)] will-change-transform",
+  },
+  scaleInPremium: {
+    initial: "opacity-0 scale-[0.96] blur-[1px]",
+    animate: "opacity-100 scale-100 blur-0",
+    transition: "transition-all duration-1000 ease-[cubic-bezier(0.2,0.8,0.2,1)] will-change-transform",
+  },
+  staggeredReveal: {
+    initial: "opacity-0 translate-y-8",
+    animate: "opacity-100 translate-y-0",
+    transition: "transition-all duration-700 ease-[cubic-bezier(0.25,0.46,0.45,0.94)]",
+  },
   // Nuevas animaciones mejoradas para destinos
   slideUpCard: {
     initial: "opacity-0 translate-y-12 scale-95",

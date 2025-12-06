@@ -1,4 +1,5 @@
 import React, { useRef, useState, useEffect } from "react";
+import { AnimatedSection } from "../../../hooks/scrollAnimations";
 
 const fallbackImg = "/images/destinations-hero-fallback.jpg";
 
@@ -6,11 +7,6 @@ const DestinationsHero = () => {
   const videoRef = useRef(null);
   const [videoError, setVideoError] = useState(false);
   const [canPlay, setCanPlay] = useState(false);
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   useEffect(() => {
     const vid = videoRef.current;
@@ -57,9 +53,7 @@ const DestinationsHero = () => {
 
       {/* Contenido */}
       <div className="relative z-10 max-w-7xl mx-auto px-6 sm:px-6 lg:px-8 text-center text-white">
-        <div
-          className={`transition-all duration-1000 ease-out ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}
-        >
+        <AnimatedSection animation="fadeUpPremium" delay={200}>
           {/* Título principal */}
           <h1 className="font-volkhov text-[2.25rem] leading-[1.1] sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-bold sm:leading-tight mb-5 sm:mb-6 lg:mb-8">
             <span className="block text-white drop-shadow-2xl mb-2 sm:mb-3">
@@ -74,7 +68,7 @@ const DestinationsHero = () => {
           <p className="text-sm sm:text-base lg:text-xl max-w-lg sm:max-w-xl lg:max-w-3xl mx-auto text-white/95 leading-relaxed font-light">
             Encuentra experiencias únicas, filtra por tus intereses y diseña el viaje perfecto.
           </p>
-        </div>
+        </AnimatedSection>
       </div>
 
       {/* Mensaje de error del video */}

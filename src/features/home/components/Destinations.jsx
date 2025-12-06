@@ -117,9 +117,9 @@ const DestinationCard = React.memo(function DestinationCard({
   const precioPorPersona =
     personasValidas && p?.precio_total
       ? formatPrecio(
-          (parseFloat(p?.precio_total) || 0) / personasValue,
-          moneda,
-        )
+        (parseFloat(p?.precio_total) || 0) / personasValue,
+        moneda,
+      )
       : null;
   const duracion = p?.duracion_dias ? `${p.duracion_dias} días` : "";
   const firstDest =
@@ -275,7 +275,7 @@ const Destinations = () => {
     } catch (e) {
       setError(
         e?.response?.data?.message ||
-          "No se pudieron cargar los destinos. Intenta más tarde.",
+        "No se pudieron cargar los destinos. Intenta más tarde.",
       );
     } finally {
       setLoading(false);
@@ -342,7 +342,7 @@ const Destinations = () => {
       <div className="max-w-7xl mx-auto">
         {/* Título sección */}
         <AnimatedSection
-          animation="fadeInUp"
+          animation="fadeUpPremium"
           className="text-center mb-10 sm:mb-14 lg:mb-16"
           forceVisible={sectionVisible}
         >
@@ -386,9 +386,9 @@ const Destinations = () => {
             displayItems.map((p, index) => (
               <AnimatedSection
                 key={p.codigoUrl || p.titulo || index}
-                animation="destCard"
+                animation="staggeredReveal"
                 index={index}
-                stagger={90}
+                stagger={100}
                 className="h-full will-change-transform"
                 forceVisible={sectionVisible}
               >
@@ -397,9 +397,9 @@ const Destinations = () => {
             ))}
           {!loading && hasMore && (
             <AnimatedSection
-              animation="destCard"
+              animation="staggeredReveal"
               index={displayItems.length}
-              stagger={90}
+              stagger={100}
               className="h-full will-change-transform"
               forceVisible={sectionVisible}
             >
@@ -422,8 +422,8 @@ const Destinations = () => {
               displayItems.map((p, i) => (
                 <AnimatedSection
                   key={p.codigoUrl || p.titulo || i}
-                  animation="fadeInUp"
-                  delay={100 + i * 140}
+                  animation="fadeUpPremium"
+                  delay={100 + i * 100}
                   forceVisible={sectionVisible}
                   className="will-change-transform"
                 >

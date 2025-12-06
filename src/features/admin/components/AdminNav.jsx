@@ -52,11 +52,10 @@ const NavItem = ({
       </div>
       <span
         className={`font-medium overflow-hidden transition-all duration-300 text-sm
-                    ${
-                      !(isOpen || isMobile)
-                        ? "w-0 opacity-0"
-                        : "w-full opacity-100"
-                    }`}
+                    ${!(isOpen || isMobile)
+            ? "w-0 opacity-0"
+            : "w-full opacity-100"
+          }`}
       >
         {label}
       </span>
@@ -85,10 +84,9 @@ const NavItem = ({
           end={to === "/admin"}
           style={({ isActive }) => (isActive ? activeLinkStyle : undefined)}
           className={({ isActive }) =>
-            `${commonClasses} ${isMobile ? "" : desktopClasses} ${
-              isActive
-                ? "text-white font-semibold shadow-lg"
-                : "text-gray-700 hover:text-blue-600"
+            `${commonClasses} ${isMobile ? "" : desktopClasses} ${isActive
+              ? "text-white font-semibold shadow-lg"
+              : "text-gray-700 hover:text-blue-600"
             }`
           }
           title={!isOpen && !isMobile ? label : undefined}
@@ -217,7 +215,7 @@ const AdminNav = ({ isOpen, setIsOpen }) => {
 
         {/* Overlay oscuro cuando el menú está abierto */}
         {isMobileMenuOpen && (
-          <div 
+          <div
             className="fixed inset-0 bg-black/50 z-40 backdrop-blur-sm"
             onClick={() => setIsMobileMenuOpen(false)}
             aria-hidden="true"
@@ -225,10 +223,9 @@ const AdminNav = ({ isOpen, setIsOpen }) => {
         )}
 
         {/* Menú móvil deslizable */}
-        <nav 
-          className={`fixed top-16 left-0 right-0 bottom-0 bg-white text-gray-700 shadow-2xl z-40 transform transition-transform duration-300 ease-in-out overflow-y-auto ${
-            isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
-          }`}
+        <nav
+          className={`fixed top-16 left-0 right-0 bottom-0 bg-white text-gray-700 shadow-2xl z-40 transform transition-transform duration-300 ease-in-out overflow-y-auto ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
+            }`}
         >
           <div className="p-4 border-b border-gray-100 bg-gradient-to-r from-gray-50 to-blue-50">
             <UserAvatar size="md" showInfo={true} />
@@ -262,30 +259,7 @@ const AdminNav = ({ isOpen, setIsOpen }) => {
                  border-r border-gray-200/80 nav-gradient-border
                  ${isOpen ? "w-64" : "w-20"} group`}
     >
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className="absolute bottom-24 -right-3.5 p-2.5 bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-700 
-                   hover:from-blue-700 hover:via-indigo-700 hover:to-purple-800 rounded-full text-white 
-                   transition-all duration-300 shadow-lg hover:shadow-xl flex items-center justify-center
-                   border-2 border-white hover:scale-110 transform z-20
-                   opacity-0 group-hover:opacity-100 translate-x-2 group-hover:translate-x-0
-                   group/btn nav-hover-lift"
-        aria-label={isOpen ? "Contraer menú" : "Expandir menú"}
-      >
-        <div className="relative">
-          {isOpen ? (
-            <FiChevronLeft
-              size={16}
-              className="transition-transform duration-300 group-hover/btn:scale-110"
-            />
-          ) : (
-            <FiChevronRight
-              size={16}
-              className="transition-transform duration-300 group-hover/btn:scale-110"
-            />
-          )}
-        </div>
-      </button>
+
 
       <div
         className={`flex items-center mb-8 mt-4 px-2 py-3 cursor-pointer group/logo
@@ -300,9 +274,8 @@ const AdminNav = ({ isOpen, setIsOpen }) => {
           <FiCompass className="text-white text-2xl" />
         </div>
         <div
-          className={`ml-3 overflow-hidden transition-all duration-300 ${
-            !isOpen ? "opacity-0 w-0" : "opacity-100"
-          }`}
+          className={`overflow-hidden transition-all duration-300 ${!isOpen ? "opacity-0 w-0 h-0" : "opacity-100 ml-3"
+            }`}
         >
           <h1 className="font-bold text-2xl text-gray-800">
             <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent font-extrabold">
@@ -329,11 +302,38 @@ const AdminNav = ({ isOpen, setIsOpen }) => {
         )}
       </div>
 
-      <ul className="flex flex-col gap-1 flex-grow">
+      <ul className="flex flex-col gap-1">
         {navLinks.map((link) => (
           <NavItem key={link.to} {...link} isOpen={isOpen} />
         ))}
       </ul>
+
+      <div className="relative w-full">
+        <button
+          onClick={() => setIsOpen(!isOpen)}
+          className="absolute -right-8 top-4 p-3 bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-700 
+                     hover:from-blue-700 hover:via-indigo-700 hover:to-purple-800 rounded-full text-white 
+                     transition-all duration-300 shadow-lg hover:shadow-xl flex items-center justify-center
+                     border-2 border-white hover:scale-110 transform z-20
+                     opacity-0 group-hover:opacity-100 translate-x-2 group-hover:translate-x-0
+                     group/btn nav-hover-lift"
+          aria-label={isOpen ? "Contraer menú" : "Expandir menú"}
+        >
+          <div className="relative">
+            {isOpen ? (
+              <FiChevronLeft
+                size={16}
+                className="transition-transform duration-300 group-hover/btn:scale-110"
+              />
+            ) : (
+              <FiChevronRight
+                size={16}
+                className="transition-transform duration-300 group-hover/btn:scale-110"
+              />
+            )}
+          </div>
+        </button>
+      </div>
 
       <div className="mt-auto border-t border-gray-200 pt-4">
         <div

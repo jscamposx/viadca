@@ -1,5 +1,7 @@
 import React from "react";
 
+import { AnimatedSection, useSectionReveal } from "../../../hooks/scrollAnimations";
+
 const Logos = ({ logos }) => {
   const containerRef = React.useRef(null);
   const trackRef = React.useRef(null);
@@ -10,16 +12,20 @@ const Logos = ({ logos }) => {
   const [seqWidth, setSeqWidth] = React.useState(0);
   const [paused, setPaused] = React.useState(false);
 
-  // Normalizamos la lista base (mantiene props como h, width, height)
-  const base = React.useMemo(() => logos || [], [logos]);
-  // Creamos varias secuencias para cubrir el viewport con holgura
-  const sequences = React.useMemo(() => [base, base, base], [base]);
+  // Hook para revelar la sección
+  const [sectionRef, sectionVisible] = useSectionReveal({ threshold: 0.1 });
 
-  // Observa el ancho de la primera secuencia (cambia cuando cargan imágenes o al redimensionar)
+  // Normalizamos la lista base
+  const base = React.useMemo(() => logos || [], [logos]);
+  // Creamos secuencias para cubrir el viewport
+  const sequences = React.useMemo(() => [base, base, base, base], [base]); // Aumenté a 4 para seguridad en monitores ultrawide
+
+  // Observa el ancho de la primera secuencia
   React.useEffect(() => {
     const el = firstSeqRef.current;
     if (!el) return;
 
+    // Medir incluye el padding derecho que añadiremos a los LI, asegurando un loop perfecto
     const measure = () => setSeqWidth(el.scrollWidth || el.offsetWidth || 0);
     measure();
 
@@ -31,7 +37,8 @@ const Logos = ({ logos }) => {
       window.addEventListener("resize", measure);
     }
 
-    const t = setTimeout(measure, 300); // por si imágenes terminan de cargar
+    // Un pequeño delay para asegurar que fuentes/estilos cargaron
+    const t = setTimeout(measure, 300);
 
     return () => {
       clearTimeout(t);
@@ -40,14 +47,14 @@ const Logos = ({ logos }) => {
     };
   }, [base]);
 
-  // Animación con rAF: desplazamiento continuo sin saltos usando módulo
+  // Animación
   React.useEffect(() => {
     const prefersReduced =
       window.matchMedia &&
       window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (prefersReduced) return; // respeta preferencias del usuario
+    if (prefersReduced) return;
 
-    const speed = 60; // px/segundo (ajusta al gusto)
+    const speed = 60; // px/segundo
 
     const tick = (now) => {
       if (!trackRef.current || !seqWidth) {
@@ -57,18 +64,20 @@ const Logos = ({ logos }) => {
       }
 
       if (!lastTimeRef.current) lastTimeRef.current = now;
-      const dt = (now - lastTimeRef.current) / 1000; // segundos
+      const dt = (now - lastTimeRef.current) / 1000;
       lastTimeRef.current = now;
 
       if (!paused) {
         offsetRef.current -= speed * dt;
-        // Normaliza el offset a [0, seqWidth) y aplica el negativo para mover a la izquierda
+        // La lógica modular aquí funciona perfecto si todos los items tienen el mismo espacio (padding)
         const visual = ((offsetRef.current % seqWidth) + seqWidth) % seqWidth;
         const x = -visual;
-        // Suaviza subpíxeles para evitar jitter
+
+        // Redondeo para evitar jitter visual en monitores de alta frecuencia
         const snapped =
           Math.round(x * (window.devicePixelRatio || 1)) /
           (window.devicePixelRatio || 1);
+
         trackRef.current.style.transform = `translate3d(${snapped}px, 0, 0)`;
       }
 
@@ -86,12 +95,17 @@ const Logos = ({ logos }) => {
   return (
     <section
       id="socios"
+      ref={sectionRef}
       aria-labelledby="logos-heading"
-      className="py-12 sm:py-16 lg:py-20 px-4 sm:px-6 lg:px-8 relative scroll-mt-32 bg-gradient-to-b from-gray-50 to-white"
+      className="py-12 sm:py-16 lg:py-20 px-4 sm:px-6 lg:px-8 relative scroll-mt-32 bg-gradient-to-b from-gray-50 to-white overflow-hidden" // overflow-hidden importante en la sección o contenedor
       role="region"
     >
       <div className="max-w-7xl mx-auto">
-        <div className="text-center mb-8 sm:mb-10 lg:mb-12">
+        <AnimatedSection
+          animation="fadeUpPremium"
+          className="text-center mb-8 sm:mb-10 lg:mb-12"
+          forceVisible={sectionVisible}
+        >
           <p className="text-slate-600 font-semibold text-sm sm:text-base uppercase tracking-wide mb-2">
             Nuestros socios
           </p>
@@ -107,9 +121,14 @@ const Logos = ({ logos }) => {
               aria-hidden="true"
             />
           </div>
-        </div>
-        <div
-          className="relative overflow-hidden rounded-2xl bg-white/70 backdrop-blur supports-[backdrop-filter]:bg-white/50 "
+        </AnimatedSection>
+
+        {/* Contenedor principal del carrusel */}
+        <AnimatedSection
+          animation="scaleInPremium"
+          delay={200}
+          forceVisible={sectionVisible}
+          className="relative overflow-hidden rounded-2xl bg-white/70 backdrop-blur supports-[backdrop-filter]:bg-white/50 border border-slate-100/50"
           aria-live="polite"
           ref={containerRef}
           onMouseEnter={() => setPaused(true)}
@@ -118,6 +137,7 @@ const Logos = ({ logos }) => {
           onBlur={() => setPaused(false)}
           tabIndex={0}
         >
+          {/* Sombras de desvanecimiento laterales */}
           <div
             className="pointer-events-none absolute left-0 top-0 h-full w-16 sm:w-24 lg:w-32 bg-gradient-to-r from-white to-transparent z-10"
             aria-hidden="true"
@@ -127,6 +147,7 @@ const Logos = ({ logos }) => {
             aria-hidden="true"
           />
 
+          {/* TRACK: Flex continuo */}
           <div
             ref={trackRef}
             className="flex w-max items-center opacity-90 hover:opacity-100 transition-opacity py-6 px-2 sm:px-4 will-change-transform select-none"
@@ -136,13 +157,23 @@ const Logos = ({ logos }) => {
               <ul
                 key={`seq-${sIdx}`}
                 ref={sIdx === 0 ? firstSeqRef : undefined}
-                className="flex w-max shrink-0 items-center gap-16 sm:gap-20 lg:gap-24"
+                // CAMBIO 1: Eliminamos 'gap-...' aquí. El flex mantiene los items juntos, el espacio lo dará el LI.
+                className="flex w-max shrink-0 items-center"
                 role="list"
               >
                 {seq.map((logo, idx) => (
-                  <li key={`logo-${sIdx}-${idx}`} className="shrink-0">
+                  <li
+                    key={`logo-${sIdx}-${idx}`}
+                    // CAMBIO 2: Añadimos padding-right (pr) aquí. 
+                    // Esto asegura que el espacio es parte del ancho del elemento.
+                    // Al terminar la lista 1, el último elemento tiene padding, separándolo del primero de la lista 2.
+                    className="shrink-0 pr-16 sm:pr-20 lg:pr-24"
+                  >
                     <div
-                      className={`${"flex items-center justify-center"} ${logo.boxed ? "bg-white/90 backdrop-blur rounded-2xl p-6 shadow-xl border border-slate-100" : ""}`}
+                      className={`${"flex items-center justify-center"} ${logo.boxed
+                        ? "bg-white/90 backdrop-blur rounded-2xl p-6 shadow-xl border border-slate-100"
+                        : ""
+                        }`}
                       role="img"
                       aria-label={logo.alt}
                     >
@@ -151,9 +182,11 @@ const Logos = ({ logos }) => {
                         alt={logo.alt}
                         width={logo.width || undefined}
                         height={logo.height || undefined}
-                        className={`${logo.h || "h-16"} w-auto grayscale hover:grayscale-0 transition-all duration-500 ease-linear drop-shadow focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-600`}
+                        className={`${logo.h || "h-16"
+                          } w-auto grayscale hover:grayscale-0 transition-all duration-500 ease-linear drop-shadow focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-600`}
                         decoding="async"
                         loading="lazy"
+                        draggable="false" // Buena práctica en carruseles para evitar arrastrar la imagen fantasma
                       />
                     </div>
                   </li>
@@ -161,7 +194,7 @@ const Logos = ({ logos }) => {
               </ul>
             ))}
           </div>
-        </div>
+        </AnimatedSection>
       </div>
     </section>
   );
