@@ -65,10 +65,13 @@ const AdminPaquetes = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const deferredSearchTerm = useDeferredValue(searchTerm);
   const [filteredPaquetes, setFilteredPaquetes] = useState([]);
+  
+  // Estado de ordenamiento para backend
   const [sortConfig, setSortConfig] = useState({
-    key: "titulo",
-    direction: "asc",
+    sortBy: "created_at",
+    sortOrder: "DESC",
   });
+  
   const [priceFilter, setPriceFilter] = useState({ min: "", max: "" });
   const [durationFilter, setDurationFilter] = useState("");
   const [mayoristaFilter, setMayoristaFilter] = useState("");
@@ -248,7 +251,33 @@ const AdminPaquetes = () => {
     }
   };
 
-  // Sincronizar filtros con backend - Sistema dinámico
+  // Función para manejar el ordenamiento
+  const handleSort = (field) => {
+    setSortConfig((prev) => {
+      // Si es el mismo campo
+      if (prev.sortBy === field) {
+        // Si está en DESC, volver al ordenamiento por defecto
+        if (prev.sortOrder === "DESC") {
+          return {
+            sortBy: "created_at",
+            sortOrder: "DESC",
+          };
+        }
+        // Si está en ASC, cambiar a DESC
+        return {
+          sortBy: field,
+          sortOrder: "DESC",
+        };
+      }
+      // Si es un campo nuevo, ordenar ASC por defecto
+      return {
+        sortBy: field,
+        sortOrder: "ASC",
+      };
+    });
+  };
+
+  // Sincronizar filtros y ordenamiento con backend
   useEffect(() => {
     const backendFilters = {};
     
@@ -282,11 +311,14 @@ const AdminPaquetes = () => {
       console.log('✅ Agregando filtro tipoProducto:', tipoProductoFilter);
     }
     
-    // Solo actualizar si hay filtros activos
-    const hasFilters = Object.keys(backendFilters).length > 0;
-    console.log('📊 Filtros finales que se enviarán al backend:', hasFilters ? backendFilters : '⭕ NINGUNO (objeto vacío)');
-    setFilters(hasFilters ? backendFilters : {});
-  }, [statusFilter, favoritoFilter, mayoristaFilter, tipoProductoFilter, mayoristas, setFilters]);
+    // Agregar ordenamiento
+    backendFilters.sortBy = sortConfig.sortBy;
+    backendFilters.sortOrder = sortConfig.sortOrder;
+    console.log('🔀 Agregando ordenamiento:', sortConfig);
+    
+    console.log('📊 Filtros finales que se enviarán al backend:', backendFilters);
+    setFilters(backendFilters);
+  }, [statusFilter, favoritoFilter, mayoristaFilter, tipoProductoFilter, mayoristas, sortConfig, setFilters]);
 
   // Aplicar filtros locales: SOLO precio y ordenamiento
   // Los demás filtros (activo, favorito, mayorista, tipo) los maneja el backend
@@ -1019,6 +1051,132 @@ const AdminPaquetes = () => {
                 >
                   Filtros Rápidos
                 </h2>
+              </div>
+            </div>
+
+            {/* Botones de Ordenamiento */}
+            <div className="border-t border-gray-200 pt-3">
+              <div className="flex items-center gap-2 mb-2">
+                <FiArrowUp className="w-4 h-4 text-gray-500" />
+                <span className="text-xs font-semibold text-gray-600">Ordenar por:</span>
+              </div>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                <button
+                  onClick={() => handleSort("titulo")}
+                  className={`px-3 py-2.5 rounded-lg font-medium transition flex items-center justify-center gap-2 text-sm ${
+                    sortConfig.sortBy === "titulo"
+                      ? "bg-blue-100 text-blue-700"
+                      : "bg-white text-gray-700 hover:bg-gray-100 border border-gray-200"
+                  }`}
+                >
+                  <span>Título</span>
+                  {sortConfig.sortBy === "titulo" && (
+                    <svg
+                      stroke="currentColor"
+                      fill="none"
+                      strokeWidth="2"
+                      viewBox="0 0 24 24"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      className={`w-3 h-3 transition-transform ${
+                        sortConfig.sortOrder === "DESC" ? "rotate-180" : ""
+                      }`}
+                      height="1em"
+                      width="1em"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <line x1="12" y1="19" x2="12" y2="5"></line>
+                      <polyline points="5 12 12 5 19 12"></polyline>
+                    </svg>
+                  )}
+                </button>
+                <button
+                  onClick={() => handleSort("precio_total")}
+                  className={`px-3 py-2.5 rounded-lg font-medium transition flex items-center justify-center gap-2 text-sm ${
+                    sortConfig.sortBy === "precio_total"
+                      ? "bg-blue-100 text-blue-700"
+                      : "bg-white text-gray-700 hover:bg-gray-100 border border-gray-200"
+                  }`}
+                >
+                  <span>Precio</span>
+                  {sortConfig.sortBy === "precio_total" && (
+                    <svg
+                      stroke="currentColor"
+                      fill="none"
+                      strokeWidth="2"
+                      viewBox="0 0 24 24"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      className={`w-3 h-3 transition-transform ${
+                        sortConfig.sortOrder === "DESC" ? "rotate-180" : ""
+                      }`}
+                      height="1em"
+                      width="1em"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <line x1="12" y1="19" x2="12" y2="5"></line>
+                      <polyline points="5 12 12 5 19 12"></polyline>
+                    </svg>
+                  )}
+                </button>
+                <button
+                  onClick={() => handleSort("fecha_inicio")}
+                  className={`px-3 py-2.5 rounded-lg font-medium transition flex items-center justify-center gap-2 text-sm ${
+                    sortConfig.sortBy === "fecha_inicio"
+                      ? "bg-blue-100 text-blue-700"
+                      : "bg-white text-gray-700 hover:bg-gray-100 border border-gray-200"
+                  }`}
+                >
+                  <span>Fecha inicio</span>
+                  {sortConfig.sortBy === "fecha_inicio" && (
+                    <svg
+                      stroke="currentColor"
+                      fill="none"
+                      strokeWidth="2"
+                      viewBox="0 0 24 24"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      className={`w-3 h-3 transition-transform ${
+                        sortConfig.sortOrder === "DESC" ? "rotate-180" : ""
+                      }`}
+                      height="1em"
+                      width="1em"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <line x1="12" y1="19" x2="12" y2="5"></line>
+                      <polyline points="5 12 12 5 19 12"></polyline>
+                    </svg>
+                  )}
+                </button>
+                <button
+                  onClick={() => handleSort("activo")}
+                  className={`px-3 py-2.5 rounded-lg font-medium transition flex items-center justify-center gap-2 text-sm ${
+                    sortConfig.sortBy === "activo"
+                      ? "bg-blue-100 text-blue-700"
+                      : "bg-white text-gray-700 hover:bg-gray-100 border border-gray-200"
+                  }`}
+                >
+                  <span>Estado</span>
+                  {sortConfig.sortBy === "activo" && (
+                    <svg
+                      stroke="currentColor"
+                      fill="none"
+                      strokeWidth="2"
+                      viewBox="0 0 24 24"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      className={`w-3 h-3 transition-transform ${
+                        sortConfig.sortOrder === "DESC" ? "rotate-180" : ""
+                      }`}
+                      height="1em"
+                      width="1em"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <line x1="12" y1="19" x2="12" y2="5"></line>
+                      <polyline points="5 12 12 5 19 12"></polyline>
+                    </svg>
+                  )}
+                </button>
               </div>
             </div>
 
