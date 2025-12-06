@@ -1,313 +1,243 @@
-# Viadca Viajes – Frontend (Vite + React)
+# 🌎✨ Viadca Viajes – Frontend
 
-Aplicación frontend de Viadca Viajes construida con Vite, React y Tailwind, enfocada en performance, SEO y UX. Incluye un panel de administración protegido, vistas públicas de paquetes/destinos, subida/optimización de imágenes y utilidades para SEO y mapas.
+**Plataforma web moderna para gestión y visualización de paquetes de viaje**, construida con un enfoque total en **rendimiento, SEO, seguridad y experiencia de usuario**. Este frontend alimenta tanto el sitio público como el panel de administración de Viadca.
 
-Producción: <https://www.viadca.app>
-
-
-## Stack principal
-
-- Vite 7, React 19, React Router 7
-- Tailwind CSS 4 (a través de `@tailwindcss/vite`)
-- Axios para llamadas HTTP con cookies (withCredentials)
-- Framer Motion para animaciones y transiciones
-- Leaflet/React-Leaflet para mapas (opcional MapTiler)
-- Cloudinary (vía backend) para gestión/optimización de imágenes
-- ESLint + Prettier (config básico) para calidad de código
+🔗 **Producción:** [https://www.viadca.app](https://www.viadca.app)
 
 
-## Scripts de desarrollo
+<img width="1701" height="918" alt="image" src="https://github.com/user-attachments/assets/73740be3-f368-4920-acdb-eb464fe69d9c" />
+<img width="1721" height="868" alt="image" src="https://github.com/user-attachments/assets/4d8dd9ed-3734-4e6b-8a55-48da848dd3d3" />
 
-- Desarrollo (arranca Vite):
+---
 
-```powershell
+# 🚀 Tech Stack Principal
+
+* **Vite 7** – compilación ultrarrápida
+* **React 19 + React Router 7** – SPA optimizada y escalable
+* **Tailwind CSS 4** – estilos modernos y consistentes
+* **Axios** con `withCredentials` – soporte de cookies para autenticación segura
+* **Framer Motion** – animaciones fluidas y de nivel profesional
+* **React‑Leaflet / MapTiler / OSM** – mapas dinámicos y personalizables
+* **Cloudinary (vía backend)** – carga, optimización y transformaciones de imágenes
+* **ESLint + Prettier** – calidad y consistencia de código
+
+---
+
+# 📦 Scripts de Desarrollo
+
+### ▶️ Desarrollo
+
+```bash
 pnpm dev
 ```
 
-- Build de producción:
+### 🏗️ Build de Producción
 
-```powershell
+```bash
 pnpm build
 ```
 
-- Build con sitemap dinámico y robots.txt (recomendado para SEO):
-
-Este script ejecuta `scripts/generateSitemap.js` ANTES del build. El script del sitemap usa la variable de entorno `VITE_API_URL` (en entorno Node), para consultar paquetes públicos y generar rutas; si no está definida, usa `http://localhost:3000`.
-
-PowerShell (Windows):
+### 🌐 Build con sitemap dinámico (SEO recomendado)
 
 ```powershell
 $env:VITE_API_URL = "https://api.viadca.app"; pnpm run build:seo
 ```
 
-- Vista previa del build localmente:
+### 🔍 Vista previa del build
 
-```powershell
+```bash
 pnpm preview
 ```
 
-- Linter y formato:
+### 🧹 Linter / Formato
 
-```powershell
+```bash
 pnpm lint
 pnpm format
 ```
 
-- Análisis de bundle (opcional):
+### 📊 Bundle Analyzer
 
-```powershell
+```bash
 pnpm run build:analyze
 ```
 
-- Generar solo sitemap/robots sin compilar:
+---
 
-```powershell
-pnpm run generate-sitemap
-```
-
-Notas:
-- El script `env-check` figura en package.json pero no hay archivo `env-check.js` en el repo. Si lo necesitas, añádelo o elimina el script.
-
-
-## Variables de entorno
-
-Coloca un archivo `.env` en la raíz (para Vite deben empezar con `VITE_`). Ejemplos:
+# 🔐 Variables de Entorno (`.env`)
 
 ```ini
 VITE_API_BASE_URL=https://api.viadca.app
 VITE_CLOUDINARY_CLOUD_NAME=dsh8njsiu
-# Opcional: tiles en español (si no usas MAPTILER)
 VITE_ES_TILE_URL=
-# Opcional: clave gratuita de MapTiler
 VITE_MAPTILER_KEY=
-
-# Solo para el script Node del sitemap (build time)
-# Si no lo defines, usa http://localhost:3000
 VITE_API_URL=https://api.viadca.app
 ```
 
-Detalles importantes:
+✔ URLs de API y tiles se resuelven automáticamente
+✔ Cookies seguras habilitadas (`withCredentials: true`)
+✔ Cloudinary solo mediante endpoints del backend (flujo seguro)
 
-- API Base URL: si `VITE_API_BASE_URL` no está definido, en desarrollo se usa `http://localhost:3000` y en producción `https://api.viadca.app` (ver `src/api/axiosConfig.js`).
-- Cookies y CORS: Axios está configurado con `withCredentials: true`. Asegúrate de que tu backend permita cookies cross-site (CORS correcto, SameSite/secure y origen).
-- Cloudinary: la subida de imágenes NO va directo a Cloudinary desde el cliente; se hace vía endpoints del backend (`/admin/upload/*`). `VITE_CLOUDINARY_CLOUD_NAME` se usa para construir URLs optimizadas al mostrar imágenes.
-- Mapas: si defines `VITE_ES_TILE_URL`, se usa esa fuente. Si no, y defines `VITE_MAPTILER_KEY`, se usan tiles de MapTiler en español. En su defecto, se usan tiles públicos de OpenStreetMap.
+---
 
-
-## Estructura del proyecto
+# 🧭 Estructura del Proyecto
 
 ```text
 viadca-main/
-├─ public/                  # Activos estáticos servidos tal cual
-│  ├─ HomePage/ ...
+├─ public/
+│  ├─ HomePage/
 │  ├─ videos/
-│  ├─ favicon.svg robots.txt sitemap.xml viadca-icon.avif viadcalogo.avif
+│  ├─ favicon.svg sitemap.xml robots.txt
 ├─ scripts/
-│  └─ generateSitemap.js   # Genera sitemap.xml y robots.txt a partir del API
+│  └─ generateSitemap.js
 ├─ src/
-│  ├─ api/                 # Axios + servicios de dominio (paquetes, mayoristas, auth, contacto)
-│  ├─ components/          # UI reutilizable (inputs, modales, paginator, etc.) + rutas protegidas
-│  ├─ contexts/            # Contextos (Auth, Loading)
-│  ├─ features/            # Vistas por dominio (home, destinos, paquete, admin, auth, legal, perfil)
-│  ├─ hooks/               # Hooks personalizados (fetch, SEO, Cloudinary, etc.)
-│  ├─ services/            # CloudinaryService (mostrar/optimizar URLs)
-│  ├─ styles/              # Animaciones/globales
-│  ├─ utils/               # SEO, imágenes, logs, precios, etc.
-│  ├─ App.jsx main.jsx     # Rutas y bootstrap de la app
-├─ vite.config.js          # Plugins (React SWC, Tailwind, compresión gzip/brotli, terser)
-├─ nginx.conf              # Ejemplo de configuración Nginx para SPA
-├─ server.config.js        # Configs sugeridas (compresión y headers)
-├─ eslint.config.js        # ESLint + React Hooks + React Refresh + Prettier
-├─ postcss.config.cjs      # PostCSS (Tailwind se inyecta vía plugin de Vite)
-├─ package.json pnpm-lock.yaml
-└─ README.md
+│  ├─ api/           # Servicios axios
+│  ├─ components/    # UI, modales, rutas protegidas
+│  ├─ contexts/      # Auth y Loading
+│  ├─ features/      # Home, destinos, paquetes, admin, auth
+│  ├─ hooks/         # Fetch, SEO, Cloudinary, etc.
+│  ├─ services/      # CloudinaryService
+│  ├─ styles/        # Global & animations
+│  ├─ utils/         # SEO, imágenes, logs, precios
+│  ├─ App.jsx
+│  └─ main.jsx
+├─ vite.config.js
+├─ nginx.conf
+└─ package.json
 ```
 
+---
 
-## Rutas principales de la app
+# 🌍 Rutas Principales
 
-- Públicas
-  - `/` Inicio (Home)
-  - `/paquetes` Listado público (features/destinations)
-  - `/paquetes/:url` Detalle de paquete (features/package)
-  - `/preguntas-frecuentes` (carga diferida con skeleton)
-  - `/privacidad`, `/terminos`, `/cookies`
-  - Autenticación: `/iniciar-sesion`, `/registro`, `/verificar-correo`, `/recuperar-contraseña`, `/restablecer-contraseña`, `/aprobacion-pendiente`
+## Públicas
 
-- Protegidas (requieren sesión y rol)
-  - `/perfil` Perfil de usuario (protegida)
-  - `/admin` Área de administración (ProtectedRoute con `requiredRole="admin"`)
-    - Dashboard, Paquetes (CRUD), Mayoristas (CRUD), Usuarios, Papelera, Perfil, Configuración
+* `/` Inicio
+* `/paquetes` Listado
+* `/paquetes/:url` Detalle
+* `/preguntas-frecuentes`
+* `/privacidad`, `/terminos`, `/cookies`
+* Autenticación completa: login, registro, verificación, recuperación
 
-Autenticación:
+## Protegidas (Roles y Sesiones)
 
-- El backend maneja la sesión con cookies. En iOS/Safari, como fallback, el backend puede devolver `access_token`; el cliente lo guarda en memoria/sessionStorage y lo envía como `Authorization: Bearer` si el navegador no envía cookies.
+* `/perfil`
+* `/admin`
 
+  * Dashboard, Paquetes CRUD, Mayoristas CRUD, Usuarios, Papelera, Configuración
 
-## Integración con APIs
+Autenticación híbrida: cookies + fallback de token para iOS/Safari.
 
-- Base Axios (`src/api/axiosConfig.js`):
-  - `baseURL` desde `VITE_API_BASE_URL` o fallbacks
-  - `withCredentials: true` para cookies
-  - Interceptores con logs solo en desarrollo (ocultan tokens en consola)
+---
 
-- Servicios principales (`src/api`):
-  - `packagesService`: CRUD de paquetes, listado público `/paquetes/listado`, exportar Excel, stats, toggle favorito, hoteles custom
-  - `mayoristasService`: CRUD y stats de mayoristas
-  - `authService`: registro, login/logout, verificación de correo, recuperación/restablecimiento, profile y administración de usuarios
-  - `contactService`: obtener/crear/actualizar/eliminar información de contacto con caché en memoria
+# 🔗 Integración con APIs
 
+* Axios configurado con `interceptors`
+* Logs solo en desarrollo
+* Endpoints principales: paquetes, mayoristas, contacto, auth
+* CRUD completo en panel administrador
 
-## Imágenes y Cloudinary
+---
 
-- `src/services/cloudinaryService.js` expone utilidades para:
-  - Subida/eliminación de imágenes vía backend (`/admin/upload/*`)
-  - Construcción de URLs optimizadas (transformaciones) y `srcset`
-  - Funciones para generar versiones responsivas/optimizar Pexels/Cloudinary
-- `src/utils/imageUtils.js` integra CloudinaryService y resuelve URLs del backend (`/uploads/...`) y del front (`public/*`).
+# 🖼️ Imágenes – Optimización Profesional (Cloudinary)
 
+* URLs transformadas automáticamente para dispositivos y resoluciones
+* Generación de `srcset` y formatos (`avif/webp`)
+* Subidas vía backend → mayor seguridad
 
-## Mapas
+---
 
-- `react-leaflet` con carga diferida del CSS de Leaflet para optimizar LCP
-- Fuente de tiles prioriza español (`VITE_ES_TILE_URL`), o MapTiler con `VITE_MAPTILER_KEY`; si no, OpenStreetMap.
+# 🗺️ Mapas
 
+* `react‑leaflet` con carga diferida del CSS → mejor LCP
+* Soporte para español vía `VITE_ES_TILE_URL` o MapTiler
+* Fallback automático a OpenStreetMap
 
-## SEO y rendimiento
+---
 
-- Meta tags y JSON-LD base en `index.html`
-- Utilidades SEO en `src/utils/seoUtils.js` para títulos, descripciones, keywords y datos estructurados por paquete
-- `scripts/generateSitemap.js` construye `public/sitemap.xml` y `public/robots.txt` desde el API (usar `VITE_API_URL` en build time)
-- `vite.config.js`:
-  - Compresión gzip y brotli (archivos `.gz` y `.br`)
-  - `terser` con drop de `console` y `debugger`
-  - `manualChunks` para dividir vendor/ui/maps
+# 🔎 SEO & Performance
 
+* Metadatos + JSON‑LD dinámico
+* Sitemap y robots generados desde API
+* Estrategias de `manualChunks` para dividir vendor/map/ui
+* Compresión Brotli + Gzip
+* Eliminación de `console` y `debugger` en producción
 
-## Desarrollo local
+---
 
-Requisitos:
+# 🛠️ Desarrollo Local
 
-- Node 18+ recomendado
-- pnpm 8+
-
-Pasos:
-
-1. Instalar dependencias
-
-  ```powershell
-  pnpm install
-  ```
-
-1. Definir `.env` (al menos `VITE_API_BASE_URL` si no usas el fallback)
-
-1. Arrancar el servidor de desarrollo
-
-```powershell
+```bash
+pnpm install
 pnpm dev
 ```
 
-El front asume un backend disponible en `VITE_API_BASE_URL` (o `http://localhost:3000`).
+Requiere backend corriendo en `VITE_API_BASE_URL`.
 
+---
 
-## Despliegue
+# ☁️ Despliegue
 
-1. Compilar
+### 1️⃣ Compilar
 
-- Build estándar: `pnpm build`
-- Build recomendado con sitemap:
-
-  ```powershell
-  $env:VITE_API_URL = "https://api.viadca.app"; pnpm run build:seo
-  ```
-
-1. Servir carpeta `dist/` con tu servidor preferido (Nginx, CDN, Render, etc.)
-
-- El repo incluye `nginx.conf` con:
-  - SPA fallback `try_files ... /index.html`
-  - Cache agresiva para estáticos y compresión gzip/brotli
-  - Headers de seguridad recomendados
-
-1. Backend/API
-
-- Asegura CORS y cookies cross-site para el dominio del front
-- Endpoints usados por el front (no exhaustivo):
-  - Público: `GET /paquetes/listado`, `GET /paquetes/:codigoUrl`, `GET /contacto`
-  - Admin: `POST /admin/upload/image(s)`, `CRUD /admin/paquetes`, `CRUD /admin/mayoristas`, `GET /admin/usuarios`, etc.
-
-
-## Calidad de código
-
-- ESLint: reglas base + hooks + react-refresh + prettier
-
-  ```powershell
-  pnpm lint
-  ```
-
-- Formato con Prettier
-
-  ```powershell
-  pnpm format
-  ```
-
-
-## Solución de problemas (FAQ)
-
-- CORS/Autenticación: veo `withCredentials: true`. Si no se mantiene la sesión:
-  - Verifica `Access-Control-Allow-Credentials: true` en backend y origen permitido
-  - Cookies con `SameSite=None; Secure` si es cross-site sobre HTTPS
-  - En iOS/Safari, el cliente puede usar `Authorization: Bearer` como fallback
-
-## Testimonios (Home) – Gestión vía JSON
-
-Los testimonios mostrados en el carrusel de la Home ahora se cargan dinámicamente desde `public/data/testimonials.json` (fetch en cliente). Puedes actualizar o añadir nuevos testimonios sin tocar el código React.
-
-Formato de cada objeto en el array:
-
-```jsonc
-[
-  {
-    "name": "Nombre del Cliente",
-    "location": "Hace 3 días" // o ciudad/fecha relativa
-    "avatar": "/HomePage/testimonio-user1.avif", // ruta pública (puede ser externa absoluta)
-    "quote": "Texto del testimonio",
-    "accentFrom": "from-indigo-500", // opcional Tailwind gradient start
-    "accentTo": "to-violet-500"      // opcional Tailwind gradient end
-  }
-]
+```powershell
+$env:VITE_API_URL="https://api.viadca.app"; pnpm run build:seo
 ```
 
-Notas:
-- `accentFrom` y `accentTo` son opcionales; si faltan, el componente asigna un par de colores cíclico.
-- Para forzar recarga en producción (cache de CDN) puedes cambiar el nombre del archivo o un query param manual (`/data/testimonials.json?refresh=123`). El componente ya añade un timestamp `_` para evitar cache demasiado agresivo en navegadores.
-- Procura mantener el array relativamente corto (≤ 20) para no aumentar el tiempo de carga inicial. Si necesitas muchos, considera paginar o cargar bajo demanda.
-- Imágenes: ideal servirlas como `.avif` o `.webp` optimizadas y cuadradas (min 128x128) para mayor nitidez.
+### 2️⃣ Servir `dist/`
 
-Si eliminas todos los testimonios, el carrusel mostrará un mensaje: "No hay testimonios disponibles".
+Con Nginx, CDN, Render, etc.
 
-- Mapas sin tiles o en inglés:
-  - Define `VITE_ES_TILE_URL` o `VITE_MAPTILER_KEY`
+### 3️⃣ Backend
 
-- Imágenes del backend no cargan:
-  - Revisa que `VITE_API_BASE_URL` sea correcto. `imageUtils` convierte `/uploads/...` a `${API}/uploads/...`
+* CORS con cookies (`SameSite=None; Secure`)
+* Endpoints públicos y privados configurados
 
-- Sitemap vacío en build:seo
-  - Define `VITE_API_URL` en el entorno del proceso de Node al ejecutar `generateSitemap.js`
+---
 
+# 🧪 Testimonios dinámicos
 
-## Contribuir
+Cargados desde `public/data/testimonials.json` sin modificar React.
 
-- Commits asistidos (opcional): `pnpm commit` o `pnpm commit-es` usan `aicommits` si lo tienes instalado globalmente.
-- Haz PRs con descripciones claras y, cuando aplique, incluye capturas o GIFs.
+```json
+{
+  "name": "Cliente Demo",
+  "location": "Hace 3 días",
+  "avatar": "/HomePage/testimonio.avif",
+  "quote": "Excelente servicio y atención."
+}
+```
 
+---
 
-## Licencia
+# 🔧 Troubleshooting
 
-Este repositorio está marcado como `"private": true`. Todos los derechos reservados a su(s) autor(es).
+**Cookies no se guardan**
+✔ Revisar CORS, `Allow-Credentials` y SameSite
+✔ HTTPS obligatorio para cookies cross‑site
 
+**Sitemap vacío**
+✔ Asegurar `VITE_API_URL` en build SEO
 
-## Autoría
+**Imágenes del backend no cargan**
+✔ Revisar conversión `/uploads` en `imageUtils`
 
-- Propietario: @jscamposx
-- Proyecto: Viadca Viajes – Frontend
+---
 
+# 🤝 Contribuir
+
+* Commits con AI opcional mediante `pnpm commit`
+* PRs con capturas y descripción
+
+---
+
+# 🏷️ Licencia
+
+Repositorio privado – Todos los derechos reservados.
+
+---
+
+# 👤 Autoría
+
+**Propietario:** @jscamposx
+**Proyecto:** Viadca Viajes – Frontend
