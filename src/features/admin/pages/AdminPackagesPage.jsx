@@ -68,8 +68,8 @@ const AdminPaquetes = () => {
   
   // Estado de ordenamiento para backend
   const [sortConfig, setSortConfig] = useState({
-    sortBy: "created_at",
-    sortOrder: "DESC",
+    sortBy: null,
+    sortOrder: null,
   });
   
   const [priceFilter, setPriceFilter] = useState({ min: "", max: "" });
@@ -256,11 +256,11 @@ const AdminPaquetes = () => {
     setSortConfig((prev) => {
       // Si es el mismo campo
       if (prev.sortBy === field) {
-        // Si está en DESC, volver al ordenamiento por defecto
+        // Si está en DESC, quitar el ordenamiento (volver a null)
         if (prev.sortOrder === "DESC") {
           return {
-            sortBy: "created_at",
-            sortOrder: "DESC",
+            sortBy: null,
+            sortOrder: null,
           };
         }
         // Si está en ASC, cambiar a DESC
@@ -311,10 +311,14 @@ const AdminPaquetes = () => {
       console.log('✅ Agregando filtro tipoProducto:', tipoProductoFilter);
     }
     
-    // Agregar ordenamiento
-    backendFilters.sortBy = sortConfig.sortBy;
-    backendFilters.sortOrder = sortConfig.sortOrder;
-    console.log('🔀 Agregando ordenamiento:', sortConfig);
+    // Agregar ordenamiento solo si está activo
+    if (sortConfig.sortBy && sortConfig.sortOrder) {
+      backendFilters.sortBy = sortConfig.sortBy;
+      backendFilters.sortOrder = sortConfig.sortOrder;
+      console.log('🔀 Agregando ordenamiento:', sortConfig);
+    } else {
+      console.log('🔀 Sin ordenamiento personalizado (usando default del backend)');
+    }
     
     console.log('📊 Filtros finales que se enviarán al backend:', backendFilters);
     setFilters(backendFilters);
