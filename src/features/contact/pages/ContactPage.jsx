@@ -1,10 +1,9 @@
-import React, { useState } from "react";
+import React from "react";
 import PageTransition from "../../../components/ui/PageTransition";
 import UnifiedNav from "../../../components/layout/UnifiedNav";
 import Footer from "../../home/components/Footer";
 import { useContactInfo } from "../../../hooks/useContactInfo";
 import { useContactActions } from "../../../hooks/useContactActions";
-import api from "../../../api";
 import {
   FiMail,
   FiPhone,
@@ -14,10 +13,6 @@ import {
   FiArrowRight,
   FiExternalLink,
   FiCalendar,
-  FiSend,
-  FiUser,
-  FiCheckCircle,
-  FiAlertCircle,
 } from "react-icons/fi";
 import {
   FaWhatsapp,
@@ -30,45 +25,6 @@ import {
 const ContactPage = () => {
   const { contactInfo } = useContactInfo();
   const { openWhatsApp, onPhoneClick, ToastPortal } = useContactActions();
-
-  // Estados para el formulario
-  const [formData, setFormData] = useState({
-    nombre: "",
-    email: "",
-    telefono: "",
-    mensaje: "",
-  });
-  const [formLoading, setFormLoading] = useState(false);
-  const [formMessage, setFormMessage] = useState(null);
-
-  // Handlers del formulario
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleSubmitForm = async (e) => {
-    e.preventDefault();
-    setFormLoading(true);
-    setFormMessage(null);
-
-    try {
-      await api.post("/contacto/send", formData);
-      setFormMessage({
-        type: "success",
-        text: "¡Mensaje enviado! Te contactaremos pronto.",
-      });
-      // Limpiar formulario
-      setFormData({ nombre: "", email: "", telefono: "", mensaje: "" });
-    } catch (error) {
-      setFormMessage({
-        type: "error",
-        text: error.response?.data?.message || "Error al enviar el mensaje. Intenta de nuevo.",
-      });
-    } finally {
-      setFormLoading(false);
-    }
-  };
 
   // --- Lógica de Coordenadas (Para OpenStreetMap) ---
   const getCoordinates = () => {
@@ -281,139 +237,6 @@ const ContactPage = () => {
                     </div>
                   </div>
                 ))}
-              </div>
-
-              {/* --- FORMULARIO DE CONTACTO --- */}
-              <div className="mb-16">
-                <div className="bg-white rounded-3xl shadow-xl overflow-hidden border border-slate-100">
-                  <div className="bg-gradient-to-r from-blue-600 to-indigo-700 px-8 py-6">
-                    <div className="flex items-center gap-3">
-                      <div className="p-2 bg-white/20 rounded-xl backdrop-blur-sm">
-                        <FiMessageSquare className="w-6 h-6 text-white" />
-                      </div>
-                      <div>
-                        <h2 className="text-2xl font-bold text-white">Envíanos un mensaje</h2>
-                        <p className="text-white/90 text-sm">Te responderemos a la brevedad</p>
-                      </div>
-                    </div>
-                  </div>
-
-                  <form onSubmit={handleSubmitForm} className="p-8">
-                    <div className="grid md:grid-cols-2 gap-6 mb-6">
-                      {/* Nombre */}
-                      <div className="space-y-2">
-                        <label className="text-sm font-bold text-slate-700 flex items-center gap-2">
-                          <FiUser className="w-4 h-4" />
-                          Nombre completo
-                        </label>
-                        <input
-                          type="text"
-                          name="nombre"
-                          value={formData.nombre}
-                          onChange={handleInputChange}
-                          required
-                          disabled={formLoading}
-                          className="w-full px-4 py-3 rounded-xl border-2 border-slate-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-100 outline-none transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-                          placeholder="Tu nombre"
-                        />
-                      </div>
-
-                      {/* Email */}
-                      <div className="space-y-2">
-                        <label className="text-sm font-bold text-slate-700 flex items-center gap-2">
-                          <FiMail className="w-4 h-4" />
-                          Correo electrónico
-                        </label>
-                        <input
-                          type="email"
-                          name="email"
-                          value={formData.email}
-                          onChange={handleInputChange}
-                          required
-                          disabled={formLoading}
-                          className="w-full px-4 py-3 rounded-xl border-2 border-slate-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-100 outline-none transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-                          placeholder="tu@email.com"
-                        />
-                      </div>
-
-                      {/* Teléfono */}
-                      <div className="space-y-2 md:col-span-2">
-                        <label className="text-sm font-bold text-slate-700 flex items-center gap-2">
-                          <FiPhone className="w-4 h-4" />
-                          Teléfono (opcional)
-                        </label>
-                        <input
-                          type="tel"
-                          name="telefono"
-                          value={formData.telefono}
-                          onChange={handleInputChange}
-                          disabled={formLoading}
-                          className="w-full px-4 py-3 rounded-xl border-2 border-slate-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-100 outline-none transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-                          placeholder="+52 618 123 4567"
-                        />
-                      </div>
-
-                      {/* Mensaje */}
-                      <div className="space-y-2 md:col-span-2">
-                        <label className="text-sm font-bold text-slate-700 flex items-center gap-2">
-                          <FiMessageSquare className="w-4 h-4" />
-                          Mensaje
-                        </label>
-                        <textarea
-                          name="mensaje"
-                          value={formData.mensaje}
-                          onChange={handleInputChange}
-                          required
-                          disabled={formLoading}
-                          rows="5"
-                          className="w-full px-4 py-3 rounded-xl border-2 border-slate-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-100 outline-none transition-all resize-none disabled:opacity-50 disabled:cursor-not-allowed"
-                          placeholder="Cuéntanos sobre tu viaje ideal..."
-                        />
-                      </div>
-                    </div>
-
-                    {/* Mensaje de estado */}
-                    {formMessage && (
-                      <div
-                        className={`mb-6 p-4 rounded-xl flex items-start gap-3 ${
-                          formMessage.type === "success"
-                            ? "bg-emerald-50 border border-emerald-200"
-                            : "bg-rose-50 border border-rose-200"
-                        }`}
-                      >
-                        <div className={`mt-0.5 ${formMessage.type === "success" ? "text-emerald-600" : "text-rose-600"}`}>
-                          {formMessage.type === "success" ? (
-                            <FiCheckCircle className="w-5 h-5" />
-                          ) : (
-                            <FiAlertCircle className="w-5 h-5" />
-                          )}
-                        </div>
-                        <p className={`text-sm font-medium ${formMessage.type === "success" ? "text-emerald-800" : "text-rose-800"}`}>
-                          {formMessage.text}
-                        </p>
-                      </div>
-                    )}
-
-                    {/* Botón Submit */}
-                    <button
-                      type="submit"
-                      disabled={formLoading}
-                      className="w-full md:w-auto px-8 py-4 bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white font-bold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none hover:-translate-y-0.5"
-                    >
-                      {formLoading ? (
-                        <>
-                          <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                          Enviando...
-                        </>
-                      ) : (
-                        <>
-                          <FiSend className="w-5 h-5" />
-                          Enviar mensaje
-                        </>
-                      )}
-                    </button>
-                  </form>
-                </div>
               </div>
 
               {/* --- MAIN CONTENT GRID (BENTO) --- */}
