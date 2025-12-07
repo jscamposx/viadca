@@ -24,11 +24,13 @@ import {
   FiCheckCircle,
   FiRefreshCw,
   FiXCircle,
-  FiStar, // añadido
+  FiStar,
   FiHeart,
+  FiFileText,
 } from "react-icons/fi";
 import AdminHeaderCard from "../components/AdminHeaderCard";
 import api from "../../../api";
+import apiClient from "../../../api/axiosConfig";
 // import { useNotification } from "./AdminLayout";
 import { useNotifications } from "../hooks/useNotifications";
 import Pagination from "../../../components/ui/Pagination";
@@ -85,6 +87,14 @@ const AdminPaquetes = () => {
     packageId: null,
     packageName: "",
   });
+  
+  // Estado para modal de exportación
+  const [exportDialog, setExportDialog] = useState({
+    isOpen: false,
+    packageId: null,
+    packageName: "",
+  });
+  
   // const { addNotification } = useNotification();
   const { notify } = useNotifications();
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -200,6 +210,20 @@ const AdminPaquetes = () => {
   ]);
 
   const handleExport = async (paqueteId) => {
+    // Abrir modal de exportación en lugar de exportar directamente
+    const found = paquetes?.find?.((p) => p.id === paqueteId);
+    const packageName = found?.titulo || found?.title || "Paquete";
+    
+    setExportDialog({
+      isOpen: true,
+      packageId: paqueteId,
+      packageName: packageName,
+    });
+  };
+
+  const handleExportExcel = async () => {
+    const { packageId } = exportDialog;
+    
     // Local slugify (igual enfoque que en PackageLookupPanel)
     const slugify = (str = "") =>
       String(str)
@@ -210,18 +234,19 @@ const AdminPaquetes = () => {
         .replace(/^-+|-+$/g, "")
         .substring(0, 80) || "paquete";
 
-    // Intentar obtener el título del paquete desde la lista actual
-    const found = paquetes?.find?.((p) => p.id === paqueteId);
-    const rawTitulo = found?.titulo || found?.title || `paquete-${paqueteId}`;
+    const found = paquetes?.find?.((p) => p.id === packageId);
+    const rawTitulo = found?.titulo || found?.title || `paquete-${packageId}`;
     const fileSlug = slugify(rawTitulo);
+
+    // Cerrar modal
+    setExportDialog({ isOpen: false, packageId: null, packageName: "" });
 
     await notify.operation(
       async () => {
-        const response = await api.packages.exportToExcel(paqueteId);
+        const response = await api.packages.exportToExcel(packageId);
         const url = window.URL.createObjectURL(new Blob([response.data]));
         const link = document.createElement("a");
         link.href = url;
-        // Nombre alineado al cotizador: usar título slugificado
         link.setAttribute("download", `${fileSlug}.xlsx`);
         document.body.appendChild(link);
         link.click();
@@ -234,6 +259,50 @@ const AdminPaquetes = () => {
         loadingTitle: "Exportando",
         successTitle: "Exportación lista",
         errorTitle: "Error al exportar",
+      },
+    );
+  };
+
+  const handleExportPDF = async () => {
+    const { packageId } = exportDialog;
+    
+    const slugify = (str = "") =>
+      String(str)
+        .normalize("NFD")
+        .replace(/\p{Diacritic}/gu, "")
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-+|-+$/g, "")
+        .substring(0, 80) || "paquete";
+
+    const found = paquetes?.find?.((p) => p.id === packageId);
+    const rawTitulo = found?.titulo || found?.title || `paquete-${packageId}`;
+    const fileSlug = slugify(rawTitulo);
+
+    // Cerrar modal
+    setExportDialog({ isOpen: false, packageId: null, packageName: "" });
+
+    await notify.operation(
+      async () => {
+        const response = await apiClient.get(`/admin/paquetes/pdf/${packageId}`, {
+          responseType: 'blob',
+        });
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+        const link = document.createElement("a");
+        link.href = url;
+        link.setAttribute("download", `cotizacion_${fileSlug}.pdf`);
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        window.URL.revokeObjectURL(url);
+      },
+      {
+        loadingMessage: "Generando PDF...",
+        successMessage: "Cotización PDF generada.",
+        errorMessage: "No ha sido posible generar el PDF.",
+        loadingTitle: "Generando cotización",
+        successTitle: "PDF listo",
+        errorTitle: "Error al generar PDF",
       },
     );
   };
@@ -1878,6 +1947,82 @@ const AdminPaquetes = () => {
         cancelText="Cancelar"
         type="warning"
       />
+
+      {/* Modal de exportación */}
+      {exportDialog.isOpen && (
+        <div 
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-fadeIn"
+          onClick={() =>
+            setExportDialog({
+              isOpen: false,
+              packageId: null,
+              packageName: "",
+            })
+          }
+        >
+          <div 
+            className="bg-white rounded-2xl shadow-2xl max-w-md w-full transform transition-all animate-scaleIn"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Header */}
+            <div className="bg-gradient-to-r from-blue-600 to-indigo-700 px-6 py-4 rounded-t-2xl">
+              <h3 className="text-xl font-bold text-white flex items-center gap-2">
+                <FiDownload className="w-5 h-5" />
+                Exportar Paquete
+              </h3>
+              {exportDialog.packageName && (
+                <p className="text-blue-100 text-sm mt-1 truncate">
+                  {exportDialog.packageName}
+                </p>
+              )}
+            </div>
+
+            {/* Body */}
+            <div className="p-6">
+              <p className="text-gray-600 mb-6 text-center">
+                Selecciona el formato de exportación
+              </p>
+
+              {/* Botones de exportación */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {/* Botón PDF */}
+                <button
+                  onClick={handleExportPDF}
+                  className="group flex flex-col items-center justify-center gap-2 bg-gradient-to-br from-red-500 to-pink-600 hover:from-red-600 hover:to-pink-700 text-white font-semibold py-4 px-4 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105 transform"
+                >
+                  <FiFileText className="w-8 h-8 group-hover:scale-110 transition-transform" />
+                  <span className="text-sm">Cotización PDF</span>
+                  <span className="text-xs opacity-90">Documento profesional</span>
+                </button>
+
+                {/* Botón Excel */}
+                <button
+                  onClick={handleExportExcel}
+                  className="group flex flex-col items-center justify-center gap-2 bg-gradient-to-br from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 text-white font-semibold py-4 px-4 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105 transform"
+                >
+                  <FiDownload className="w-8 h-8 group-hover:scale-110 group-hover:translate-y-1 transition-all" />
+                  <span className="text-sm">Datos Excel</span>
+                  <span className="text-xs opacity-90">Hoja de cálculo</span>
+                </button>
+              </div>
+
+              {/* Botón cancelar */}
+              <button
+                onClick={() =>
+                  setExportDialog({
+                    isOpen: false,
+                    packageId: null,
+                    packageName: "",
+                  })
+                }
+                className="mt-4 w-full py-3 px-4 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-xl transition-all duration-200"
+              >
+                Cancelar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
