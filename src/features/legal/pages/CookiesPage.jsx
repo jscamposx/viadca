@@ -32,7 +32,7 @@ const CookiesPage = () => {
 
   return (
     <>
-      <UnifiedNav contactInfo={contactInfo} transparentOnTop={false} />
+      <UnifiedNav contactInfo={contactInfo} transparentOnTop={false} hideNavLinks={true} />
       <PageTransition>
         <div className="flex flex-col min-h-screen bg-white md:bg-slate-50 font-sans selection:bg-purple-100 selection:text-purple-700">
           

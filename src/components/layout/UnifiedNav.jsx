@@ -16,6 +16,7 @@ const UnifiedNav = ({
   transparentOnTop = false,
   showScrollProgress = false,
   sectionLinks = [],
+  hideNavLinks = false,
 }) => {
   const { user, isAuthenticated, isAdmin, logout } = useAuth();
   const [isScrolled, setIsScrolled] = useState(false);
@@ -232,6 +233,7 @@ const UnifiedNav = ({
 
           {/* Links desktop */}
           {/* Reemplazo enlaces para colorear según modo */}
+          {!hideNavLinks && (
           <div className="hidden lg:flex items-center justify-center space-x-6 xl:space-x-8 flex-1 min-w-0">
             {hasSectionNav
               ? sectionLinks.map((l) => {
@@ -276,6 +278,7 @@ const UnifiedNav = ({
                   );
                 })}
           </div>
+          )}
 
           {/* User area desktop */}
           <div className="hidden lg:flex items-center gap-6 pl-4 shrink-0">
@@ -509,6 +512,7 @@ const UnifiedNav = ({
           >
             <div className="px-4 py-6 space-y-2">
               {/* Enlaces de navegación principales */}
+              {!hideNavLinks && (
               <div className="space-y-1">
                 {hasSectionNav
                   ? sectionLinks.map((link) => {
@@ -584,6 +588,7 @@ const UnifiedNav = ({
                       );
                     })}
               </div>
+              )}
               
               {/* Sección de usuario / autenticación */}
               <div className="pt-6 space-y-3 border-t border-blue-100/50">

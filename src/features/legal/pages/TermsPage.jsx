@@ -33,7 +33,7 @@ const TermsPage = () => {
 
   return (
     <>
-      <UnifiedNav contactInfo={contactInfo} transparentOnTop={false} />
+      <UnifiedNav contactInfo={contactInfo} transparentOnTop={false} hideNavLinks={true} />
       <PageTransition>
         <div className="flex flex-col min-h-screen bg-white md:bg-slate-50 font-sans selection:bg-orange-100 selection:text-orange-700">
           
