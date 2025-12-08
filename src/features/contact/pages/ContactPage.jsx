@@ -162,7 +162,7 @@ const ContactPage = () => {
 
   return (
     <>
-      <UnifiedNav contactInfo={contactInfo} transparentOnTop={false} />
+      <UnifiedNav contactInfo={contactInfo} transparentOnTop={false} hideNavLinks={true} />
       <PageTransition>
         <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white font-sans">
           {/* --- HERO SECTION --- */}
