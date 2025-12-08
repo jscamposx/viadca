@@ -4,8 +4,6 @@ import {
   useDeferredValue,
   useMemo,
   useCallback,
-  lazy,
-  Suspense,
   useRef,
 } from "react";
 import { Link, useLocation } from "react-router-dom";
@@ -22,9 +20,8 @@ import {
   FiRefreshCw,
 } from "react-icons/fi";
 import AdminHeaderCard from "../components/AdminHeaderCard";
-// import ConfirmDialog from "../components/ConfirmDialog";
-const ConfirmDialog = lazy(() => import("../components/ConfirmDialog"));
-const MayoristaCard = lazy(() => import("../components/MayoristaCard"));
+import MayoristaCard from "../components/MayoristaCard";
+import ConfirmDialog from "../components/ConfirmDialog";
 import { useNotifications } from "../hooks/useNotifications";
 import Pagination from "../../../components/ui/Pagination";
 import api from "../../../api";
@@ -165,6 +162,11 @@ const AdminMayoristasPage = () => {
     }
   }, [location.state?.pendingOperation, location.key, refetch, notify]);
 
+  // Sincronizar búsqueda local con el hook (backend)
+  useEffect(() => {
+    setSearch(deferredSearchTerm);
+  }, [deferredSearchTerm, setSearch]);
+
   const handleDelete = useCallback((mayoristaId, mayoristaName) => {
     setConfirmDialog({
       isOpen: true,
@@ -210,6 +212,7 @@ const AdminMayoristasPage = () => {
 
   const clearFilters = () => {
     setSearchTerm("");
+    setSearch(""); // Limpiar búsqueda en el backend
     setTipoFilter("");
     setTipoProductoFilter("");
     setSortConfig({ key: "nombre", direction: "asc" });
@@ -880,21 +883,15 @@ const AdminMayoristasPage = () => {
           renderSkeletonCards()
         ) : filteredMayoristas.length > 0 ? (
           <>
-            <Suspense
-              fallback={renderSkeletonCards(
-                Math.min(filteredMayoristas.length || 0, 9),
-              )}
-            >
-              <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6 items-stretch [content-visibility:auto] [contain-intrinsic-size:600px_900px]">
-                {filteredMayoristas.map((mayorista) => (
-                  <MayoristaCard
-                    key={mayorista.id}
-                    mayorista={mayorista}
-                    onDelete={handleDelete}
-                  />
-                ))}
-              </div>
-            </Suspense>
+            <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6 items-stretch [content-visibility:auto] [contain-intrinsic-size:600px_900px]">
+              {filteredMayoristas.map((mayorista) => (
+                <MayoristaCard
+                  key={mayorista.id}
+                  mayorista={mayorista}
+                  onDelete={handleDelete}
+                />
+              ))}
+            </div>
 
             {/* Paginación */}
             <Pagination
@@ -980,19 +977,17 @@ const AdminMayoristasPage = () => {
         )}
 
         {/* Diálogo de confirmación */}
-        <Suspense fallback={null}>
-          <ConfirmDialog
-            isOpen={confirmDialog.isOpen}
-            onClose={closeConfirmDialog}
-            onConfirm={confirmDelete}
-            title="Mover a papelera"
-            message="¿Estás seguro de que quieres mover este mayorista a la papelera? Podrás restaurarlo desde la sección de papelera."
-            itemName={confirmDialog.mayoristaName}
-            confirmText="Mover a papelera"
-            cancelText="Cancelar"
-            type="warning"
-          />
-        </Suspense>
+        <ConfirmDialog
+          isOpen={confirmDialog.isOpen}
+          onClose={closeConfirmDialog}
+          onConfirm={confirmDelete}
+          title="Mover a papelera"
+          message="¿Estás seguro de que quieres mover este mayorista a la papelera? Podrás restaurarlo desde la sección de papelera."
+          itemName={confirmDialog.mayoristaName}
+          confirmText="Mover a papelera"
+          cancelText="Cancelar"
+          type="warning"
+        />
       </div>
     </div>
   );

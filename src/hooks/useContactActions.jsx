@@ -77,7 +77,16 @@ export const useContactActions = () => {
       const raw = contactInfo?.telefono || "";
       const phoneTel = raw.replace(/[^0-9+]/g, "");
       const mobile = isMobileDevice();
-      if (!mobile) {
+      
+      if (mobile) {
+        // En móvil: abrir marcador directamente
+        if (!phoneTel) {
+          showToast("No hay teléfono configurado");
+          return;
+        }
+        window.location.href = `tel:${phoneTel}`;
+      } else {
+        // En escritorio: copiar al portapapeles
         if (e && typeof e.preventDefault === "function") e.preventDefault();
         if (!phoneTel) {
           showToast("No hay teléfono configurado");
