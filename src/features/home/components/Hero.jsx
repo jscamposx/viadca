@@ -4,6 +4,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
 import { ArrowUpRight, Check } from "lucide-react";
 import defaultVideo from "/videos/destinations-hero.mp4";
+import { useContactActions } from "../../../hooks/useContactActions";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -48,6 +49,8 @@ const Hero = () => {
   const textRef = useRef(null);
   const leftContentRef = useRef(null);
   const leftContentInnerRef = useRef(null);
+  const { openWhatsApp, onPhoneClick, getPhoneHref, ToastPortal } =
+    useContactActions();
 
   useGSAP(
     () => {
@@ -207,25 +210,37 @@ const Hero = () => {
       <section className="flex flex-col items-center justify-center w-full max-w-375 mx-auto px-6 relative pt-4 pb-12 md:pt-10 md:pb-20">
         <div className="w-full `max-w-177 flex justify-center mb-4 md:mb-0">
           <span className="text-[15px] md:text-[28px] font-bold uppercase text-gray-900 tracking-wide md:-tracking-[0.14px] text-center block">
-            Punto de venta Square
+            Agencia de viajes
           </span>
         </div>
         <div className="w-full max-w-307.5mt-2 md:mt-4 mb-8 md:mb-12">
           <h1 className="text-[42px] leading-[1.05] md:text-[90px] md:leading-none font-serif text-center text-gray-900 font-medium tracking-tight md:-tracking-[2.7px]">
-            Un PDV preparado <br /> para lo que tienes
+            Un Viaje y un destino <br /> nosotros lo hacemos posible
           </h1>
         </div>
         <div className="flex flex-row gap-3 w-full justify-center px-2 sm:w-auto sm:px-0">
-          <button className="group flex-1 sm:flex-none px-6 py-3 md:px-8 md:py-4 rounded-full border-2 border-black bg-white text-black font-bold text-sm md:text-lg cursor-pointer transition-all duration-300 hover:scale-105 hover:bg-gray-50">
+          <button
+            type="button"
+            onClick={() =>
+              openWhatsApp(
+                "Hola, quiero cotizar mi viaje con Viadca. ¿Me ayudas con opciones?",
+              )
+            }
+            className="group flex-1 sm:flex-none px-6 py-3 md:px-8 md:py-4 rounded-full border-2 border-black bg-white text-black font-bold text-sm md:text-lg cursor-pointer transition-all duration-300 hover:scale-105 hover:bg-gray-50"
+          >
             <span className="block transition-transform duration-300 group-hover:scale-[0.952]">
-              Comenzar
+              Consultar en WhatsApp
             </span>
           </button>
-          <button className="group flex-1 sm:flex-none px-6 py-3 md:px-8 md:py-4 rounded-full border-2 border-black bg-black text-white font-bold text-sm md:text-lg cursor-pointer transition-all duration-300 hover:scale-105 hover:bg-gray-800">
+          <a
+            href={getPhoneHref()}
+            onClick={onPhoneClick}
+            className="group flex-1 sm:flex-none px-6 py-3 md:px-8 md:py-4 rounded-full border-2 border-black bg-black text-white font-bold text-sm md:text-lg cursor-pointer transition-all duration-300 hover:scale-105 hover:bg-gray-800"
+          >
             <span className="block transition-transform duration-300 group-hover:scale-[0.952]">
-              Contactar ventas
+              Llamar ahora
             </span>
-          </button>
+          </a>
         </div>
       </section>
 
@@ -338,6 +353,7 @@ const Hero = () => {
           </div>
         </div>
       </div>
+      <ToastPortal />
     </div>
   );
 };
