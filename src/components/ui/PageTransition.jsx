@@ -4,6 +4,7 @@ const PageTransition = ({
   children,
   className = "",
   animationType = "fade-up",
+  disableAnimations = false,
 }) => {
   const animations = {
     "fade-up": {
@@ -102,6 +103,10 @@ const PageTransition = ({
       },
     },
   };
+
+  if (disableAnimations) {
+    return <div className={className}>{children}</div>;
+  }
 
   return (
     <motion.div

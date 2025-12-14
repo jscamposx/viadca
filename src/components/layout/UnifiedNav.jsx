@@ -209,7 +209,7 @@ const UnifiedNav = ({
           />
         )}
         <nav
-          className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between transition-[padding] duration-300 ${isScrolled ? "py-2.5" : "py-4 sm:py-6"}`}
+          className={`w-full max-w-375 mx-auto  px-7 lg:px-0  flex items-center justify-between transition-[padding] duration-300 ${isScrolled ? "py-2.5" : "py-4 sm:py-6"}`}
           aria-label="Navegación principal"
         >
           {/* Logo */}

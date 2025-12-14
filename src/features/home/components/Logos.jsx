@@ -2,7 +2,18 @@ import React from "react";
 
 import { AnimatedSection, useSectionReveal } from "../../../hooks/scrollAnimations";
 
-const Logos = ({ logos }) => {
+const defaultLogos = [
+  { src: "/HomePage/logo1.avif", alt: "Partner 1", h: "h-24", width: 240, height: 96 },
+  { src: "/HomePage/logo2.avif", alt: "Partner 2", h: "h-24", width: 240, height: 96 },
+  { src: "/HomePage/logo3.avif", alt: "Partner 3", h: "h-24", width: 240, height: 96 },
+  { src: "/HomePage/logo7.avif", alt: "Partner 4", h: "h-14", width: 240, height: 96 },
+  { src: "/HomePage/logo6.avif", alt: "Partner 5", h: "h-12", width: 240, height: 96 },
+  { src: "/HomePage/logo8.avif", alt: "Partner 6", h: "h-24", width: 240, height: 96 },
+  { src: "/HomePage/logo9.avif", alt: "Partner 7", h: "h-24", width: 240, height: 96 },
+  { src: "/HomePage/logo10.avif", alt: "Partner 8", h: "h-24", width: 240, height: 96 },
+];
+
+const Logos = ({ logos: logosProp }) => {
   const containerRef = React.useRef(null);
   const trackRef = React.useRef(null);
   const firstSeqRef = React.useRef(null);
@@ -16,7 +27,10 @@ const Logos = ({ logos }) => {
   const [sectionRef, sectionVisible] = useSectionReveal({ threshold: 0.1 });
 
   // Normalizamos la lista base
-  const base = React.useMemo(() => logos || [], [logos]);
+  const base = React.useMemo(
+    () => (logosProp && logosProp.length ? logosProp : defaultLogos),
+    [logosProp],
+  );
   // Creamos secuencias para cubrir el viewport
   const sequences = React.useMemo(() => [base, base, base, base], [base]); // Aumenté a 4 para seguridad en monitores ultrawide
 
@@ -100,28 +114,8 @@ const Logos = ({ logos }) => {
       className="py-12 sm:py-16 lg:py-20 px-4 sm:px-6 lg:px-8 relative scroll-mt-32 bg-gradient-to-b from-gray-50 to-white overflow-hidden" // overflow-hidden importante en la sección o contenedor
       role="region"
     >
-      <div className="max-w-7xl mx-auto">
-        <AnimatedSection
-          animation="fadeUpPremium"
-          className="text-center mb-8 sm:mb-10 lg:mb-12"
-          forceVisible={sectionVisible}
-        >
-          <p className="text-slate-600 font-semibold text-sm sm:text-base uppercase tracking-wide mb-2">
-            Nuestros socios
-          </p>
-          <h2
-            id="logos-heading"
-            className="font-volkhov font-bold text-3xl sm:text-4xl text-slate-800 leading-tight"
-          >
-            Socios y marcas colaboradoras
-          </h2>
-          <div className="mt-4 flex justify-center">
-            <span
-              className="h-1 w-16 rounded bg-blue-500/70"
-              aria-hidden="true"
-            />
-          </div>
-        </AnimatedSection>
+      <div className="max-w-375  mx-auto">
+       
 
         {/* Contenedor principal del carrusel */}
         <AnimatedSection

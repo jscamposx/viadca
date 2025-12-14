@@ -3,10 +3,11 @@ import { Link } from "react-router-dom";
 import { useContactActions } from "../../../hooks/useContactActions"; // nuevo hook para unificar lógica
 import OptimizedImage from "../../../components/ui/OptimizedImage.jsx";
 
-const Footer = ({ contactInfo, contactLoading, currentYear }) => {
+const Footer = ({ contactInfo, contactLoading }) => {
   const { openWhatsApp, getPhoneHref, onPhoneClick, ToastPortal } =
     useContactActions();
   const whatsappFooterMsg = "Hola, me gustaría planificar un viaje con Viadca.";
+  const currentYear = new Date().getFullYear();
 
   return (
     <footer

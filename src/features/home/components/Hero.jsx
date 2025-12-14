@@ -1,229 +1,344 @@
-import React, { useEffect, useState } from "react";
-import { useContactActions } from "../../../hooks/useContactActions";
-import {
-  AnimatedSection,
-  useSectionReveal,
-} from "../../../hooks/scrollAnimations";
-import OptimizedImage from "../../../components/ui/OptimizedImage.jsx";
+import React, { useRef, useState } from "react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { useGSAP } from "@gsap/react";
+import { ArrowUpRight, Check } from "lucide-react";
+import defaultVideo from "/videos/destinations-hero.mp4";
+
+gsap.registerPlugin(ScrollTrigger);
+
+const contentData = {
+  food: {
+    label: "Comida",
+    title: "Alimentos y bebidas",
+    desc: "Administra tu restaurante con las mejores funciones para servicio completo o rápido.",
+    features: ["Pedidos rápidos", "Mesas y platos", "Cuentas de bar"],
+    video: defaultVideo,
+  },
+  retail: {
+    label: "Tienda",
+    title: "Tiendas Minoristas",
+    desc: "Todo lo que necesitas para vender en tienda y en línea. Sincroniza tu inventario.",
+    features: ["Inventario real", "Perfiles clientes", "Ventas omnicanal"],
+    video:
+      defaultVideo,
+  },
+  beauty: {
+    label: "Belleza",
+    title: "Belleza y Estética",
+    desc: "Agenda citas y envía recordatorios automáticos. Diseñado para salones y spas.",
+    features: ["Reservas 24/7", "Recordatorios", "Gestión personal"],
+    video: defaultVideo,
+  },
+  services: {
+    label: "Servicios",
+    title: "Servicios Pro",
+    desc: "Facturación profesional y contratos digitales para consultores.",
+    features: ["Facturas", "Pagos recurrentes", "Contratos"],
+    video: defaultVideo,
+  },
+};
 
 const Hero = () => {
-  const { openWhatsApp, getPhoneHref, onPhoneClick, ToastPortal } =
-    useContactActions();
+  const [activeTab, setActiveTab] = useState("food");
+  const containerRef = useRef(null);
+  const rightSideWrapperRef = useRef(null);
+  const videoInnerRef = useRef(null);
+  const overlayRef = useRef(null);
+  const textRef = useRef(null);
+  const leftContentRef = useRef(null);
+  const leftContentInnerRef = useRef(null);
 
-  // Detectar mobile para ajustar delays
-  const [isMobile, setIsMobile] = useState(false);
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    const mq = window.matchMedia("(max-width: 640px)");
-    const handler = () => setIsMobile(mq.matches);
-    handler();
-    mq.addEventListener("change", handler);
-    return () => mq.removeEventListener("change", handler);
-  }, []);
+  useGSAP(
+    () => {
+      const mm = gsap.matchMedia();
+      mm.add("(min-width: 1024px)", () => {
+        gsap.set(leftContentRef.current, {
+          width: "0%",
+          height: "100%",
+          opacity: 0,
+        });
+        const tl = gsap.timeline({
+          scrollTrigger: {
+            trigger: containerRef.current,
+            start: "top top",
+            end: "+=250%",
+            scrub: 1,
+            pin: true,
+            pinSpacing: true,
+          },
+        });
+        tl.to(videoInnerRef.current, {
+          width: "95vw",
+          height: "95vh",
+          borderRadius: "0px",
+          duration: 1,
+        });
+        tl.to(
+          overlayRef.current,
+          {
+            opacity: 1,
+            backdropFilter: "blur(16px)",
+            backgroundColor: "rgba(0,0,0,0.4)",
+            duration: 1,
+          },
+          ">-0.5"
+        );
+        tl.fromTo(
+          textRef.current,
+          { y: 50, opacity: 0 },
+          { y: 0, opacity: 1, duration: 1 },
+          "<"
+        );
+        tl.to(textRef.current, { y: -50, opacity: 0, duration: 0.5 }, "+=0.2");
+        tl.addLabel("splitMove");
+        tl.to(
+          leftContentRef.current,
+          { width: "50%", opacity: 1, duration: 2 },
+          "splitMove"
+        );
+        tl.fromTo(
+          leftContentInnerRef.current,
+          { y: 50, opacity: 0 },
+          { y: 0, opacity: 1, duration: 1.5 },
+          "splitMove+=0.5"
+        );
+        tl.to(
+          rightSideWrapperRef.current,
+          { width: "50%", padding: "2rem", duration: 2 },
+          "splitMove"
+        );
+        tl.to(
+          videoInnerRef.current,
+          {
+            width: "100%",
+            height: "70vh",
+            borderRadius: "32px",
+            boxShadow: "0 25px 50px -12px rgba(0,0,0,0.25)",
+            duration: 2,
+          },
+          "splitMove"
+        );
+        tl.to(overlayRef.current, { opacity: 0, duration: 1 }, "splitMove+=1");
+      });
 
-  // Revelar todo el hero tan pronto como cualquier parte entre al viewport (mobile: inmediato)
-  const [heroRef, heroVisible] = useSectionReveal({
-    threshold: 0.01,
-    rootMargin: isMobile ? "0px 0px 0px 0px" : "0px 0px -5% 0px",
-  });
+      mm.add("(max-width: 1023px)", () => {
+        gsap.set(leftContentRef.current, {
+          width: "100%",
+          height: "0%",
+          opacity: 0,
+        });
+        const tl = gsap.timeline({
+          scrollTrigger: {
+            trigger: containerRef.current,
+            start: "top top",
+            end: "+=200%",
+            scrub: 1,
+            pin: true,
+          },
+        });
 
-  const d = (base) =>
-    isMobile ? Math.min(Math.round(base * 0.35), 180) : base;
+        tl.to(videoInnerRef.current, {
+          width: "100%",
+          height: "100vh",
+          borderRadius: "0px",
+          duration: 1,
+        });
+        tl.to(
+          rightSideWrapperRef.current,
+          { padding: "0px", duration: 1 },
+          "<"
+        );
+        tl.to(
+          overlayRef.current,
+          {
+            opacity: 1,
+            backdropFilter: "blur(12px)",
+            backgroundColor: "rgba(0,0,0,0.4)",
+            duration: 1,
+          },
+          ">-0.5"
+        );
+        tl.fromTo(
+          textRef.current,
+          { y: 30, opacity: 0 },
+          { y: 0, opacity: 1, duration: 1 },
+          "<"
+        );
+        tl.to(textRef.current, { opacity: 0, duration: 0.5 }, "+=0.2");
 
-  // Inyectar preload de la imagen Hero solo cuando este componente se monta (evita warning en otras rutas)
-  useEffect(() => {
-    const id = "preload-hero-image";
-    if (!document.getElementById(id)) {
-      const link = document.createElement("link");
-      link.id = id;
-      link.rel = "preload";
-      link.as = "image";
-      link.href = "/HomePage/Hero-Image.avif";
-      link.type = "image/avif";
-      document.head.appendChild(link);
-    }
-  }, []);
+        tl.addLabel("mobileSplit");
+
+        tl.to(
+          rightSideWrapperRef.current,
+          { height: "40%", width: "100%", padding: "1rem", duration: 2 },
+          "mobileSplit"
+        );
+        tl.to(
+          videoInnerRef.current,
+          { width: "100%", height: "100%", borderRadius: "20px", duration: 2 },
+          "mobileSplit"
+        );
+        tl.to(
+          leftContentRef.current,
+          { height: "60%", width: "100%", opacity: 1, duration: 2 },
+          "mobileSplit"
+        );
+        tl.fromTo(
+          leftContentInnerRef.current,
+          { y: 30, opacity: 0 },
+          { y: 0, opacity: 1, duration: 1.5 },
+          "mobileSplit+=0.5"
+        );
+        tl.to(
+          overlayRef.current,
+          { opacity: 0, duration: 1 },
+          "mobileSplit+=1"
+        );
+      });
+    },
+    { scope: containerRef }
+  );
+
+  const currentContent = contentData[activeTab];
 
   return (
-    <>
-      <section
-        ref={heroRef}
-        id="hero"
-        aria-labelledby="hero-heading"
-        className="relative min-h-[100svh] md:min-h-[100svh] lg:min-h-[100svh] bg-gradient-to-br from-blue-50 to-orange-50 scroll-mt-32"
+    <div className="bg-white w-full overflow-x-hidden pt-30">
+      <section className="flex flex-col items-center justify-center w-full max-w-375 mx-auto px-6 relative pt-4 pb-12 md:pt-10 md:pb-20">
+        <div className="w-full `max-w-177 flex justify-center mb-4 md:mb-0">
+          <span className="text-[15px] md:text-[28px] font-bold uppercase text-gray-900 tracking-wide md:-tracking-[0.14px] text-center block">
+            Punto de venta Square
+          </span>
+        </div>
+        <div className="w-full max-w-307.5mt-2 md:mt-4 mb-8 md:mb-12">
+          <h1 className="text-[42px] leading-[1.05] md:text-[90px] md:leading-none font-serif text-center text-gray-900 font-medium tracking-tight md:-tracking-[2.7px]">
+            Un PDV preparado <br /> para lo que tienes
+          </h1>
+        </div>
+        <div className="flex flex-row gap-3 w-full justify-center px-2 sm:w-auto sm:px-0">
+          <button className="group flex-1 sm:flex-none px-6 py-3 md:px-8 md:py-4 rounded-full border-2 border-black bg-white text-black font-bold text-sm md:text-lg cursor-pointer transition-all duration-300 hover:scale-105 hover:bg-gray-50">
+            <span className="block transition-transform duration-300 group-hover:scale-[0.952]">
+              Comenzar
+            </span>
+          </button>
+          <button className="group flex-1 sm:flex-none px-6 py-3 md:px-8 md:py-4 rounded-full border-2 border-black bg-black text-white font-bold text-sm md:text-lg cursor-pointer transition-all duration-300 hover:scale-105 hover:bg-gray-800">
+            <span className="block transition-transform duration-300 group-hover:scale-[0.952]">
+              Contactar ventas
+            </span>
+          </button>
+        </div>
+      </section>
+
+      <div
+        ref={containerRef}
+        className="w-full h-screen flex flex-col lg:flex-row items-stretch overflow-hidden relative bg-white"
       >
-        {/* Fondo decorativo desktop (mobile limpio para foco en contenido) */}
         <div
-          className="absolute top-0 right-0 w-1/2 h-full bg-hero-pattern bg-no-repeat bg-right-top opacity-10 pointer-events-none hidden sm:block"
-          aria-hidden="true"
-        ></div>
-        <div
-          className="absolute top-24 left-1/2 -translate-x-1/2 w-64 h-64 sm:w-80 sm:h-80 bg-blue-200 rounded-full opacity-25 md:opacity-20 lg:left-20 lg:translate-x-0 lg:w-96 lg:h-96 blur-2xl"
-          aria-hidden="true"
-        ></div>
-
-        {/* Hero Content */}
-        <div className="relative z-10 px-4 sm:px-6 lg:px-8 pt-6 sm:pt-14 md:pt-18 xl:pt-24 2xl:pt-28 pb-8 lg:pb-14">
-          <div className="max-w-7xl mx-auto">
-            <div className="grid lg:grid-cols-2 gap-10 lg:gap-12 items-center max-w-3xl md:max-w-4xl lg:max-w-none mx-auto">
-              {/* Imagen primero en mobile */}
-              <AnimatedSection
-                animation="scaleInPremium"
-                delay={d(200)}
-                forceVisible={heroVisible}
-                className="relative order-first lg:order-last"
-              >
-                <div className="relative rounded-3xl overflow-visible max-w-md sm:max-w-xl md:max-w-2xl lg:max-w-none mx-auto">
-                  <OptimizedImage
-                    src="/HomePage/Hero-Image.avif"
-                    alt="Ilustración viajero preparando maletas con agencia de viajes VIADCA"
-                    width={1200}
-                    height={800}
-                    priority={true}
-                    responsive
-                    sizes="(max-width:640px) 100vw, (max-width:1024px) 50vw, 50vw"
-                    className="w-full h-auto sm:h-80 md:h-[26rem] lg:h-[30rem] xl:h-[32rem] 2xl:h-[38rem] max-h-[60vh] md:max-h-[65vh] object-contain"
-                    placeholder={false}
-                    lazy={false}
-                    fadeIn={false}
-                  />
-                </div>
-              </AnimatedSection>
-
-              {/* Texto */}
-              <div className="space-y-6 lg:space-y-8 text-center lg:text-left relative bg-transparent">
-                {/* Backdrop sutil solo mobile para mejorar contraste (sin borde ni sombra) */}
-                <div className="absolute inset-0 -z-10 rounded-3xl sm:hidden"></div>
-                <AnimatedSection
-                  animation="fadeUpPremium"
-                  delay={d(100)}
-                  forceVisible={heroVisible}
+          ref={leftContentRef}
+          className="bg-white z-30 flex flex-col justify-start lg:justify-center relative border-r border-gray-100 order-2 lg:order-1 overflow-hidden"
+        >
+          <div
+            ref={leftContentInnerRef}
+            className="w-full max-w-xl mx-auto px-6 lg:px-12 flex flex-col justify-start lg:justify-center h-full py-8 lg:py-0"
+          >
+            {/* TABS */}
+            <div className="flex overflow-x-auto pb-4 lg:pb-0 lg:flex-wrap gap-2 mb-4 lg:mb-8 no-scrollbar mask-gradient">
+              {Object.keys(contentData).map((key) => (
+                <button
+                  key={key}
+                  onClick={() => setActiveTab(key)}
+                  className={`whitespace-nowrap px-4 py-2 rounded-full border text-sm font-semibold transition-all duration-300 cursor-pointer hover:shadow-md
+                                ${
+                                  activeTab === key
+                                    ? "bg-black text-white border-black"
+                                    : "bg-white text-gray-600 border-gray-200 hover:border-gray-400"
+                                }`}
                 >
-                  <div className="space-y-3">
-                    <p className="text-blue-600 font-semibold text-sm tracking-wide sm:text-base uppercase">
-                      VIADCA by Zafiro Tours
-                    </p>
-                    <p className="text-slate-600 text-xs sm:text-sm lg:hidden font-medium">
-                      Desde Durango para el mundo
-                    </p>
-                  </div>
-                </AnimatedSection>
+                  {contentData[key].label}
+                </button>
+              ))}
+            </div>
 
-                <AnimatedSection
-                  animation="fadeUpPremium"
-                  delay={d(250)}
-                  forceVisible={heroVisible}
-                >
-                  <h1
-                    id="hero-heading"
-                    className="font-volkhov font-bold leading-tight text-slate-800 text-[clamp(2rem,6vw,3.4rem)] sm:text-5xl md:text-6xl xl:text-7xl tracking-tight"
-                  >
-                    <span className="block">Vive experiencias</span>
-                    <span className="block text-indigo-700">
-                      extraordinarias,
-                    </span>
-                    <span className="block">viaja sin límites</span>
-                  </h1>
-                </AnimatedSection>
+            <div className="w-full h-px bg-gray-200 mb-4 lg:mb-8 hidden lg:block"></div>
 
-                <AnimatedSection
-                  animation="fadeUpPremium"
-                  delay={d(400)}
-                  forceVisible={heroVisible}
-                >
-                  <p className="text-slate-600 text-[15px] sm:text-lg md:text-lg lg:text-xl leading-relaxed max-w-xl mx-auto lg:mx-0">
-                    Más de 15 años diseñando aventuras únicas, tours
-                    personalizados y experiencias inolvidables desde Durango.
-                  </p>
-                </AnimatedSection>
+            <div className="space-y-4 lg:space-y-6">
+              <h2 className="text-3xl lg:text-5xl font-bold text-gray-900 font-serif leading-tight">
+                {currentContent.title}
+              </h2>
+              <p className="text-base lg:text-lg text-gray-600 leading-relaxed">
+                {currentContent.desc}
+              </p>
 
-                {/* CTA */}
-                <AnimatedSection
-                  animation="fadeUpPremium"
-                  delay={d(550)}
-                  forceVisible={heroVisible}
-                >
-                  <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3 sm:gap-4 pt-2 sm:pt-4">
-                    <button
-                      type="button"
-                      onClick={openWhatsApp}
-                      aria-label="Planifica tu viaje por WhatsApp"
-                      className="w-full sm:w-auto bg-[#25D366] hover:bg-[#1ebe5d] text-white px-7 py-3.5 sm:px-8 sm:py-4 rounded-xl transition-all duration-300 font-semibold hover:shadow-lg sm:hover:shadow-xl hover:scale-[1.02] sm:hover:scale-105 transform flex items-center justify-center gap-2 sm:gap-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#25D366] disabled:opacity-60 disabled:cursor-not-allowed"
+              <div>
+                <p className="text-sm font-bold text-gray-900 uppercase tracking-wide pt-2 mb-2">
+                  Accede rápidamente a:
+                </p>
+                <ul className="space-y-2">
+                  {currentContent.features.map((item, index) => (
+                    <li
+                      key={index}
+                      className="flex items-start text-base text-gray-700 font-medium"
                     >
-                      {/* Icono oficial estilo WhatsApp (SVG) */}
-                      <svg
-                        className="w-5 h-5"
-                        viewBox="0 0 32 32"
-                        aria-hidden="true"
-                        fill="currentColor"
-                        focusable="false"
-                      >
-                        <path d="M16.04 3C9.4 3 4 8.4 4 15.05c0 2.65.87 5.11 2.35 7.1L4 29l7.07-2.32a12.97 12.97 0 0 0 4.97 1c6.63 0 12.03-5.4 12.03-12.05C28.07 8.4 22.67 3 16.04 3Zm7.1 17.18c-.3.84-1.73 1.6-2.4 1.7-.62.1-1.4.14-2.26-.14-.52-.17-1.18-.38-2.04-.74-3.6-1.56-5.94-5.2-6.12-5.44-.18-.24-1.46-1.94-1.46-3.7 0-1.76.92-2.63 1.25-2.99.33-.36.72-.45.96-.45.24 0 .48 0 .69.01.22.01.52-.08.82.63.3.7 1.04 2.42 1.13 2.6.09.18.15.4.03.64-.12.24-.18.39-.36.6-.18.21-.38.47-.54.63-.18.18-.36.37-.16.73.21.36.93 1.53 2 2.48 1.37 1.22 2.48 1.6 2.84 1.78.36.18.57.15.78-.09.21-.24.9-1.05 1.14-1.41.24-.36.48-.3.81-.18.33.12 2.14 1.01 2.5 1.2.36.18.6.27.69.42.09.15.09.87-.21 1.71Z" />
-                      </svg>
-                      <span className="whitespace-nowrap">Planifica tu viaje</span>
-                    </button>
-                  </div>
-                </AnimatedSection>
+                      <div className="mt-1 mr-3 p-0.5 bg-black rounded-full shrink-0">
+                        <Check className="w-3 h-3 text-white" />
+                      </div>
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </div>
 
-                {/* Stats desktop + versión comprimida mobile */}
-                <AnimatedSection
-                  animation="staggeredReveal"
-                  delay={d(700)}
-                  forceVisible={heroVisible}
+              <div className="pt-2">
+                <a
+                  href="#"
+                  className="inline-flex items-center text-base lg:text-lg font-bold text-black hover:underline group transition-all"
                 >
-                  <div className="hidden lg:flex items-center gap-8 pt-3">
-                    <div className="text-center">
-                      <div className="text-2xl font-bold text-blue-600">
-                        15+
-                      </div>
-                      <div className="text-sm text-slate-600 mt-1">
-                        Años de experiencia
-                      </div>
-                    </div>
-                    <div className="text-center">
-                      <div className="text-2xl font-bold text-green-600">
-                        5,000+
-                      </div>
-                      <div className="text-sm text-slate-600 mt-1">
-                        Viajeros felices
-                      </div>
-                    </div>
-                    <div className="text-center">
-                      <div className="text-2xl font-bold text-orange-600">
-                        50+
-                      </div>
-                      <div className="text-sm text-slate-600 mt-1">
-                        Destinos
-                      </div>
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-3 gap-3 pt-1 max-w-xs mx-auto lg:hidden">
-                    <div className="bg-white/80 rounded-lg p-2.5 text-center shadow-sm border border-slate-100">
-                      <div className="text-sm font-bold text-blue-600">15+</div>
-                      <div className="text-[10px] text-slate-600">Años</div>
-                    </div>
-                    <div className="bg-white/80 rounded-lg p-2.5 text-center shadow-sm border border-slate-100">
-                      <div className="text-sm font-bold text-green-600">
-                        5K+
-                      </div>
-                      <div className="text-[10px] text-slate-600">Clientes</div>
-                    </div>
-                    <div className="bg-white/80 rounded-lg p-2.5 text-center shadow-sm border border-slate-100">
-                      <div className="text-sm font-bold text-orange-600">
-                        50+
-                      </div>
-                      <div className="text-[10px] text-slate-600">Destinos</div>
-                    </div>
-                  </div>
-                </AnimatedSection>
+                  Obtén más información
+                  <ArrowUpRight className="ml-2 w-4 h-4 lg:w-5 lg:h-5 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+                </a>
               </div>
             </div>
           </div>
         </div>
-      </section>
 
-      <ToastPortal />
-    </>
+        <div
+          ref={rightSideWrapperRef}
+          className="grow h-full flex items-center justify-center relative z-20 order-1 lg:order-2 p-4 lg:p-0"
+        >
+          <div
+            ref={videoInnerRef}
+            className="relative overflow-hidden shadow-2xl bg-black w-full h-full lg:w-[85%] lg:h-[80vh] rounded-3xl"
+          >
+            <video
+              key={activeTab}
+              autoPlay
+              muted
+              loop
+              playsInline
+              className="w-full h-full object-cover absolute inset-0 z-0 transition-opacity duration-500"
+            >
+              <source src={currentContent.video} type="video/webm" />
+              <source src={currentContent.video} type="video/mp4" />
+            </video>
+
+            <div
+              ref={overlayRef}
+              className="absolute inset-0 z-10 pointer-events-none opacity-0"
+              style={{ backdropFilter: "blur(0px)" }}
+            ></div>
+
+            <div
+              ref={textRef}
+              className="absolute inset-0 z-20 flex flex-col items-center justify-center p-4 text-center pointer-events-none opacity-0"
+            >
+              <h2 className="text-white text-3xl lg:text-6xl font-bold leading-tight drop-shadow-lg font-serif">
+                Ponte en marcha con un <br /> PDV personalizado.
+              </h2>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 };
 
