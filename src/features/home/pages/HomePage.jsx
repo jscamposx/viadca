@@ -21,8 +21,9 @@ const Home = () => {
       <PageTransition disableAnimations>
         <main id="main-content" role="main" aria-label="Contenido principal" className="min-h-screen bg-white overflow-x-hidden">
           <Hero />
+           <Carousel />
           <Features />
-          <Carousel />
+         
           <GrowthSection />
           <Reviews />
           <GetStartedSection />

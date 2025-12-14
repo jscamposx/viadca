@@ -81,6 +81,14 @@ const normalizePackages = (raw = []) => {
         price: price ? `${currency} ${price}` : "Cotiza",
         image: pickImage(p),
         alt: `Viaje a ${destino}`,
+        href:
+          p?.codigoUrl
+            ? `/paquetes/${p.codigoUrl}`
+            : p?.slug
+              ? `/paquetes/${p.slug}`
+              : p?.id
+                ? `/paquetes/${p.id}`
+                : null,
       };
     })
     .filter(Boolean);
@@ -188,9 +196,16 @@ const Carousel = () => {
             className="flex gap-4 sm:gap-6 overflow-x-auto scrollbar-hide pb-8 snap-x snap-mandatory px-2 scroll-smooth"
           >
             {routes.map((route, index) => (
-              <div
+              <a
                 key={route.id}
-                // width: 85vw en móvil (más inmersivo) y 320px fijo en desktop
+                href={route.href || "#"}
+                target={route.href ? "_blank" : undefined}
+                rel={route.href ? "noreferrer" : undefined}
+                onClick={(e) => {
+                  if (!route.href) {
+                    e.preventDefault();
+                  }
+                }}
                 className="route-card flex-none w-[85vw] sm:w-[320px] snap-center group cursor-pointer"
               >
                 <div className="relative overflow-hidden rounded-3xl aspect-3/4 mb-5 shadow-sm hover:shadow-xl transition-shadow duration-300 bg-gray-200">
@@ -217,8 +232,13 @@ const Carousel = () => {
                     <span className="text-gray-400 font-normal text-xs mr-1 uppercase tracking-wide">Desde</span>
                     {route.price}
                   </p>
+
+                  <div className="inline-flex items-center justify-center gap-2 text-sm font-semibold text-indigo-600 group-hover:text-indigo-700 transition-colors">
+                    <span>Ver detalles</span>
+                    <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />
+                  </div>
                 </div>
-              </div>
+              </a>
             ))}
           </div>
         </div>
