@@ -193,7 +193,7 @@ const Carousel = () => {
         <div className="relative">
           <div
             ref={carouselRef}
-            className="flex gap-4 sm:gap-6 overflow-x-auto scrollbar-hide pb-8 snap-x snap-mandatory px-2 scroll-smooth"
+            className="flex gap-4 sm:gap-6 overflow-x-auto scrollbar-hide pb-8 snap-x snap-proximity px-2 scroll-smooth"
           >
             {routes.map((route, index) => (
               <a
