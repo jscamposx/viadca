@@ -183,7 +183,7 @@ const Hero = () => {
         );
         tl.to(
           leftContentRef.current,
-          { height: "85%", width: "100%", opacity: 1, duration: 2 },
+          { height: "65%", width: "100%", opacity: 1, duration: 2 },
           "mobileSplit"
         );
         tl.fromTo(
@@ -225,7 +225,7 @@ const Hero = () => {
                 "Hola, quiero cotizar mi viaje con Viadca. ¿Me ayudas con opciones?",
               )
             }
-            className="group px-4 py-2 sm:px-5 sm:py-2.5 md:px-6 md:py-3 rounded-full border-2 border-black bg-white text-black font-semibold text-xs sm:text-sm md:text-base leading-tight cursor-pointer transition-colors duration-200 hover:bg-gray-50 whitespace-nowrap"
+            className="group inline-flex items-center justify-center min-h-[46px] sm:min-h-[48px] px-4 py-2 sm:px-5 sm:py-2.5 md:px-6 md:py-3 rounded-full border-2 border-black bg-white text-black font-semibold text-xs sm:text-sm md:text-base leading-tight cursor-pointer transition-colors duration-200 hover:bg-gray-50 whitespace-nowrap"
           >
             <span className="block transition-transform duration-300 group-hover:scale-[0.952]">
               Consultar en WhatsApp
@@ -234,7 +234,7 @@ const Hero = () => {
           <a
             href={getPhoneHref()}
             onClick={onPhoneClick}
-            className="group px-4 py-2 sm:px-5 sm:py-2.5 md:px-6 md:py-3 rounded-full border-2 border-black bg-black text-white font-semibold text-xs sm:text-sm md:text-base leading-tight cursor-pointer transition-colors duration-200 hover:bg-gray-800 whitespace-nowrap"
+            className="group inline-flex items-center justify-center min-h-[46px] sm:min-h-[48px] px-4 py-2 sm:px-5 sm:py-2.5 md:px-6 md:py-3 rounded-full border-2 border-black bg-black text-white font-semibold text-xs sm:text-sm md:text-base leading-tight cursor-pointer transition-colors duration-200 hover:bg-gray-800 whitespace-nowrap"
           >
             <span className="block transition-transform duration-300 group-hover:scale-[0.952]">
               Llamar ahora
@@ -256,12 +256,12 @@ const Hero = () => {
             className="w-full max-w-xl mx-auto px-6 lg:px-12 flex flex-col justify-start lg:justify-center h-full py-8 lg:py-0"
           >
             {/* TABS */}
-            <div className="flex overflow-x-auto pb-4 lg:pb-0 lg:flex-wrap gap-2 mb-4 lg:mb-8 no-scrollbar mask-gradient -mx-2 px-2 items-center min-h-[60px]">
+            <div className="flex overflow-x-auto pb-3 lg:pb-0 lg:flex-wrap gap-2 mb-4 lg:mb-8 no-scrollbar mask-gradient -mx-2 px-2 items-center min-h-[56px]">
               {Object.keys(contentData).map((key) => (
                 <button
                   key={key}
                   onClick={() => setActiveTab(key)}
-                    className={`inline-flex items-center justify-center h-11 px-3 sm:px-4 rounded-full border text-[11px] sm:text-sm font-semibold leading-none transition-all duration-200 cursor-pointer hover:shadow-md whitespace-nowrap
+                    className={`inline-flex items-center justify-center h-10 px-3 sm:px-4 rounded-full border text-[11px] sm:text-sm font-semibold leading-none transition-all duration-200 cursor-pointer hover:shadow-md whitespace-nowrap
                                 ${
                                   activeTab === key
                                     ? "bg-black text-white border-black"
