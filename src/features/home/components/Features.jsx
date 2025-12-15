@@ -12,9 +12,8 @@ const FEATURES_DATA = [
     title: "Viajes a tu medida",
     description:
       "Diseñamos tu viaje con vuelos, hotel y traslados ajustados a fechas, presupuesto y preferencias.",
-    image:
-      "https://images.unsplash.com/photo-1502920514313-52581002a659?q=80&w=1200&auto=format&fit=crop",
-    alt: "Planeación de viaje en mapa",
+    image: "/HomePage/feat-medida.avif",
+    alt: "Planeación de viaje con mapas y maletas",
     modalDetails: [
       {
         headline: "Itinerarios personalizados",
@@ -34,10 +33,9 @@ const FEATURES_DATA = [
     id: "docs",
     title: "Asesoría y documentación",
     description:
-      "Te guiamos con visas, seguros y requisitos sanitarios para que viajes sin contratiempos.",
-    image:
-      "https://images.unsplash.com/photo-1521292270410-a8c0c3c5b2d6?q=80&w=1200&auto=format&fit=crop",
-    alt: "Pasaportes y documentos de viaje",
+      "Te indicamos qué visas, seguros y requisitos sanitarios necesitas antes de viajar.",
+    image: "/HomePage/feat-documentacion.avif",
+    alt: "Documentación de viaje y pasaportes",
     modalDetails: [
       {
         headline: "Revisión de requisitos",
@@ -49,7 +47,7 @@ const FEATURES_DATA = [
       },
       {
         headline: "Checklists y recordatorios",
-        text: "Te enviamos recordatorios de check-in, visados electrónicos y tiempos de llegada al aeropuerto.",
+        text: "Enviamos recordatorios de check-in, visados electrónicos y tiempos de llegada al aeropuerto.",
       },
     ],
   },
@@ -58,9 +56,8 @@ const FEATURES_DATA = [
     title: "Soporte dedicado 24/7",
     description:
       "Acompañamiento de nuestro equipo antes, durante y después del viaje para ajustes, reprogramaciones o emergencias.",
-    image:
-      "https://images.unsplash.com/photo-1521737604893-d14cc237f11d?q=80&w=1200&auto=format&fit=crop",
-    alt: "Agente de soporte ayudando a viajero",
+    image: "/HomePage/feat-asesoria.avif",
+    alt: "Asesoría de viaje personalizada",
     modalDetails: [
       {
         headline: "Gestión de cambios",
@@ -81,9 +78,8 @@ const FEATURES_DATA = [
     title: "Beneficios y pagos flexibles",
     description:
       "Accede a promos, pagos en meses con costo financiero y tarifas negociadas para maximizar tu presupuesto.",
-    image:
-      "https://images.unsplash.com/photo-1528909514045-2fa4ac7a08ba?q=80&w=1200&auto=format&fit=crop",
-    alt: "Tarjetas y ahorro en viajes",
+    image: "/HomePage/feat-pagos.avif",
+    alt: "Pagos y beneficios para viajes",
     modalDetails: [
       {
         headline: "Financiamiento",
