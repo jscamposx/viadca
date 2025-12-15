@@ -24,7 +24,7 @@ const contentData = {
     video: defaultVideo,
   },
   destacados: {
-    label: "Nuestros destacados",
+    label: "Destacados",
     title: "Selección destacada por Viadca",
     desc: "Rutas favoritas de nuestra comunidad con tarifas negociadas y extras incluidos.",
     features: ["Tarifas especiales", "Bloqueos anticipados", "Bonos y upgrades sujetos a disponibilidad"],
@@ -217,7 +217,7 @@ const Hero = () => {
             Vive experiencias únicas <br /> y viaja tranquilo con Viadca
           </h1>
         </div>
-        <div className="flex flex-row gap-3 w-full justify-center px-2 sm:w-auto sm:px-0">
+        <div className="flex flex-row items-center gap-2 justify-center px-2 sm:px-0">
           <button
             type="button"
             onClick={() =>
@@ -225,7 +225,7 @@ const Hero = () => {
                 "Hola, quiero cotizar mi viaje con Viadca. ¿Me ayudas con opciones?",
               )
             }
-            className="group flex-1 sm:flex-none px-6 py-3 md:px-8 md:py-4 rounded-full border-2 border-black bg-white text-black font-bold text-sm md:text-lg cursor-pointer transition-all duration-300 hover:scale-105 hover:bg-gray-50"
+            className="group px-4 py-2.5 sm:px-5 sm:py-2.5 md:px-6 md:py-3 rounded-full border-2 border-black bg-white text-black font-semibold text-sm sm:text-base md:text-base cursor-pointer transition-colors duration-200 hover:bg-gray-50"
           >
             <span className="block transition-transform duration-300 group-hover:scale-[0.952]">
               Consultar en WhatsApp
@@ -234,7 +234,7 @@ const Hero = () => {
           <a
             href={getPhoneHref()}
             onClick={onPhoneClick}
-            className="group flex-1 sm:flex-none px-6 py-3 md:px-8 md:py-4 rounded-full border-2 border-black bg-black text-white font-bold text-sm md:text-lg cursor-pointer transition-all duration-300 hover:scale-105 hover:bg-gray-800"
+            className="group px-4 py-2.5 sm:px-5 sm:py-2.5 md:px-6 md:py-3 rounded-full border-2 border-black bg-black text-white font-semibold text-sm sm:text-base md:text-base cursor-pointer transition-colors duration-200 hover:bg-gray-800"
           >
             <span className="block transition-transform duration-300 group-hover:scale-[0.952]">
               Llamar ahora
@@ -261,11 +261,11 @@ const Hero = () => {
                 <button
                   key={key}
                   onClick={() => setActiveTab(key)}
-                  className={`whitespace-nowrap px-4 py-2 rounded-full border text-sm font-semibold transition-all duration-300 cursor-pointer hover:shadow-md
+                    className={`px-3 sm:px-4 py-2 rounded-full border text-xs sm:text-sm font-semibold leading-tight transition-all duration-200 cursor-pointer hover:shadow-md
                                 ${
                                   activeTab === key
                                     ? "bg-black text-white border-black"
-                                    : "bg-white text-gray-600 border-gray-200 hover:border-gray-400"
+                                    : "bg-white text-gray-700 border-gray-200 hover:border-gray-400"
                                 }`}
                 >
                   {contentData[key].label}
