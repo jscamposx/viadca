@@ -4,6 +4,10 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
 import { ArrowUpRight, Check } from "lucide-react";
 import defaultVideo from "/videos/destinations-hero.mp4";
+
+const heroVideo1 = "/videos/video1.webm";
+const heroVideo2 = "/videos/video2.webm";
+const heroVideo3 = "/videos/video3.webm";
 import { useContactActions } from "../../../hooks/useContactActions";
 
 gsap.registerPlugin(ScrollTrigger);
@@ -14,28 +18,32 @@ const contentData = {
     title: "Explora México con Viadca",
     desc: "Vuelos y hoteles en los destinos más queridos: playas, pueblos mágicos y escapadas urbanas.",
     features: ["Paquetes con vuelo + hotel", "Traslados y seguros opcionales", "Pagos en meses con costo financiero"],
-    video: defaultVideo,
+    videoMp4: defaultVideo,
+    videoWebm: heroVideo1,
   },
   internacionales: {
     label: "Internacionales",
     title: "Aventura fuera de México",
     desc: "Circuitos y escapadas internacionales con operadores confiables y soporte en ruta.",
     features: ["Guías y traslados incluidos", "Reprogramaciones con el equipo Viadca", "Contacto 24/7"],
-    video: defaultVideo,
+    videoMp4: defaultVideo,
+    videoWebm: heroVideo2,
   },
   destacados: {
     label: "Destacados",
     title: "Selección destacada por Viadca",
     desc: "Rutas favoritas de nuestra comunidad con tarifas negociadas y extras incluidos.",
     features: ["Tarifas especiales", "Bloqueos anticipados", "Bonos y upgrades sujetos a disponibilidad"],
-    video: defaultVideo,
+    videoMp4: defaultVideo,
+    videoWebm: heroVideo3,
   },
   todos: {
     label: "Todos",
     title: "Explora todos los paquetes",
     desc: "Consulta el catálogo completo y encuentra tu próximo viaje en minutos.",
     features: ["Filtros por destino y fecha", "Opciones familiares y corporativas", "Asesoría de nuestro equipo"],
-    video: defaultVideo,
+    videoMp4: defaultVideo,
+    videoWebm: null,
   },
 };
 
@@ -331,8 +339,12 @@ const Hero = () => {
               playsInline
               className="w-full h-full object-cover absolute inset-0 z-0 transition-opacity duration-500"
             >
-              <source src={currentContent.video} type="video/webm" />
-              <source src={currentContent.video} type="video/mp4" />
+              {currentContent.videoWebm ? (
+                <source src={currentContent.videoWebm} type="video/webm" />
+              ) : null}
+              {currentContent.videoMp4 ? (
+                <source src={currentContent.videoMp4} type="video/mp4" />
+              ) : null}
             </video>
 
             <div
