@@ -8,78 +8,94 @@ gsap.registerPlugin(ScrollTrigger);
 
 const FEATURES_DATA = [
   {
-    id: "payment",
-    title: "Acepta cualquier tipo de pago",
+    id: "tailor",
+    title: "Viajes a tu medida",
     description:
-      "Recibe pagos en persona, en línea o por teléfono, y luego accede a tu dinero al instante. Simplifica el proceso de pago con funciones que te ayudan a agilizar el servicio.",
+      "Diseñamos tu viaje con vuelos, hotel y traslados ajustados a fechas, presupuesto y preferencias.",
     image:
-      "https://images.ctfassets.net/2d5q1td6cyxq/ah0miZPiEPGcHXq7ee7zO/5842168cbe1a1abadf82a90489ee5a90/PD07327-USES-features-payment.png?fm=webp&q=85&fit=fill&w=958",
-    alt: "Terminal de pago Square",
+      "https://images.unsplash.com/photo-1502920514313-52581002a659?q=80&w=1200&auto=format&fit=crop",
+    alt: "Planeación de viaje en mapa",
     modalDetails: [
       {
-        headline: "Tipos de pago",
-        text: "Acepta las principales tarjetas de crédito, pagos sin contacto, etc.",
+        headline: "Itinerarios personalizados",
+        text: "Escogemos horarios y conexiones cómodas con proveedores confiables.",
       },
       {
-        headline: "Transferencias rápidas",
-        text: "Transfiere fondos a una cuenta bancaria externa gratis.",
+        headline: "Flexibilidad",
+        text: "Opciones con cambios permitidos y políticas claras antes de pagar.",
+      },
+      {
+        headline: "Ajustes y upgrades",
+        text: "Revisamos opciones de categoría de hotel, traslados privados y asistencia en aeropuerto para mejorar tu experiencia.",
       },
     ],
   },
   {
-    id: "sell",
-    title: "Vende de todo",
+    id: "docs",
+    title: "Asesoría y documentación",
     description:
-      "En un mismo surtido de artículos, puedes agregar varios artículos del menú, productos, servicios o paquetes personalizados. Cobra las ventas rápidamente con un mosaico de artículos personalizado.",
+      "Te guiamos con visas, seguros y requisitos sanitarios para que viajes sin contratiempos.",
     image:
-      "https://images.ctfassets.net/2d5q1td6cyxq/6VhwqJWH1JEITY3Cf6VJnq/42cdf18518dc4f7d9012fefd7b756c5d/PD07327-USES-features-sell.png?fm=webp&q=85&fit=fill&w=958",
-    alt: "Interfaz de venta",
+      "https://images.unsplash.com/photo-1521292270410-a8c0c3c5b2d6?q=80&w=1200&auto=format&fit=crop",
+    alt: "Pasaportes y documentos de viaje",
     modalDetails: [
       {
-        headline: "Catálogo flexible",
-        text: "Crea variantes de artículos y modificadores complejos.",
+        headline: "Revisión de requisitos",
+        text: "Validamos pasaporte, visas y vacunas según tu destino.",
       },
       {
-        headline: "Gestión de inventario",
-        text: "Recibe alertas de stock bajo en tiempo real.",
+        headline: "Seguros de viaje",
+        text: "Coberturas médicas, equipaje y cancelación recomendadas para tu ruta.",
+      },
+      {
+        headline: "Checklists y recordatorios",
+        text: "Te enviamos recordatorios de check-in, visados electrónicos y tiempos de llegada al aeropuerto.",
       },
     ],
   },
   {
-    id: "organized",
-    title: "Trabaja de manera rápida y organizada",
+    id: "care",
+    title: "Soporte dedicado 24/7",
     description:
-      "Un PDV intuitivo que no requiere capacitación compleja. Mantén a tu equipo sincronizado y las operaciones fluyendo sin interrupciones.",
+      "Acompañamiento de nuestro equipo antes, durante y después del viaje para ajustes, reprogramaciones o emergencias.",
     image:
-      "https://images.ctfassets.net/2d5q1td6cyxq/1Upj6heZj0hvn7JmoZJnvi/1ac80e575f88e4eae3f22220e53c50fa/PD07327-features-organized.png?fm=webp&q=85&fit=fill&w=958",
-    alt: "Organización",
+      "https://images.unsplash.com/photo-1521737604893-d14cc237f11d?q=80&w=1200&auto=format&fit=crop",
+    alt: "Agente de soporte ayudando a viajero",
     modalDetails: [
       {
-        headline: "Permisos de equipo",
-        text: "Controla el acceso con códigos personalizados.",
+        headline: "Gestión de cambios",
+        text: "Te ayudamos con vuelos, hoteles y traslados cuando surgen imprevistos.",
       },
       {
-        headline: "Perfiles de clientes",
-        text: "Guarda historiales de compra automáticamente.",
+        headline: "Comunicación clara",
+        text: "Canales directos por WhatsApp y teléfono con tiempos de respuesta rápidos.",
+      },
+      {
+        headline: "Seguimiento en destino",
+        text: "Confirmamos servicios clave (traslados, tours) y damos soporte en español durante el viaje.",
       },
     ],
   },
   {
-    id: "grow",
-    title: "Aprende y crece con cada venta",
+    id: "perks",
+    title: "Beneficios y pagos flexibles",
     description:
-      "Datos y estadísticas en tiempo real sobre tu negocio para tomar decisiones informadas y mejorar tu rentabilidad día a día.",
+      "Accede a promos, pagos en meses con costo financiero y tarifas negociadas para maximizar tu presupuesto.",
     image:
-      "https://images.ctfassets.net/2d5q1td6cyxq/19oGKq54H07C4WTWLRZWNG/0a5f35e20487a9d85762781c0633cb2d/PD07327-USES-features-grow.png?fm=webp&q=85&fit=fill&w=958",
-    alt: "Crecimiento",
+      "https://images.unsplash.com/photo-1528909514045-2fa4ac7a08ba?q=80&w=1200&auto=format&fit=crop",
+    alt: "Tarjetas y ahorro en viajes",
     modalDetails: [
       {
-        headline: "Reportes de ventas",
-        text: "Visualiza ventas brutas y netas en tiempo real.",
+        headline: "Financiamiento",
+        text: "Pagos en meses con costo financiero y anticipos para asegurar tu lugar.",
       },
       {
-        headline: "Integraciones",
-        text: "Conecta con QuickBooks, Xero y más.",
+        headline: "Tarifas negociadas",
+        text: "Mejores condiciones con hoteles, tours y cruceros aliados.",
+      },
+      {
+        headline: "Extras y amenidades",
+        text: "Buscamos upgrades, desayunos incluidos o late check-out según disponibilidad del proveedor.",
       },
     ],
   },
@@ -210,7 +226,7 @@ const Features = () => {
         <div className="max-w-375 mx-auto">
           <div className="mb-16">
             <h2 className="mx-automax-w-375 text-center text-4xl md:text-[64px] leading-[1.05] tracking-[-0.02em]  text-gray-900">
-              Vende sin problemas en una o cien sucursales
+              Viaja con respaldo total en cada etapa
             </h2>
           </div>
 

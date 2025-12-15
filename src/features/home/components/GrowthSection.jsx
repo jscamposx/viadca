@@ -3,27 +3,27 @@ import React, { useState } from 'react';
 const GROWTH_DATA = [
   {
     id: 1,
-    title: "Aparece en todas partes",
-    description: "Crece con herramientas incorporadas de optimización de motores de búsqueda (SEO) e integraciones con Google y Meta.",
-    image: "https://images.ctfassets.net/2d5q1td6cyxq/2sVLYLXAmCQPaCBkpEQI2V/8d925d6f3c35c2cdee600be9b3de43db/PD07134_-_USES_desktop_show_up.png?fm=webp&q=85&fit=fill&w=1400"
+    title: "Inspírate y elige",
+    description: "Curamos destinos y rutas populares cada semana para darte ideas claras según tu presupuesto.",
+    image: "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?q=80&w=1400&auto=format&fit=crop"
   },
   {
     id: 2,
-    title: "Envía promociones personalizadas",
-    description: "Envía campañas de marketing por correo electrónico y mensaje de texto en cualquier momento.",
-    image: "https://images.ctfassets.net/2d5q1td6cyxq/4ovoRcpg57OK30qofHicWV/c9235b5bee6dd276aa27b79ef72b63b5/PD07134_-_USES_desktop_promotions.png?fm=webp&q=85&fit=fill&w=1400"
+    title: "Promos y bloqueos anticipados",
+    description: "Te avisamos de tarifas especiales y bloqueamos lugares mientras confirmas con tu equipo o familia.",
+    image: "https://images.unsplash.com/photo-1503220317375-aaad61436b1b?q=80&w=1400&auto=format&fit=crop"
   },
   {
     id: 3,
-    title: "Recompensa a tus clientes frecuentes",
-    description: "Impulsa las ventas frecuentes con un programa de recompensas integrado.",
-    image: "https://images.ctfassets.net/2d5q1td6cyxq/15Qy90J8Hm8cPCsZB3UQjd/3f1d4cdeade1ebd928e5507b197eaa83/PD07134_-_USES_desktop_loyalty.png?fm=webp&q=85&fit=fill&w=1400"
+    title: "Acompañamiento en ruta",
+    description: "Equipo Viadca para cambios, reacomodos y tips locales mientras viajas.",
+    image: "https://images.unsplash.com/photo-1528909514045-2fa4ac7a08ba?q=80&w=1400&auto=format&fit=crop"
   },
   {
     id: 4,
-    title: "Vende tarjetas de regalo electrónicas",
-    description: "Personaliza diseños y ofrece tarjetas de regalo electrónicas directamente en tu sitio.",
-    image: "https://images.ctfassets.net/2d5q1td6cyxq/41YYpZ8Wb7QrCpo0vLCp7c/cc370d8eaca00aacb03c44d923dffc0e/PD07134_-_USES_desktop_eGifts.png?fm=webp&q=85&fit=fill&w=1400"
+    title: "Pagos y seguros flexibles",
+    description: "Pagos en meses con costo financiero, anticipos y seguros de viaje para proteger tu inversión.",
+    image: "https://images.unsplash.com/photo-1520607162513-77705c0f0d4a?q=80&w=1400&auto=format&fit=crop"
   }
 ];
 
@@ -35,7 +35,7 @@ const GrowthSection = () => {
       <div className="max-w-375 mx-auto">
         <div className="mb-12 lg:mb-24 max-w-4xl">
           <h2 className="text-4xl md:text-[56px] lg:text-[64px] font-serif font-medium text-gray-900 tracking-tight leading-[1.05]">
-            Amplía tu alcance. Vende más.
+            Viaja informado y con respaldo
           </h2>
         </div>
 

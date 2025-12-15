@@ -9,39 +9,38 @@ import { useContactActions } from "../../../hooks/useContactActions";
 gsap.registerPlugin(ScrollTrigger);
 
 const contentData = {
-  food: {
-    label: "Comida",
-    title: "Alimentos y bebidas",
-    desc: "Administra tu restaurante con las mejores funciones para servicio completo o rápido.",
-    features: ["Pedidos rápidos", "Mesas y platos", "Cuentas de bar"],
+  mexico: {
+    label: "México",
+    title: "Explora México con Viadca",
+    desc: "Vuelos y hoteles en los destinos más queridos: playas, pueblos mágicos y escapadas urbanas.",
+    features: ["Paquetes con vuelo + hotel", "Traslados y seguros opcionales", "Pagos en meses con costo financiero"],
     video: defaultVideo,
   },
-  retail: {
-    label: "Tienda",
-    title: "Tiendas Minoristas",
-    desc: "Todo lo que necesitas para vender en tienda y en línea. Sincroniza tu inventario.",
-    features: ["Inventario real", "Perfiles clientes", "Ventas omnicanal"],
-    video:
-      defaultVideo,
-  },
-  beauty: {
-    label: "Belleza",
-    title: "Belleza y Estética",
-    desc: "Agenda citas y envía recordatorios automáticos. Diseñado para salones y spas.",
-    features: ["Reservas 24/7", "Recordatorios", "Gestión personal"],
+  internacionales: {
+    label: "Internacionales",
+    title: "Aventura fuera de México",
+    desc: "Circuitos y escapadas internacionales con operadores confiables y soporte en ruta.",
+    features: ["Guías y traslados incluidos", "Reprogramaciones con el equipo Viadca", "Contacto 24/7"],
     video: defaultVideo,
   },
-  services: {
-    label: "Servicios",
-    title: "Servicios Pro",
-    desc: "Facturación profesional y contratos digitales para consultores.",
-    features: ["Facturas", "Pagos recurrentes", "Contratos"],
+  destacados: {
+    label: "Nuestros destacados",
+    title: "Selección destacada por Viadca",
+    desc: "Rutas favoritas de nuestra comunidad con tarifas negociadas y extras incluidos.",
+    features: ["Tarifas especiales", "Bloqueos anticipados", "Bonos y upgrades sujetos a disponibilidad"],
+    video: defaultVideo,
+  },
+  todos: {
+    label: "Todos",
+    title: "Explora todos los paquetes",
+    desc: "Consulta el catálogo completo y encuentra tu próximo viaje en minutos.",
+    features: ["Filtros por destino y fecha", "Opciones familiares y corporativas", "Asesoría de nuestro equipo"],
     video: defaultVideo,
   },
 };
 
 const Hero = () => {
-  const [activeTab, setActiveTab] = useState("food");
+  const [activeTab, setActiveTab] = useState("mexico");
   const containerRef = useRef(null);
   const rightSideWrapperRef = useRef(null);
   const videoInnerRef = useRef(null);
@@ -215,7 +214,7 @@ const Hero = () => {
         </div>
         <div className="w-full max-w-307.5mt-2 md:mt-4 mb-8 md:mb-12">
           <h1 className="text-[42px] leading-[1.05] md:text-[90px] md:leading-none font-serif text-center text-gray-900 font-medium tracking-tight md:-tracking-[2.7px]">
-            Un Viaje y un destino <br /> nosotros lo hacemos posible
+            Vive experiencias únicas <br /> y viaja tranquilo con Viadca
           </h1>
         </div>
         <div className="flex flex-row gap-3 w-full justify-center px-2 sm:w-auto sm:px-0">
@@ -286,7 +285,7 @@ const Hero = () => {
 
               <div>
                 <p className="text-sm font-bold text-gray-900 uppercase tracking-wide pt-2 mb-2">
-                  Accede rápidamente a:
+                  Te ayudamos con:
                 </p>
                 <ul className="space-y-2">
                   {currentContent.features.map((item, index) => (
@@ -305,10 +304,10 @@ const Hero = () => {
 
               <div className="pt-2">
                 <a
-                  href="#"
+                  href="/paquetes"
                   className="inline-flex items-center text-base lg:text-lg font-bold text-black hover:underline group transition-all"
                 >
-                  Obtén más información
+                  Ver paquetes
                   <ArrowUpRight className="ml-2 w-4 h-4 lg:w-5 lg:h-5 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
                 </a>
               </div>
@@ -347,7 +346,7 @@ const Hero = () => {
               className="absolute inset-0 z-20 flex flex-col items-center justify-center p-4 text-center pointer-events-none opacity-0"
             >
               <h2 className="text-white text-3xl lg:text-6xl font-bold leading-tight drop-shadow-lg font-serif">
-                Ponte en marcha con un <br /> PDV personalizado.
+                Planea tu siguiente viaje <br /> con Viadca.
               </h2>
             </div>
           </div>
