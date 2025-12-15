@@ -5,25 +5,25 @@ const GROWTH_DATA = [
     id: 1,
     title: "Inspírate y elige",
     description: "Curamos destinos y rutas populares cada semana para darte ideas claras según tu presupuesto.",
-    image: "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?q=80&w=1400&auto=format&fit=crop"
+    image: "/HomePage/grow-inspirate.avif"
   },
   {
     id: 2,
     title: "Promos y bloqueos anticipados",
     description: "Te avisamos de tarifas especiales y bloqueamos lugares mientras confirmas con tu equipo o familia.",
-    image: "https://images.unsplash.com/photo-1503220317375-aaad61436b1b?q=80&w=1400&auto=format&fit=crop"
+    image: "/HomePage/grow-bloqueos.avif"
   },
   {
     id: 3,
     title: "Acompañamiento en ruta",
     description: "Equipo Viadca para cambios, reacomodos y tips locales mientras viajas.",
-    image: "https://images.unsplash.com/photo-1528909514045-2fa4ac7a08ba?q=80&w=1400&auto=format&fit=crop"
+    image: "/HomePage/grow-ruta.avif"
   },
   {
     id: 4,
     title: "Pagos y seguros flexibles",
     description: "Pagos en meses con costo financiero, anticipos y seguros de viaje para proteger tu inversión.",
-    image: "https://images.unsplash.com/photo-1520607162513-77705c0f0d4a?q=80&w=1400&auto=format&fit=crop"
+    image: "/HomePage/grow-meses.avif"
   }
 ];
 
@@ -75,7 +75,7 @@ const GrowthSection = () => {
                             <img 
                               src={item.image} 
                               alt={item.title} 
-                              className="w-full h-auto max-h-75 object-contain drop-shadow-sm"
+                              className="w-full h-auto max-h-75 object-cover drop-shadow-sm"
                             />
                          </div>
                       </div>
@@ -99,7 +99,7 @@ const GrowthSection = () => {
                     <img
                       src={item.image}
                       alt={item.title}
-                      className="w-full h-full object-contain drop-shadow-sm"
+                      className="w-full h-full object-cover drop-shadow-sm"
                     />
                  </div>
                ))}
