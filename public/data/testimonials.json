@@ -1,7 +1,15 @@
 [
   {
+    "name": "Ana Victoria Huerta Alcantar",
+    "location": "Hace 3 semanas",
+    "avatar": "/HomePage/testimonio-user4.avif",
+    "quote": "Me ayudó mucho para planear y hacer realidad mi viaje a Las Vegas.",
+    "accentFrom": "from-amber-500",
+    "accentTo": "to-orange-500"
+  },
+  {
     "name": "Jess",
-    "location": "Hace 1 día",
+    "location": "Hace 4 semanas",
     "avatar": "/HomePage/testimonio-user2.avif",
     "quote": "El mejor de los servicios. Muy buen acomodo de los viajes, hoteles y atención al cliente excelentes. No hubo contratiempos y todas nuestras dudas fueron resueltas de la manera más amable. Muy recomendable! Muchas gracias! 🙏",
     "accentFrom": "from-blue-600",
