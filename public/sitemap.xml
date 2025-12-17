@@ -2,7 +2,7 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
         xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
   
-  <!-- Páginas principales -->
+  <!-- Páginas Core -->
   <url>
     <loc>https://www.viadca.app/</loc>
     <lastmod>2025-09-02</lastmod>
@@ -23,27 +23,28 @@
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
-  
+
+  <!-- Información y Ayuda -->
   <url>
     <loc>https://www.viadca.app/preguntas-frecuentes</loc>
     <lastmod>2025-09-02</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.8</priority>
   </url>
   
   <url>
     <loc>https://www.viadca.app/contacto</loc>
     <lastmod>2025-09-02</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
+    <priority>0.7</priority>
   </url>
   
-  <!-- Páginas legales -->
+  <!-- Páginas Legales -->
   <url>
-    <loc>https://www.viadca.app/aviso-privacidad</loc>
+    <loc>https://www.viadca.app/privacidad</loc>
     <lastmod>2025-09-02</lastmod>
     <changefreq>yearly</changefreq>
-    <priority>0.3</priority>
+    <priority>0.5</priority>
   </url>
   
   <url>
@@ -52,23 +53,34 @@
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
-  
-  <!-- 
-  NOTA: Los paquetes dinámicos deben generarse automáticamente 
-  en el build process o mediante un script que consulte la API.
-  
-  Formato esperado para cada paquete:
+
   <url>
-    <loc>https://www.viadca.app/paquetes/[codigoUrl]</loc>
-    <lastmod>[fecha_modificacion]</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-    <image:image>
-      <image:loc>[url_imagen_principal]</image:loc>
-      <image:title>[titulo_paquete]</image:title>
-      <image:caption>[descripcion_corta]</image:caption>
-    </image:image>
+    <loc>https://www.viadca.app/cookies</loc>
+    <lastmod>2025-09-02</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
   </url>
-  -->
+
+  <!-- Autenticación (Baja prioridad pero indexables) -->
+  <url>
+    <loc>https://www.viadca.app/iniciar-sesion</loc>
+    <lastmod>2025-09-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.4</priority>
+  </url>
+
+  <url>
+    <loc>https://www.viadca.app/registro</loc>
+    <lastmod>2025-09-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.4</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.viadca.app/recuperar-contraseña</loc>
+    <lastmod>2025-09-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.3</priority>
+  </url>
   
 </urlset>
