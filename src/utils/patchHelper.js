@@ -197,6 +197,12 @@ export const preparePatchPayload = (originalPackage, currentFormData) => {
 const normalizePackageData = (data) => {
   if (!data) return {};
 
+  const parseOptionalFloat = (value) => {
+    if (value === null || value === undefined || value === "") return null;
+    const parsed = parseFloat(value);
+    return Number.isNaN(parsed) ? null : parsed;
+  };
+
   let itinerarioTexto = data.itinerario_texto || "";
   if (!itinerarioTexto && data.itinerarios && Array.isArray(data.itinerarios)) {
     const itinerarioOrdenado = data.itinerarios.sort(
@@ -224,14 +230,8 @@ const normalizePackageData = (data) => {
             return Number.isNaN(parsed) || parsed <= 0 ? null : parsed;
           })(),
     // Nuevos campos opcionales desglosados (mantener null si no existen)
-    precio_vuelo:
-      data.precio_vuelo === null || data.precio_vuelo === undefined
-        ? null
-        : parseFloat(data.precio_vuelo),
-    precio_hospedaje:
-      data.precio_hospedaje === null || data.precio_hospedaje === undefined
-        ? null
-        : parseFloat(data.precio_hospedaje),
+    precio_vuelo: parseOptionalFloat(data.precio_vuelo),
+    precio_hospedaje: parseOptionalFloat(data.precio_hospedaje),
     descuento: data.descuento ? parseFloat(data.descuento) : null,
     anticipo: data.anticipo ? parseFloat(data.anticipo) : null,
     notas: data.notas || null,
@@ -349,7 +349,7 @@ const buildDestinosPayload = (formData) => {
   ).map((d, idx) => ({
     ciudad: d.ciudad || d.name || "",
     estado: d.estado || null,
-    pais: d.pais || null,
+    pais: d.pais || formData.destino_pais || parseDisplay(formData.destino).pais || null,
     destino_lat: parseFloat(d.lat) || null,
     destino_lng: parseFloat(d.lng) || null,
     orden: idx + 2,
