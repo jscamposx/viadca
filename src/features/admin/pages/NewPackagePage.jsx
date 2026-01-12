@@ -1,5 +1,3 @@
-import { APIProvider } from "@vis.gl/react-google-maps";
-import { getGoogleMapsApiKey } from "../../../utils/mapsUtils";
 import { useParams, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import {
@@ -32,6 +30,7 @@ import Error from "../../package/components/Error";
 import PatchPreview from "../components/PatchPreview";
 import { setOperation } from "../utils/operationBus";
 
+// Página de creación y edición de paquetes
 const NuevoPaquete = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -58,6 +57,7 @@ const NuevoPaquete = () => {
     handleImagesChange,
     handleAddDestination,
     handleRemoveDestination,
+    handleUpdateDestination,
     handleSubmit: formSubmitHandler,
     currentPatchPayload,
   } = usePackageForm(paquete);
@@ -209,22 +209,16 @@ const NuevoPaquete = () => {
   const currentSection = sections.find((s) => s.id === activeSection);
   const progress = ((getCurrentSectionIndex() + 1) / sections.length) * 100;
 
-  const mapsApiKey = getGoogleMapsApiKey();
+  const showPatchPreview = id && paquete;
 
   return (
-    <APIProvider
-      apiKey={mapsApiKey || ""}
-      libraries={["places", "geocoding", "marker"]}
-      language="es"
-      region="MX"
-      version="beta"
-    >
+    <>
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50">
-        <div className="sticky top-0 z-50 bg-white/80 backdrop-blur-xl border-b border-slate-200/60">
-          <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 xl:px-8">
-            <div className="grid grid-cols-3 items-center h-14 sm:h-16 lg:h-20">
-              {/* Sección izquierda - Botón atrás y título */}
-              <div className="flex items-center gap-2 sm:gap-4 min-w-0">
+      <div className="sticky top-0 z-50 bg-white/80 backdrop-blur-xl border-b border-slate-200/60">
+        <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 xl:px-8">
+          <div className="grid grid-cols-3 items-center h-14 sm:h-16 lg:h-20">
+            {/* Sección izquierda - Botón atrás y título */}
+            <div className="flex items-center gap-2 sm:gap-4 min-w-0">
                 <button
                   type="button"
                   onClick={() => navigate("/admin/paquetes")}
@@ -481,6 +475,7 @@ const NuevoPaquete = () => {
                         additionalDestinations={formData.additionalDestinations}
                         onAddDestination={handleAddDestination}
                         onRemoveDestination={handleRemoveDestination}
+                        onUpdateDestination={handleUpdateDestination}
                       />
                     )}
 
@@ -555,7 +550,7 @@ const NuevoPaquete = () => {
                   </div>
                 </div>
 
-                <div className="sticky bottom-4 sm:bottom-6 bg-white rounded-xl sm:rounded-2xl shadow-lg border border-slate-200 p-3 sm:p-4">
+                <div className="sticky bottom-4 sm:bottom-6 z-[500] bg-white rounded-xl sm:rounded-2xl shadow-lg border border-slate-200 p-3 sm:p-4">
                   <div className="flex items-center justify-between">
                     <button
                       type="button"
@@ -640,8 +635,8 @@ const NuevoPaquete = () => {
         </div>
       </div>
 
-      {id && paquete && <PatchPreview patchPayload={currentPatchPayload} />}
-    </APIProvider>
+      {showPatchPreview && <PatchPreview patchPayload={currentPatchPayload} />}
+    </>
   );
 };
 

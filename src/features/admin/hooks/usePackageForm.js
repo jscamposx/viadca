@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo, useRef, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../../../api";
+import { reverseGeocode } from "../../../services/geocodingService";
 import {
   preparePatchPayload,
   hasChanges,
@@ -160,6 +161,12 @@ export const usePackageForm = (initialPackageData = null) => {
         directMayoristasIds: initialPackageData.mayoristasIds,
       });
 
+      console.log("🗺️ Cargando destinos desde backend:", {
+        destinosOriginales: initialPackageData.destinos,
+        totalDestinos: (initialPackageData.destinos || []).length,
+        destinosProcesados: (initialPackageData.destinos || []).slice(1).length,
+      });
+
       setFormData({
         titulo: initialPackageData.titulo || "",
         fecha_inicio: formatDateForInput(initialPackageData.fecha_inicio),
@@ -222,19 +229,21 @@ export const usePackageForm = (initialPackageData = null) => {
         destino_pais: initialDestino.pais || "",
         additionalDestinations: (initialPackageData.destinos || [])
           .slice(1)
+          .filter(dest => dest.destino_lat && dest.destino_lng)
           .map((dest) => ({
-            name: dest.destino || dest.ciudad,
-            lat: dest.destino_lat,
-            lng: dest.destino_lng,
+            name: dest.destino || dest.ciudad || [dest.ciudad, dest.estado].filter(Boolean).join(", ") || "Destino",
+            lat: parseFloat(dest.destino_lat),
+            lng: parseFloat(dest.destino_lng),
           })),
         additionalDestinationsDetailed: (initialPackageData.destinos || [])
           .slice(1)
+          .filter(dest => dest.destino_lat && dest.destino_lng)
           .map((dest) => ({
             ciudad: dest.ciudad || dest.destino || "",
             estado: dest.estado || "",
             pais: dest.pais || "",
-            lat: dest.destino_lat,
-            lng: dest.destino_lng,
+            lat: parseFloat(dest.destino_lat),
+            lng: parseFloat(dest.destino_lng),
           })),
         destinos: initialPackageData.destinos || [],
         imagenes: processedImages,
@@ -251,31 +260,71 @@ export const usePackageForm = (initialPackageData = null) => {
   const [searchValue, setSearchValue] = useState("");
 
   useEffect(() => {
-    setSearchValue(
-      selectionMode === "destino" ? formData.destino : formData.origen,
-    );
-  }, [selectionMode, formData.origen, formData.destino]);
+    if (selectionMode === "destino") {
+      setSearchValue(formData.destino || "");
+      return;
+    }
+
+    if (selectionMode === "origen") {
+      setSearchValue(formData.origen || "");
+      return;
+    }
+
+    if (selectionMode === "nuevo_destino") {
+      setSearchValue("");
+      return;
+    }
+
+    const matchAdditional = /^destino_(\d+)$/.exec(selectionMode || "");
+    if (matchAdditional) {
+      const index = Number(matchAdditional[1]);
+      const name = formData.additionalDestinations?.[index]?.name || "";
+      setSearchValue(name);
+    }
+  }, [
+    selectionMode,
+    formData.origen,
+    formData.destino,
+    formData.additionalDestinations,
+  ]);
 
   const handlePlaceSelected = useCallback(
     (place) => {
-      const { geometry, formatted_address } = place;
-      if (!geometry) return;
-      const { lat, lng } = geometry.location;
-      // Extraer componentes para ciudad/estado/pais
-      const comps = place.address_components || [];
-      const getComp = (type) => {
-        const c = comps.find((ac) => ac.types.includes(type));
-        return c ? c.long_name : null;
-      };
-      const ciudad =
-        getComp("locality") ||
-        getComp("sublocality") ||
-        getComp("administrative_area_level_2") ||
-        getComp("administrative_area_level_3") ||
-        "";
-      const estado = getComp("administrative_area_level_1") || "";
-      const pais = getComp("country") || "";
-      const display = formatted_address.split(",").slice(0, 2).join(", ");
+      // Soportar dos formatos: Google Maps (geometry.location) y OSM (lat/lng directos)
+      let lat, lng, ciudad, estado, pais, display;
+      
+      if (place.geometry && place.geometry.location) {
+        // Formato Google Maps (legacy)
+        const { geometry, formatted_address } = place;
+        lat = typeof geometry.location.lat === 'function' ? geometry.location.lat() : geometry.location.lat;
+        lng = typeof geometry.location.lng === 'function' ? geometry.location.lng() : geometry.location.lng;
+        
+        const comps = place.address_components || [];
+        const getComp = (type) => {
+          const c = comps.find((ac) => ac.types.includes(type));
+          return c ? c.long_name : null;
+        };
+        ciudad =
+          getComp("locality") ||
+          getComp("sublocality") ||
+          getComp("administrative_area_level_2") ||
+          getComp("administrative_area_level_3") ||
+          "";
+        estado = getComp("administrative_area_level_1") || "";
+        pais = getComp("country") || "";
+        display = formatted_address.split(",").slice(0, 2).join(", ");
+      } else {
+        // Formato OSM (nuevo)
+        lat = place.lat;
+        lng = place.lng;
+        ciudad = place.city || "";
+        estado = place.state || "";
+        pais = place.country || "";
+        display = place.address || place.name || place.displayName || "";
+      }
+      
+      if (!lat || !lng) return;
+      
       setFormData((prev) => ({
         ...prev,
         ...(selectionMode === "destino"
@@ -284,13 +333,13 @@ export const usePackageForm = (initialPackageData = null) => {
               destino_ciudad: ciudad,
               destino_estado: estado,
               destino_pais: pais,
-              destino_lat: lat(),
-              destino_lng: lng(),
+              destino_lat: lat,
+              destino_lng: lng,
             }
           : {
               origen: display,
-              origen_lat: lat(),
-              origen_lng: lng(),
+              origen_lat: lat,
+              origen_lng: lng,
             }),
       }));
     },
@@ -298,56 +347,33 @@ export const usePackageForm = (initialPackageData = null) => {
   );
 
   const onMapClick = useCallback(
-    (event) => {
-      const latLng = event.detail.latLng;
+    async (latLng, mode = selectionMode, placeData = null) => {
       if (!latLng) return;
-      const geocoder = new window.google.maps.Geocoder();
-      geocoder.geocode(
-        {
-          location: latLng,
-          language: "es",
-          region: "MX",
-        },
-        (results, status) => {
-          if (status === "OK" && results[0]) {
-            const place = results[0];
-            const comps = place.address_components || [];
-            const getComp = (type) => {
-              const c = comps.find((ac) => ac.types.includes(type));
-              return c ? c.long_name : null;
-            };
-            const ciudad =
-              getComp("locality") ||
-              getComp("sublocality") ||
-              getComp("administrative_area_level_2") ||
-              getComp("administrative_area_level_3") ||
-              "";
-            const estado = getComp("administrative_area_level_1") || "";
-            const pais = getComp("country") || "";
-            const display = place.formatted_address
-              .split(",")
-              .slice(0, 2)
-              .join(", ");
-            setFormData((prev) => ({
-              ...prev,
-              ...(selectionMode === "destino"
-                ? {
-                    destino: display,
-                    destino_ciudad: ciudad,
-                    destino_estado: estado,
-                    destino_pais: pais,
-                    destino_lat: latLng.lat,
-                    destino_lng: latLng.lng,
-                  }
-                : {
-                    origen: display,
-                    origen_lat: latLng.lat,
-                    origen_lng: latLng.lng,
-                  }),
-            }));
-          }
-        },
-      );
+
+      let result = placeData;
+      if (!result) {
+        result = await reverseGeocode(latLng.lat, latLng.lng, true);
+      }
+
+      if (result) {
+        setFormData((prev) => ({
+          ...prev,
+          ...(mode === "destino"
+            ? {
+                destino: result.displayName || result.name || "",
+                destino_ciudad: result.city || "",
+                destino_estado: result.state || "",
+                destino_pais: result.country || "",
+                destino_lat: result.lat,
+                destino_lng: result.lng,
+              }
+            : {
+                origen: result.displayName || result.name || "",
+                origen_lat: result.lat,
+                origen_lng: result.lng,
+              }),
+        }));
+      }
     },
     [selectionMode],
   );
@@ -418,6 +444,16 @@ export const usePackageForm = (initialPackageData = null) => {
           ...(prev.additionalDestinations || []),
           destination,
         ],
+        additionalDestinationsDetailed: [
+          ...(prev.additionalDestinationsDetailed || []),
+          {
+            ciudad: destination.name || "",
+            estado: "",
+            pais: "",
+            lat: destination.lat,
+            lng: destination.lng,
+          },
+        ],
       }));
       return true;
     },
@@ -430,7 +466,34 @@ export const usePackageForm = (initialPackageData = null) => {
       additionalDestinations: prev.additionalDestinations.filter(
         (_, i) => i !== index,
       ),
+      additionalDestinationsDetailed: (prev.additionalDestinationsDetailed || []).filter(
+        (_, i) => i !== index,
+      ),
     }));
+  }, []);
+
+  const handleUpdateDestination = useCallback((index, updatedDestination) => {
+    setFormData((prev) => {
+      const newDestinations = [...(prev.additionalDestinations || [])];
+      newDestinations[index] = updatedDestination;
+      
+      // También actualizar additionalDestinationsDetailed para mantener consistencia
+      const newDetailed = [...(prev.additionalDestinationsDetailed || [])];
+      if (newDetailed[index]) {
+        newDetailed[index] = {
+          ...newDetailed[index],
+          ciudad: updatedDestination.name || newDetailed[index].ciudad,
+          lat: updatedDestination.lat,
+          lng: updatedDestination.lng,
+        };
+      }
+      
+      return {
+        ...prev,
+        additionalDestinations: newDestinations,
+        additionalDestinationsDetailed: newDetailed,
+      };
+    });
   }, []);
 
   const handleSubmit = async (
@@ -1437,6 +1500,7 @@ export const usePackageForm = (initialPackageData = null) => {
     handleImagesChange,
     handleAddDestination,
     handleRemoveDestination,
+    handleUpdateDestination,
     handleSubmit,
     currentPatchPayload,
     hotelImagesProgress,

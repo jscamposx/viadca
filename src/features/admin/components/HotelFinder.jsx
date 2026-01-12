@@ -1,12 +1,11 @@
 import { useState, useEffect, useCallback, useRef } from "react";
-import { useMapsLibrary } from "@vis.gl/react-google-maps";
 import StarRating from "./StarRating";
 import { getImageUrl } from "../../../utils/imageUtils";
 import OptimizedImage from "../../../components/ui/OptimizedImage";
 import api from "../../../api";
 
 const HotelFinder = ({ destination, onHotelSelect, selectedHotel }) => {
-  const places = useMapsLibrary("places");
+  const places = null;
   const [allHotels, setAllHotels] = useState([]);
   const [customHotels, setCustomHotels] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -14,7 +13,7 @@ const HotelFinder = ({ destination, onHotelSelect, selectedHotel }) => {
   const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(0);
   const [searchTerm, setSearchTerm] = useState("");
-  const [sourceTab, setSourceTab] = useState("google"); // 'google' | 'custom' | 'todos'
+  const [sourceTab, setSourceTab] = useState("custom");
   const [isManualFormVisible, setIsManualFormVisible] = useState(false);
   const [isLoadingHotelImages, setIsLoadingHotelImages] = useState(false);
   const [customHotel, setCustomHotel] = useState({
