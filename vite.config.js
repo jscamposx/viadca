@@ -31,7 +31,7 @@ export default defineConfig({
       output: {
         manualChunks: {
           vendor: ["react", "react-dom"],
-          maps: ["@vis.gl/react-google-maps"],
+          maps: ["leaflet", "react-leaflet"],
           ui: ["react-icons"],
         },
       },
