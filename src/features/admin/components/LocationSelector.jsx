@@ -207,6 +207,9 @@ const LocationSelector = ({
           name: addressName,
           lat: place.lat,
           lng: place.lng,
+          city: place.city,
+          state: place.state,
+          country: place.country,
         });
         setEditingDestinationIndex(null);
         setSelectionMode("destino");
@@ -262,6 +265,9 @@ const LocationSelector = ({
             name: geocodeResult?.displayName || "Ubicación sin nombre",
             lat: latLng.lat,
             lng: latLng.lng,
+            city: geocodeResult?.city,
+            state: geocodeResult?.state,
+            country: geocodeResult?.country,
           });
           setEditingDestinationIndex(null);
           setSelectionMode("destino");

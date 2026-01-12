@@ -479,14 +479,35 @@ export const usePackageForm = (initialPackageData = null) => {
       
       // También actualizar additionalDestinationsDetailed para mantener consistencia
       const newDetailed = [...(prev.additionalDestinationsDetailed || [])];
-      if (newDetailed[index]) {
-        newDetailed[index] = {
-          ...newDetailed[index],
-          ciudad: updatedDestination.name || newDetailed[index].ciudad,
-          lat: updatedDestination.lat,
-          lng: updatedDestination.lng,
-        };
-      }
+
+      const prevDetailed = newDetailed[index] || {};
+      const ciudad =
+        updatedDestination.city ||
+        updatedDestination.ciudad ||
+        updatedDestination.name ||
+        prevDetailed.ciudad ||
+        "";
+      const estado =
+        updatedDestination.state ||
+        updatedDestination.estado ||
+        prevDetailed.estado ||
+        null;
+      const pais =
+        updatedDestination.country ||
+        updatedDestination.pais ||
+        prevDetailed.pais ||
+        prev.destino_pais ||
+        null;
+
+      newDetailed[index] = {
+        ...prevDetailed,
+        name: updatedDestination.name || prevDetailed.name || ciudad,
+        ciudad,
+        estado,
+        pais,
+        lat: updatedDestination.lat,
+        lng: updatedDestination.lng,
+      };
       
       return {
         ...prev,
@@ -856,38 +877,77 @@ export const usePackageForm = (initialPackageData = null) => {
       mayoristasIds: formData.mayoristasIds,
       count: (formData.mayoristasIds || []).length,
     });
+    const parseOptionalFloat = (value) => {
+      if (value === null || value === undefined || value === "") return null;
+      const parsed = parseFloat(value);
+      return Number.isNaN(parsed) ? null : parsed;
+    };
+
+    const parseDisplay = (display) => {
+      const raw = (display || "").trim();
+      if (!raw) return { ciudad: "", estado: null, pais: null };
+      const parts = raw
+        .split(",")
+        .map((p) => p.trim())
+        .filter(Boolean);
+
+      if (parts.length === 1) return { ciudad: parts[0], estado: null, pais: null };
+      if (parts.length === 2) return { ciudad: parts[0], estado: null, pais: parts[1] };
+      return { ciudad: parts[0], estado: parts[1] || null, pais: parts[parts.length - 1] || null };
+    };
+
+    const defaultPais =
+      (formData.destino_pais && String(formData.destino_pais).trim()) ||
+      parseDisplay(formData.destino).pais ||
+      null;
+
     // Helper para construir objeto destino nuevo esquema
     const buildDestino = (displayName, lat, lng, orden, detailed) => {
-      if (detailed && detailed.ciudad) {
-        return {
-          ciudad: detailed.ciudad,
-          estado: detailed.estado || null,
-          pais: detailed.pais || null,
-          destino_lat: parseFloat(lat),
-          destino_lng: parseFloat(lng),
-          orden,
-        };
-      }
-      const parts = (displayName || "").split(",").map((p) => p.trim());
-      let ciudad = parts[0] || displayName || "";
-      let estado = null;
-      let pais = null;
-      if (parts.length === 2) {
-        pais = parts[1];
-      } else if (parts.length >= 3) {
-        estado = parts[1];
-        pais = parts[parts.length - 1];
-      }
+      const latNum = parseOptionalFloat(lat);
+      const lngNum = parseOptionalFloat(lng);
+      if (latNum === null || lngNum === null) return null;
+
+      const display =
+        displayName ||
+        detailed?.name ||
+        detailed?.ciudad ||
+        "";
+      const parsed = parseDisplay(display);
+
+      // Permitir que detailed.ciudad sea un display completo tipo "Guadalajara, Región, País"
+      const detailedCiudadParsed = detailed?.ciudad ? parseDisplay(detailed.ciudad) : null;
+
+      const ciudad =
+        detailed?.ciudad ||
+        detailed?.name ||
+        detailedCiudadParsed?.ciudad ||
+        parsed.ciudad ||
+        "";
+
+      const estado =
+        detailed?.estado ||
+        detailedCiudadParsed?.estado ||
+        parsed.estado ||
+        null;
+
+      const pais =
+        detailed?.pais ||
+        detailedCiudadParsed?.pais ||
+        parsed.pais ||
+        defaultPais ||
+        null;
+
       return {
         ciudad,
-        estado: estado || null,
-        pais: pais || formData.destino_pais || null,
-        destino_lat: parseFloat(lat),
-        destino_lng: parseFloat(lng),
+        estado,
+        pais,
+        destino_lat: latNum,
+        destino_lng: lngNum,
         orden,
       };
     };
-    const destinosPayload = [
+
+    const destinosCandidates = [
       buildDestino(
         formData.destino,
         formData.destino_lat,
@@ -897,21 +957,37 @@ export const usePackageForm = (initialPackageData = null) => {
           ciudad: formData.destino_ciudad,
           estado: formData.destino_estado,
           pais: formData.destino_pais,
+          name: formData.destino,
         },
       ),
       ...(formData.additionalDestinationsDetailed &&
       formData.additionalDestinationsDetailed.length
         ? formData.additionalDestinationsDetailed.map((d, idx) =>
-            buildDestino(d.ciudad, d.lat, d.lng, idx + 2, {
-              ciudad: d.ciudad,
-              estado: d.estado,
-              pais: d.pais,
-            }),
+            buildDestino(
+              d.ciudad || d.name,
+              d.lat ?? d.destino_lat,
+              d.lng ?? d.destino_lng,
+              idx + 2,
+              d,
+            ),
           )
         : (formData.additionalDestinations || []).map((d, idx) =>
-            buildDestino(d.name, d.lat, d.lng, idx + 2),
+            buildDestino(d.name, d.lat, d.lng, idx + 2, d),
           )),
     ];
+
+    const destinosPayload = destinosCandidates
+      .filter(Boolean)
+      .map((d, idx) => ({ ...d, orden: idx + 1 }));
+
+    const firstInvalidPaisIndex = destinosPayload.findIndex(
+      (d) => !d?.pais || String(d.pais).trim() === "",
+    );
+    if (firstInvalidPaisIndex !== -1) {
+      const msg = `El país no puede estar vacío (destino #${firstInvalidPaisIndex + 1}). Selecciona la ubicación desde el buscador o especifica un país.`;
+      if (addNotification) addNotification(msg, "error");
+      throw new Error(msg);
+    }
     const personasParsedRaw = parseInt(formData.personas, 10);
     const personasValue =
       formData.personas === "" ||
