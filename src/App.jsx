@@ -4,7 +4,7 @@ import { AnimatePresence } from "framer-motion";
 import PaqueteDetalle from "./features/package/pages/PackageViewPage";
 import AdminDashboard from "./features/admin/pages/AdminDashboardPage";
 import AdminPaquetes from "./features/admin/pages/AdminPackagesPage";
-import HomePaymentRequiredPage from "./features/home/pages/HomePaymentRequiredPage";
+import Home from "./features/home/pages/HomePage";
 import NuevoPaquete from "./features/admin/pages/NewPackagePage";
 import AdminLayout from "./features/admin/pages/AdminLayout";
 import AdminMayoristasPage from "./features/admin/pages/AdminMayoristasPage";
@@ -44,7 +44,7 @@ function AppRoutes() {
       <ScrollToTop />
       <AnimatePresence mode="wait" initial={false}>
         <Routes location={location} key={location.pathname}>
-          <Route path="/" element={<HomePaymentRequiredPage />} />
+          <Route path="/" element={<Home />} />
           <Route path="/paquetes" element={<DestinationsPage />} />
           <Route path="/paquetes/:url" element={<PaqueteDetalle />} />
           <Route path="/mis-paquetes" element={<MyPackagesPage />} />
